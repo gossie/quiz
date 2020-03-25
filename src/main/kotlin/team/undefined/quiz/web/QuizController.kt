@@ -7,6 +7,7 @@ import team.undefined.quiz.core.Quiz
 import team.undefined.quiz.core.QuizService
 
 @RestController
+@CrossOrigin
 @RequestMapping("/api/quiz")
 class QuizController(private val quizService: QuizService) {
 
@@ -24,7 +25,7 @@ class QuizController(private val quizService: QuizService) {
     }
 }
 
-private fun Quiz.map(): QuizDTO {
+fun Quiz.map(): QuizDTO {
     return QuizDTO(this.name)
 }
 

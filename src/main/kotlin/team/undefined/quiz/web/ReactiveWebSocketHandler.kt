@@ -1,0 +1,19 @@
+package team.undefined.quiz.web
+
+import org.springframework.stereotype.Component
+import org.springframework.web.reactive.socket.WebSocketHandler
+import org.springframework.web.reactive.socket.WebSocketSession
+import reactor.core.publisher.Mono
+import team.undefined.quiz.core.QuizService
+
+@Component
+class ReactiveWebSocketHandler(private val quizService: QuizService) : WebSocketHandler {
+
+    override fun handle(webSocketSession: WebSocketSession): Mono<Void> {
+        return webSocketSession.send(quizService.observeBuzzer()
+                .map { webSocketSession.textMessage(it.toString()) })
+                .and(webSocketSession.receive()
+                        .map { it.payloadAsText }
+                        .log());
+    }
+}

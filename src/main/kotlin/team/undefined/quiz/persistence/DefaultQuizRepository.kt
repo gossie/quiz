@@ -18,12 +18,18 @@ class DefaultQuizRepository(private val quizEntityRepository: QuizEntityReposito
                 .map { it.map() }
     }
 
+    override fun saveQuiz(quiz: Quiz): Mono<Quiz> {
+        return quizEntityRepository.save(quiz.map())
+                .map { it.map() }
+    }
+
 }
 
 private fun QuizEntity.map(): Quiz {
-    return Quiz(this.id, this.name)
+    val participants = if(this.participants.isEmpty()) emptyList() else this.participants.split(";")
+    return Quiz(this.id, this.name, participants, this.turn)
 }
 
 private fun Quiz.map(): QuizEntity {
-    return QuizEntity(this.id, this.name)
+    return QuizEntity(this.id, this.name, this.participants.joinToString(";"), this.turn)
 }

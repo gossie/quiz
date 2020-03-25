@@ -8,4 +8,6 @@ interface QuizRepository {
 
     fun determineQuiz(id: Long): Mono<Quiz>
 
+    fun saveQuiz(quiz: Quiz): Mono<Quiz>
+
 }
