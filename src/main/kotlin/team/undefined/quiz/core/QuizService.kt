@@ -35,10 +35,15 @@ class QuizService(private val quizRepository: QuizRepository) {
                 }
     }
 
-    fun observeBuzzer(): Flux<String> {
+    fun observeQuiz(): Flux<String> {
         return emitterProcessor
     }
 
+    fun startNewQuestion(quizId: Long): Mono<Quiz> {
+        return quizRepository.determineQuiz(quizId)
+                .map { it.startQuestion() }
+                .flatMap { quizRepository.saveQuiz(it) }
+    }
 
 
 }

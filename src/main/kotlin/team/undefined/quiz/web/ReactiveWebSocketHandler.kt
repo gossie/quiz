@@ -10,7 +10,7 @@ import team.undefined.quiz.core.QuizService
 class ReactiveWebSocketHandler(private val quizService: QuizService) : WebSocketHandler {
 
     override fun handle(webSocketSession: WebSocketSession): Mono<Void> {
-        return webSocketSession.send(quizService.observeBuzzer()
+        return webSocketSession.send(quizService.observeQuiz()
                 .map { webSocketSession.textMessage(it.toString()) })
                 .and(webSocketSession.receive()
                         .map { it.payloadAsText }

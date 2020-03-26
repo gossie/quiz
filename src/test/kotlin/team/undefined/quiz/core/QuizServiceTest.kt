@@ -2,7 +2,6 @@ package team.undefined.quiz.core
 
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
-import org.mockito.Mockito
 import org.mockito.Mockito.`when`
 import org.mockito.Mockito.mock
 import reactor.core.publisher.Mono
@@ -57,7 +56,7 @@ internal class QuizServiceTest {
         val quizService = QuizService(quizRepository)
 
         val  sb = StringBuilder()
-        quizService.observeBuzzer()
+        quizService.observeQuiz()
                 .subscribe { sb.append(it) }
 
         val buzzer = quizService.buzzer(7, "Sandra")
@@ -66,6 +65,59 @@ internal class QuizServiceTest {
                 .verifyComplete()
 
         assertThat(sb.toString()).isEqualTo("Sandra");
+    }
+
+    @Test
+    fun shouldNotAllowSecondBuzzer() {
+        val quizRepository = mock(QuizRepository::class.java)
+        `when`(quizRepository.determineQuiz(7))
+                .thenReturn(Mono.just(Quiz(7, "Quiz", listOf("Sandra", "Allli", "Erik"))))
+                .thenReturn(Mono.just(Quiz(7, "Quiz", listOf("Sandra", "Allli", "Erik"), "Sandra")))
+        `when`(quizRepository.saveQuiz(Quiz(7, "Quiz", listOf("Sandra", "Allli", "Erik"), "Sandra")))
+                .thenReturn(Mono.just(Quiz(7, "Quiz", listOf("Sandra", "Allli", "Erik"), "Sandra")))
+
+        val quizService = QuizService(quizRepository)
+
+        val  sb = StringBuilder()
+        quizService.observeQuiz()
+                .subscribe {
+                    sb.clear()
+                    sb.append(it)
+                }
+
+        StepVerifier.create(quizService.buzzer(7, "Sandra"))
+                .expectNext(Quiz(7, "Quiz", listOf("Sandra", "Allli", "Erik"), "Sandra"))
+                .verifyComplete()
+
+        assertThat(sb.toString()).isEqualTo("Sandra");
+
+        val buzzer = quizService.buzzer(7, "Allli")
+        StepVerifier.create(buzzer)
+                .verifyComplete()
+
+        assertThat(sb.toString()).isEqualTo("Sandra")
+    }
+
+    @Test
+    fun shouldStartNewQuestion() {
+        val quizRepository = mock(QuizRepository::class.java)
+        `when`(quizRepository.determineQuiz(117))
+                .thenReturn(Mono.just(Quiz(117, "Quiz", listOf("Sandra", "Allli", "Erik"), "Sandra")))
+        `when`(quizRepository.saveQuiz(Quiz(117, "Quiz", listOf("Sandra", "Allli", "Erik"))))
+                .thenReturn(Mono.just(Quiz(117, "Quiz", listOf("Sandra", "Allli", "Erik"))))
+
+        val quizService = QuizService(quizRepository)
+
+        val  sb = StringBuilder()
+        quizService.observeQuiz()
+                .subscribe {
+                    sb.clear()
+                    sb.append(it)
+                }
+
+        StepVerifier.create(quizService.startNewQuestion(117))
+                .expectNext(Quiz(117, "Quiz", listOf("Sandra", "Allli", "Erik")))
+                .verifyComplete()
     }
 
 }

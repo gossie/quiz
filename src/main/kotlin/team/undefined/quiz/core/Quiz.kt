@@ -16,4 +16,9 @@ data class Quiz(val id: Long? = null, val name: String, val participants: List<S
         return this;
     }
 
+    fun startQuestion(): Quiz {
+        turn = null
+        return this
+    }
+
 }
