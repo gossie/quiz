@@ -1,7 +1,6 @@
 package team.undefined.quiz.web
 
 import org.junit.jupiter.api.Test
-import org.mockito.Mockito
 import org.mockito.Mockito.`when`
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.reactive.WebFluxTest
@@ -29,7 +28,7 @@ internal class QuizControllerTest {
         webTestClient
                 .post()
                 .uri("/api/quiz")
-                .body(BodyInserters.fromValue(QuizDTO("Q")))
+                .body(BodyInserters.fromValue(QuizDTO(name = "Q")))
                 .accept(MediaType.APPLICATION_JSON)
                 .exchange()
                 .expectStatus().isCreated

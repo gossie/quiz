@@ -1,11 +1,13 @@
 package team.undefined.quiz.core
 
 import org.assertj.core.api.Assertions.assertThat
+import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test
 import org.mockito.Mockito.`when`
 import org.mockito.Mockito.mock
 import reactor.core.publisher.Mono
 import reactor.test.StepVerifier
+import java.util.concurrent.atomic.AtomicReference
 
 internal class QuizServiceTest {
 
@@ -55,16 +57,16 @@ internal class QuizServiceTest {
 
         val quizService = QuizService(quizRepository)
 
-        val  sb = StringBuilder()
+        val observedQuiz = AtomicReference<Quiz>();
         quizService.observeQuiz()
-                .subscribe { sb.append(it) }
+                .subscribe { observedQuiz.set(it) }
 
         val buzzer = quizService.buzzer(7, "Sandra")
         StepVerifier.create(buzzer)
                 .expectNext(Quiz(7, "Quiz", listOf("Sandra", "Allli", "Erik"), "Sandra"))
                 .verifyComplete()
 
-        assertThat(sb.toString()).isEqualTo("Sandra");
+        assertThat(observedQuiz.get()).isEqualTo(Quiz(7, "Quiz", listOf("Sandra", "Allli", "Erik"), "Sandra"))
     }
 
     @Test
@@ -78,24 +80,21 @@ internal class QuizServiceTest {
 
         val quizService = QuizService(quizRepository)
 
-        val  sb = StringBuilder()
+        val observedQuiz = AtomicReference<Quiz>();
         quizService.observeQuiz()
-                .subscribe {
-                    sb.clear()
-                    sb.append(it)
-                }
+                .subscribe { observedQuiz.set(it) }
 
         StepVerifier.create(quizService.buzzer(7, "Sandra"))
                 .expectNext(Quiz(7, "Quiz", listOf("Sandra", "Allli", "Erik"), "Sandra"))
                 .verifyComplete()
 
-        assertThat(sb.toString()).isEqualTo("Sandra");
+        assertThat(observedQuiz.get()).isEqualTo(Quiz(7, "Quiz", listOf("Sandra", "Allli", "Erik"), "Sandra"));
 
         val buzzer = quizService.buzzer(7, "Allli")
         StepVerifier.create(buzzer)
                 .verifyComplete()
 
-        assertThat(sb.toString()).isEqualTo("Sandra")
+        assertThat(observedQuiz.get()).isEqualTo(Quiz(7, "Quiz", listOf("Sandra", "Allli", "Erik"), "Sandra"))
     }
 
     @Test
@@ -108,16 +107,15 @@ internal class QuizServiceTest {
 
         val quizService = QuizService(quizRepository)
 
-        val  sb = StringBuilder()
+        val observedQuiz = AtomicReference<Quiz>();
         quizService.observeQuiz()
-                .subscribe {
-                    sb.clear()
-                    sb.append(it)
-                }
+                .subscribe { observedQuiz.set(it) }
 
         StepVerifier.create(quizService.startNewQuestion(117))
                 .expectNext(Quiz(117, "Quiz", listOf("Sandra", "Allli", "Erik")))
                 .verifyComplete()
+
+        assertThat(Quiz(117, "Quiz", listOf("Sandra", "Allli", "Erik")))
     }
 
 }

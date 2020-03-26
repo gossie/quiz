@@ -1,5 +1,6 @@
 package team.undefined.quiz.persistence
 
+import com.fasterxml.jackson.databind.ObjectMapper
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.data.r2dbc.DataR2dbcTest
@@ -10,7 +11,7 @@ import team.undefined.quiz.core.QuizService
 import team.undefined.quiz.web.ReactiveWebSocketHandler
 
 @DataR2dbcTest
-@Import(DefaultQuizRepository::class, QuizService::class, ReactiveWebSocketHandler::class)
+@Import(DefaultQuizRepository::class, QuizService::class, ReactiveWebSocketHandler::class, ObjectMapper::class)
 internal class DefaultQuizRepositoryTest {
 
     @Autowired

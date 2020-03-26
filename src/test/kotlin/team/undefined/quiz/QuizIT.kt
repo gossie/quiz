@@ -18,7 +18,7 @@ internal class QuizIT(@Autowired private val webTestClient: WebTestClient) {
         webTestClient!!
                 .post()
                 .uri("/api/quiz")
-                .body(BodyInserters.fromValue(QuizDTO("Q")))
+                .body(BodyInserters.fromValue(QuizDTO(name = "Q")))
                 .accept(MediaType.APPLICATION_JSON)
                 .exchange()
                 .expectStatus().isCreated

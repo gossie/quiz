@@ -1,5 +1,9 @@
 package team.undefined.quiz.web
 
+import org.springframework.hateoas.server.mvc.linkTo
+import org.springframework.hateoas.server.reactive.WebFluxLinkBuilder
+import org.springframework.hateoas.server.reactive.WebFluxLinkBuilder.linkTo
+import org.springframework.hateoas.server.reactive.WebFluxLinkBuilder.methodOn
 import org.springframework.http.HttpStatus
 import org.springframework.web.bind.annotation.*
 import reactor.core.publisher.Mono
@@ -7,7 +11,7 @@ import team.undefined.quiz.core.Quiz
 import team.undefined.quiz.core.QuizService
 
 @RestController
-@CrossOrigin
+@CrossOrigin(origins = ["*"], allowedHeaders = ["*"])
 @RequestMapping("/api/quiz")
 class QuizController(private val quizService: QuizService) {
 
@@ -23,10 +27,20 @@ class QuizController(private val quizService: QuizService) {
         return quizService.determineQuiz(quizId)
                 .map { it.map() }
     }
+/*
+    private fun addLinks(quiz: QuizDTO): Mono<QuizDTO> {
+        linkTo(methodOn(QuizController::class.java).determineQuiz(quiz.id!!))
+                .withSelfRel()
+                .toMono()
+                .map { quiz.add(it) }
+                .map { linkTo(methodOn(ParticipantsController::class.java)) }
+    }
+    */
+
 }
 
 fun Quiz.map(): QuizDTO {
-    return QuizDTO(this.name)
+    return QuizDTO(this.id, this.name, this.participants, this.turn)
 }
 
 private fun QuizDTO.map(): Quiz {
