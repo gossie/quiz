@@ -1,7 +1,5 @@
 package team.undefined.quiz.web
 
-import org.springframework.hateoas.server.mvc.linkTo
-import org.springframework.hateoas.server.reactive.WebFluxLinkBuilder
 import org.springframework.hateoas.server.reactive.WebFluxLinkBuilder.linkTo
 import org.springframework.hateoas.server.reactive.WebFluxLinkBuilder.methodOn
 import org.springframework.http.HttpStatus
@@ -19,30 +17,29 @@ class QuizController(private val quizService: QuizService) {
     @ResponseStatus(HttpStatus.CREATED)
     fun createQuiz(@RequestBody quiz: QuizDTO): Mono<QuizDTO> {
         return quizService.createQuiz(quiz.map())
-                .map { it.map() }
+                .flatMap { it.map() }
     }
 
     @GetMapping("/{quizId}", produces = ["application/json"])
     fun determineQuiz(@PathVariable quizId: Long): Mono<QuizDTO> {
         return quizService.determineQuiz(quizId)
-                .map { it.map() }
+                .flatMap { it.map() }
     }
-/*
-    private fun addLinks(quiz: QuizDTO): Mono<QuizDTO> {
-        linkTo(methodOn(QuizController::class.java).determineQuiz(quiz.id!!))
-                .withSelfRel()
-                .toMono()
-                .map { quiz.add(it) }
-                .map { linkTo(methodOn(ParticipantsController::class.java)) }
-    }
-    */
 
 }
 
-fun Quiz.map(): QuizDTO {
+fun Quiz.map(): Mono<QuizDTO> {
     return QuizDTO(this.id, this.name, this.participants, this.turn)
+            .addLinks()
 }
 
 private fun QuizDTO.map(): Quiz {
     return Quiz(null, this.name)
+}
+
+private fun QuizDTO.addLinks(): Mono<QuizDTO> {
+    return linkTo(methodOn(ParticipantsController::class.java).create(this.id!!, ""))
+            .withRel("createParticipant")
+            .toMono()
+            .map { this.add(it) }
 }

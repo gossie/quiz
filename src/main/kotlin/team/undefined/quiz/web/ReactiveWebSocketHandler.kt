@@ -14,7 +14,7 @@ class ReactiveWebSocketHandler(private val quizService: QuizService,
 
     override fun handle(webSocketSession: WebSocketSession): Mono<Void> {
         return webSocketSession.send(quizService.observeQuiz()
-                .map { it.map() }
+                .flatMap { it.map() }
                 .map { objectMapper.writeValueAsString(it) }
                 .map { webSocketSession.textMessage(it.toString()) })
                 .and(webSocketSession.receive()

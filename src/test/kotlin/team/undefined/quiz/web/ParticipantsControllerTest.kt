@@ -8,7 +8,6 @@ import org.springframework.boot.test.mock.mockito.MockBean
 import org.springframework.context.annotation.Import
 import org.springframework.http.MediaType
 import org.springframework.test.web.reactive.server.WebTestClient
-import org.springframework.test.web.reactive.server.expectBody
 import org.springframework.web.reactive.function.BodyInserters
 import reactor.core.publisher.Mono
 import team.undefined.quiz.core.Quiz
@@ -36,7 +35,7 @@ internal class ParticipantsControllerTest {
                 .body(BodyInserters.fromValue("Erik"))
                 .exchange()
                 .expectStatus().isCreated
-                .expectBody().json("{\"id\":7,\"name\":\"Quiz\",\"participants\":[\"Erik\"],\"links\":[]}")
+                .expectBody().json("{\"id\":7,\"name\":\"Quiz\",\"participants\":[\"Erik\"],\"links\":[{\"href\":\"/api/quiz/7/participants\",\"rel\":\"createParticipant\"}]}")
     }
 
     @Test

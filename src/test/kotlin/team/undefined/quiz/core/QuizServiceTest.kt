@@ -42,9 +42,15 @@ internal class QuizServiceTest {
 
         val quizService = QuizService(quizRepository)
 
+        val observedQuiz = AtomicReference<Quiz>();
+        quizService.observeQuiz()
+                .subscribe { observedQuiz.set(it) }
+
         StepVerifier.create(quizService.createParticipant(12, "Sandra"))
                 .expectNext(Quiz(12, "Quiz", listOf("Sandra")))
                 .verifyComplete()
+
+        assertThat(observedQuiz.get()).isEqualTo(Quiz(12, "Quiz", listOf("Sandra")))
     }
 
     @Test

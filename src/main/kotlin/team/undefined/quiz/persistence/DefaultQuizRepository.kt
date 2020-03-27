@@ -26,7 +26,7 @@ class DefaultQuizRepository(private val quizEntityRepository: QuizEntityReposito
 }
 
 private fun QuizEntity.map(): Quiz {
-    val participants = if(this.participants.isEmpty()) emptyList() else this.participants.split(";")
+    val participants = if(this.participants.isEmpty()) ArrayList() else ArrayList(this.participants.split(";"))
     return Quiz(this.id, this.name, participants, this.turn)
 }
 

@@ -35,7 +35,7 @@ class QuizApplication {
 					.subscribe { println(it.id) }
 		}
 	}
- */
+*/
 }
 
 fun main(args: Array<String>) {

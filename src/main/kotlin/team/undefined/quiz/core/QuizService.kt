@@ -8,7 +8,7 @@ import reactor.core.publisher.Mono
 @Service
 class QuizService(private val quizRepository: QuizRepository) {
 
-    private val emitterProcessor: EmitterProcessor<Quiz> = EmitterProcessor.create()
+    private val emitterProcessor: EmitterProcessor<Quiz> = EmitterProcessor.create(1)
 
     fun createQuiz(quiz: Quiz): Mono<Quiz> {
         return quizRepository.createQuiz(quiz)
@@ -22,6 +22,10 @@ class QuizService(private val quizRepository: QuizRepository) {
         return quizRepository.determineQuiz(quizId)
                 .map { it.addParticipant(participantName) }
                 .flatMap { quizRepository.saveQuiz(it) }
+                .map {
+                    emitterProcessor.onNext(it)
+                    it
+                }
     }
 
     fun buzzer(quizId: Long, participantName: String): Mono<Quiz> {

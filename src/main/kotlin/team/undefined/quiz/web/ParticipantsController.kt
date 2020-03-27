@@ -14,13 +14,13 @@ class ParticipantsController(private val quizService: QuizService) {
     @ResponseStatus(HttpStatus.CREATED)
     fun create(@PathVariable quizId: Long, @RequestBody participantName: String): Mono<QuizDTO> {
         return quizService.createParticipant(quizId, participantName)
-                .map { it.map() };
+                .flatMap { it.map() };
     }
 
     @PutMapping("/{participantName}/buzzer", produces = ["application/json"])
     fun buzzer(@PathVariable quizId: Long, @PathVariable participantName: String): Mono<QuizDTO> {
         return quizService.buzzer(quizId, participantName)
-                .map { it.map() };
+                .flatMap { it.map() };
     }
 
 }

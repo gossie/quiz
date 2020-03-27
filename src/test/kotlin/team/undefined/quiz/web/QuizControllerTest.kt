@@ -32,7 +32,7 @@ internal class QuizControllerTest {
                 .accept(MediaType.APPLICATION_JSON)
                 .exchange()
                 .expectStatus().isCreated
-                .expectBody().json("{\"name\":\"Q\"}")
+                .expectBody().json("{\"name\":\"Q\",\"links\":[{\"href\":\"/api/quiz/17/participants\",\"rel\":\"createParticipant\"}]}")
     }
 
     @Test
@@ -45,7 +45,7 @@ internal class QuizControllerTest {
                 .accept(MediaType.APPLICATION_JSON)
                 .exchange()
                 .expectStatus().isOk
-                .expectBody().json("{\"name\":\"Q\"}")
+                .expectBody().json("{\"name\":\"Q\"},\"links\":[{\"href\":\"/api/quiz/17/participants\",\"rel\":\"createParticipant\"}]}")
     }
 
 }
