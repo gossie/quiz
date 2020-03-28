@@ -7,9 +7,9 @@ data class Quiz(val id: Long? = null, val name: String, val participants: List<P
                 .none { it.turn }
     }
 
-    fun select(participantName: String): Quiz {
+    fun select(participantId: Long): Quiz {
         participants
-                .find { it.name == participantName }
+                .find { it.id == participantId }
                 ?.turn = true
         return this
     }
@@ -23,6 +23,27 @@ data class Quiz(val id: Long? = null, val name: String, val participants: List<P
         participants.forEach { it.turn = false }
         (questions as MutableList).add(question)
         return this
+    }
+
+    fun answeredCorrect(): Quiz {
+        participants
+                .filter { it.turn }
+                .forEach {
+                    it.points = it.points + 1
+                    it.turn = false
+                }
+
+        questions.forEach { it.pending = false }
+        return this;
+    }
+
+    fun answeredInorrect(): Quiz {
+        participants
+                .filter { it.turn }
+                .forEach { it.turn = false }
+
+        questions.forEach { it.pending = false }
+        return this;
     }
 
 }

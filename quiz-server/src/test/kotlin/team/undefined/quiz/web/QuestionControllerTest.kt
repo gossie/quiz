@@ -19,8 +19,6 @@ import team.undefined.quiz.core.QuizService
 @Import(ReactiveWebSocketHandler::class)
 class QuestionControllerTest {
 
-    private val PARTICIPANTS = listOf(Participant(23, "Sandra"), Participant(23, "Allli"), Participant(23, "Erik"))
-
     @Autowired
     private lateinit var webTestClient: WebTestClient
     @MockBean
@@ -29,7 +27,7 @@ class QuestionControllerTest {
     @Test
     fun shouldstartNewQuestion() {
         `when`(quizService.startNewQuestion(11,"Wofür steht die Abkürzung a.d.?"))
-                .thenReturn(Mono.just(Quiz(11, "Quiz", PARTICIPANTS, listOf(Question(question = "Wofür steht die Abkürzung a.d.?")))))
+                .thenReturn(Mono.just(Quiz(11, "Quiz", emptyList(), listOf(Question(question = "Wofür steht die Abkürzung a.d.?")))))
 
         webTestClient
                 .post()
@@ -39,6 +37,6 @@ class QuestionControllerTest {
                 .body(BodyInserters.fromValue("Wofür steht die Abkürzung a.d.?"))
                 .exchange()
                 .expectStatus().isCreated
-                .expectBody().json("{\"id\":11,\"name\":\"Quiz\",\"participants\":[\"Sandra\",\"Allli\",\"Erik\"],\"questions\":[\"Wofür steht die Abkürzung a.d.?\"],\"links\":[{\"href\":\"/api/quiz/11/participants\",\"rel\":\"createParticipant\"},{\"href\":\"/api/quiz/11/questions\",\"rel\":\"createQuestion\"}]}")
+                .expectBody().json("{\"id\":11,\"name\":\"Quiz\",\"questions\":[\"Wofür steht die Abkürzung a.d.?\"],\"links\":[{\"href\":\"/api/quiz/11/participants\",\"rel\":\"createParticipant\"},{\"href\":\"/api/quiz/11/questions\",\"rel\":\"createQuestion\"}]}")
     }
 }

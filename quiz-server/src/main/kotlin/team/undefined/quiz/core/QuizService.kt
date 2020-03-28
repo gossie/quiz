@@ -28,10 +28,10 @@ class QuizService(private val quizRepository: QuizRepository) {
                 }
     }
 
-    fun buzzer(quizId: Long, participantName: String): Mono<Quiz> {
+    fun buzzer(quizId: Long, participantId: Long): Mono<Quiz> {
         return quizRepository.determineQuiz(quizId)
                 .filter { it.nobodyHasBuzzered() }
-                .map { it.select(participantName) }
+                .map { it.select(participantId) }
                 .flatMap { quizRepository.saveQuiz(it) }
                 .map {
                     emitterProcessor.onNext(it)
@@ -49,9 +49,28 @@ class QuizService(private val quizRepository: QuizRepository) {
                 }
     }
 
+    fun correctAnswer(quizId: Long): Mono<Quiz> {
+        return quizRepository.determineQuiz(quizId)
+                .map { it.answeredCorrect() }
+                .flatMap { quizRepository.saveQuiz(it) }
+                .map {
+                    emitterProcessor.onNext(it)
+                    it
+                }
+    }
+
+    fun incorrectAnswer(quizId: Long): Mono<Quiz> {
+        return quizRepository.determineQuiz(quizId)
+                .map { it.answeredInorrect() }
+                .flatMap { quizRepository.saveQuiz(it) }
+                .map {
+                    emitterProcessor.onNext(it)
+                    it
+                }
+    }
+
     fun observeQuiz(): Flux<Quiz> {
         return emitterProcessor
     }
-
 
 }

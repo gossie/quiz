@@ -52,7 +52,7 @@ private fun fromQuestions(quiz: QuizEntity, participants: List<Participant>, que
 }
 
 private fun ParticipantEntity.map(): Participant {
-    return Participant(this.id, this.name, this.turn == 1)
+    return Participant(this.id, this.name, this.turn == 1, this.points)
 }
 
 private fun QuestionEntity.map(): Question {
@@ -64,7 +64,7 @@ private fun Quiz.map(): QuizEntity {
 }
 
 private fun Participant.map(quiz: Quiz): ParticipantEntity {
-    return ParticipantEntity(this.id, this.name, if (this.turn) 1 else 0, quiz.id!!)
+    return ParticipantEntity(this.id, this.name, if (this.turn) 1 else 0, this.points, quiz.id!!)
 }
 
 private fun Question.map(quiz: Quiz): QuestionEntity {

@@ -68,7 +68,7 @@ internal class QuizServiceTest {
         quizService.observeQuiz()
                 .subscribe { observedQuiz.set(it) }
 
-        val buzzer = quizService.buzzer(7, "Sandra")
+        val buzzer = quizService.buzzer(7, 23)
         StepVerifier.create(buzzer)
                 .expectNext(Quiz(7, "Quiz", listOf(Participant(23, "Sandra", true), Participant(24, "Allli"), Participant(25, "Erik")), emptyList()))
                 .verifyComplete()
@@ -91,13 +91,13 @@ internal class QuizServiceTest {
         quizService.observeQuiz()
                 .subscribe { observedQuiz.set(it) }
 
-        StepVerifier.create(quizService.buzzer(7, "Sandra"))
+        StepVerifier.create(quizService.buzzer(7, 23))
                 .expectNext(Quiz(7, "Quiz", listOf(Participant(23, "Sandra", true), Participant(24, "Allli"), Participant(25, "Erik")), emptyList()))
                 .verifyComplete()
 
         assertThat(observedQuiz.get()).isEqualTo(Quiz(7, "Quiz", listOf(Participant(23, "Sandra", true), Participant(24, "Allli"), Participant(25, "Erik")), emptyList()))
 
-        val buzzer = quizService.buzzer(7, "Allli")
+        val buzzer = quizService.buzzer(7, 24)
         StepVerifier.create(buzzer)
                 .verifyComplete()
 
@@ -125,4 +125,45 @@ internal class QuizServiceTest {
         assertThat(observedQuiz.get()).isEqualTo(Quiz(117, "Quiz", PARTICIPANTS, listOf(Question(12, "Warum ist die Banane krumm?",true))))
     }
 
+    @Test
+    fun shouldAnswerQuestionCorrect() {
+        val quizRepository = mock(QuizRepository::class.java)
+        `when`(quizRepository.determineQuiz(117))
+                .thenReturn(Mono.just(Quiz(117, "Quiz", listOf(Participant(23, "Sandra", true), Participant(24, "Allli"), Participant(25, "Erik")), listOf(Question(12, "Warum ist die Banane krumm?", true)))))
+        `when`(quizRepository.saveQuiz(Quiz(117, "Quiz", listOf(Participant(23, "Sandra", points = 1), Participant(24, "Allli"), Participant(25, "Erik")), listOf(Question(12, "Warum ist die Banane krumm?")))))
+                .thenReturn(Mono.just(Quiz(117, "Quiz", listOf(Participant(23, "Sandra", points = 1), Participant(24, "Allli"), Participant(25, "Erik")), listOf(Question(12, "Warum ist die Banane krumm?")))))
+
+        val quizService = QuizService(quizRepository)
+
+        val observedQuiz = AtomicReference<Quiz>()
+        quizService.observeQuiz()
+                .subscribe { observedQuiz.set(it) }
+
+        StepVerifier.create(quizService.correctAnswer(117))
+                .expectNext(Quiz(117, "Quiz", listOf(Participant(23, "Sandra", points = 1), Participant(24, "Allli"), Participant(25, "Erik")), listOf(Question(12, "Warum ist die Banane krumm?"))))
+                .verifyComplete()
+
+        assertThat(observedQuiz.get()).isEqualTo(Quiz(117, "Quiz", listOf(Participant(23, "Sandra", points = 1), Participant(24, "Allli"), Participant(25, "Erik")), listOf(Question(12, "Warum ist die Banane krumm?"))))
+    }
+
+    @Test
+    fun shouldAnswerQuestionIncorrect() {
+        val quizRepository = mock(QuizRepository::class.java)
+        `when`(quizRepository.determineQuiz(117))
+                .thenReturn(Mono.just(Quiz(117, "Quiz", listOf(Participant(23, "Sandra", true), Participant(24, "Allli"), Participant(25, "Erik")), listOf(Question(12, "Warum ist die Banane krumm?", true)))))
+        `when`(quizRepository.saveQuiz(Quiz(117, "Quiz", listOf(Participant(23, "Sandra"), Participant(24, "Allli"), Participant(25, "Erik")), listOf(Question(12, "Warum ist die Banane krumm?")))))
+                .thenReturn(Mono.just(Quiz(117, "Quiz", listOf(Participant(23, "Sandra"), Participant(24, "Allli"), Participant(25, "Erik")), listOf(Question(12, "Warum ist die Banane krumm?")))))
+
+        val quizService = QuizService(quizRepository)
+
+        val observedQuiz = AtomicReference<Quiz>()
+        quizService.observeQuiz()
+                .subscribe { observedQuiz.set(it) }
+
+        StepVerifier.create(quizService.incorrectAnswer(117))
+                .expectNext(Quiz(117, "Quiz", listOf(Participant(23, "Sandra"), Participant(24, "Allli"), Participant(25, "Erik")), listOf(Question(12, "Warum ist die Banane krumm?"))))
+                .verifyComplete()
+
+        assertThat(observedQuiz.get()).isEqualTo(Quiz(117, "Quiz", listOf(Participant(23, "Sandra"), Participant(24, "Allli"), Participant(25, "Erik")), listOf(Question(12, "Warum ist die Banane krumm?"))))
+    }
 }

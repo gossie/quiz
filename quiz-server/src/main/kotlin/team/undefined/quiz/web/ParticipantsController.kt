@@ -17,9 +17,9 @@ class ParticipantsController(private val quizService: QuizService) {
                 .flatMap { it.map() };
     }
 
-    @PutMapping("/{participantName}/buzzer", produces = ["application/json"])
-    fun buzzer(@PathVariable quizId: Long, @PathVariable participantName: String): Mono<QuizDTO> {
-        return quizService.buzzer(quizId, participantName)
+    @PutMapping("/{participantId}/buzzer", produces = ["application/json"])
+    fun buzzer(@PathVariable quizId: Long, @PathVariable participantId: Long): Mono<QuizDTO> {
+        return quizService.buzzer(quizId, participantId)
                 .flatMap { it.map() };
     }
 
