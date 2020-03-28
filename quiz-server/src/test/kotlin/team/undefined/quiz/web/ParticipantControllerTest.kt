@@ -37,23 +37,27 @@ internal class ParticipantControllerTest {
                 .body(BodyInserters.fromValue("Erik"))
                 .exchange()
                 .expectStatus().isCreated
-                .expectBody(QuizDTO::class.java)
+                .expectBody(Map::class.java)
                 .returnResult()
                 .responseBody
 
-        assertThat(result!!.id).isEqualTo(7)
-        assertThat(result.name).isEqualTo("Quiz")
-        assertThat(result.participants).hasSize(1)
-        assertThat(result.participants[0]).isEqualTo(ParticipantDTO(23, "Erik", false, 0))
-        assertThat(result.participants[0].getLink("buzzer"))
+        val quizDTO = result!!["quiz"] as QuizDTO
+        val participantId = result["participantId"] as Long
+
+        assertThat(participantId).isEqualTo(23)
+        assertThat(quizDTO.id).isEqualTo(7)
+        assertThat(quizDTO.name).isEqualTo("Quiz")
+        assertThat(quizDTO.participants).hasSize(1)
+        assertThat(quizDTO.participants[0]).isEqualTo(ParticipantDTO(23, "Erik", false, 0))
+        assertThat(quizDTO.participants[0].getLink("buzzer"))
                 .map{ it.href }
                 .contains("/api/quiz/7/participants/23/buzzer")
-        assertThat(result.questions).isEmpty()
-        assertThat(result.links).hasSize(2)
-        assertThat(result.getLink("createParticipant"))
+        assertThat(quizDTO.questions).isEmpty()
+        assertThat(quizDTO.links).hasSize(2)
+        assertThat(quizDTO.getLink("createParticipant"))
                 .map { it.href }
                 .contains("/api/quiz/7/participants")
-        assertThat(result.getLink("createQuestion"))
+        assertThat(quizDTO.getLink("createQuestion"))
                 .map { it.href }
                 .contains("/api/quiz/7/questions")
     }
