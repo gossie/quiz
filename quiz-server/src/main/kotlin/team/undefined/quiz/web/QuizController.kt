@@ -29,7 +29,7 @@ class QuizController(private val quizService: QuizService) {
 }
 
 fun Quiz.map(): Mono<QuizDTO> {
-    return QuizDTO(this.id, this.name, this.participants, this.turn)
+    return QuizDTO(this.id, this.name, this.participants.map { it.name }, this.questions, this.turn)
             .addLinks()
 }
 
@@ -41,5 +41,9 @@ private fun QuizDTO.addLinks(): Mono<QuizDTO> {
     return linkTo(methodOn(ParticipantsController::class.java).create(this.id!!, ""))
             .withRel("createParticipant")
             .toMono()
+            .map { this.add(it) }
+            .map { linkTo(methodOn(QuestionController::class.java).createQuestion(this.id!!, "")) }
+            .map { it.withRel("createQuestion") }
+            .flatMap { it.toMono() }
             .map { this.add(it) }
 }

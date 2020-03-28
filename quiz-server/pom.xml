@@ -9,9 +9,9 @@
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
 	<groupId>team.undefined</groupId>
-	<artifactId>quiz</artifactId>
+	<artifactId>quiz-server</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
-	<name>quiz</name>
+	<name>quiz-server</name>
 	<description>Corona Quiz app</description>
 
 	<properties>

@@ -11,6 +11,8 @@ import java.util.concurrent.atomic.AtomicReference
 
 internal class QuizServiceTest {
 
+    private val PARTICIPANTS = listOf(Participant(23, "Sandra"), Participant(23, "Allli"), Participant(23, "Erik"))
+
     @Test
     fun shouldCreateQuiz() {
         val quizRepository = mock(QuizRepository::class.java)
@@ -38,7 +40,7 @@ internal class QuizServiceTest {
     fun shouldCreateParticipant() {
         val quizRepository = mock(QuizRepository::class.java)
         `when`(quizRepository.determineQuiz(12)).thenReturn(Mono.just(Quiz(12, "Quiz")))
-        `when`(quizRepository.saveQuiz(Quiz(12, "Quiz", listOf("Sandra")))).thenReturn(Mono.just(Quiz(12, "Quiz", listOf("Sandra"))))
+        `when`(quizRepository.saveQuiz(Quiz(12, "Quiz", listOf(Participant(name = "Sandra"))))).thenReturn(Mono.just(Quiz(12, "Quiz", listOf(Participant(23, "Sandra")))))
 
         val quizService = QuizService(quizRepository)
 
@@ -47,19 +49,19 @@ internal class QuizServiceTest {
                 .subscribe { observedQuiz.set(it) }
 
         StepVerifier.create(quizService.createParticipant(12, "Sandra"))
-                .expectNext(Quiz(12, "Quiz", listOf("Sandra")))
+                .expectNext(Quiz(12, "Quiz", listOf(Participant(23, "Sandra"))))
                 .verifyComplete()
 
-        assertThat(observedQuiz.get()).isEqualTo(Quiz(12, "Quiz", listOf("Sandra")))
+        assertThat(observedQuiz.get()).isEqualTo(Quiz(12, "Quiz", listOf(Participant(23, "Sandra"))))
     }
 
     @Test
     fun shouldBuzzer() {
         val quizRepository = mock(QuizRepository::class.java)
         `when`(quizRepository.determineQuiz(7))
-                .thenReturn(Mono.just(Quiz(7, "Quiz", listOf("Sandra", "Allli", "Erik"))))
-        `when`(quizRepository.saveQuiz(Quiz(7, "Quiz", listOf("Sandra", "Allli", "Erik"), "Sandra")))
-                .thenReturn(Mono.just(Quiz(7, "Quiz", listOf("Sandra", "Allli", "Erik"), "Sandra")))
+                .thenReturn(Mono.just(Quiz(7, "Quiz", PARTICIPANTS)))
+        `when`(quizRepository.saveQuiz(Quiz(7, "Quiz", PARTICIPANTS, emptyList(), "Sandra")))
+                .thenReturn(Mono.just(Quiz(7, "Quiz", PARTICIPANTS, emptyList(), "Sandra")))
 
         val quizService = QuizService(quizRepository)
 
@@ -69,20 +71,20 @@ internal class QuizServiceTest {
 
         val buzzer = quizService.buzzer(7, "Sandra")
         StepVerifier.create(buzzer)
-                .expectNext(Quiz(7, "Quiz", listOf("Sandra", "Allli", "Erik"), "Sandra"))
+                .expectNext(Quiz(7, "Quiz", PARTICIPANTS, emptyList(), "Sandra"))
                 .verifyComplete()
 
-        assertThat(observedQuiz.get()).isEqualTo(Quiz(7, "Quiz", listOf("Sandra", "Allli", "Erik"), "Sandra"))
+        assertThat(observedQuiz.get()).isEqualTo(Quiz(7, "Quiz", PARTICIPANTS, emptyList(), "Sandra"))
     }
 
     @Test
     fun shouldNotAllowSecondBuzzer() {
         val quizRepository = mock(QuizRepository::class.java)
         `when`(quizRepository.determineQuiz(7))
-                .thenReturn(Mono.just(Quiz(7, "Quiz", listOf("Sandra", "Allli", "Erik"))))
-                .thenReturn(Mono.just(Quiz(7, "Quiz", listOf("Sandra", "Allli", "Erik"), "Sandra")))
-        `when`(quizRepository.saveQuiz(Quiz(7, "Quiz", listOf("Sandra", "Allli", "Erik"), "Sandra")))
-                .thenReturn(Mono.just(Quiz(7, "Quiz", listOf("Sandra", "Allli", "Erik"), "Sandra")))
+                .thenReturn(Mono.just(Quiz(7, "Quiz", PARTICIPANTS)))
+                .thenReturn(Mono.just(Quiz(7, "Quiz", PARTICIPANTS, emptyList(), "Sandra")))
+        `when`(quizRepository.saveQuiz(Quiz(7, "Quiz", PARTICIPANTS, emptyList(), "Sandra")))
+                .thenReturn(Mono.just(Quiz(7, "Quiz", PARTICIPANTS, emptyList(), "Sandra")))
 
         val quizService = QuizService(quizRepository)
 
@@ -91,25 +93,25 @@ internal class QuizServiceTest {
                 .subscribe { observedQuiz.set(it) }
 
         StepVerifier.create(quizService.buzzer(7, "Sandra"))
-                .expectNext(Quiz(7, "Quiz", listOf("Sandra", "Allli", "Erik"), "Sandra"))
+                .expectNext(Quiz(7, "Quiz", PARTICIPANTS, emptyList(), "Sandra"))
                 .verifyComplete()
 
-        assertThat(observedQuiz.get()).isEqualTo(Quiz(7, "Quiz", listOf("Sandra", "Allli", "Erik"), "Sandra"));
+        assertThat(observedQuiz.get()).isEqualTo(Quiz(7, "Quiz", PARTICIPANTS, emptyList(), "Sandra"));
 
         val buzzer = quizService.buzzer(7, "Allli")
         StepVerifier.create(buzzer)
                 .verifyComplete()
 
-        assertThat(observedQuiz.get()).isEqualTo(Quiz(7, "Quiz", listOf("Sandra", "Allli", "Erik"), "Sandra"))
+        assertThat(observedQuiz.get()).isEqualTo(Quiz(7, "Quiz", PARTICIPANTS, emptyList(), "Sandra"))
     }
 
     @Test
     fun shouldStartNewQuestion() {
         val quizRepository = mock(QuizRepository::class.java)
         `when`(quizRepository.determineQuiz(117))
-                .thenReturn(Mono.just(Quiz(117, "Quiz", listOf("Sandra", "Allli", "Erik"), "Sandra")))
-        `when`(quizRepository.saveQuiz(Quiz(117, "Quiz", listOf("Sandra", "Allli", "Erik"))))
-                .thenReturn(Mono.just(Quiz(117, "Quiz", listOf("Sandra", "Allli", "Erik"))))
+                .thenReturn(Mono.just(Quiz(117, "Quiz", PARTICIPANTS, emptyList(), "Sandra")))
+        `when`(quizRepository.saveQuiz(Quiz(117, "Quiz", PARTICIPANTS)))
+                .thenReturn(Mono.just(Quiz(117, "Quiz", PARTICIPANTS)))
 
         val quizService = QuizService(quizRepository)
 
@@ -118,10 +120,10 @@ internal class QuizServiceTest {
                 .subscribe { observedQuiz.set(it) }
 
         StepVerifier.create(quizService.startNewQuestion(117))
-                .expectNext(Quiz(117, "Quiz", listOf("Sandra", "Allli", "Erik")))
+                .expectNext(Quiz(117, "Quiz", PARTICIPANTS))
                 .verifyComplete()
 
-        assertThat(Quiz(117, "Quiz", listOf("Sandra", "Allli", "Erik")))
+        assertThat(Quiz(117, "Quiz", PARTICIPANTS))
     }
 
 }

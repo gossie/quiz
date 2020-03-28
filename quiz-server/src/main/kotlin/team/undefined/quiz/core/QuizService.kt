@@ -15,12 +15,12 @@ class QuizService(private val quizRepository: QuizRepository) {
     }
 
     fun determineQuiz(quizId: Long): Mono<Quiz> {
-        return quizRepository.determineQuiz(quizId);
+        return quizRepository.determineQuiz(quizId)
     }
 
     fun createParticipant(quizId: Long, participantName: String): Mono<Quiz> {
         return quizRepository.determineQuiz(quizId)
-                .map { it.addParticipant(participantName) }
+                .map { it.addParticipant(Participant(name = participantName)) }
                 .flatMap { quizRepository.saveQuiz(it) }
                 .map {
                     emitterProcessor.onNext(it)
