@@ -21,3 +21,9 @@
 .App-link {
     color: #61dafb;
 }
+
+.buzzer {
+    background-color: #FF0000;
+    font-weight: bold;
+    font-size: 28px;
+}

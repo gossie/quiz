@@ -1,5 +1,5 @@
 {
-  "name": "quiz-client",
+  "name": "quiz-participant-aclient",
   "version": "0.1.0",
   "private": true,
   "dependencies": {

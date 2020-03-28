@@ -4,16 +4,23 @@ import './QuizDashboard.css';
 import Participants from './Participants';
 import Quiz from './quiz';
 
-interface QuizProps {
+interface QuizDashboardProps {
     quiz: Quiz;
+    participantId: number;
 }
 
-const QuizDashboard: React.FC<QuizProps> = (props: QuizProps) => {
+const QuizDashboard: React.FC<QuizDashboardProps> = (props: QuizDashboardProps) => {
 
     const [quiz, setQuiz] = useState(props.quiz);
 
     const buzzer = () => {
-        fetch('http://localhost:8080/api/quiz/1/participants/Erik/buzzer', {
+        const buzzerHref = quiz.participants
+                .find(p => p.id === props.participantId)
+                .links
+                .find(link => link.rel === 'buzzer')
+                .href;
+
+        fetch(`http://localhost:8080${buzzerHref}`, {
             method: 'PUT',
             headers: {
                 Accept: 'application/json'
@@ -31,16 +38,6 @@ const QuizDashboard: React.FC<QuizProps> = (props: QuizProps) => {
             console.log('event', ev);
             setQuiz(JSON.parse(ev.data));
         };
-
-        fetch('http://localhost:8080/api/quiz/1/', {
-            method: 'GET',
-            headers: {
-                Accept: 'application/json'
-            }
-        })
-        .then(response => response.json())
-        .then(json => setQuiz(json))
-        .catch(e => console.error(e));
         
         return () => {
             console.log('websocket wird geschlossen');
@@ -51,10 +48,7 @@ const QuizDashboard: React.FC<QuizProps> = (props: QuizProps) => {
     return (
         <header className="App-header">
             <Participants quiz={quiz}></Participants>
-            <p>
-                <span>{quiz?.turn} ist dran</span>
-            </p>
-            <button className="App-link" onClick={buzzer}>
+            <button className="buzzer" onClick={buzzer}>
                 Buzzer
             </button>
         </header>
