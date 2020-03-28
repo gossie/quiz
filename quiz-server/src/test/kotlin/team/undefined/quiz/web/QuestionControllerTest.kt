@@ -11,6 +11,7 @@ import org.springframework.test.web.reactive.server.WebTestClient
 import org.springframework.web.reactive.function.BodyInserters
 import reactor.core.publisher.Mono
 import team.undefined.quiz.core.Participant
+import team.undefined.quiz.core.Question
 import team.undefined.quiz.core.Quiz
 import team.undefined.quiz.core.QuizService
 
@@ -27,8 +28,8 @@ class QuestionControllerTest {
 
     @Test
     fun shouldstartNewQuestion() {
-        `when`(quizService.startNewQuestion(11))
-                .thenReturn(Mono.just(Quiz(11, "Quiz", PARTICIPANTS, listOf("Wofür steht die Abkürzung a.d.?"))))
+        `when`(quizService.startNewQuestion(11,"Wofür steht die Abkürzung a.d.?"))
+                .thenReturn(Mono.just(Quiz(11, "Quiz", PARTICIPANTS, listOf(Question(question = "Wofür steht die Abkürzung a.d.?")))))
 
         webTestClient
                 .post()

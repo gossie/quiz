@@ -29,7 +29,7 @@ class QuizController(private val quizService: QuizService) {
 }
 
 fun Quiz.map(): Mono<QuizDTO> {
-    return QuizDTO(this.id, this.name, this.participants.map { it.name }, this.questions, this.turn)
+    return QuizDTO(this.id, this.name, this.participants.map { it.name }, this.questions.map { it.question }, this.participants.find { it.turn }?.name)
             .addLinks()
 }
 

@@ -1,13 +1,16 @@
 package team.undefined.quiz.core
 
-data class Quiz(val id: Long? = null, val name: String, val participants: List<Participant> = ArrayList(), val questions: List<String> = ArrayList(), var turn: String? = null) {
+data class Quiz(val id: Long? = null, val name: String, val participants: List<Participant> = ArrayList(), val questions: List<Question> = ArrayList()) {
 
     fun nobodyHasBuzzered(): Boolean {
-        return turn == null
+        return participants
+                .none { it.turn }
     }
 
     fun select(participantName: String): Quiz {
-        turn = participantName
+        participants
+                .find { it.name == participantName }
+                ?.turn = true
         return this
     }
 
@@ -16,8 +19,9 @@ data class Quiz(val id: Long? = null, val name: String, val participants: List<P
         return this;
     }
 
-    fun startQuestion(): Quiz {
-        turn = null
+    fun startQuestion(question: Question): Quiz {
+        participants.forEach { it.turn = false }
+        (questions as MutableList).add(question)
         return this
     }
 

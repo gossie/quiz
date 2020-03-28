@@ -11,25 +11,40 @@ import team.undefined.quiz.web.QuizDTO
 
 @SpringBootTest
 @AutoConfigureWebTestClient
-internal class QuizIT(@Autowired private val webTestClient: WebTestClient) {
+internal class QuizIT() {
+
+    @Autowired
+    private lateinit var webTestClient: WebTestClient
 
     @Test
     fun shouldCreateAndGetQuiz() {
-        webTestClient!!
+        webTestClient
                 .post()
                 .uri("/api/quiz")
-                .body(BodyInserters.fromValue(QuizDTO(name = "Q")))
+                .body(BodyInserters.fromValue(QuizDTO(name = "Quiz")))
                 .accept(MediaType.APPLICATION_JSON)
                 .exchange()
                 .expectStatus().isCreated
-                .expectBody().json("{\"name\":\"Q\"}")
+                .expectBody().json("{\"name\":\"Quiz\",\"links\":[{\"href\":\"/api/quiz/1/participants\",\"rel\":\"createParticipant\"},{\"href\":\"/api/quiz/1/questions\",\"rel\":\"createQuestion\"}]}")
 
         webTestClient
-                .get()
-                .uri("/api/quiz/1")
+                .post()
+                .uri("/api/quiz/1/participants")
+                .contentType(MediaType.TEXT_PLAIN)
                 .accept(MediaType.APPLICATION_JSON)
+                .body(BodyInserters.fromValue("André"))
                 .exchange()
-                .expectStatus().isOk
-                .expectBody().json("{\"name\":\"Q\"}")
+                .expectStatus().isCreated
+                .expectBody().json("{\"name\":\"Quiz\",\"participants\":[\"André\"],\"links\":[{\"href\":\"/api/quiz/1/participants\",\"rel\":\"createParticipant\"},{\"href\":\"/api/quiz/1/questions\",\"rel\":\"createQuestion\"}]}")
+
+        webTestClient
+                .post()
+                .uri("/api/quiz/1/participants")
+                .contentType(MediaType.TEXT_PLAIN)
+                .accept(MediaType.APPLICATION_JSON)
+                .body(BodyInserters.fromValue("Lena"))
+                .exchange()
+                .expectStatus().isCreated
+                .expectBody().json("{\"name\":\"Quiz\",\"participants\":[\"André\",\"Lena\"],\"links\":[{\"href\":\"/api/quiz/1/participants\",\"rel\":\"createParticipant\"},{\"href\":\"/api/quiz/1/questions\",\"rel\":\"createQuestion\"}]}")
     }
 }

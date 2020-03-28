@@ -13,7 +13,7 @@ class QuestionController(private val quizService: QuizService) {
     @PostMapping(consumes = ["text/plain"], produces = ["application/json"])
     @ResponseStatus(HttpStatus.CREATED)
     fun createQuestion(@PathVariable quizId: Long, @RequestBody question: String): Mono<QuizDTO> {
-        return quizService.startNewQuestion(quizId)
+        return quizService.startNewQuestion(quizId, question)
                 .flatMap { it.map() }
     }
 

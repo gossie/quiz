@@ -18,8 +18,6 @@ import team.undefined.quiz.core.QuizService
 @Import(ReactiveWebSocketHandler::class)
 internal class ParticipantControllerTest {
 
-    private val PARTICIPANTS = listOf(Participant(23, "Sandra"), Participant(23, "Allli"), Participant(23, "Erik"))
-
     @Autowired
     private lateinit var webTestClient: WebTestClient
     @MockBean
@@ -44,7 +42,7 @@ internal class ParticipantControllerTest {
     @Test
     fun shouldBuzzer() {
         `when`(quizService.buzzer(17, "Sandra"))
-                .thenReturn(Mono.just(Quiz(17, "Quiz", PARTICIPANTS, emptyList(), "Sandra")))
+                .thenReturn(Mono.just(Quiz(17, "Quiz", listOf(Participant(23, "Sandra", true), Participant(23, "Allli"), Participant(23, "Erik")), emptyList())))
 
         webTestClient
                 .put()
