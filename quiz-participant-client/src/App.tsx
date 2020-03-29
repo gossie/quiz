@@ -11,7 +11,7 @@ function App() {
 
     const joinQuiz = async () => {
 
-        const quizResponse = await fetch(`${process.env.REACT_APP_BASE_URL}api/quiz/${quizId}`, {
+        const quizResponse = await fetch(`${process.env.REACT_APP_BASE_URL}/api/quiz/${quizId}`, {
             method: 'GET',
             headers: {
                 Accept: 'application/json'
