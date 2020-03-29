@@ -74,7 +74,7 @@ internal class QuizIT() {
                 .body(BodyInserters.fromValue("true"))
                 .exchange()
                 .expectStatus().isOk
-                .expectBody().json("{\"name\":\"Quiz\",\"participants\":[{\"name\":\"André\",\"turn\":false,\"points\":0},{\"name\":\"Lena\",\"turn\":false,\"points\":1}],\"questions\":[\"Wer schrieb das Buch Animal Farm?\"]}")
+                .expectBody().json("{\"name\":\"Quiz\",\"participants\":[{\"name\":\"André\",\"turn\":false,\"points\":0},{\"name\":\"Lena\",\"turn\":true,\"points\":1}],\"questions\":[\"Wer schrieb das Buch Animal Farm?\"]}")
 
         webTestClient
                 .post()
@@ -103,7 +103,6 @@ internal class QuizIT() {
                 .body(BodyInserters.fromValue("false"))
                 .exchange()
                 .expectStatus().isOk
-                .expectBody().json("{\"name\":\"Quiz\",\"participants\":[{\"name\":\"André\",\"turn\":false,\"points\":0},{\"name\":\"Lena\",\"turn\":false,\"points\":1}],\"questions\":[\"Wer schrieb das Buch Animal Farm?\",\"Wo befindet sich das Kahnbein?\"]}")
-
+                .expectBody().json("{\"name\":\"Quiz\",\"participants\":[{\"name\":\"André\",\"turn\":true ,\"points\":0},{\"name\":\"Lena\",\"turn\":false,\"points\":1}],\"questions\":[\"Wer schrieb das Buch Animal Farm?\",\"Wo befindet sich das Kahnbein?\"]}")
     }
 }

@@ -28,20 +28,13 @@ data class Quiz(val id: Long? = null, val name: String, val participants: List<P
     fun answeredCorrect(): Quiz {
         participants
                 .filter { it.turn }
-                .forEach {
-                    it.points = it.points + 1
-                    it.turn = false
-                }
+                .forEach { it.points = it.points + 1 }
 
         questions.forEach { it.pending = false }
         return this;
     }
 
     fun answeredInorrect(): Quiz {
-        participants
-                .filter { it.turn }
-                .forEach { it.turn = false }
-
         questions.forEach { it.pending = false }
         return this;
     }

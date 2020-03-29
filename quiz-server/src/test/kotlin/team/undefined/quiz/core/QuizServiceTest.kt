@@ -130,8 +130,8 @@ internal class QuizServiceTest {
         val quizRepository = mock(QuizRepository::class.java)
         `when`(quizRepository.determineQuiz(117))
                 .thenReturn(Mono.just(Quiz(117, "Quiz", listOf(Participant(23, "Sandra", true), Participant(24, "Allli"), Participant(25, "Erik")), listOf(Question(12, "Warum ist die Banane krumm?", true)))))
-        `when`(quizRepository.saveQuiz(Quiz(117, "Quiz", listOf(Participant(23, "Sandra", points = 1), Participant(24, "Allli"), Participant(25, "Erik")), listOf(Question(12, "Warum ist die Banane krumm?")))))
-                .thenReturn(Mono.just(Quiz(117, "Quiz", listOf(Participant(23, "Sandra", points = 1), Participant(24, "Allli"), Participant(25, "Erik")), listOf(Question(12, "Warum ist die Banane krumm?")))))
+        `when`(quizRepository.saveQuiz(Quiz(117, "Quiz", listOf(Participant(23, "Sandra", true, 1), Participant(24, "Allli"), Participant(25, "Erik")), listOf(Question(12, "Warum ist die Banane krumm?")))))
+                .thenReturn(Mono.just(Quiz(117, "Quiz", listOf(Participant(23, "Sandra", true, 1), Participant(24, "Allli"), Participant(25, "Erik")), listOf(Question(12, "Warum ist die Banane krumm?")))))
 
         val quizService = QuizService(quizRepository)
 
@@ -140,10 +140,10 @@ internal class QuizServiceTest {
                 .subscribe { observedQuiz.set(it) }
 
         StepVerifier.create(quizService.correctAnswer(117))
-                .expectNext(Quiz(117, "Quiz", listOf(Participant(23, "Sandra", points = 1), Participant(24, "Allli"), Participant(25, "Erik")), listOf(Question(12, "Warum ist die Banane krumm?"))))
+                .expectNext(Quiz(117, "Quiz", listOf(Participant(23, "Sandra", true, 1), Participant(24, "Allli"), Participant(25, "Erik")), listOf(Question(12, "Warum ist die Banane krumm?"))))
                 .verifyComplete()
 
-        assertThat(observedQuiz.get()).isEqualTo(Quiz(117, "Quiz", listOf(Participant(23, "Sandra", points = 1), Participant(24, "Allli"), Participant(25, "Erik")), listOf(Question(12, "Warum ist die Banane krumm?"))))
+        assertThat(observedQuiz.get()).isEqualTo(Quiz(117, "Quiz", listOf(Participant(23, "Sandra", true, 1), Participant(24, "Allli"), Participant(25, "Erik")), listOf(Question(12, "Warum ist die Banane krumm?"))))
     }
 
     @Test
@@ -151,8 +151,8 @@ internal class QuizServiceTest {
         val quizRepository = mock(QuizRepository::class.java)
         `when`(quizRepository.determineQuiz(117))
                 .thenReturn(Mono.just(Quiz(117, "Quiz", listOf(Participant(23, "Sandra", true), Participant(24, "Allli"), Participant(25, "Erik")), listOf(Question(12, "Warum ist die Banane krumm?", true)))))
-        `when`(quizRepository.saveQuiz(Quiz(117, "Quiz", listOf(Participant(23, "Sandra"), Participant(24, "Allli"), Participant(25, "Erik")), listOf(Question(12, "Warum ist die Banane krumm?")))))
-                .thenReturn(Mono.just(Quiz(117, "Quiz", listOf(Participant(23, "Sandra"), Participant(24, "Allli"), Participant(25, "Erik")), listOf(Question(12, "Warum ist die Banane krumm?")))))
+        `when`(quizRepository.saveQuiz(Quiz(117, "Quiz", listOf(Participant(23, "Sandra", true), Participant(24, "Allli"), Participant(25, "Erik")), listOf(Question(12, "Warum ist die Banane krumm?")))))
+                .thenReturn(Mono.just(Quiz(117, "Quiz", listOf(Participant(23, "Sandra", true), Participant(24, "Allli"), Participant(25, "Erik")), listOf(Question(12, "Warum ist die Banane krumm?")))))
 
         val quizService = QuizService(quizRepository)
 
@@ -161,9 +161,9 @@ internal class QuizServiceTest {
                 .subscribe { observedQuiz.set(it) }
 
         StepVerifier.create(quizService.incorrectAnswer(117))
-                .expectNext(Quiz(117, "Quiz", listOf(Participant(23, "Sandra"), Participant(24, "Allli"), Participant(25, "Erik")), listOf(Question(12, "Warum ist die Banane krumm?"))))
+                .expectNext(Quiz(117, "Quiz", listOf(Participant(23, "Sandra", true), Participant(24, "Allli"), Participant(25, "Erik")), listOf(Question(12, "Warum ist die Banane krumm?"))))
                 .verifyComplete()
 
-        assertThat(observedQuiz.get()).isEqualTo(Quiz(117, "Quiz", listOf(Participant(23, "Sandra"), Participant(24, "Allli"), Participant(25, "Erik")), listOf(Question(12, "Warum ist die Banane krumm?"))))
+        assertThat(observedQuiz.get()).isEqualTo(Quiz(117, "Quiz", listOf(Participant(23, "Sandra", true), Participant(24, "Allli"), Participant(25, "Erik")), listOf(Question(12, "Warum ist die Banane krumm?"))))
     }
 }
