@@ -35,7 +35,7 @@ internal class QuizControllerTest {
                 .accept(MediaType.APPLICATION_JSON)
                 .exchange()
                 .expectStatus().isCreated
-                .expectBody().json("{\"name\":\"Q\",\"links\":[{\"href\":\"/api/quiz/17/participants\",\"rel\":\"createParticipant\"},{\"href\":\"/api/quiz/17/questions\",\"rel\":\"createQuestion\"}]}")
+                .expectBody().json("{\"name\":\"Q\",\"links\":[{\"href\":\"/api/quiz/17/participants\",\"rel\":\"createParticipant\"},{\"href\":\"/api/quiz/17/questions\",\"rel\":\"createQuestion\"},{\"href\":\"/api/quiz/17\",\"rel\":\"answer\"}]}")
     }
 
     @Test
@@ -56,13 +56,16 @@ internal class QuizControllerTest {
         assertThat(result?.name).isEqualTo("Q")
         assertThat(result?.participants).isEmpty()
         assertThat(result?.questions).isEmpty()
-        assertThat(result?.links).hasSize(2)
+        assertThat(result?.links).hasSize(3)
         assertThat(result?.getLink("createParticipant"))
                 .map { it.href }
                 .contains("/api/quiz/17/participants")
         assertThat(result?.getLink("createQuestion"))
                 .map { it.href }
                 .contains("/api/quiz/17/questions")
+        assertThat(result?.getLink("answer"))
+                .map { it.href }
+                .contains("/api/quiz/17")
     }
 
     @Test
@@ -87,13 +90,16 @@ internal class QuizControllerTest {
         assertThat(result.participants[0]).isEqualTo(ParticipantDTO(17, "Sandra", false, 1))
         assertThat(result.participants[1]).isEqualTo(ParticipantDTO(18, "Erik", false, 0))
         assertThat(result.questions).isEqualTo(listOf("Warum ist die Banane krumm?"))
-        assertThat(result.links).hasSize(2)
+        assertThat(result.links).hasSize(3)
         assertThat(result.getLink("createParticipant"))
                 .map { it.href }
                 .contains("/api/quiz/14/participants")
         assertThat(result.getLink("createQuestion"))
                 .map { it.href }
                 .contains("/api/quiz/14/questions")
+        assertThat(result.getLink("answer"))
+                .map { it.href }
+                .contains("/api/quiz/14")
     }
 
     @Test
@@ -118,13 +124,16 @@ internal class QuizControllerTest {
         assertThat(result.participants[0]).isEqualTo(ParticipantDTO(17, "Sandra", false, 1))
         assertThat(result.participants[1]).isEqualTo(ParticipantDTO(18, "Erik", false, 0))
         assertThat(result.questions).isEqualTo(listOf("Warum ist die Banane krumm?"))
-        assertThat(result.links).hasSize(2)
+        assertThat(result.links).hasSize(3)
         assertThat(result.getLink("createParticipant"))
                 .map { it.href }
                 .contains("/api/quiz/14/participants")
         assertThat(result.getLink("createQuestion"))
                 .map { it.href }
                 .contains("/api/quiz/14/questions")
+        assertThat(result.getLink("answer"))
+                .map { it.href }
+                .contains("/api/quiz/14")
     }
 
 }

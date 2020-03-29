@@ -35,7 +35,7 @@ internal class QuizIT() {
                 .body(BodyInserters.fromValue("André"))
                 .exchange()
                 .expectStatus().isCreated
-                .expectBody().json("{\"name\":\"Quiz\",\"participants\":[{\"name\":\"André\",\"turn\":false,\"points\":0}],\"links\":[{\"href\":\"/api/quiz/1/participants\",\"rel\":\"createParticipant\"},{\"href\":\"/api/quiz/1/questions\",\"rel\":\"createQuestion\"}]}")
+                .expectBody().json("{\"quiz\":{\"name\":\"Quiz\",\"participants\":[{\"name\":\"André\",\"turn\":false,\"points\":0}]},\"participantId\":1}")
 
         webTestClient
                 .post()
@@ -45,7 +45,7 @@ internal class QuizIT() {
                 .body(BodyInserters.fromValue("Lena"))
                 .exchange()
                 .expectStatus().isCreated
-                .expectBody().json("{\"name\":\"Quiz\",\"participants\":[{\"name\":\"André\",\"turn\":false,\"points\":0},{\"name\":\"Lena\",\"turn\":false,\"points\":0}]}")
+                .expectBody().json("{\"quiz\":{\"name\":\"Quiz\",\"participants\":[{\"name\":\"André\",\"turn\":false,\"points\":0},{\"name\":\"Lena\",\"turn\":false,\"points\":0}]},\"participantId\":2}")
 
         webTestClient
                 .post()

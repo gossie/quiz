@@ -37,6 +37,6 @@ class QuestionControllerTest {
                 .body(BodyInserters.fromValue("Wofür steht die Abkürzung a.d.?"))
                 .exchange()
                 .expectStatus().isCreated
-                .expectBody().json("{\"id\":11,\"name\":\"Quiz\",\"questions\":[\"Wofür steht die Abkürzung a.d.?\"],\"links\":[{\"href\":\"/api/quiz/11/participants\",\"rel\":\"createParticipant\"},{\"href\":\"/api/quiz/11/questions\",\"rel\":\"createQuestion\"}]}")
+                .expectBody().json("{\"id\":11,\"name\":\"Quiz\",\"questions\":[\"Wofür steht die Abkürzung a.d.?\"],\"links\":[{\"href\":\"/api/quiz/11/participants\",\"rel\":\"createParticipant\"},{\"href\":\"/api/quiz/11/questions\",\"rel\":\"createQuestion\"},{\"href\":\"/api/quiz/11\",\"rel\":\"answer\"}]}")
     }
 }
