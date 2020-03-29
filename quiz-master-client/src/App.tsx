@@ -5,6 +5,7 @@ import QuizMaster from './QuizMaster';
 
 function App() {
     const [quiz, setQuiz] = useState({} as Quiz);
+    const [quizId, setQuizId] = useState('');
 
     const startQuiz = async () => {
         const quizResponse = await fetch('http://localhost:8080/api/quiz/', {
@@ -21,6 +22,17 @@ function App() {
         setQuiz(newQuiz);
     };
 
+    const joinQuiz = async () => {
+        const quizResponse = await fetch(`http://localhost:8080/api/quiz/${quizId}`, {
+            method: 'GET',
+            headers: {
+                Accept: 'application/json'
+            }
+        });
+        const joinedQuiz: Quiz = await quizResponse.json();
+        setQuiz(joinedQuiz)
+    };
+
     return (
         <div className="App">
             <header className="App-header">
@@ -28,9 +40,20 @@ function App() {
                   ?
                     <QuizMaster quiz={quiz}></QuizMaster>
                   :
-                    <p>
-                        <button onClick={startQuiz}>Start quiz</button>
-                    </p>
+                    <div>
+                        <p>
+                            <button onClick={startQuiz}>Start quiz</button>
+                        </p>
+                        <div>
+                            <h3>Join quiz</h3>
+                            <div>
+                                <span><label>Quiz ID</label></span><span><input type="text" onChange={(ev) => setQuizId(ev.target.value)} /></span>
+                            </div>
+                            <div>
+                                <button onClick={joinQuiz}>GO!</button>
+                            </div>
+                        </div>
+                    </div>
                 }
                 
             </header>

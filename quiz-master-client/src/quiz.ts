@@ -15,5 +15,6 @@ export default interface Quiz {
     id: number;
     turn?: string;
     participants: Array<Participant>;
+    questions: Array<string>;
     links: Array<Link>;
 }

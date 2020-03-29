@@ -1,6 +1,5 @@
 import React from 'react';
 import Quiz from "./quiz";
-import '@gossie/array-pipe'
 
 import './Participants.css';
 

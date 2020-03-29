@@ -17,25 +17,25 @@ import team.undefined.quiz.web.ReactiveWebSocketHandler
 internal class DefaultQuizRepositoryTest {
 
     @Autowired
-    private lateinit var defaultQuizRepository: DefaultQuizRepository;
+    private lateinit var defaultQuizRepository: DefaultQuizRepository
 
     @Test
     fun shouldCreateAndDetermineChangeAndSaveQuiz() {
         StepVerifier.create(defaultQuizRepository.createQuiz(Quiz(name = "Quiz")))
                 .expectNext(Quiz(1, "Quiz"))
-                .verifyComplete();
+                .verifyComplete()
 
         StepVerifier.create(defaultQuizRepository.determineQuiz(1))
                 .expectNext(Quiz(1, "Quiz"))
-                .verifyComplete();
+                .verifyComplete()
 
         StepVerifier.create(defaultQuizRepository.saveQuiz(Quiz(1, "Quiz", listOf(Participant(name = "Sandra"), Participant(name = "Allli"), Participant(name = "Erik", turn = true)), listOf(Question(question = "Wofür steht eigentlich a.D.?")))))
                 .expectNext(Quiz(1, "Quiz", listOf(Participant(1, "Sandra"), Participant(2, "Allli"), Participant(3, "Erik", true)), listOf(Question(1, "Wofür steht eigentlich a.D.?"))))
-                .verifyComplete();
+                .verifyComplete()
 
         StepVerifier.create(defaultQuizRepository.saveQuiz(Quiz(1, "Quiz", listOf(Participant(1, "Sandra"), Participant(2, "Allli"), Participant(3, "Erik", points = 1)), listOf(Question(1, "Wofür steht eigentlich a.D.?")))))
                 .expectNext(Quiz(1, "Quiz", listOf(Participant(1, "Sandra"), Participant(2, "Allli"), Participant(3, "Erik", points = 1)), listOf(Question(1, "Wofür steht eigentlich a.D.?"))))
-                .verifyComplete();
+                .verifyComplete()
     }
 
 }

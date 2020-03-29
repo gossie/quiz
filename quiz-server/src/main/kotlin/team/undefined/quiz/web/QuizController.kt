@@ -75,4 +75,8 @@ private fun QuizDTO.addLinks(): Mono<QuizDTO> {
             .map { it.withRel("createQuestion") }
             .flatMap { it.toMono() }
             .map { this.add(it) }
+            .map { linkTo(methodOn(QuizController::class.java).answer(this.id!!, "")) }
+            .map { it.withRel("answer") }
+            .flatMap { it.toMono() }
+            .map { this.add(it) }
 }

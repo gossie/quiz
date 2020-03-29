@@ -3,6 +3,7 @@ import React, { useState, useEffect } from 'react';
 import './QuizDashboard.css';
 import Participants from './Participants';
 import Quiz from './quiz';
+import Question from './Question';
 
 interface QuizDashboardProps {
     quiz: Quiz;
@@ -48,7 +49,8 @@ const QuizDashboard: React.FC<QuizDashboardProps> = (props: QuizDashboardProps) 
     return (
         <header className="App-header">
             <Participants quiz={quiz}></Participants>
-            <button className="buzzer" onClick={buzzer}>
+            <Question quiz={quiz}></Question>
+            <button disabled={quiz.participants.some(p => p.turn)} className="buzzer" onClick={buzzer}>
                 Buzzer
             </button>
         </header>
