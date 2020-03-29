@@ -11,7 +11,7 @@ function App() {
 
     const joinQuiz = async () => {
 
-        const quizResponse = await fetch(`http://localhost:8080/api/quiz/${quizId}`, {
+        const quizResponse = await fetch(`${process.env.REACT_APP_BASE_URL}api/quiz/${quizId}`, {
             method: 'GET',
             headers: {
                 Accept: 'application/json'
@@ -20,7 +20,7 @@ function App() {
         const quiz: Quiz = await quizResponse.json();
         
         const participantLink = quiz.links.find(link => link.rel === 'createParticipant').href;
-        const participantResponse = await fetch(`http://localhost:8080${participantLink}`, {
+        const participantResponse = await fetch(`${process.env.REACT_APP_BASE_URL}${participantLink}`, {
             method: 'POST',
             body: name,
             headers: {

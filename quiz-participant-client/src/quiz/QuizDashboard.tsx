@@ -21,7 +21,7 @@ const QuizDashboard: React.FC<QuizDashboardProps> = (props: QuizDashboardProps) 
                 .find(link => link.rel === 'buzzer')
                 .href;
 
-        fetch(`http://localhost:8080${buzzerHref}`, {
+        fetch(`${process.env.REACT_APP_BASE_URL}${buzzerHref}`, {
             method: 'PUT',
             headers: {
                 Accept: 'application/json'
