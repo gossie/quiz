@@ -10,7 +10,7 @@ const Questions: React.FC<QuestionsProps> = (props: QuestionsProps) => {
 
     const startQuestion = async () => {
         const questioinLink = props.quiz.links.find(link => link.rel === 'createQuestion')?.href;
-        await fetch(`http://localhost:8080${questioinLink}`, {
+        await fetch(`${process.env.REACT_APP_BASE_URL}${questioinLink}`, {
             method: 'POST',
             body: newQuestion,
             headers: {

@@ -8,7 +8,7 @@ function App() {
     const [quizId, setQuizId] = useState('');
 
     const startQuiz = async () => {
-        const quizResponse = await fetch('http://localhost:8080/api/quiz/', {
+        const quizResponse = await fetch(`${process.env.REACT_APP_BASE_URL}/api/quiz/`, {
             method: 'POST',
             body: JSON.stringify({
                 name: 'Hegarty\'s Quiz'
@@ -23,7 +23,7 @@ function App() {
     };
 
     const joinQuiz = async () => {
-        const quizResponse = await fetch(`http://localhost:8080/api/quiz/${quizId}`, {
+        const quizResponse = await fetch(`${process.env.REACT_APP_BASE_URL}/api/quiz/${quizId}`, {
             method: 'GET',
             headers: {
                 Accept: 'application/json'

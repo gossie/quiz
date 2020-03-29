@@ -12,7 +12,7 @@ const Answers: React.FC<AnswersProps> = (props: AnswersProps) => {
                 .find(link => link.rel === 'answer')
                 ?.href;
 
-        await fetch(`http://localhost:8080${answerHref}`, {
+        await fetch(`${process.env.REACT_APP_BASE_URL}${answerHref}`, {
             method: 'PATCH',
             body: correct,
             headers: {
