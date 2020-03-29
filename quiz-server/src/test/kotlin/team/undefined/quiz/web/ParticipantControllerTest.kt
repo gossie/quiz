@@ -37,12 +37,12 @@ internal class ParticipantControllerTest {
                 .body(BodyInserters.fromValue("Erik"))
                 .exchange()
                 .expectStatus().isCreated
-                .expectBody(Map::class.java)
+                .expectBody(CreateParticipantResponse::class.java)
                 .returnResult()
                 .responseBody
 
-        val quizDTO = result!!["quiz"] as QuizDTO
-        val participantId = result["participantId"] as Long
+        val quizDTO = result!!.quiz
+        val participantId = result.participantId
 
         assertThat(participantId).isEqualTo(23)
         assertThat(quizDTO.id).isEqualTo(7)

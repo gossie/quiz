@@ -12,22 +12,16 @@ class ParticipantsController(private val quizService: QuizService) {
 
     @PostMapping(consumes = ["text/plain"], produces = ["application/json"])
     @ResponseStatus(HttpStatus.CREATED)
-    fun create(@PathVariable quizId: Long, @RequestBody participantName: String): Mono<Map<String, Any>> {
+    fun create(@PathVariable quizId: Long, @RequestBody participantName: String): Mono<CreateParticipantResponse> {
         return quizService.createParticipant(quizId, participantName)
                 .flatMap { it.map() }
-                .map {
-                    val participantId = it.participants.find { it.name == participantName }!!.id
-                    val result = HashMap<String, Any>()
-                    result["participantId"] = participantId
-                    result["quiz"] = it
-                    result
-                }
+                .map { CreateParticipantResponse(it.participants.find { it.name == participantName }!!.id, it) }
     }
 
     @PutMapping("/{participantId}/buzzer", produces = ["application/json"])
     fun buzzer(@PathVariable quizId: Long, @PathVariable participantId: Long): Mono<QuizDTO> {
         return quizService.buzzer(quizId, participantId)
-                .flatMap { it.map() };
+                .flatMap { it.map() }
     }
 
 }
