@@ -1,6 +1,6 @@
 {
-  "short_name": "Quiz App",
-  "name": "Quiz App",
+  "short_name": "Quiz participant app",
+  "name": "Quiz participant app",
   "icons": [],
   "start_url": ".",
   "display": "standalone",
