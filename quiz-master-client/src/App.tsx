@@ -5,13 +5,14 @@ import QuizMaster from './QuizMaster';
 
 function App() {
     const [quiz, setQuiz] = useState({} as Quiz);
+    const [quizName, setQuizName] = useState('');
     const [quizId, setQuizId] = useState('');
 
     const startQuiz = async () => {
         const quizResponse = await fetch(`${process.env.REACT_APP_BASE_URL}/api/quiz/`, {
             method: 'POST',
             body: JSON.stringify({
-                name: 'Hegarty\'s Quiz'
+                name: quizName
             }),
             headers: {
                 'Content-Type': 'application/json',
@@ -42,6 +43,7 @@ function App() {
                   :
                     <div>
                         <p>
+                            <span><label>Quiz name</label></span><span><input type="text" onChange={(ev) => setQuizName(ev.target.value)} /></span>
                             <button onClick={startQuiz}>Start quiz</button>
                         </p>
                         <div>

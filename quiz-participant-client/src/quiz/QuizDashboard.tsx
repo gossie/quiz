@@ -48,6 +48,7 @@ const QuizDashboard: React.FC<QuizDashboardProps> = (props: QuizDashboardProps) 
 
     return (
         <header className="App-header">
+            <h1>{quiz.name}</h1>
             <Participants quiz={quiz}></Participants>
             <Question quiz={quiz}></Question>
             <button disabled={quiz.participants.some(p => p.turn)} className="buzzer" onClick={buzzer}>
