@@ -13,7 +13,6 @@ function App() {
 
         const quizResponse = await fetch(`${process.env.REACT_APP_BASE_URL}/api/quiz/${quizId}`, {
             method: 'GET',
-            mode: 'no-cors',
             headers: {
                 Accept: 'application/json'
             }

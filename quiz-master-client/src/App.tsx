@@ -10,7 +10,6 @@ function App() {
     const startQuiz = async () => {
         const quizResponse = await fetch(`${process.env.REACT_APP_BASE_URL}/api/quiz/`, {
             method: 'POST',
-            mode: 'no-cors',
             body: JSON.stringify({
                 name: 'Hegarty\'s Quiz'
             }),
@@ -26,7 +25,6 @@ function App() {
     const joinQuiz = async () => {
         const quizResponse = await fetch(`${process.env.REACT_APP_BASE_URL}/api/quiz/${quizId}`, {
             method: 'GET',
-            mode: 'no-cors',
             headers: {
                 Accept: 'application/json'
             }
