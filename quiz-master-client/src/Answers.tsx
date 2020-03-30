@@ -14,7 +14,6 @@ const Answers: React.FC<AnswersProps> = (props: AnswersProps) => {
 
         await fetch(`${process.env.REACT_APP_BASE_URL}${answerHref}`, {
             method: 'PATCH',
-            mode: 'no-cors',
             body: correct,
             headers: {
                 'Content-Type': 'text/plain',

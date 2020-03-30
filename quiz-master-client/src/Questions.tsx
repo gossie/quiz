@@ -12,7 +12,6 @@ const Questions: React.FC<QuestionsProps> = (props: QuestionsProps) => {
         const questioinLink = props.quiz.links.find(link => link.rel === 'createQuestion')?.href;
         await fetch(`${process.env.REACT_APP_BASE_URL}${questioinLink}`, {
             method: 'POST',
-            mode: 'no-cors',
             body: newQuestion,
             headers: {
                 'Content-Type': 'text/plain',

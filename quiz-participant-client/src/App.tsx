@@ -22,7 +22,6 @@ function App() {
         const participantLink = quiz.links.find(link => link.rel === 'createParticipant').href;
         const participantResponse = await fetch(`${process.env.REACT_APP_BASE_URL}${participantLink}`, {
             method: 'POST',
-            mode: 'no-cors',
             body: name,
             headers: {
                 'Content-Type': 'text/plain',
