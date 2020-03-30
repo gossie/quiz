@@ -19,6 +19,6 @@ class ReactiveWebSocketHandler(private val quizService: QuizService,
                 .map { webSocketSession.textMessage(it.toString()) })
                 .and(webSocketSession.receive()
                         .map { it.payloadAsText }
-                        .log());
+                        .log())
     }
 }

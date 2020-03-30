@@ -18,10 +18,13 @@ const QuizMaster: React.FC<QuizMasterProps> = (props: QuizMasterProps) => {
             console.log('event', ev);
             setQuiz(JSON.parse(ev.data));
         };
-        
+
+        const i = setInterval(() => clientWebSocket.send('heartBeat'), 10000);
+
         return () => {
             console.log('websocket wird geschlossen');
             clientWebSocket.close();
+            clearInterval(i);
         };
     }, []);
 

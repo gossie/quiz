@@ -39,10 +39,13 @@ const QuizDashboard: React.FC<QuizDashboardProps> = (props: QuizDashboardProps) 
             console.log('event', ev);
             setQuiz(JSON.parse(ev.data));
         };
-        
+
+        const i = setInterval(() => clientWebSocket.send('heartBeat'), 10000);
+
         return () => {
             console.log('websocket wird geschlossen');
             clientWebSocket.close();
+            clearInterval(i);
         };
     }, []);
 
