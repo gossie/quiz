@@ -46,7 +46,7 @@ fun Quiz.map(): Mono<QuizDTO> {
     return Flux.fromIterable(this.participants)
             .flatMap { it.map(this.id!!) }
             .collect(Collectors.toList())
-            .map { QuizDTO(this.id, this.name, it, this.questions.map { it.question }, this.participants.find { it.turn }?.name) }
+            .map { QuizDTO(this.id, this.name, it, this.questions.map { it.question }) }
             .flatMap { it.addLinks() }
 }
 

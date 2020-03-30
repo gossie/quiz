@@ -104,5 +104,16 @@ internal class QuizIT() {
                 .exchange()
                 .expectStatus().isOk
                 .expectBody().json("{\"name\":\"Quiz\",\"participants\":[{\"name\":\"André\",\"turn\":true ,\"points\":0},{\"name\":\"Lena\",\"turn\":false,\"points\":1}],\"questions\":[\"Wer schrieb das Buch Animal Farm?\",\"Wo befindet sich das Kahnbein?\"]}")
+
+        webTestClient
+                .post()
+                .uri("/api/quiz/1/participants")
+                .contentType(MediaType.TEXT_PLAIN)
+                .accept(MediaType.APPLICATION_JSON)
+                .body(BodyInserters.fromValue("Lena"))
+                .exchange()
+                .expectStatus().isCreated
+                .expectBody().json("{\"quiz\":{\"name\":\"Quiz\",\"participants\":[{\"name\":\"André\",\"turn\":true,\"points\":0},{\"name\":\"Lena\",\"turn\":false,\"points\":1}]},\"participantId\":2}")
+
     }
 }
