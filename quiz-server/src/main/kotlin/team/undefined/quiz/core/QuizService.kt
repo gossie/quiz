@@ -20,12 +20,9 @@ class QuizService(private val quizRepository: QuizRepository) {
 
     fun createParticipant(quizId: Long, participantName: String): Mono<Quiz> {
         return quizRepository.determineQuiz(quizId)
-                .map { it.addParticipant(Participant(name = participantName)) }
+                .map { it.addParticipantIfNecessary(Participant(name = participantName)) }
                 .flatMap { quizRepository.saveQuiz(it) }
-                .map {
-                    emitterProcessor.onNext(it)
-                    it
-                }
+                .map { emitQuiz(it) }
     }
 
     fun buzzer(quizId: Long, participantId: Long): Mono<Quiz> {
@@ -33,44 +30,37 @@ class QuizService(private val quizRepository: QuizRepository) {
                 .filter { it.nobodyHasBuzzered() }
                 .map { it.select(participantId) }
                 .flatMap { quizRepository.saveQuiz(it) }
-                .map {
-                    emitterProcessor.onNext(it)
-                    it
-                }
+                .map { emitQuiz(it) }
     }
 
     fun startNewQuestion(quizId: Long, question: String): Mono<Quiz> {
         return quizRepository.determineQuiz(quizId)
                 .map { it.startQuestion(Question(question = question, pending = true)) }
                 .flatMap { quizRepository.saveQuiz(it) }
-                .map {
-                    emitterProcessor.onNext(it)
-                    it
-                }
+                .map { emitQuiz(it) }
     }
 
     fun correctAnswer(quizId: Long): Mono<Quiz> {
         return quizRepository.determineQuiz(quizId)
                 .map { it.answeredCorrect() }
                 .flatMap { quizRepository.saveQuiz(it) }
-                .map {
-                    emitterProcessor.onNext(it)
-                    it
-                }
+                .map { emitQuiz(it) }
     }
 
     fun incorrectAnswer(quizId: Long): Mono<Quiz> {
         return quizRepository.determineQuiz(quizId)
                 .map { it.answeredInorrect() }
                 .flatMap { quizRepository.saveQuiz(it) }
-                .map {
-                    emitterProcessor.onNext(it)
-                    it
-                }
+                .map { emitQuiz(it) }
     }
 
     fun observeQuiz(): Flux<Quiz> {
         return emitterProcessor
+    }
+
+    private fun emitQuiz(quiz: Quiz): Quiz {
+        emitterProcessor.onNext(quiz)
+        return quiz
     }
 
 }

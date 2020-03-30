@@ -55,6 +55,25 @@ internal class QuizServiceTest {
     }
 
     @Test
+    fun shouldNotCreateParticipantWithTheSameName() {
+        val quizRepository = mock(QuizRepository::class.java)
+        `when`(quizRepository.determineQuiz(12)).thenReturn(Mono.just(Quiz(12, "Quiz", listOf(Participant(23, "Sandra")))))
+        `when`(quizRepository.saveQuiz(Quiz(12, "Quiz", listOf(Participant(23, "Sandra"))))).thenReturn(Mono.just(Quiz(12, "Quiz", listOf(Participant(23, "Sandra")))))
+
+        val quizService = QuizService(quizRepository)
+
+        val observedQuiz = AtomicReference<Quiz>()
+        quizService.observeQuiz()
+                .subscribe { observedQuiz.set(it) }
+
+        StepVerifier.create(quizService.createParticipant(12, "Sandra"))
+                .expectNext(Quiz(12, "Quiz", listOf(Participant(23, "Sandra"))))
+                .verifyComplete()
+
+        assertThat(observedQuiz.get()).isEqualTo(Quiz(12, "Quiz", listOf(Participant(23, "Sandra"))))
+    }
+
+    @Test
     fun shouldBuzzer() {
         val quizRepository = mock(QuizRepository::class.java)
         `when`(quizRepository.determineQuiz(7))

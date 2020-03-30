@@ -14,8 +14,11 @@ data class Quiz(val id: Long? = null, val name: String, val participants: List<P
         return this
     }
 
-    fun addParticipant(participantName: Participant): Quiz {
-        (participants as MutableList).add(participantName)
+    fun addParticipantIfNecessary(participant: Participant): Quiz {
+        if (participants.none { it.name == participant.name }) {
+            (participants as MutableList).add(participant)
+        }
+
         return this;
     }
 
