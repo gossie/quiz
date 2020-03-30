@@ -21,7 +21,7 @@ const Questions: React.FC<QuestionsProps> = (props: QuestionsProps) => {
         setNewQuestion('');
     };
 
-    const elements = props.quiz.questions.map(q => <div key={q}>{q}</div>);
+    const elements = props.quiz.questions.map((q, index) => <div key={index}>#{index + 1} {q}</div>);
     return (
         <div>
             <h3>Questions</h3>

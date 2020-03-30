@@ -38,4 +38,3 @@ class QuizApplication {
 fun main(args: Array<String>) {
 	runApplication<QuizApplication>(*args)
 }
-
