@@ -23,6 +23,7 @@ const QuizDashboard: React.FC<QuizDashboardProps> = (props: QuizDashboardProps) 
 
         fetch(`${process.env.REACT_APP_BASE_URL}${buzzerHref}`, {
             method: 'PUT',
+            mode: 'no-cors',
             headers: {
                 Accept: 'application/json'
             }

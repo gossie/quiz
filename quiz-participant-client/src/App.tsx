@@ -13,6 +13,7 @@ function App() {
 
         const quizResponse = await fetch(`${process.env.REACT_APP_BASE_URL}/api/quiz/${quizId}`, {
             method: 'GET',
+            mode: 'no-cors',
             headers: {
                 Accept: 'application/json'
             }
@@ -22,6 +23,7 @@ function App() {
         const participantLink = quiz.links.find(link => link.rel === 'createParticipant').href;
         const participantResponse = await fetch(`${process.env.REACT_APP_BASE_URL}${participantLink}`, {
             method: 'POST',
+            mode: 'no-cors',
             body: name,
             headers: {
                 'Content-Type': 'text/plain',
