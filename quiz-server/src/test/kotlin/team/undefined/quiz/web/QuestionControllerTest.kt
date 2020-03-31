@@ -24,7 +24,7 @@ class QuestionControllerTest {
     private lateinit var  quizService: QuizService
 
     @Test
-    fun shouldstartNewQuestion() {
+    fun shouldStartNewQuestion() {
         `when`(quizService.startNewQuestion(11,"Wofür steht die Abkürzung a.d.?"))
                 .thenReturn(Mono.just(Quiz(11, "Quiz", emptyList(), listOf(Question(question = "Wofür steht die Abkürzung a.d.?")))))
 
