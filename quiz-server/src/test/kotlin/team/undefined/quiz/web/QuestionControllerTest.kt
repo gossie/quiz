@@ -10,13 +10,12 @@ import org.springframework.http.MediaType
 import org.springframework.test.web.reactive.server.WebTestClient
 import org.springframework.web.reactive.function.BodyInserters
 import reactor.core.publisher.Mono
-import team.undefined.quiz.core.Participant
 import team.undefined.quiz.core.Question
 import team.undefined.quiz.core.Quiz
 import team.undefined.quiz.core.QuizService
 
 @WebFluxTest(controllers = [QuestionController::class])
-@Import(ReactiveWebSocketHandler::class)
+@Import(WebSocketHandlerFactory::class)
 class QuestionControllerTest {
 
     @Autowired

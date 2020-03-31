@@ -16,7 +16,7 @@ import team.undefined.quiz.core.Quiz
 import team.undefined.quiz.core.QuizService
 
 @WebFluxTest(controllers = [ParticipantsController::class])
-@Import(ReactiveWebSocketHandler::class)
+@Import(WebSocketHandlerFactory::class)
 internal class ParticipantControllerTest {
 
     @Autowired
