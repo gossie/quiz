@@ -8,7 +8,7 @@ import reactor.core.publisher.Mono
 @Service
 class QuizService(private val quizRepository: QuizRepository) {
 
-    private val emitterProcessor: EmitterProcessor<Quiz> = EmitterProcessor.create()
+    private val observables = HashMap<Long, EmitterProcessor<Quiz>>()
 
     fun createQuiz(quiz: Quiz): Mono<Quiz> {
         return quizRepository.createQuiz(quiz)
@@ -54,12 +54,16 @@ class QuizService(private val quizRepository: QuizRepository) {
                 .map { emitQuiz(it) }
     }
 
-    fun observeQuiz(): Flux<Quiz> {
-        return emitterProcessor
+    fun observeQuiz(quizId: Long): Flux<Quiz> {
+        return observables.computeIfAbsent(quizId) {
+            val emitter: EmitterProcessor<Quiz> = EmitterProcessor.create()
+            emitter.doOnComplete { observables.remove(quizId) }
+            emitter
+        }
     }
 
     private fun emitQuiz(quiz: Quiz): Quiz {
-        emitterProcessor.onNext(quiz)
+        observables[quiz.id]?.onNext(quiz)
         return quiz
     }
 

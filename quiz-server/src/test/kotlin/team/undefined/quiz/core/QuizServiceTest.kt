@@ -44,7 +44,7 @@ internal class QuizServiceTest {
         val quizService = QuizService(quizRepository)
 
         val observedQuiz = AtomicReference<Quiz>()
-        quizService.observeQuiz()
+        quizService.observeQuiz(12)
                 .subscribe { observedQuiz.set(it) }
 
         StepVerifier.create(quizService.createParticipant(12, "Sandra"))
@@ -63,7 +63,7 @@ internal class QuizServiceTest {
         val quizService = QuizService(quizRepository)
 
         val observedQuiz = AtomicReference<Quiz>()
-        quizService.observeQuiz()
+        quizService.observeQuiz(12)
                 .subscribe { observedQuiz.set(it) }
 
         StepVerifier.create(quizService.createParticipant(12, "Sandra"))
@@ -84,7 +84,7 @@ internal class QuizServiceTest {
         val quizService = QuizService(quizRepository)
 
         val observedQuiz = AtomicReference<Quiz>()
-        quizService.observeQuiz()
+        quizService.observeQuiz(7)
                 .subscribe { observedQuiz.set(it) }
 
         val buzzer = quizService.buzzer(7, 23)
@@ -107,7 +107,7 @@ internal class QuizServiceTest {
         val quizService = QuizService(quizRepository)
 
         val observedQuiz = AtomicReference<Quiz>()
-        quizService.observeQuiz()
+        quizService.observeQuiz(7)
                 .subscribe { observedQuiz.set(it) }
 
         StepVerifier.create(quizService.buzzer(7, 23))
@@ -134,7 +134,7 @@ internal class QuizServiceTest {
         val quizService = QuizService(quizRepository)
 
         val observedQuiz = AtomicReference<Quiz>()
-        quizService.observeQuiz()
+        quizService.observeQuiz(117)
                 .subscribe { observedQuiz.set(it) }
 
         StepVerifier.create(quizService.startNewQuestion(117, "Warum ist die Banane krumm?"))
@@ -155,7 +155,7 @@ internal class QuizServiceTest {
         val quizService = QuizService(quizRepository)
 
         val observedQuiz = AtomicReference<Quiz>()
-        quizService.observeQuiz()
+        quizService.observeQuiz(117)
                 .subscribe { observedQuiz.set(it) }
 
         StepVerifier.create(quizService.correctAnswer(117))
@@ -176,7 +176,7 @@ internal class QuizServiceTest {
         val quizService = QuizService(quizRepository)
 
         val observedQuiz = AtomicReference<Quiz>()
-        quizService.observeQuiz()
+        quizService.observeQuiz(117)
                 .subscribe { observedQuiz.set(it) }
 
         StepVerifier.create(quizService.incorrectAnswer(117))
