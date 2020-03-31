@@ -9,7 +9,7 @@ jobs:
         with:
           java-version: 13
       - name: verify
-        run: mvnw clean verify
+        run: ./mvnw clean verify
   build-quiz-master-client:
     runs-on: ubuntu-latest
     env:
@@ -23,7 +23,7 @@ jobs:
         run: npm install
         working-directory: ${{env.working-directory}}
       - name: Unit tests
-        run: npm run test:ci
+        run: npm run test
         working-directory: ${{env.working-directory}}
   build-quiz-participant-client:
     runs-on: ubuntu-latest
@@ -38,5 +38,5 @@ jobs:
         run: npm install
         working-directory: ${{env.working-directory}}
       - name: Unit tests
-        run: npm run test:ci
+        run: npm run test
         working-directory: ${{env.working-directory}}
