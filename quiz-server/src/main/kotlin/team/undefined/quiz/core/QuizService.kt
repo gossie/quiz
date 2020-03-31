@@ -55,7 +55,11 @@ class QuizService(private val quizRepository: QuizRepository) {
     }
 
     fun observeQuiz(quizId: Long): Flux<Quiz> {
-        return observables.computeIfAbsent(quizId) { EmitterProcessor.create() }
+        return observables.computeIfAbsent(quizId) {
+            val emitter: EmitterProcessor<Quiz> = EmitterProcessor.create()
+            emitter.doOnComplete { observables.remove(quizId) }
+            emitter
+        }
     }
 
     private fun emitQuiz(quiz: Quiz): Quiz {
