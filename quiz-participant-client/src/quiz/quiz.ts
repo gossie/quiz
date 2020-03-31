@@ -12,6 +12,7 @@ interface Participant {
 }
 
 export default interface Quiz {
+    id: number;
     name: string;
     turn?: string;
     participants: Array<Participant>;

@@ -13,7 +13,7 @@ const QuizMaster: React.FC<QuizMasterProps> = (props: QuizMasterProps) => {
 
     useEffect(() => {
         console.log('websocket wird erstellt');
-        const clientWebSocket = new WebSocket(`${process.env.REACT_APP_WS_BASE_URL}/event-emitter`);
+        const clientWebSocket = new WebSocket(`${process.env.REACT_APP_WS_BASE_URL}/event-emitter/${quiz.id}`);
         clientWebSocket.onmessage = ev => {
             console.log('event', ev);
             setQuiz(JSON.parse(ev.data));
