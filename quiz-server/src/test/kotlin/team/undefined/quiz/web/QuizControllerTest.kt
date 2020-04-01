@@ -40,11 +40,11 @@ internal class QuizControllerTest {
 
     @Test
     fun shouldGetQuiz() {
-        `when`(quizService.determineQuiz(17)).thenReturn(Mono.just(Quiz(17, "Q")))
+        `when`(quizService.determineQuiz(18)).thenReturn(Mono.just(Quiz(18, "Q")))
 
         val result = webTestClient
                 .get()
-                .uri("/api/quiz/17")
+                .uri("/api/quiz/18")
                 .accept(MediaType.APPLICATION_JSON)
                 .exchange()
                 .expectStatus().isOk
@@ -52,20 +52,20 @@ internal class QuizControllerTest {
                 .returnResult()
                 .responseBody
 
-        assertThat(result?.id).isEqualTo(17)
+        assertThat(result?.id).isEqualTo(18)
         assertThat(result?.name).isEqualTo("Q")
         assertThat(result?.participants).isEmpty()
         assertThat(result?.questions).isEmpty()
         assertThat(result?.links).hasSize(3)
         assertThat(result?.getLink("createParticipant"))
                 .map { it.href }
-                .contains("/api/quiz/17/participants")
+                .contains("/api/quiz/18/participants")
         assertThat(result?.getLink("createQuestion"))
                 .map { it.href }
-                .contains("/api/quiz/17/questions")
+                .contains("/api/quiz/18/questions")
         assertThat(result?.getLink("answer"))
                 .map { it.href }
-                .contains("/api/quiz/17")
+                .contains("/api/quiz/18")
     }
 
     @Test
@@ -104,7 +104,7 @@ internal class QuizControllerTest {
 
     @Test
     fun shouldAnswerIncorrect() {
-        `when`(quizService.incorrectAnswer(14)).thenReturn(Mono.just(Quiz(14, "Quiz", listOf(Participant(17, "Sandra", false, 1), Participant(18, "Erik", false, 0)), listOf(Question(19, "Warum ist die Banane krumm?")))))
+        `when`(quizService.incorrectAnswer(14)).thenReturn(Mono.just(Quiz(11, "Quiz", listOf(Participant(17, "Sandra", false, 1), Participant(18, "Erik", false, 0)), listOf(Question(19, "Warum ist die Banane krumm?")))))
 
         val result = webTestClient
                 .patch()
@@ -118,7 +118,7 @@ internal class QuizControllerTest {
                 .returnResult()
                 .responseBody
 
-        assertThat(result!!.id).isEqualTo(14)
+        assertThat(result!!.id).isEqualTo(11)
         assertThat(result.name).isEqualTo("Quiz")
         assertThat(result.participants).hasSize(2)
         assertThat(result.participants[0]).isEqualTo(ParticipantDTO(17, "Sandra", false, 1))
@@ -127,13 +127,13 @@ internal class QuizControllerTest {
         assertThat(result.links).hasSize(3)
         assertThat(result.getLink("createParticipant"))
                 .map { it.href }
-                .contains("/api/quiz/14/participants")
+                .contains("/api/quiz/11/participants")
         assertThat(result.getLink("createQuestion"))
                 .map { it.href }
-                .contains("/api/quiz/14/questions")
+                .contains("/api/quiz/11/questions")
         assertThat(result.getLink("answer"))
                 .map { it.href }
-                .contains("/api/quiz/14")
+                .contains("/api/quiz/11")
     }
 
 }
