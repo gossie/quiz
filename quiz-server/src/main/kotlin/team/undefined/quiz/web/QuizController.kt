@@ -16,20 +16,13 @@ import java.util.stream.Collectors
 @RestController
 @CrossOrigin(origins = ["*"], allowedHeaders = ["*"])
 @RequestMapping("/api/quiz")
-class QuizController(private val quizService: QuizService,
-                     private val webSocketHandlerMapping: HandlerMapping,
-                     private val webSocketHandlerFactory: WebSocketHandlerFactory) {
+class QuizController(private val quizService: QuizService) {
 
     @PostMapping(produces = ["application/json"])
     @ResponseStatus(HttpStatus.CREATED)
     fun createQuiz(@RequestBody quiz: QuizDTO): Mono<QuizDTO> {
         return quizService.createQuiz(quiz.map())
                 .flatMap { it.map() }
-                .map {
-                    (webSocketHandlerMapping as SimpleUrlHandlerMapping).urlMap = mapOf(Pair("/event-emitter/" + it.id, webSocketHandlerFactory.createWebSocketHandler(it.id!!)))
-                    webSocketHandlerMapping.initApplicationContext()
-                    it
-                }
     }
 
     @PatchMapping("/{quizId}", consumes = ["text/plain"], produces = ["application/json"])
@@ -47,11 +40,6 @@ class QuizController(private val quizService: QuizService,
     fun determineQuiz(@PathVariable quizId: Long): Mono<QuizDTO> {
         return quizService.determineQuiz(quizId)
                 .flatMap { it.map() }
-                .map {
-                    (webSocketHandlerMapping as SimpleUrlHandlerMapping).urlMap = mapOf(Pair("/event-emitter/" + it.id, webSocketHandlerFactory.createWebSocketHandler(it.id!!)))
-                    webSocketHandlerMapping.initApplicationContext()
-                    it
-                }
     }
 
 }
