@@ -7,15 +7,14 @@ import org.springframework.web.reactive.HandlerMapping
 import org.springframework.web.reactive.handler.SimpleUrlHandlerMapping
 import org.springframework.web.reactive.socket.WebSocketHandler
 import org.springframework.web.reactive.socket.server.support.WebSocketHandlerAdapter
-import team.undefined.quiz.web.WebSocketHandlerFactory
+import team.undefined.quiz.web.ReactiveWebSocketHandler
 
 
 @SpringBootApplication
 class QuizApplication {
 	@Bean
-	fun webSocketHandlerMapping(webSocketHandlerFactory: WebSocketHandlerFactory): HandlerMapping {
-		val map = HashMap<String, WebSocketHandler>()
-		return SimpleUrlHandlerMapping(map, 1)
+	fun webSocketHandlerMapping(webSocketHandler: ReactiveWebSocketHandler): HandlerMapping {
+		return SimpleUrlHandlerMapping(mapOf(Pair("/event-emitter/{quizId}", webSocketHandler)), 1)
 	}
 
 	@Bean

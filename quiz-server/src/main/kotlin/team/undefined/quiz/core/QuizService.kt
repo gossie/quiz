@@ -4,11 +4,12 @@ import org.springframework.stereotype.Service
 import reactor.core.publisher.EmitterProcessor
 import reactor.core.publisher.Flux
 import reactor.core.publisher.Mono
+import java.util.concurrent.ConcurrentHashMap
 
 @Service
 class QuizService(private val quizRepository: QuizRepository) {
 
-    private val observables = HashMap<Long, EmitterProcessor<Quiz>>()
+    private val observables = ConcurrentHashMap<Long, EmitterProcessor<Quiz>>()
 
     fun createQuiz(quiz: Quiz): Mono<Quiz> {
         return quizRepository.createQuiz(quiz)
@@ -57,7 +58,7 @@ class QuizService(private val quizRepository: QuizRepository) {
     fun observeQuiz(quizId: Long): Flux<Quiz> {
         return observables.computeIfAbsent(quizId) {
             val emitter: EmitterProcessor<Quiz> = EmitterProcessor.create()
-            emitter.doOnComplete { observables.remove(quizId) }
+            emitter.doAfterTerminate { observables.remove(quizId) }
             emitter
         }
     }
@@ -65,6 +66,10 @@ class QuizService(private val quizRepository: QuizRepository) {
     private fun emitQuiz(quiz: Quiz): Quiz {
         observables[quiz.id]?.onNext(quiz)
         return quiz
+    }
+
+    fun removeObserver(quizId: Long) {
+        observables.remove(quizId)
     }
 
 }
