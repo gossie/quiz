@@ -13,7 +13,7 @@ import team.undefined.quiz.web.WebSocketHandlerFactory
 @SpringBootApplication
 class QuizApplication {
 	@Bean
-	fun webSocketHandlerMapping(webSocketHandlerFactory: WebSocketHandlerFactory): HandlerMapping {
+	fun webSocketHandlerMapping(): HandlerMapping {
 		val map = HashMap<String, WebSocketHandler>()
 		return SimpleUrlHandlerMapping(map, 1)
 	}
