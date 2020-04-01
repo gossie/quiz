@@ -16,14 +16,14 @@ internal class WebSocketHandlerFactoryTest {
     }
 
     @Test
-    fun shouldReturnTheSameHandlerForTheSameID() {
+    fun shouldReturnADifferentHandlerForTheSameID() {
         val factory = WebSocketHandlerFactory(mock(QuizService::class.java), mock(ObjectMapper::class.java))
         val handler1 = factory.createWebSocketHandler(1)
         val handler2 = factory.createWebSocketHandler(1)
 
         assertThat(handler1).isNotNull
         assertThat(handler2).isNotNull
-        assertThat(handler1).isSameAs(handler2)
+        assertThat(handler1).isNotSameAs(handler2)
     }
 
     @Test
