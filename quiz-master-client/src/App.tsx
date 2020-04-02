@@ -2,13 +2,12 @@ import React, { useState } from 'react';
 import './App.css';
 import Quiz from './quiz';
 import QuizMaster from './QuizMaster';
+import LoginPageWidget from './LoginPageWidget/LoginPageWidget';
 
 function App() {
     const [quiz, setQuiz] = useState({} as Quiz);
-    const [quizName, setQuizName] = useState('');
-    const [quizId, setQuizId] = useState('');
 
-    const startQuiz = async () => {
+    const startQuiz = async (quizName: string) => {
         const quizResponse = await fetch(`${process.env.REACT_APP_BASE_URL}/api/quiz/`, {
             method: 'POST',
             body: JSON.stringify({
@@ -23,7 +22,7 @@ function App() {
         setQuiz(newQuiz);
     };
 
-    const joinQuiz = async () => {
+    const joinQuiz = async (quizId: string) => {
         const quizResponse = await fetch(`${process.env.REACT_APP_BASE_URL}/api/quiz/${quizId}`, {
             method: 'GET',
             headers: {
@@ -48,34 +47,8 @@ function App() {
                 <QuizMaster quiz={quiz}></QuizMaster>
                 :
                 <div className="container App-content">
-                   
-                    <div className="box">
-                        <h5 className="title is-5">Create a quiz</h5>
-                        <div className="field has-addons">
-                            <div className="control">
-                                <input className="input" type="text" placeholder="Quiz Name"  onChange={(ev) => setQuizName(ev.target.value)} />
-                            </div>
-                            <div className="control">
-                                <button className="button is-info" onClick={startQuiz}>
-                                Start!
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div className="box">
-                        <h5 className="title is-5">Join a quiz</h5>
-                        <div className="field has-addons">
-                            <div className="control">
-                                <input className="input" type="text" placeholder="Quiz ID" onChange={(ev) => setQuizId(ev.target.value)}/>
-                            </div>
-                            <div className="control">
-                                <button className="button is-info" onClick={joinQuiz}>
-                                Join!
-                                </button>
-                            </div>
-                        </div>
-                    </div>
+                    <LoginPageWidget title="Create a Quiz" inputLabel="Quiz Name" buttonLabel="Start!" onSubmit={startQuiz}></LoginPageWidget>
+                    <LoginPageWidget title="Join a Quiz" inputLabel="Quiz ID" buttonLabel="Join!" onSubmit={joinQuiz}></LoginPageWidget> 
                 </div>
             }
                 
