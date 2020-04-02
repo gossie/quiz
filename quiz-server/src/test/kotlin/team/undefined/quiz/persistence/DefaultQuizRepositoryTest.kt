@@ -10,10 +10,10 @@ import team.undefined.quiz.core.Participant
 import team.undefined.quiz.core.Question
 import team.undefined.quiz.core.Quiz
 import team.undefined.quiz.core.QuizService
-import team.undefined.quiz.web.WebSocketHandlerFactory
+import team.undefined.quiz.web.ReactiveWebSocketHandler
 
 @DataR2dbcTest
-@Import(DefaultQuizRepository::class, QuizService::class, WebSocketHandlerFactory::class, ObjectMapper::class)
+@Import(DefaultQuizRepository::class, QuizService::class, ReactiveWebSocketHandler::class, ObjectMapper::class)
 internal class DefaultQuizRepositoryTest {
 
     @Autowired
