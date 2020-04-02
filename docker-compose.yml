@@ -1,0 +1,25 @@
+version: '2'
+services:
+    quiz-master-client:
+        build: ./quiz-master-client
+        expose:
+            - 3000
+        ports:
+            - 3000:80
+        restart: unless-stopped
+      
+    quiz-participant-client:
+        build: ./quiz-participant-client
+        expose:
+            - 3001
+        ports:
+            - 3001:80
+        restart: unless-stopped
+      
+    quiz-server:
+        build: .
+        expose:
+            - 5000
+        ports:
+            - 5000:5000
+        restart: unless-stopped
