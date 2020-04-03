@@ -12,16 +12,18 @@ const Questions: React.FC<QuestionsProps> = (props: QuestionsProps) => {
         const questioinLink = props.quiz.links.find(link => link.rel === 'createQuestion')?.href;
         await fetch(`${process.env.REACT_APP_BASE_URL}${questioinLink}`, {
             method: 'POST',
-            body: newQuestion,
+            body: JSON.stringify({
+                question: newQuestion
+            }),
             headers: {
-                'Content-Type': 'text/plain',
+                'Content-Type': 'application/json',
                 Accept: 'application/json'
             }
         });
         setNewQuestion('');
     };
 
-    const elements = props.quiz.questions.map((q, index) => <div key={index}>#{index + 1} {q}</div>);
+    const elements = props.quiz.questions.map((q, index) => <div key={index}>#{index + 1} {q.question}</div>);
     return (
         <div>
             <h3>Questions</h3>
