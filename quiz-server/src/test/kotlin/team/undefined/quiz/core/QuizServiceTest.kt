@@ -145,6 +145,27 @@ internal class QuizServiceTest {
     }
 
     @Test
+    fun shouldStartNewQuestionWithImage() {
+        val quizRepository = mock(QuizRepository::class.java)
+        `when`(quizRepository.determineQuiz(117))
+                .thenReturn(Mono.just(Quiz(117, "Quiz", listOf(Participant(23, "Sandra", true), Participant(24, "Allli"), Participant(25, "Erik")))))
+        `when`(quizRepository.saveQuiz(Quiz(117, "Quiz", PARTICIPANTS, listOf(Question(question = "Wer ist das?", pending = true, imageName = "image.png")))))
+                .thenReturn(Mono.just(Quiz(117, "Quiz", PARTICIPANTS, listOf(Question(12, "Wer ist das?",true, "imageName")))))
+
+        val quizService = QuizService(quizRepository)
+
+        val observedQuiz = AtomicReference<Quiz>()
+        quizService.observeQuiz(117)
+                .subscribe { observedQuiz.set(it) }
+
+        StepVerifier.create(quizService.startNewQuestion(117, "Wer ist das?", "image.png"))
+                .expectNext(Quiz(117, "Quiz", PARTICIPANTS, listOf(Question(12, "Wer ist das?",true, "imageName"))))
+                .verifyComplete()
+
+        assertThat(observedQuiz.get()).isEqualTo(Quiz(117, "Quiz", PARTICIPANTS, listOf(Question(12, "Wer ist das?",true, "imageName"))))
+    }
+
+    @Test
     fun shouldAnswerQuestionCorrect() {
         val quizRepository = mock(QuizRepository::class.java)
         `when`(quizRepository.determineQuiz(117))

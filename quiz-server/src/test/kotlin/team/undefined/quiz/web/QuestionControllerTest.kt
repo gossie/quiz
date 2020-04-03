@@ -38,4 +38,20 @@ class QuestionControllerTest {
                 .expectStatus().isCreated
                 .expectBody().json("{\"id\":11,\"name\":\"Quiz\",\"questions\":[\"Wofür steht die Abkürzung a.d.?\"],\"links\":[{\"href\":\"/api/quiz/11/participants\",\"rel\":\"createParticipant\"},{\"href\":\"/api/quiz/11/questions\",\"rel\":\"createQuestion\"},{\"href\":\"/api/quiz/11\",\"rel\":\"answer\"}]}")
     }
+
+    @Test
+    fun shouldStartNewQuestionWithImage() {
+        `when`(quizService.startNewQuestion(11, "Wer ist das?", "image.png"))
+                .thenReturn(Mono.just(Quiz(11, "Quiz", emptyList(), listOf(Question(23, "Wer ist das?", true, "image.png")))))
+
+        webTestClient
+                .post()
+                .uri("/api/quiz/11/questions")
+                .contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON)
+                .body(BodyInserters.fromValue(QuestionDTO(question = "Wer ist das?", imageName = "image.png")))
+                .exchange()
+                .expectStatus().isCreated
+                .expectBody().json("{\"id\":11,\"name\":\"Quiz\",\"questions\":[{\"id\":23,\"question\":\"Wer ist das?\",\"links\":[{\"href\":\"https://path/image.png\",\"rel\":\"image\"}]}],\"links\":[{\"href\":\"/api/quiz/11/participants\",\"rel\":\"createParticipant\"},{\"href\":\"/api/quiz/11/questions\",\"rel\":\"createQuestion\"},{\"href\":\"/api/quiz/11\",\"rel\":\"answer\"}]}")
+    }
 }
