@@ -6,11 +6,11 @@ interface QuestionProps {
 }
 
 const Question: React.FC<QuestionProps> = (props: QuestionProps) => {
-    const lastQuestion = props.quiz.questions.length > 0 ? props.quiz.questions[props.quiz.questions.length - 1] : undefined;
+    const pendingQuestion = props.quiz.questions.find(question => question.pending)
     return (
         <div>
             <h3>Current question</h3>
-            { lastQuestion && <span>{lastQuestion}</span> }
+            { pendingQuestion && <span>{pendingQuestion}</span> }
         </div>
     )
 };

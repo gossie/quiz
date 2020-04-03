@@ -11,11 +11,17 @@ interface Participant {
     links: Array<Link>;
 }
 
+interface Question{
+    question: string;
+    pending: boolean;
+    links: Array<Link>;
+}
+
 export default interface Quiz {
     id: number;
     name: string;
     turn?: string;
     participants: Array<Participant>;
-    questions: Array<string>;
+    questions: Array<Question>;
     links: Array<Link>;
 }
