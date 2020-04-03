@@ -10,7 +10,7 @@ const Question: React.FC<QuestionProps> = (props: QuestionProps) => {
     return (
         <div>
             <h3>Current question</h3>
-            { pendingQuestion && <span>{pendingQuestion}</span> }
+            { pendingQuestion && <span data-testid="current-question">{pendingQuestion.question}</span> }
         </div>
     )
 };
