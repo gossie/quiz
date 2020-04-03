@@ -68,7 +68,7 @@ private fun ParticipantDTO.addLinks(quizId: Long): Mono<ParticipantDTO> {
 }
 
 private fun Question.map(quizId: Long): QuestionDTO {
-    return QuestionDTO(this.id, this.question, this.imageName)
+    return QuestionDTO(this.id, this.question, this.pending, this.imageName)
             .add(Link("https://path/" + this.imageName, "image"))
 }
 
