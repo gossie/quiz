@@ -1,17 +1,22 @@
 import React, { useState } from 'react';
-import './App.css';
+import './quiz-client-shared/App.css';
 import Quiz from './quiz';
 import QuizMaster from './QuizMaster';
-import LoginPageWidget from './LoginPageWidget/LoginPageWidget';
+import LoginPageWidget from './quiz-client-shared/LoginPageWidget/LoginPageWidget' 
+import AppHeader from './quiz-client-shared/AppHeader/AppHeader';
+
 
 function App() {
     const [quiz, setQuiz] = useState({} as Quiz);
 
-    const startQuiz = async (quizName: string) => {
+    const quizNameLabel = 'Quiz Name';
+    const quizIdLabel = 'Quiz Id';
+
+    const startQuiz = async (value: any) => {
         const quizResponse = await fetch(`${process.env.REACT_APP_BASE_URL}/api/quiz/`, {
             method: 'POST',
             body: JSON.stringify({
-                name: quizName
+                name: value[quizNameLabel]
             }),
             headers: {
                 'Content-Type': 'application/json',
@@ -22,8 +27,8 @@ function App() {
         setQuiz(newQuiz);
     };
 
-    const joinQuiz = async (quizId: string) => {
-        const quizResponse = await fetch(`${process.env.REACT_APP_BASE_URL}/api/quiz/${quizId}`, {
+    const joinQuiz = async (value: any) => {
+        const quizResponse = await fetch(`${process.env.REACT_APP_BASE_URL}/api/quiz/${value[quizIdLabel]}`, {
             method: 'GET',
             headers: {
                 Accept: 'application/json'
@@ -35,24 +40,17 @@ function App() {
 
     return (
         <div className="App">
-            <header className="level App-header">
-                <div className="icon App-logo">
-                    <i className="far fa-question-circle"></i>
-                </div> 
-                QuizMaster
-            </header>
+            <AppHeader title="Quiz Master"></AppHeader>
             
             { quiz.id
                 ?
                 <QuizMaster quiz={quiz}></QuizMaster>
                 :
                 <div className="container App-content">
-                    <LoginPageWidget title="Create a Quiz" inputLabel="Quiz Name" buttonLabel="Start!" onSubmit={startQuiz}></LoginPageWidget>
-                    <LoginPageWidget title="Join a Quiz" inputLabel="Quiz ID" buttonLabel="Join!" onSubmit={joinQuiz}></LoginPageWidget> 
+                    <LoginPageWidget title="Create a Quiz" inputLabels={[quizNameLabel]} buttonLabel="Start!" onSubmit={startQuiz}></LoginPageWidget>
+                    <LoginPageWidget title="Join a Quiz" inputLabels={[quizIdLabel]} buttonLabel="Join!" onSubmit={joinQuiz}></LoginPageWidget> 
                 </div>
-            }
-                
-            
+            } 
         </div>
     );
 }
