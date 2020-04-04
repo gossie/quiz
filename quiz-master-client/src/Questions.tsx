@@ -29,12 +29,24 @@ const Questions: React.FC<QuestionsProps> = (props: QuestionsProps) => {
     const elements = props.quiz.questions.map((q, index) => <div key={index}>#{index + 1} {q.question}</div>);
     return (
         <div>
-            <h3>Questions</h3>
-            <p>
-                <input data-testid="new-question" value={newQuestion} onChange={ev => setNewQuestion(ev.target.value)} />
-                <input data-testid="image-path" value={imagePath} onChange={ev => setImagePath(ev.target.value)} />
-                <button data-testid="question-button" onClick={startQuestion}>Start question</button>
-            </p>
+            <h4 className="title is-4">Questions</h4>
+            <div className="field">
+                <div className="control">
+                    <input data-testid="new-question" value={newQuestion} onChange={ev => setNewQuestion(ev.target.value)} className="input" type="text" placeholder="Question" />
+                </div>
+            </div>
+            
+            <div className="field">
+                <div className="control">
+                    <input data-testid="image-path" value={imagePath} onChange={ev => setImagePath(ev.target.value)} className="input" type="text" placeholder="Image path" />
+                </div>
+            </div>
+            <div className="field is-grouped">
+                <div className="control">
+                    <button data-testid="question-button" onClick={startQuestion} className="button is-link">Start question</button>
+                </div>
+            </div>
+                    
             <div data-testid="questions">
                 {elements}
             </div>
