@@ -36,13 +36,16 @@
   width: 100%;
 }
 
+.Quiz-dashboard .Dashboard-content {
+  width: 100%;
+}
+
 @media screen and (min-width: 600px) {
   .Quiz-dashboard .Dashboard-content {
       display: flex;
       flex-direction: row;
       justify-content: space-around;
       max-width: 1000px;
-      width: 100%;
   }
 
   .Quiz-dashboard .question, .Quiz-dashboard .participants {
