@@ -15,7 +15,7 @@ class ParticipantsController(private val quizService: QuizService) {
     fun create(@PathVariable quizId: Long, @RequestBody participantName: String): Mono<CreateParticipantResponse> {
         return quizService.createParticipant(quizId, participantName)
                 .flatMap { it.map() }
-                .map { CreateParticipantResponse(it.participants.find { it.name == participantName }!!.id, it) }
+                .map { CreateParticipantResponse(it.participants.find { it.name == participantName }!!.id!!, it) }
     }
 
     @PutMapping("/{participantId}/buzzer", produces = ["application/json"])

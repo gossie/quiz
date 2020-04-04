@@ -12,7 +12,7 @@ const Participants: React.FC<ParticipantsProps> = (props: ParticipantsProps) => 
 
     return (
         <div>
-            <h3>Participants</h3>
+            <h4 className="title is-4">Questions</h4>
             <p data-testid="participants">
                 {elements}
             </p>
