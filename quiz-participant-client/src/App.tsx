@@ -1,17 +1,20 @@
 import React, { useState } from 'react';
-import './App.css';
+import './quiz-client-shared/App.css';
 import QuizDashboard from './quiz/QuizDashboard';
 import Quiz from './quiz/quiz';
+import LoginPageWidget from './quiz-client-shared/LoginPageWidget/LoginPageWidget';
+import AppHeader from './quiz-client-shared/AppHeader/AppHeader';
 
 function App() {
-    const [quizId, setQuizId] = useState('');
-    const [name, setName] = useState('');
     const [quiz, setQuiz] = useState({} as Quiz);
     const [participantId, setParticipantId] = useState(0)
 
-    const joinQuiz = async () => {
+    const quizIdLabel: string = 'Quiz ID';
+    const playerNameLabel: string = 'Player Name';
 
-        const quizResponse = await fetch(`${process.env.REACT_APP_BASE_URL}/api/quiz/${quizId}`, {
+    const joinQuiz = async (value) => {
+
+        const quizResponse = await fetch(`${process.env.REACT_APP_BASE_URL}/api/quiz/${value[quizIdLabel]}`, {
             method: 'GET',
             headers: {
                 Accept: 'application/json'
@@ -22,7 +25,7 @@ function App() {
         const participantLink = quiz.links.find(link => link.rel === 'createParticipant').href;
         const participantResponse = await fetch(`${process.env.REACT_APP_BASE_URL}${participantLink}`, {
             method: 'POST',
-            body: name,
+            body: value[playerNameLabel],
             headers: {
                 'Content-Type': 'text/plain',
                 Accept: 'application/json'
@@ -35,21 +38,15 @@ function App() {
 
     return (
         <div className="App">
+            <AppHeader title="Quiz"></AppHeader>
+            <div className="container App-content">
             {Object.keys(quiz).length > 0 ? 
                 <QuizDashboard quiz={quiz} participantId={participantId}></QuizDashboard> :
-                <header className="App-header">
-                    <h3>Join quiz</h3>
-                    <div>
-                        <span><label>Quiz ID</label></span><span><input type="text" onChange={(ev) => setQuizId(ev.target.value)} /></span>
-                    </div>
-                    <div>
-                        <span><label>Name</label></span><span><input type="text" onChange={(ev) => setName(ev.target.value)} /></span>
-                    </div>
-                    <div>
-                        <button onClick={joinQuiz}>GO!</button>
-                    </div>
-                </header>
+                <div className="container Login-page">
+                    <LoginPageWidget title="Join a Quiz" inputLabels={[playerNameLabel, quizIdLabel]} buttonLabel="Join!" onSubmit={joinQuiz}></LoginPageWidget> 
+                </div>     
             }
+            </div>
         </div>
     );
 }
