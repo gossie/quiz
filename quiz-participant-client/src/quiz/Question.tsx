@@ -1,16 +1,46 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import Quiz from "../quiz-client-shared/quiz";
+import './Question.css';
 
 interface QuestionProps {
     quiz: Quiz;
 }
 
 const Question: React.FC<QuestionProps> = (props: QuestionProps) => {
-    const lastQuestion = props.quiz.questions.length > 0 ? props.quiz.questions[props.quiz.questions.length - 1] : undefined;
+    const [cssClass, setCssClass] = useState('question-image invisible');
+    const [time, setTime] = useState(3);
+
+    const pendingQuestion = props.quiz.questions.find(question => question.pending)
+    const hasImage = pendingQuestion?.imagePath !== '';
+
+    useEffect(() => {
+        if (hasImage && cssClass.includes('invisible')) {
+            const timer = setTimeout(() => {
+                setTime(oldTime => oldTime - 1);
+                if (time === 0) {
+                    setCssClass('question-image');
+                }
+            }, 1000);
+            return () => clearTimeout(timer);
+        }
+    });
+
     return (
         <div>
             <h5 className="title is-5">Current question</h5>
-            { lastQuestion && <span>{lastQuestion}</span> }
+            <div>
+            { pendingQuestion &&
+                <div>
+                    <span data-testid="current-question">{pendingQuestion.question}</span>
+                    { hasImage &&
+                        <div className="image-wrapper">
+                            { time > 0 && <span>{time}</span> }
+                            <img src={pendingQuestion.imagePath} alt="There should be something here" className={cssClass}></img>
+                        </div>
+                    }
+                </div>
+            }
+            </div>
         </div>
     )
 };

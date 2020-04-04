@@ -7,6 +7,7 @@ import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.http.MediaType
 import org.springframework.test.web.reactive.server.WebTestClient
 import org.springframework.web.reactive.function.BodyInserters
+import team.undefined.quiz.web.QuestionDTO
 import team.undefined.quiz.web.QuizDTO
 
 @SpringBootTest
@@ -50,12 +51,12 @@ internal class QuizIT() {
         webTestClient
                 .post()
                 .uri("/api/quiz/1/questions")
-                .contentType(MediaType.TEXT_PLAIN)
+                .contentType(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON)
-                .body(BodyInserters.fromValue("Wer schrieb das Buch Animal Farm?"))
+                .body(BodyInserters.fromValue(QuestionDTO(question = "Wer schrieb das Buch Animal Farm?")))
                 .exchange()
                 .expectStatus().isCreated
-                .expectBody().json("{\"name\":\"Quiz\",\"participants\":[{\"name\":\"André\",\"turn\":false,\"points\":0},{\"name\":\"Lena\",\"turn\":false,\"points\":0}],\"questions\":[\"Wer schrieb das Buch Animal Farm?\"]}")
+                .expectBody().json("{\"name\":\"Quiz\",\"participants\":[{\"name\":\"André\",\"turn\":false,\"points\":0},{\"name\":\"Lena\",\"turn\":false,\"points\":0}],\"questions\":[{\"question\":\"Wer schrieb das Buch Animal Farm?\"}]}")
 
         webTestClient
                 .put()
@@ -64,7 +65,7 @@ internal class QuizIT() {
                 .body(BodyInserters.fromValue("Wer schrieb das Buch Animal Farm?"))
                 .exchange()
                 .expectStatus().isOk
-                .expectBody().json("{\"name\":\"Quiz\",\"participants\":[{\"name\":\"André\",\"turn\":false,\"points\":0},{\"name\":\"Lena\",\"turn\":true,\"points\":0}],\"questions\":[\"Wer schrieb das Buch Animal Farm?\"]}")
+                .expectBody().json("{\"name\":\"Quiz\",\"participants\":[{\"name\":\"André\",\"turn\":false,\"points\":0},{\"name\":\"Lena\",\"turn\":true,\"points\":0}],\"questions\":[{\"question\":\"Wer schrieb das Buch Animal Farm?\"}]}")
 
         webTestClient
                 .patch()
@@ -74,17 +75,17 @@ internal class QuizIT() {
                 .body(BodyInserters.fromValue("true"))
                 .exchange()
                 .expectStatus().isOk
-                .expectBody().json("{\"name\":\"Quiz\",\"participants\":[{\"name\":\"André\",\"turn\":false,\"points\":0},{\"name\":\"Lena\",\"turn\":true,\"points\":1}],\"questions\":[\"Wer schrieb das Buch Animal Farm?\"]}")
+                .expectBody().json("{\"name\":\"Quiz\",\"participants\":[{\"name\":\"André\",\"turn\":false,\"points\":0},{\"name\":\"Lena\",\"turn\":true,\"points\":1}],\"questions\":[{\"question\":\"Wer schrieb das Buch Animal Farm?\"}]}")
 
         webTestClient
                 .post()
                 .uri("/api/quiz/1/questions")
-                .contentType(MediaType.TEXT_PLAIN)
+                .contentType(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON)
-                .body(BodyInserters.fromValue("Wo befindet sich das Kahnbein?"))
+                .body(BodyInserters.fromValue(QuestionDTO(question = "Wo befindet sich das Kahnbein?")))
                 .exchange()
                 .expectStatus().isCreated
-                .expectBody().json("{\"name\":\"Quiz\",\"participants\":[{\"name\":\"André\",\"turn\":false,\"points\":0},{\"name\":\"Lena\",\"turn\":false,\"points\":1}],\"questions\":[\"Wer schrieb das Buch Animal Farm?\",\"Wo befindet sich das Kahnbein?\"]}")
+                .expectBody().json("{\"name\":\"Quiz\",\"participants\":[{\"name\":\"André\",\"turn\":false,\"points\":0},{\"name\":\"Lena\",\"turn\":false,\"points\":1}],\"questions\":[{\"question\":\"Wer schrieb das Buch Animal Farm?\"},{\"question\":\"Wo befindet sich das Kahnbein?\"}]}")
 
         webTestClient
                 .put()
@@ -93,7 +94,7 @@ internal class QuizIT() {
                 .body(BodyInserters.fromValue("Wer schrieb das Buch Animal Farm?"))
                 .exchange()
                 .expectStatus().isOk
-                .expectBody().json("{\"name\":\"Quiz\",\"participants\":[{\"name\":\"André\",\"turn\":true,\"points\":0},{\"name\":\"Lena\",\"turn\":false,\"points\":1}],\"questions\":[\"Wer schrieb das Buch Animal Farm?\",\"Wo befindet sich das Kahnbein?\"]}")
+                .expectBody().json("{\"name\":\"Quiz\",\"participants\":[{\"name\":\"André\",\"turn\":true,\"points\":0},{\"name\":\"Lena\",\"turn\":false,\"points\":1}],\"questions\":[{\"question\":\"Wer schrieb das Buch Animal Farm?\"},{\"question\":\"Wo befindet sich das Kahnbein?\"}]}")
 
         webTestClient
                 .patch()
@@ -103,7 +104,7 @@ internal class QuizIT() {
                 .body(BodyInserters.fromValue("false"))
                 .exchange()
                 .expectStatus().isOk
-                .expectBody().json("{\"name\":\"Quiz\",\"participants\":[{\"name\":\"André\",\"turn\":true ,\"points\":0},{\"name\":\"Lena\",\"turn\":false,\"points\":1}],\"questions\":[\"Wer schrieb das Buch Animal Farm?\",\"Wo befindet sich das Kahnbein?\"]}")
+                .expectBody().json("{\"name\":\"Quiz\",\"participants\":[{\"name\":\"André\",\"turn\":true ,\"points\":0},{\"name\":\"Lena\",\"turn\":false,\"points\":1}],\"questions\":[{\"question\":\"Wer schrieb das Buch Animal Farm?\"},{\"question\":\"Wo befindet sich das Kahnbein?\"}]}")
 
         webTestClient
                 .post()

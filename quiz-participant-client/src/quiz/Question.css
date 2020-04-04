@@ -1,0 +1,11 @@
+.image-wrapper {
+    height: 150px;
+}
+
+.question-image {
+    height: 150px;
+}
+
+.invisible {
+    display: none;
+}

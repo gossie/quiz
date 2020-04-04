@@ -1,14 +1,14 @@
 package team.undefined.quiz.web
 
+import org.springframework.hateoas.Link
 import org.springframework.hateoas.server.reactive.WebFluxLinkBuilder.linkTo
 import org.springframework.hateoas.server.reactive.WebFluxLinkBuilder.methodOn
 import org.springframework.http.HttpStatus
 import org.springframework.web.bind.annotation.*
-import org.springframework.web.reactive.HandlerMapping
-import org.springframework.web.reactive.handler.SimpleUrlHandlerMapping
 import reactor.core.publisher.Flux
 import reactor.core.publisher.Mono
 import team.undefined.quiz.core.Participant
+import team.undefined.quiz.core.Question
 import team.undefined.quiz.core.Quiz
 import team.undefined.quiz.core.QuizService
 import java.util.stream.Collectors
@@ -48,7 +48,7 @@ fun Quiz.map(): Mono<QuizDTO> {
     return Flux.fromIterable(this.participants)
             .flatMap { it.map(this.id!!) }
             .collect(Collectors.toList())
-            .map { QuizDTO(this.id, this.name, it, this.questions.map { it.question }) }
+            .map { QuizDTO(this.id, this.name, it, this.questions.map { it.map(this.id!!) }) }
             .flatMap { it.addLinks() }
 }
 
@@ -58,10 +58,15 @@ private fun Participant.map(quizId: Long): Mono<ParticipantDTO> {
 }
 
 private fun ParticipantDTO.addLinks(quizId: Long): Mono<ParticipantDTO> {
-    return linkTo(methodOn(ParticipantsController::class.java).buzzer(quizId, this.id))
+    return linkTo(methodOn(ParticipantsController::class.java).buzzer(quizId, this.id!!))
             .withRel("buzzer")
             .toMono()
             .map { this.add(it) }
+}
+
+private fun Question.map(quizId: Long): QuestionDTO {
+    val questionDTO = QuestionDTO(this.id, this.question, this.pending, this.imagePath)
+    return if (this.imagePath == "") questionDTO else questionDTO.add(Link(this.imagePath, "image"))
 }
 
 private fun QuizDTO.map(): Quiz {
@@ -73,7 +78,7 @@ private fun QuizDTO.addLinks(): Mono<QuizDTO> {
             .withRel("createParticipant")
             .toMono()
             .map { this.add(it) }
-            .map { linkTo(methodOn(QuestionController::class.java).createQuestion(this.id!!, "")) }
+            .map { linkTo(methodOn(QuestionController::class.java).createQuestion(this.id!!, null)) }
             .map { it.withRel("createQuestion") }
             .flatMap { it.toMono() }
             .map { this.add(it) }
