@@ -11,7 +11,7 @@ interface JoinWidgetProps {
 const LoginPageWidget: React.FC<JoinWidgetProps> = (props: JoinWidgetProps) => {
     const [inputValue, setInputValue] = useState({});
     const fields = props.inputLabels.map((label) => 
-        <div className="control">
+        <div key={label} className="control">
             <input className="input" type="text" placeholder={label} onChange={(ev) => setInputValue({...inputValue, ...{[label]: ev.target.value}})}/>
         </div>
     );

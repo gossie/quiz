@@ -11,7 +11,7 @@ export interface Participant {
     links: Array<Link>;
 }
 
-interface Question{
+export interface Question{
     question: string;
     imagePath: string;
     pending: boolean;
