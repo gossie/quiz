@@ -32,6 +32,10 @@ const QuizDashboard: React.FC<QuizDashboardProps> = (props: QuizDashboardProps) 
         .catch(e => console.error(e));
     };
 
+    const isParticipantActive = () => {
+       return quiz.participants.some(p => p.turn && p.id === props.participantId)
+    }
+
     useEffect(() => {
         console.log('websocket wird erstellt');
         const clientWebSocket = new WebSocket(`${process.env.REACT_APP_WS_BASE_URL}/event-emitter/${quiz.id}`);
@@ -50,14 +54,27 @@ const QuizDashboard: React.FC<QuizDashboardProps> = (props: QuizDashboardProps) 
     }, []);
 
     return (
-        <header className="App-header">
-            <h1>{quiz.name}</h1>
-            <Participants quiz={quiz}></Participants>
-            <Question quiz={quiz}></Question>
-            <button disabled={quiz.participants.some(p => p.turn)} className="buzzer" onClick={buzzer}>
-                Buzzer
-            </button>
-        </header>
+        <div className="Quiz-dashboard">
+            <h4 className="title is-4">{quiz.name}</h4>
+            <div className="container Dashboard-content">
+                <div className="container participants">
+                    <Participants quiz={quiz}></Participants>
+                </div>
+                <div className="container question">
+                    <Question quiz={quiz}></Question>
+                    <button disabled={quiz.participants.some(p => p.turn)} className={isParticipantActive() ? 'buzzer active' : 'buzzer'} onClick={buzzer}>
+                        {!quiz.participants.some(p => p.turn) ? 
+                            "I know it!" :
+                            (!isParticipantActive() ?
+                            "Too late!"
+                            :
+                            "Your turn!")
+                        }
+                            
+                    </button>
+                </div>
+            </div>
+        </div>
     )
 };
 

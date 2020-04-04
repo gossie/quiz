@@ -13,7 +13,7 @@ const Participants: React.FC<ParticipantsProps> = (props: ParticipantsProps) => 
 
     return (
         <div>
-            <h3>Participants</h3>
+            <h5 className="title is-5">Participants</h5>
             <p data-testid="participants">
                 {elements}
             </p>

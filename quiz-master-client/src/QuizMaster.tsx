@@ -29,11 +29,18 @@ const QuizMaster: React.FC<QuizMasterProps> = (props: QuizMasterProps) => {
     }, []);
 
     return (
-        <div>
-            <h1>{quiz.name} ({quiz.id})</h1>
-            <Participants quiz={quiz}></Participants>
-            <Answers quiz={quiz}></Answers>
-            <Questions quiz={quiz}></Questions>
+        <div className="container Quiz-dashboard">
+            <h4 className="title is-4">{quiz.name} (ID: {quiz.id})</h4>
+            <div className="container Dashboard-content">
+                <div className="container participants">
+                    <Participants quiz={quiz}></Participants>
+                </div>
+                <div className="container question">
+                    <Answers quiz={quiz}></Answers>
+                    <Questions quiz={quiz}></Questions>
+                </div>
+               
+            </div>
         </div>
     )
 }
