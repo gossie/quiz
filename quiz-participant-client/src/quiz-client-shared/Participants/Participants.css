@@ -1,0 +1,14 @@
+.participant {
+    display: block;
+    margin-bottom: 7px;
+}
+
+.participant.turn {
+    color: orange;
+    font-weight: bold
+}
+
+.participants-list {
+    display: block;
+    text-align: left;
+}

@@ -1,7 +1,0 @@
-.participant {
-    margin: calc(10px + 2vmin)
-}
-
-.participant.turn {
-    color: #00FF00;
-}

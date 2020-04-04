@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import './quiz-client-shared/App.css';
 import QuizDashboard from './quiz/QuizDashboard';
-import Quiz from './quiz/quiz';
+import Quiz from './quiz-client-shared/quiz';
 import LoginPageWidget from './quiz-client-shared/LoginPageWidget/LoginPageWidget';
 import AppHeader from './quiz-client-shared/AppHeader/AppHeader';
 
