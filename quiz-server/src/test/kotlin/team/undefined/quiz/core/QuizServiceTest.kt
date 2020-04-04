@@ -145,6 +145,27 @@ internal class QuizServiceTest {
     }
 
     @Test
+    fun shouldStopPendingOldQuestionWhenNewQuestionIsStarted() {
+        val quizRepository = mock(QuizRepository::class.java)
+        `when`(quizRepository.determineQuiz(117))
+                .thenReturn(Mono.just(Quiz(117, "Quiz", listOf(Participant(23, "Sandra", true), Participant(24, "Allli"), Participant(25, "Erik")), mutableListOf(Question(12, "Warum ist die Banane krumm?", pending = true)))))
+        `when`(quizRepository.saveQuiz(Quiz(117, "Quiz", PARTICIPANTS, listOf(Question(12, "Warum ist die Banane krumm?", false), Question(question = "Wie hoch ist die Zugspitze?", pending = true)))))
+                .thenReturn(Mono.just(Quiz(117, "Quiz", PARTICIPANTS, listOf(Question(12, "Warum ist die Banane krumm?",false), Question(13, "Wie hoch ist die Zugspitze?", true)))))
+
+        val quizService = QuizService(quizRepository)
+
+        val observedQuiz = AtomicReference<Quiz>()
+        quizService.observeQuiz(117)
+                .subscribe { observedQuiz.set(it) }
+
+        StepVerifier.create(quizService.startNewQuestion(117, "Wie hoch ist die Zugspitze?"))
+                .expectNext(Quiz(117, "Quiz", PARTICIPANTS, listOf(Question(12, "Warum ist die Banane krumm?",false), Question(13, "Wie hoch ist die Zugspitze?", true))))
+                .verifyComplete()
+
+        assertThat(observedQuiz.get()).isEqualTo(Quiz(117, "Quiz", PARTICIPANTS, listOf(Question(12, "Warum ist die Banane krumm?",false), Question(13, "Wie hoch ist die Zugspitze?", true))))
+    }
+
+    @Test
     fun shouldStartNewQuestionWithImage() {
         val quizRepository = mock(QuizRepository::class.java)
         `when`(quizRepository.determineQuiz(117))
