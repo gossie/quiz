@@ -13,6 +13,7 @@ interface Participant {
 
 interface Question {
     question: string;
+    imagePath?: string;
     pending: boolean;
     links: Array<Link>;
 }
