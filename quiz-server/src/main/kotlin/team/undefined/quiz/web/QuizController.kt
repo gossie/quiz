@@ -1,13 +1,10 @@
 package team.undefined.quiz.web
 
 import org.springframework.hateoas.Link
-import org.springframework.hateoas.server.reactive.WebFluxLinkBuilder
 import org.springframework.hateoas.server.reactive.WebFluxLinkBuilder.linkTo
 import org.springframework.hateoas.server.reactive.WebFluxLinkBuilder.methodOn
 import org.springframework.http.HttpStatus
 import org.springframework.web.bind.annotation.*
-import org.springframework.web.reactive.HandlerMapping
-import org.springframework.web.reactive.handler.SimpleUrlHandlerMapping
 import reactor.core.publisher.Flux
 import reactor.core.publisher.Mono
 import team.undefined.quiz.core.Participant
@@ -68,8 +65,8 @@ private fun ParticipantDTO.addLinks(quizId: Long): Mono<ParticipantDTO> {
 }
 
 private fun Question.map(quizId: Long): QuestionDTO {
-    return QuestionDTO(this.id, this.question, this.pending, this.imageName)
-            .add(Link("https://path/" + this.imageName, "image"))
+    val questionDTO = QuestionDTO(this.id, this.question, this.pending, this.imagePath)
+    return if (this.imagePath == "") questionDTO else questionDTO.add(Link(this.imagePath, "image"))
 }
 
 private fun QuizDTO.map(): Quiz {

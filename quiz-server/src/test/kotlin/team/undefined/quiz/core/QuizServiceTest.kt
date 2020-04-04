@@ -149,8 +149,8 @@ internal class QuizServiceTest {
         val quizRepository = mock(QuizRepository::class.java)
         `when`(quizRepository.determineQuiz(117))
                 .thenReturn(Mono.just(Quiz(117, "Quiz", listOf(Participant(23, "Sandra", true), Participant(24, "Allli"), Participant(25, "Erik")))))
-        `when`(quizRepository.saveQuiz(Quiz(117, "Quiz", PARTICIPANTS, listOf(Question(question = "Wer ist das?", pending = true, imageName = "image.png")))))
-                .thenReturn(Mono.just(Quiz(117, "Quiz", PARTICIPANTS, listOf(Question(12, "Wer ist das?",true, "imageName")))))
+        `when`(quizRepository.saveQuiz(Quiz(117, "Quiz", PARTICIPANTS, listOf(Question(question = "Wer ist das?", pending = true, imagePath = "pathToImage")))))
+                .thenReturn(Mono.just(Quiz(117, "Quiz", PARTICIPANTS, listOf(Question(12, "Wer ist das?",true, "pathToImage")))))
 
         val quizService = QuizService(quizRepository)
 
@@ -158,11 +158,11 @@ internal class QuizServiceTest {
         quizService.observeQuiz(117)
                 .subscribe { observedQuiz.set(it) }
 
-        StepVerifier.create(quizService.startNewQuestion(117, "Wer ist das?", "image.png"))
-                .expectNext(Quiz(117, "Quiz", PARTICIPANTS, listOf(Question(12, "Wer ist das?",true, "imageName"))))
+        StepVerifier.create(quizService.startNewQuestion(117, "Wer ist das?", "pathToImage"))
+                .expectNext(Quiz(117, "Quiz", PARTICIPANTS, listOf(Question(12, "Wer ist das?",true, "pathToImage"))))
                 .verifyComplete()
 
-        assertThat(observedQuiz.get()).isEqualTo(Quiz(117, "Quiz", PARTICIPANTS, listOf(Question(12, "Wer ist das?",true, "imageName"))))
+        assertThat(observedQuiz.get()).isEqualTo(Quiz(117, "Quiz", PARTICIPANTS, listOf(Question(12, "Wer ist das?",true, "pathToImage"))))
     }
 
     @Test

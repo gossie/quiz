@@ -37,8 +37,8 @@ internal class DefaultQuizRepositoryTest {
                 .expectNext(Quiz(1, "Quiz", listOf(Participant(1, "Sandra"), Participant(2, "Allli"), Participant(3, "Erik", points = 1)), listOf(Question(1, "Wofür steht eigentlich a.D.?"))))
                 .verifyComplete()
 
-        StepVerifier.create(defaultQuizRepository.saveQuiz(Quiz(1, "Quiz", listOf(Participant(1, "Sandra"), Participant(2, "Allli"), Participant(3, "Erik", points = 1)), listOf(Question(1, "Wofür steht eigentlich a.D.?", imageName = "image.png")))))
-                .expectNext(Quiz(1, "Quiz", listOf(Participant(1, "Sandra"), Participant(2, "Allli"), Participant(3, "Erik", points = 1)), listOf(Question(1, "Wofür steht eigentlich a.D.?", imageName = "image.png"))))
+        StepVerifier.create(defaultQuizRepository.saveQuiz(Quiz(1, "Quiz", listOf(Participant(1, "Sandra"), Participant(2, "Allli"), Participant(3, "Erik", points = 1)), listOf(Question(1, "Wofür steht eigentlich a.D.?", imagePath = "pathToImage")))))
+                .expectNext(Quiz(1, "Quiz", listOf(Participant(1, "Sandra"), Participant(2, "Allli"), Participant(3, "Erik", points = 1)), listOf(Question(1, "Wofür steht eigentlich a.D.?", imagePath = "pathToImage"))))
                 .verifyComplete()
     }
 

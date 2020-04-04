@@ -34,9 +34,9 @@ class QuizService(private val quizRepository: QuizRepository) {
                 .map { emitQuiz(it) }
     }
 
-    fun startNewQuestion(quizId: Long, question: String, imageName: String = ""): Mono<Quiz> {
+    fun startNewQuestion(quizId: Long, question: String, imagePath: String = ""): Mono<Quiz> {
         return quizRepository.determineQuiz(quizId)
-                .map { it.startQuestion(Question(question = question, pending = true, imageName = imageName)) }
+                .map { it.startQuestion(Question(question = question, pending = true, imagePath = imagePath)) }
                 .flatMap { quizRepository.saveQuiz(it) }
                 .map { emitQuiz(it) }
     }
