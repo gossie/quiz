@@ -19,6 +19,7 @@ const Question: React.FC<QuestionProps> = (props: QuestionProps) => {
                 setTime(oldTime => oldTime - 1);
                 if (time === 0) {
                     setCssClass('question-image');
+                    setTime(3);
                 }
             }, 1000);
             return () => clearTimeout(timer);
@@ -34,7 +35,7 @@ const Question: React.FC<QuestionProps> = (props: QuestionProps) => {
                     <span data-testid="current-question">{pendingQuestion.question}</span>
                     { hasImage &&
                         <div className="image-wrapper">
-                            { time > 0 && <span>{time}</span> }
+                            { cssClass.includes('invisible') && <span>{time}</span> }
                             <img src={pendingQuestion.imagePath} alt="There should be something here" className={cssClass}></img>
                         </div>
                     }

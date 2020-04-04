@@ -24,6 +24,7 @@ data class Quiz(val id: Long? = null, val name: String, val participants: List<P
 
     fun startQuestion(question: Question): Quiz {
         participants.forEach { it.turn = false }
+        questions.forEach { it.pending = false }
         (questions as MutableList).add(question)
         return this
     }
