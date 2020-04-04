@@ -7,16 +7,22 @@ interface QuestionProps {
 }
 
 const Question: React.FC<QuestionProps> = (props: QuestionProps) => {
-    const [cssClass, setCssClass] = useState('invisible');
+    const [cssClass, setCssClass] = useState('question-image invisible');
+    const [time, setTime] = useState(3);
 
     const pendingQuestion = props.quiz.questions.find(question => question.pending)
+    const hasImage = pendingQuestion?.imagePath !== '';
 
     useEffect(() => {
-        const timer = setTimeout(() => {
-            console.log('timer');
-            setCssClass('');
-        }, 3000);
-        return () => clearTimeout(timer);
+        if (hasImage && cssClass.includes('invisible')) {
+            const timer = setTimeout(() => {
+                setTime(oldTime => oldTime - 1);
+                if (time === 0) {
+                    setCssClass('question-image');
+                }
+            }, 1000);
+            return () => clearTimeout(timer);
+        }
     });
 
     return (
@@ -26,8 +32,9 @@ const Question: React.FC<QuestionProps> = (props: QuestionProps) => {
             { pendingQuestion &&
                 <div>
                     <span data-testid="current-question">{pendingQuestion.question}</span>
-                    { pendingQuestion.imagePath !== '' &&
+                    { hasImage &&
                         <div className="image-wrapper">
+                            { time > 0 && <span>{time}</span> }
                             <img src={pendingQuestion.imagePath} alt="There should be something here" className={cssClass}></img>
                         </div>
                     }
