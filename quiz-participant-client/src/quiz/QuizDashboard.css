@@ -1,10 +1,46 @@
 
-.App-link {
-    color: #61dafb;
+.buzzer {
+    margin-top: 20px;
+    box-shadow: 3px 4px 0px 0px #661f18;
+    width: 150px;
+    height: 150px;
+	background-color:#b31727;
+    border-radius:75px;
+    border: none;
+	display:inline-block;
+	cursor:pointer;
+	color:#ffffff;
+	font-family:Arial;
+	font-size:17px;
+	padding:30px 25px;
+	text-decoration:none;
+    outline: none;
+    font-weight: bold;
 }
 
-.buzzer {
-    background-color: #FF0000;
-    font-weight: bold;
-    font-size: 28px;
+
+
+.buzzer:hover {
+	background-color:#f24437;
+}
+.buzzer:active {
+    background-color:#f24437;
+	position:relative;
+	top:1px;
+}
+
+.buzzer[disabled], .buzzer[disabled]:hover {
+    background-color:#b31727;
+    opacity: 0.3;
+}
+
+.buzzer.active[disabled], .buzzer.active[disabled]:hover {
+    background-color:#f24437;
+	position:relative;
+    top:1px;
+    opacity: 1;
+}
+
+.buzzer:focus, .buzzer:hover, .buzzer:active, .buzzer.active {
+    outline: none;
 }

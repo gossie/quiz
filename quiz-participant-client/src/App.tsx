@@ -39,12 +39,14 @@ function App() {
     return (
         <div className="App">
             <AppHeader title="Quiz"></AppHeader>
+            <div className="container App-content">
             {Object.keys(quiz).length > 0 ? 
                 <QuizDashboard quiz={quiz} participantId={participantId}></QuizDashboard> :
-                <div className="container App-content">
-                    <LoginPageWidget title="Join a Quiz" inputLabels={[playerNameLabel, quizIdLabel]} buttonLabel="Join!" onSubmit={joinQuiz}></LoginPageWidget>  
-                </div>
+                <div className="container Login-page">
+                    <LoginPageWidget title="Join a Quiz" inputLabels={[playerNameLabel, quizIdLabel]} buttonLabel="Join!" onSubmit={joinQuiz}></LoginPageWidget> 
+                </div>     
             }
+            </div>
         </div>
     );
 }
