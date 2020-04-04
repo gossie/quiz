@@ -3,7 +3,7 @@ interface Link {
     href: string;
 }
 
-interface Participant {
+export interface Participant {
     id: number;
     name: string;
     turn: boolean;
@@ -11,9 +11,9 @@ interface Participant {
     links: Array<Link>;
 }
 
-interface Question {
+interface Question{
     question: string;
-    imagePath?: string;
+    imagePath: string;
     pending: boolean;
     links: Array<Link>;
 }

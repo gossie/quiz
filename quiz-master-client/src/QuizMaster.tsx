@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import Quiz from './quiz';
-import Participants from './Participants';
+import Participants from './quiz-client-shared/Participants/Participants';
 import Questions from './Questions';
 import Answers from './Answers';
+import Quiz from './quiz-client-shared/quiz';
 
 interface QuizMasterProps {
     quiz: Quiz;

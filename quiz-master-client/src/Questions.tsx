@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import Quiz from "./quiz";
+import Quiz from './quiz-client-shared/quiz';
 
 interface QuestionsProps {
     quiz: Quiz;

@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
 
 import './QuizDashboard.css';
-import Participants from './Participants';
-import Quiz from './quiz';
+import Quiz from '../quiz-client-shared/quiz';
 import Question from './Question';
+import Participants from '../quiz-client-shared/Participants/Participants';
 
 interface QuizDashboardProps {
     quiz: Quiz;

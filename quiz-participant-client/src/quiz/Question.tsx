@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import Quiz from "./quiz";
+import Quiz from "../quiz-client-shared/quiz";
 import './Question.css';
 
 interface QuestionProps {
