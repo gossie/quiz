@@ -36,7 +36,7 @@ class QuestionControllerTest {
                 .body(BodyInserters.fromValue(QuestionDTO(question = "Wofür steht die Abkürzung a.d.?")))
                 .exchange()
                 .expectStatus().isCreated
-                .expectBody().json("{\"id\":11,\"name\":\"Quiz\",\"questions\":[{\"question\":\"Wofür steht die Abkürzung a.d.?\",\"pending\":true}],\"links\":[{\"href\":\"/api/quiz/11/participants\",\"rel\":\"createParticipant\"},{\"href\":\"/api/quiz/11/questions\",\"rel\":\"createQuestion\"},{\"href\":\"/api/quiz/11\",\"rel\":\"answer\"}]}")
+                .expectBody().json("{\"id\":11,\"name\":\"Quiz\",\"questions\":[{\"question\":\"Wofür steht die Abkürzung a.d.?\",\"pending\":true}],\"links\":[{\"href\":\"/api/quiz/11/participants\",\"rel\":\"createParticipant\"},{\"href\":\"/api/quiz/11/questions\",\"rel\":\"createQuestion\"},{\"href\":\"/api/quiz/11\",\"rel\":\"answer\"},{\"href\":\"/api/quiz/11\",\"rel\":\"reopenQuestion\"}]}")
     }
 
     @Test
@@ -52,6 +52,6 @@ class QuestionControllerTest {
                 .body(BodyInserters.fromValue(QuestionDTO(question = "Wer ist das?", imagePath = "pathToImage")))
                 .exchange()
                 .expectStatus().isCreated
-                .expectBody().json("{\"id\":11,\"name\":\"Quiz\",\"questions\":[{\"id\":23,\"question\":\"Wer ist das?\",\"pending\":true,\"links\":[{\"href\":\"pathToImage\",\"rel\":\"image\"}]}],\"links\":[{\"href\":\"/api/quiz/11/participants\",\"rel\":\"createParticipant\"},{\"href\":\"/api/quiz/11/questions\",\"rel\":\"createQuestion\"},{\"href\":\"/api/quiz/11\",\"rel\":\"answer\"}]}")
+                .expectBody().json("{\"id\":11,\"name\":\"Quiz\",\"questions\":[{\"id\":23,\"question\":\"Wer ist das?\",\"pending\":true,\"links\":[{\"href\":\"pathToImage\",\"rel\":\"image\"}]}],\"links\":[{\"href\":\"/api/quiz/11/participants\",\"rel\":\"createParticipant\"},{\"href\":\"/api/quiz/11/questions\",\"rel\":\"createQuestion\"},{\"href\":\"/api/quiz/11\",\"rel\":\"answer\"},{\"href\":\"/api/quiz/11\",\"rel\":\"reopenQuestion\"}]}")
     }
 }
