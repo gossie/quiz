@@ -55,6 +55,13 @@ class QuizService(private val quizRepository: QuizRepository) {
                 .map { emitQuiz(it) }
     }
 
+    fun reopenQuestion(quizId: Long): Mono<Quiz> {
+        return quizRepository.determineQuiz(quizId)
+                .map { it.reopenQuestion() }
+                .flatMap { quizRepository.saveQuiz(it) }
+                .map { emitQuiz(it) }
+    }
+
     fun observeQuiz(quizId: Long): Flux<Quiz> {
         return observables.computeIfAbsent(quizId) {
             val emitter: EmitterProcessor<Quiz> = EmitterProcessor.create()

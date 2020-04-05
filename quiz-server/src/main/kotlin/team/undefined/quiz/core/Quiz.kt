@@ -47,4 +47,9 @@ data class Quiz(val id: Long? = null, val name: String, val participants: List<P
         return this;
     }
 
+    fun reopenQuestion(): Quiz {
+        participants.forEach { it.turn = false }
+        return this;
+    }
+
 }
