@@ -37,6 +37,7 @@ test('should not show buttons because it is nobodys turn', () => {
 
     expect(() => getByTestId('correct-button')).toThrowError('');
     expect(() => getByTestId('incorrect-button')).toThrowError('');
+    expect(() => getByTestId('reopen-button')).toThrowError('');
 });
 
 test('should show buttons', () => {
@@ -67,6 +68,7 @@ test('should show buttons', () => {
 
     expect(getByTestId('correct-button')).toBeDefined();
     expect(getByTestId('incorrect-button')).toBeDefined();
+    expect(getByTestId('reopen-button')).toBeDefined();
 });
 
 test('should answer correctly', () => {
@@ -151,4 +153,44 @@ test('should answer correctly', () => {
     const { getByTestId } = render(<Answers quiz={quiz} />);
 
     getByTestId('incorrect-button').click();
+});
+
+test('should reopen question', () => {
+    jest.spyOn(global, 'fetch').mockImplementation((url: string, request: object) => {
+        expect(url).toEqual('http://localhost:5000/api/reopen');
+        expect(request).toEqual({
+            method: 'PUT',
+            headers: {
+                Accept: 'application/json'
+            }
+        });
+        Promise.resolve();
+    });
+
+    const quiz: Quiz = {
+        id: 17,
+        name: 'Test',
+        participants: [
+            {
+                id: 12,
+                name: 'Lena',
+                turn: false,
+                points: 13,
+                links: []
+            },
+            {
+                id: 13,
+                name: 'Erik',
+                turn: true,
+                points: 13,
+                links: []
+            }
+        ],
+        questions: [],
+        links: [{ rel: 'reopenQuestion', href: '/api/reopen' }]
+    }
+
+    const { getByTestId } = render(<Answers quiz={quiz} />);
+
+    getByTestId('reopen-button').click();
 });

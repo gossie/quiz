@@ -19,15 +19,7 @@ class QuizApplication {
 
 	@Bean
 	fun handlerAdapter() =  WebSocketHandlerAdapter()
-/*
-	@Bean
-	fun dataInitializer(quizService: QuizService): CommandLineRunner {
-		return CommandLineRunner {
-			quizService.createQuiz(Quiz(name = "Hegarty's Quiz", participants = listOf("Allli", "Sandra", "Erik")))
-					.subscribe { println(it.id) }
-		}
-	}
-*/
+
 }
 
 fun main(args: Array<String>) {

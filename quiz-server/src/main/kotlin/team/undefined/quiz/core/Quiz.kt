@@ -42,8 +42,11 @@ data class Quiz(val id: Long? = null, val name: String, val participants: List<P
         participants
                 .filter { it.turn }
                 .forEach { it.points = Math.max(it.points - 1, 0) }
+        return this;
+    }
 
-        questions.forEach { it.pending = false }
+    fun reopenQuestion(): Quiz {
+        participants.forEach { it.turn = false }
         return this;
     }
 

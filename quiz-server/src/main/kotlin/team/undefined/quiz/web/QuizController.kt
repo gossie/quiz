@@ -36,6 +36,12 @@ class QuizController(private val quizService: QuizService) {
         }
     }
 
+    @PutMapping("/{quizId}", produces = ["application/json"])
+    fun reopenQuestion(@PathVariable quizId: Long): Mono<QuizDTO> {
+        return quizService.reopenQuestion(quizId)
+                .flatMap { it.map() }
+    }
+
     @GetMapping("/{quizId}", produces = ["application/json"])
     fun determineQuiz(@PathVariable quizId: Long): Mono<QuizDTO> {
         return quizService.determineQuiz(quizId)
@@ -84,6 +90,10 @@ private fun QuizDTO.addLinks(): Mono<QuizDTO> {
             .map { this.add(it) }
             .map { linkTo(methodOn(QuizController::class.java).answer(this.id!!, "")) }
             .map { it.withRel("answer") }
+            .flatMap { it.toMono() }
+            .map { this.add(it) }
+            .map { linkTo(methodOn(QuizController::class.java).reopenQuestion(this.id!!)) }
+            .map { it.withRel("reopenQuestion") }
             .flatMap { it.toMono() }
             .map { this.add(it) }
 }
