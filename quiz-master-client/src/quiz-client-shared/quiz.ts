@@ -21,7 +21,6 @@ interface Question {
 export default interface Quiz {
     id: number;
     name: string;
-    turn?: string;
     participants: Array<Participant>;
     questions: Array<Question>;
     links: Array<Link>;
