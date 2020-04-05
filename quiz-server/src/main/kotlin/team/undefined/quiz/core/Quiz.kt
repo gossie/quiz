@@ -32,13 +32,17 @@ data class Quiz(val id: Long? = null, val name: String, val participants: List<P
     fun answeredCorrect(): Quiz {
         participants
                 .filter { it.turn }
-                .forEach { it.points = it.points + 1 }
+                .forEach { it.points = it.points + 2 }
 
         questions.forEach { it.pending = false }
         return this;
     }
 
     fun answeredInorrect(): Quiz {
+        participants
+                .filter { it.turn }
+                .forEach { it.points = Math.max(it.points - 1, 0) }
+
         questions.forEach { it.pending = false }
         return this;
     }
