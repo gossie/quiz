@@ -22,15 +22,36 @@ const Answers: React.FC<AnswersProps> = (props: AnswersProps) => {
         });
     };
 
+    const reopenQuestion = async () => {
+        const reopenHref = props.quiz
+                .links
+                .find(link => link.rel === 'reopenQuestion')
+                ?.href;
+
+        await fetch(`${process.env.REACT_APP_BASE_URL}${reopenHref}`, {
+            method: 'PUT',
+            headers: {
+                Accept: 'application/json'
+            }
+        });
+    };
+
     return (
         <div>
             { props.quiz.participants.some(p => p.turn) &&
-                <div className="field is-grouped is-grouped-centered">
-                    <div className="control">
-                        <button data-testid="correct-button" onClick={() => answer('true')} className="button is-primary">Correct</button>
+                <div>
+                    <div className="field is-grouped is-grouped-centered">
+                        <div className="control">
+                            <button data-testid="correct-button" onClick={() => answer('true')} className="button is-primary">Correct</button>
+                        </div>
+                        <div className="control">
+                            <button data-testid="incorrect-button" onClick={() => answer('false')} className="button is-link is-light">Incorrect</button>
+                        </div>
                     </div>
-                    <div className="control">
-                        <button data-testid="incorrect-button" onClick={() => answer('false')} className="button is-link is-light">Incorrect</button>
+                    <div className="field is-grouped is-grouped-centered">
+                        <div className="control">
+                            <button data-testid="reopen-button" onClick={() => reopenQuestion()} className="button is-link">Reopen question</button>
+                        </div>
                     </div>
                 </div>
             }
