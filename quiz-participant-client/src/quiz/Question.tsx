@@ -8,29 +8,8 @@ interface QuestionProps {
 }
 
 const Question: React.FC<QuestionProps> = (props: QuestionProps) => {
-    const [imageCssClass, setImageCssClass] = useState('question-image invisible');
-    const [timerCssClass, setTimerCssClass] = useState('');
-    const [time, setTime] = useState(3);
-
     const pendingQuestion = props.quiz.questions.find(question => question.pending)
     const hasImage = pendingQuestion?.imagePath !== '';
-
-    useEffect(() => {
-        console.debug('hasName', hasImage);
-        if (hasImage) {
-            const timer = setTimeout(() => {
-                console.debug('counting down');
-                setTime(oldTime => oldTime - 1);
-                if (time === 0) {
-                    console.debug('render image');
-                    setImageCssClass('question-image');
-                    setTimerCssClass('invisible');
-                    setTime(3);
-                }
-            }, 1000);
-            return () => clearTimeout(timer);
-        }
-    }, [hasImage, time]);
 
     return (
         <div>

@@ -25,9 +25,13 @@ const Answers: React.FC<AnswersProps> = (props: AnswersProps) => {
     return (
         <div>
             { props.quiz.participants.some(p => p.turn) &&
-                <div>
-                    <button onClick={() => answer('true')}>Correct</button>
-                    <button onClick={() => answer('false')}>Incorrect</button>
+                <div className="field is-grouped is-grouped-centered">
+                    <div className="control">
+                        <button data-testid="correct-button" onClick={() => answer('true')} className="button is-primary">Correct</button>
+                    </div>
+                    <div className="control">
+                        <button data-testid="incorrect-button" onClick={() => answer('false')} className="button is-link is-light">Incorrect</button>
+                    </div>
                 </div>
             }
         </div>
