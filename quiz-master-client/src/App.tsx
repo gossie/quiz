@@ -41,19 +41,18 @@ function App() {
     return (
         <div className="App">
             <AppHeader title="Quiz Master"></AppHeader>
-                <div className="container App-content">
-                    { quiz.id
-                        ?
-                        <QuizMaster quiz={quiz}></QuizMaster>
-                        :
-                    
-                            <div className="container Login-page">
-                                <LoginPageWidget title="Create a Quiz" inputLabels={[quizNameLabel]} buttonLabel="Start!" onSubmit={startQuiz}></LoginPageWidget>
-                                <LoginPageWidget title="Join a Quiz" inputLabels={[quizIdLabel]} buttonLabel="Join!" onSubmit={joinQuiz}></LoginPageWidget>
-                            </div>
-                    }
-                </div>
-            } 
+            <div className="container App-content">
+                { quiz.id
+                    ?
+                    <QuizMaster quiz={quiz}></QuizMaster>
+                    :
+                
+                        <div className="container Login-page">
+                            <LoginPageWidget title="Create a Quiz" inputLabels={[quizNameLabel]} buttonLabel="Start!" onSubmit={startQuiz}></LoginPageWidget>
+                            <LoginPageWidget title="Join a Quiz" inputLabels={[quizIdLabel]} buttonLabel="Join!" onSubmit={joinQuiz}></LoginPageWidget>
+                        </div>
+                }
+            </div>
         </div>
     );
 }
