@@ -1,7 +1,7 @@
 import React from 'react';
-import { render, fireEvent, wait } from '@testing-library/react';
+import { render } from '@testing-library/react';
 import Participants from './Participants';
-import Quiz from './quiz';
+import Quiz from '../quiz';
 
 test('has two participants', () => {
     // const quiz: Quiz = {
@@ -33,6 +33,9 @@ test('has two participants', () => {
 
 test('has no participants', () => {
     const quiz: Quiz = {
+        id: 15,
+        name: 'Quiz',
+        questions: [],
         participants: [],
         links: []
     }

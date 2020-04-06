@@ -10,15 +10,21 @@ interface JoinWidgetProps {
 
 const LoginPageWidget: React.FC<JoinWidgetProps> = (props: JoinWidgetProps) => {
     const [inputValue, setInputValue] = useState({});
-    const fields = props.inputLabels.map((label) => 
-        <div key={label} className="control">
-            <input className="input" type="text" placeholder={label} onChange={(ev) => setInputValue({...inputValue, ...{[label]: ev.target.value}})}/>
-        </div>
-    );
 
     const onSubmit = () => {
         props.onSubmit(inputValue)
     }
+
+    const fields = props.inputLabels.map((label, index) => 
+        <div key={label} className="control">
+            <input data-testid={'field-' + index}
+                   className="input"
+                   type="text"
+                   placeholder={label}
+                   onChange={(ev) => setInputValue({...inputValue, ...{[label]: ev.target.value}})}
+                   onKeyUp={ev => {if (ev.keyCode === 13) onSubmit()}} />
+        </div>
+    );
 
     return (
         <div className="box">
@@ -27,7 +33,7 @@ const LoginPageWidget: React.FC<JoinWidgetProps> = (props: JoinWidgetProps) => {
                 {fields}
                 
                 <div className="control">
-                    <button className="button is-info" onClick={onSubmit}>
+                    <button data-testid="submit-button" className="button is-info" onClick={onSubmit}>
                     {props.buttonLabel}
                     </button>
                 </div>
