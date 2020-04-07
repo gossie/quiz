@@ -23,6 +23,6 @@ export default interface Quiz {
     name: string;
     turn?: string;
     participants: Array<Participant>;
-    questions: Array<Question>;
+    openQuestions: Array<Question>;
     links: Array<Link>;
 }

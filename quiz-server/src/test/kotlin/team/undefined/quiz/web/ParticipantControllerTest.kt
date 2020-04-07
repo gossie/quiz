@@ -52,7 +52,8 @@ internal class ParticipantControllerTest {
         assertThat(quizDTO.participants[0].getLink("buzzer"))
                 .map{ it.href }
                 .contains("/api/quiz/7/participants/23/buzzer")
-        assertThat(quizDTO.questions).isEmpty()
+        assertThat(quizDTO.openQuestions).isEmpty()
+        assertThat(quizDTO.playedQuestions).isEmpty()
         assertThat(quizDTO.links).hasSize(4)
         assertThat(quizDTO.getLink("createParticipant"))
                 .map { it.href }

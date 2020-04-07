@@ -11,7 +11,7 @@ export interface Participant {
     links: Array<Link>;
 }
 
-interface Question {
+export interface Question {
     question: string;
     imagePath?: string;
     pending: boolean;
@@ -22,6 +22,7 @@ export default interface Quiz {
     id: number;
     name: string;
     participants: Array<Participant>;
-    questions: Array<Question>;
+    playedQuestions: Array<Question>;
+    openQuestions: Array<Question>;
     links: Array<Link>;
 }

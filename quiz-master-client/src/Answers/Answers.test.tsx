@@ -1,7 +1,7 @@
 import React from 'react';
 import { render } from '@testing-library/react';
 import Answers from './Answers';
-import Quiz from './quiz-client-shared/quiz';
+import Quiz from '../quiz-client-shared/quiz';
 
 test('should not show buttons because there are no participants', () => {
     const quiz: Quiz = {
@@ -146,7 +146,8 @@ test('should answer correctly', () => {
                 links: []
             }
         ],
-        questions: [],
+        playedQuestions: [],
+        openQuestions: [],
         links: [{ rel: 'answer', href: '/api/answer' }]
     }
 
@@ -186,7 +187,8 @@ test('should reopen question', () => {
                 links: []
             }
         ],
-        questions: [],
+        playedQuestions: [],
+        openQuestions: [],
         links: [{ rel: 'reopenQuestion', href: '/api/reopen' }]
     }
 

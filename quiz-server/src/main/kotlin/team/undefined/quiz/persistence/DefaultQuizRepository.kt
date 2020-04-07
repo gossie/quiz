@@ -56,7 +56,7 @@ private fun ParticipantEntity.map(): Participant {
 }
 
 private fun QuestionEntity.map(): Question {
-    return Question(this.id, this.question, this.pending == 1, this.imagePath)
+    return Question(this.id, this.question, this.pending == 1, this.imagePath, this.alreadyPlayed == 1)
 }
 
 private fun Quiz.map(): QuizEntity {
@@ -68,5 +68,5 @@ private fun Participant.map(quiz: Quiz): ParticipantEntity {
 }
 
 private fun Question.map(quiz: Quiz): QuestionEntity {
-    return QuestionEntity(this.id, this.question, if (this.pending) 1 else 0, this.imagePath, quiz.id!!)
+    return QuestionEntity(this.id, this.question, if (this.pending) 1 else 0, this.imagePath, if (this.alreadyPlayed) 1 else 0, quiz.id!!)
 }

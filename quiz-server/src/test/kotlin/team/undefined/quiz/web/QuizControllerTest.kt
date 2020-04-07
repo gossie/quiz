@@ -55,7 +55,8 @@ internal class QuizControllerTest {
         assertThat(result?.id).isEqualTo(18)
         assertThat(result?.name).isEqualTo("Q")
         assertThat(result?.participants).isEmpty()
-        assertThat(result?.questions).isEmpty()
+        assertThat(result?.openQuestions).isEmpty()
+        assertThat(result?.playedQuestions).isEmpty()
         assertThat(result?.links).hasSize(4)
         assertThat(result?.getLink("createParticipant"))
                 .map { it.href }
@@ -92,7 +93,8 @@ internal class QuizControllerTest {
         assertThat(result.participants).hasSize(2)
         assertThat(result.participants[0]).isEqualTo(ParticipantDTO(17, "Sandra", false, 1))
         assertThat(result.participants[1]).isEqualTo(ParticipantDTO(18, "Erik", false, 0))
-        assertThat(result.questions).isEqualTo(listOf(QuestionDTO(19, "Warum ist die Banane krumm?", false)))
+        assertThat(result.playedQuestions).isEmpty()
+        assertThat(result.openQuestions).isEqualTo(listOf(QuestionDTO(19, "Warum ist die Banane krumm?", false)))
         assertThat(result.links).hasSize(4)
         assertThat(result.getLink("createParticipant"))
                 .map { it.href }
@@ -129,7 +131,8 @@ internal class QuizControllerTest {
         assertThat(result.participants).hasSize(2)
         assertThat(result.participants[0]).isEqualTo(ParticipantDTO(17, "Sandra", false, 1))
         assertThat(result.participants[1]).isEqualTo(ParticipantDTO(18, "Erik", false, 0))
-        assertThat(result.questions).isEqualTo(listOf(QuestionDTO(19, "Warum ist die Banane krumm?", false)))
+        assertThat(result.playedQuestions).isEmpty()
+        assertThat(result.openQuestions).isEqualTo(listOf(QuestionDTO(19, "Warum ist die Banane krumm?", false)))
         assertThat(result.links).hasSize(4)
         assertThat(result.getLink("createParticipant"))
                 .map { it.href }
@@ -164,7 +167,8 @@ internal class QuizControllerTest {
         assertThat(result.participants).hasSize(2)
         assertThat(result.participants[0]).isEqualTo(ParticipantDTO(17, "Sandra", false, 1))
         assertThat(result.participants[1]).isEqualTo(ParticipantDTO(18, "Erik", false, 0))
-        assertThat(result.questions).isEqualTo(listOf(QuestionDTO(19, "Warum ist die Banane krumm?", true)))
+        assertThat(result.playedQuestions).isEmpty()
+        assertThat(result.openQuestions).isEqualTo(listOf(QuestionDTO(19, "Warum ist die Banane krumm?", true)))
         assertThat(result.links).hasSize(4)
         assertThat(result.getLink("createParticipant"))
                 .map { it.href }
