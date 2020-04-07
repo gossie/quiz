@@ -22,10 +22,20 @@ data class Quiz(val id: Long? = null, val name: String, val participants: List<P
         return this;
     }
 
-    fun startQuestion(question: Question): Quiz {
-        participants.forEach { it.turn = false }
-        questions.forEach { it.pending = false }
+    fun addQuestion(question: Question): Quiz {
         (questions as MutableList).add(question)
+        return this;
+    }
+
+    fun startQuestion(questionId: Long): Quiz {
+        participants.forEach { it.turn = false }
+        questions
+                .filter { it.pending }
+                .forEach {
+                    it.pending = false
+                    it.alreadyPlayed = true
+                }
+        questions.filter { it.id == questionId }[0].pending = true
         return this
     }
 
@@ -34,7 +44,13 @@ data class Quiz(val id: Long? = null, val name: String, val participants: List<P
                 .filter { it.turn }
                 .forEach { it.points = it.points + 2 }
 
-        questions.forEach { it.pending = false }
+        questions
+                .filter { it.pending }
+                .forEach {
+                    it.pending = false
+                    it.alreadyPlayed = true
+                }
+
         return this;
     }
 

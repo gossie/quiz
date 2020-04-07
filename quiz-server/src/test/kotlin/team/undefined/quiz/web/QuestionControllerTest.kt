@@ -24,8 +24,8 @@ class QuestionControllerTest {
     private lateinit var  quizService: QuizService
 
     @Test
-    fun shouldStartNewQuestion() {
-        `when`(quizService.startNewQuestion(11,"Wofür steht die Abkürzung a.d.?"))
+    fun shouldCreateQuestion() {
+        `when`(quizService.createQuestion(11,"Wofür steht die Abkürzung a.d.?"))
                 .thenReturn(Mono.just(Quiz(11, "Quiz", emptyList(), listOf(Question(question = "Wofür steht die Abkürzung a.d.?", pending = true)))))
 
         webTestClient
@@ -40,8 +40,8 @@ class QuestionControllerTest {
     }
 
     @Test
-    fun shouldStartNewQuestionWithImage() {
-        `when`(quizService.startNewQuestion(11, "Wer ist das?", "pathToImage"))
+    fun shouldCreateQuestionWithImage() {
+        `when`(quizService.createQuestion(11, "Wer ist das?", "pathToImage"))
                 .thenReturn(Mono.just(Quiz(11, "Quiz", emptyList(), listOf(Question(23, "Wer ist das?", true, "pathToImage")))))
 
         webTestClient

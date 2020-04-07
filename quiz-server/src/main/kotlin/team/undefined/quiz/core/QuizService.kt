@@ -19,6 +19,13 @@ class QuizService(private val quizRepository: QuizRepository) {
         return quizRepository.determineQuiz(quizId)
     }
 
+    fun createQuestion(quizId: Long, question: String, imagePath: String = ""): Mono<Quiz> {
+        return quizRepository.determineQuiz(quizId)
+                .map { it.addQuestion(Question(question = question, imagePath = imagePath)) }
+                .flatMap { quizRepository.saveQuiz(it) }
+                .map { emitQuiz(it) }
+    }
+
     fun createParticipant(quizId: Long, participantName: String): Mono<Quiz> {
         return quizRepository.determineQuiz(quizId)
                 .map { it.addParticipantIfNecessary(Participant(name = participantName)) }
@@ -34,9 +41,9 @@ class QuizService(private val quizRepository: QuizRepository) {
                 .map { emitQuiz(it) }
     }
 
-    fun startNewQuestion(quizId: Long, question: String, imagePath: String = ""): Mono<Quiz> {
+    fun startNewQuestion(quizId: Long, questionId: Long): Mono<Quiz> {
         return quizRepository.determineQuiz(quizId)
-                .map { it.startQuestion(Question(question = question, pending = true, imagePath = imagePath)) }
+                .map { it.startQuestion(questionId) }
                 .flatMap { quizRepository.saveQuiz(it) }
                 .map { emitQuiz(it) }
     }
