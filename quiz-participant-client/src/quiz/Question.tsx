@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import Quiz from "../quiz-client-shared/quiz";
 import './Question.css';
 import Image from './Image';
@@ -8,7 +8,7 @@ interface QuestionProps {
 }
 
 const Question: React.FC<QuestionProps> = (props: QuestionProps) => {
-    const pendingQuestion = props.quiz.questions.find(question => question.pending)
+    const pendingQuestion = props.quiz.openQuestions.find(question => question.pending)
     const hasImage = pendingQuestion?.imagePath !== '';
 
     return (

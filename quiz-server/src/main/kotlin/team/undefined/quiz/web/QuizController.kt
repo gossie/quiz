@@ -72,9 +72,17 @@ private fun ParticipantDTO.addLinks(quizId: Long): Mono<ParticipantDTO> {
 
 private fun Question.map(quizId: Long): QuestionDTO {
     val questionDTO = QuestionDTO(this.id, this.question, this.pending, this.imagePath)
+    questionDTO.add(Link("/api/quiz/" + quizId + "/questions/" + this.id, "self"))
     return if (this.imagePath == "") questionDTO else questionDTO.add(Link(this.imagePath, "image"))
 }
-
+/*
+private fun QuestionDTO.addLinks(quizId: Long): Mono<QuestionDTO> {
+    return linkTo(methodOn(QuestionController::class.java).startQuestion(quizId, this.id!!))
+            .withSelfRel()
+            .toMono()
+            .map { this.add(it) }
+}
+*/
 private fun QuizDTO.map(): Quiz {
     return Quiz(null, this.name)
 }

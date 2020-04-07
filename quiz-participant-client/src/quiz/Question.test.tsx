@@ -8,7 +8,7 @@ test('has no questions', () => {
         id: 5,
         name: "Awesome Quiz",
         participants: [],
-        questions: [],
+        openQuestions: [],
         links: []
     }
     const { getByTestId } = render(<Question quiz={quiz} />);
@@ -21,7 +21,7 @@ test('has no pending question', () => {
         id: 5,
         name: "Awesome Quiz",
         participants: [],
-        questions: [
+        openQuestions: [
             {
                 question: "What is happening?",
                 pending: false,
@@ -40,7 +40,7 @@ test('has pending question', () => {
         id: 5,
         name: "Awesome Quiz",
         participants: [],
-        questions: [
+        openQuestions: [
             {
                 question: 'What is happening?',
                 pending: true,
