@@ -53,7 +53,7 @@ class QuestionControllerTest {
                 .body(BodyInserters.fromValue(QuestionDTO(question = "Wer ist das?", imagePath = "pathToImage")))
                 .exchange()
                 .expectStatus().isCreated
-                .expectBody().json("{\"id\":11,\"name\":\"Quiz\",\"playedQuestions\":[],\"openQuestions\":[{\"id\":23,\"question\":\"Wer ist das?\",\"pending\":true,\"links\":[{\"href\":\"pathToImage\",\"rel\":\"image\"}]}],\"links\":[{\"href\":\"/api/quiz/11/participants\",\"rel\":\"createParticipant\"},{\"href\":\"/api/quiz/11/questions\",\"rel\":\"createQuestion\"},{\"href\":\"/api/quiz/11\",\"rel\":\"answer\"},{\"href\":\"/api/quiz/11\",\"rel\":\"reopenQuestion\"}]}")
+                .expectBody().json("{\"id\":11,\"name\":\"Quiz\",\"playedQuestions\":[],\"openQuestions\":[{\"id\":23,\"question\":\"Wer ist das?\",\"pending\":true,\"links\":[{\"href\":\"pathToImage\",\"rel\":\"image\"},{\"href\":\"/api/quiz/11/questions/23\",\"rel\":\"self\"}]}],\"links\":[{\"href\":\"/api/quiz/11/participants\",\"rel\":\"createParticipant\"},{\"href\":\"/api/quiz/11/questions\",\"rel\":\"createQuestion\"},{\"href\":\"/api/quiz/11\",\"rel\":\"answer\"},{\"href\":\"/api/quiz/11\",\"rel\":\"reopenQuestion\"}]}")
     }
 
     @Test
