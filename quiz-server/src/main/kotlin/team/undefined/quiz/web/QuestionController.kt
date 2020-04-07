@@ -17,4 +17,11 @@ class QuestionController(private val quizService: QuizService) {
                 .flatMap { it.map() }
     }
 
+    @PutMapping("/{questionId}", produces = ["application/json"])
+    @ResponseStatus(HttpStatus.OK)
+    fun startQuestion(@PathVariable quizId: Long, @PathVariable questionId: Long): Mono<QuizDTO> {
+        return quizService.startNewQuestion(quizId, questionId)
+                .flatMap { it.map() }
+    }
+
 }
