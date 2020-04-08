@@ -16,9 +16,9 @@ import team.undefined.quiz.web.ReactiveWebSocketHandler
 
 @SpringBootApplication
 class QuizApplication {
-
+/*
 	@Bean
-	fun initializer(connectionFactory: ConnectionFactory): ConnectionFactoryInitializer? {
+	fun initializer(connectionFactory: ConnectionFactory): ConnectionFactoryInitializer {
 		val initializer = ConnectionFactoryInitializer()
 		initializer.setConnectionFactory(connectionFactory)
 		val populator = CompositeDatabasePopulator()
@@ -26,7 +26,7 @@ class QuizApplication {
 		initializer.setDatabasePopulator(populator)
 		return initializer
 	}
-
+*/
 	@Bean
 	fun webSocketHandlerMapping(webSocketHandler: ReactiveWebSocketHandler): HandlerMapping {
 		return SimpleUrlHandlerMapping(mapOf(Pair("/event-emitter/{quizId}", webSocketHandler)), 1)
