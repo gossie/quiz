@@ -1,7 +1,35 @@
 version: '2'
 services:
+    db:
+        image: postgres
+        expose:
+            - 5432
+        ports:
+            - 5432:5432
+        environment:
+            - POSTGRES_USER=quiz
+            - POSTGRES_PASSWORD=quiz
+            - POSTGRES_DB=quiz
+        restart: unless-stopped
+        
+    quiz-server:
+        build: .
+        depends_on:
+            - db
+        expose:
+            - 5000
+        ports:
+            - 5000:5000
+        environment:
+            - DATABASE_URL=postgresql://db:5432/quiz
+            - DATABASE_USER=quiz
+            - DATABASE_PASSWORD=quiz
+        restart: unless-stopped
+        
     quiz-master-client:
         build: ./quiz-master-client
+        depends_on:
+            - quiz-server
         expose:
             - 3000
         ports:
@@ -10,16 +38,10 @@ services:
       
     quiz-participant-client:
         build: ./quiz-participant-client
+        depends_on:
+            - quiz-server
         expose:
             - 3001
         ports:
             - 3001:80
-        restart: unless-stopped
-      
-    quiz-server:
-        build: .
-        expose:
-            - 5000
-        ports:
-            - 5000:5000
         restart: unless-stopped
