@@ -12,6 +12,7 @@ import org.springframework.web.reactive.HandlerMapping
 import org.springframework.web.reactive.handler.SimpleUrlHandlerMapping
 import org.springframework.web.reactive.socket.server.support.WebSocketHandlerAdapter
 import team.undefined.quiz.web.ReactiveWebSocketHandler
+import com.google.common.eventbus.EventBus
 
 
 @SpringBootApplication
@@ -27,6 +28,11 @@ class QuizApplication {
 		return initializer
 	}
 */
+	@Bean
+	fun eventBus(): EventBus {
+		return EventBus()
+	}
+
 	@Bean
 	fun webSocketHandlerMapping(webSocketHandler: ReactiveWebSocketHandler): HandlerMapping {
 		return SimpleUrlHandlerMapping(mapOf(Pair("/event-emitter/{quizId}", webSocketHandler)), 1)

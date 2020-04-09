@@ -14,7 +14,7 @@ internal class QuizServiceTest {
 
     @Test
     fun shouldCreateQuiz() {
-        val quizRepository = mock(QuizRepository::class.java)
+        val quizRepository = mock(EventRepository::class.java)
         `when`(quizRepository.createQuiz(Quiz(name = "Quiz"))).thenReturn(Mono.just(Quiz(12, "Quiz")))
 
         val quizService = QuizService(quizRepository)
@@ -25,7 +25,7 @@ internal class QuizServiceTest {
 
     @Test
     fun shouldDetermineQuiz() {
-        val quizRepository = mock(QuizRepository::class.java)
+        val quizRepository = mock(EventRepository::class.java)
         `when`(quizRepository.determineQuiz(12)).thenReturn(Mono.just(Quiz(12, "Quiz")))
 
         val quizService = QuizService(quizRepository)
@@ -37,7 +37,7 @@ internal class QuizServiceTest {
 
     @Test
     fun shouldCreateParticipant() {
-        val quizRepository = mock(QuizRepository::class.java)
+        val quizRepository = mock(EventRepository::class.java)
         `when`(quizRepository.determineQuiz(12)).thenReturn(Mono.just(Quiz(12, "Quiz")))
         `when`(quizRepository.saveQuiz(Quiz(12, "Quiz", listOf(Participant(name = "Sandra"))))).thenReturn(Mono.just(Quiz(12, "Quiz", listOf(Participant(23, "Sandra")))))
 
@@ -56,7 +56,7 @@ internal class QuizServiceTest {
 
     @Test
     fun shouldNotCreateParticipantWithTheSameName() {
-        val quizRepository = mock(QuizRepository::class.java)
+        val quizRepository = mock(EventRepository::class.java)
         `when`(quizRepository.determineQuiz(12)).thenReturn(Mono.just(Quiz(12, "Quiz", listOf(Participant(23, "Sandra")))))
         `when`(quizRepository.saveQuiz(Quiz(12, "Quiz", listOf(Participant(23, "Sandra"))))).thenReturn(Mono.just(Quiz(12, "Quiz", listOf(Participant(23, "Sandra")))))
 
@@ -75,7 +75,7 @@ internal class QuizServiceTest {
 
     @Test
     fun shouldBuzzer() {
-        val quizRepository = mock(QuizRepository::class.java)
+        val quizRepository = mock(EventRepository::class.java)
         `when`(quizRepository.determineQuiz(7))
                 .thenReturn(Mono.just(Quiz(7, "Quiz", PARTICIPANTS)))
         `when`(quizRepository.saveQuiz(Quiz(7, "Quiz", listOf(Participant(23, "Sandra", true), Participant(24, "Allli"), Participant(25, "Erik")), emptyList())))
@@ -97,7 +97,7 @@ internal class QuizServiceTest {
 
     @Test
     fun shouldNotAllowSecondBuzzer() {
-        val quizRepository = mock(QuizRepository::class.java)
+        val quizRepository = mock(EventRepository::class.java)
         `when`(quizRepository.determineQuiz(7))
                 .thenReturn(Mono.just(Quiz(7, "Quiz", PARTICIPANTS)))
                 .thenReturn(Mono.just(Quiz(7, "Quiz", listOf(Participant(23, "Sandra", true), Participant(24, "Allli"), Participant(25, "Erik")), emptyList())))
@@ -125,7 +125,7 @@ internal class QuizServiceTest {
 
     @Test
     fun shouldCreateQuestion() {
-        val quizRepository = mock(QuizRepository::class.java)
+        val quizRepository = mock(EventRepository::class.java)
         `when`(quizRepository.determineQuiz(117))
                 .thenReturn(Mono.just(Quiz(117, "Quiz", PARTICIPANTS)))
         `when`(quizRepository.saveQuiz(Quiz(117, "Quiz", PARTICIPANTS, listOf(Question(question = "Warum ist die Banane krumm?")))))
@@ -146,7 +146,7 @@ internal class QuizServiceTest {
 
     @Test
     fun shouldStartNewQuestion() {
-        val quizRepository = mock(QuizRepository::class.java)
+        val quizRepository = mock(EventRepository::class.java)
         `when`(quizRepository.determineQuiz(117))
                 .thenReturn(Mono.just(Quiz(117, "Quiz", listOf(Participant(23, "Sandra", true), Participant(24, "Allli"), Participant(25, "Erik")), listOf(Question(12, "Warum ist die Banane krumm?"), Question(13, "Wie hoch ist die Zugspitze?")))))
         `when`(quizRepository.saveQuiz(Quiz(117, "Quiz", PARTICIPANTS, listOf(Question(12, "Warum ist die Banane krumm?", true), Question(13, "Wie hoch ist die Zugspitze?")))))
@@ -167,7 +167,7 @@ internal class QuizServiceTest {
 
     @Test
     fun shouldStopPendingOldQuestionWhenNewQuestionIsStarted() {
-        val quizRepository = mock(QuizRepository::class.java)
+        val quizRepository = mock(EventRepository::class.java)
         `when`(quizRepository.determineQuiz(117))
                 .thenReturn(Mono.just(Quiz(117, "Quiz", listOf(Participant(23, "Sandra", true), Participant(24, "Allli"), Participant(25, "Erik")), mutableListOf(Question(12, "Warum ist die Banane krumm?", pending = true), Question(13, "Wie hoch ist die Zugspitze?")))))
         `when`(quizRepository.saveQuiz(Quiz(117, "Quiz", PARTICIPANTS, listOf(Question(12, "Warum ist die Banane krumm?", false, alreadyPlayed = true), Question(13, "Wie hoch ist die Zugspitze?", pending = true)))))
@@ -188,7 +188,7 @@ internal class QuizServiceTest {
 
     @Test
     fun shouldCreateNewQuestionWithImage() {
-        val quizRepository = mock(QuizRepository::class.java)
+        val quizRepository = mock(EventRepository::class.java)
         `when`(quizRepository.determineQuiz(117))
                 .thenReturn(Mono.just(Quiz(117, "Quiz", PARTICIPANTS)))
         `when`(quizRepository.saveQuiz(Quiz(117, "Quiz", PARTICIPANTS, listOf(Question(question = "Wer ist das?", imagePath = "pathToImage")))))
@@ -209,7 +209,7 @@ internal class QuizServiceTest {
 
     @Test
     fun shouldAnswerQuestionCorrect() {
-        val quizRepository = mock(QuizRepository::class.java)
+        val quizRepository = mock(EventRepository::class.java)
         `when`(quizRepository.determineQuiz(117))
                 .thenReturn(Mono.just(Quiz(117, "Quiz", listOf(Participant(23, "Sandra", true), Participant(24, "Allli"), Participant(25, "Erik")), listOf(Question(12, "Warum ist die Banane krumm?", true)))))
         `when`(quizRepository.saveQuiz(Quiz(117, "Quiz", listOf(Participant(23, "Sandra", true, 2), Participant(24, "Allli"), Participant(25, "Erik")), listOf(Question(12, "Warum ist die Banane krumm?", alreadyPlayed = true)))))
@@ -230,7 +230,7 @@ internal class QuizServiceTest {
 
     @Test
     fun shouldAnswerQuestionIncorrect() {
-        val quizRepository = mock(QuizRepository::class.java)
+        val quizRepository = mock(EventRepository::class.java)
         `when`(quizRepository.determineQuiz(117))
                 .thenReturn(Mono.just(Quiz(117, "Quiz", listOf(Participant(23, "Sandra", true, 2), Participant(24, "Allli"), Participant(25, "Erik")), listOf(Question(12, "Warum ist die Banane krumm?", true)))))
         `when`(quizRepository.saveQuiz(Quiz(117, "Quiz", listOf(Participant(23, "Sandra", true, 1), Participant(24, "Allli"), Participant(25, "Erik")), listOf(Question(12, "Warum ist die Banane krumm?", true)))))
@@ -251,7 +251,7 @@ internal class QuizServiceTest {
 
     @Test
     fun shouldNotGetNegativePointsAfterIncorrectAnswer() {
-        val quizRepository = mock(QuizRepository::class.java)
+        val quizRepository = mock(EventRepository::class.java)
         `when`(quizRepository.determineQuiz(117))
                 .thenReturn(Mono.just(Quiz(117, "Quiz", listOf(Participant(23, "Sandra", true), Participant(24, "Allli"), Participant(25, "Erik")), listOf(Question(12, "Warum ist die Banane krumm?", true)))))
         `when`(quizRepository.saveQuiz(Quiz(117, "Quiz", listOf(Participant(23, "Sandra", true), Participant(24, "Allli"), Participant(25, "Erik")), listOf(Question(12, "Warum ist die Banane krumm?", true)))))
@@ -272,7 +272,7 @@ internal class QuizServiceTest {
 
     @Test
     fun shouldReopenQuestion() {
-        val quizRepository = mock(QuizRepository::class.java)
+        val quizRepository = mock(EventRepository::class.java)
         `when`(quizRepository.determineQuiz(117))
                 .thenReturn(Mono.just(Quiz(117, "Quiz", listOf(Participant(23, "Sandra", true), Participant(24, "Allli"), Participant(25, "Erik")), listOf(Question(12, "Warum ist die Banane krumm?", true)))))
         `when`(quizRepository.saveQuiz(Quiz(117, "Quiz", listOf(Participant(23, "Sandra", false), Participant(24, "Allli"), Participant(25, "Erik")), listOf(Question(12, "Warum ist die Banane krumm?", true)))))
