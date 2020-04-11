@@ -1,7 +1,7 @@
 
 .buzzer {
-    margin-top: 20px;
-    box-shadow: 3px 4px 0px 0px #661f18;
+    margin-top: 10px;
+    box-shadow: 6px 6px 0px 5px #661f18;
     width: 150px;
     height: 150px;
 	background-color:#b31727;
@@ -24,9 +24,11 @@
 	background-color:#f24437;
 }
 .buzzer:active {
+    box-shadow: 3px 3px 0px 3px #661f18;
     background-color:#f24437;
 	position:relative;
-	top:1px;
+    top:5px;
+    left: 5px;
 }
 
 .buzzer[disabled], .buzzer[disabled]:hover {
@@ -35,9 +37,11 @@
 }
 
 .buzzer.active[disabled], .buzzer.active[disabled]:hover {
+    box-shadow: 3px 3px 0px 2px #661f18;
     background-color:#f24437;
 	position:relative;
-    top:1px;
+    top:5px;
+    left: 3px;
     opacity: 1;
 }
 

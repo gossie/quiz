@@ -4,6 +4,7 @@ import './QuizDashboard.css';
 import Quiz from '../quiz-client-shared/quiz';
 import Question from './Question';
 import Participants from '../quiz-client-shared/Participants/Participants';
+const buzzerfile = require('./../assets/buzzer.mp3');
 
 interface QuizDashboardProps {
     quiz: Quiz;
@@ -13,8 +14,13 @@ interface QuizDashboardProps {
 const QuizDashboard: React.FC<QuizDashboardProps> = (props: QuizDashboardProps) => {
 
     const [quiz, setQuiz] = useState(props.quiz);
+    let buzzerAudio; 
+
 
     const buzzer = () => {
+       
+        buzzerAudio.play();
+        
         const buzzerHref = quiz.participants
                 .find(p => p.id === props.participantId)
                 .links
@@ -36,7 +42,20 @@ const QuizDashboard: React.FC<QuizDashboardProps> = (props: QuizDashboardProps) 
        return quiz.participants.some(p => p.turn && p.id === props.participantId)
     }
 
+    const isCurrentQuestionOpen = () => {
+        return !quiz.participants.some(p => p.turn);
+    }
+
     useEffect(() => {
+        buzzerAudio = new Audio(buzzerfile);
+        buzzerAudio.preload = true;
+
+        document.addEventListener('keydown', (event => {
+            if (event.keyCode === 32 || event.keyCode === 13 && isCurrentQuestionOpen()) {
+                buzzer();
+            }
+        }));
+
         console.log('websocket wird erstellt');
         const clientWebSocket = new WebSocket(`${process.env.REACT_APP_WS_BASE_URL}/event-emitter/${quiz.id}`);
         clientWebSocket.onmessage = ev => {
@@ -61,9 +80,9 @@ const QuizDashboard: React.FC<QuizDashboardProps> = (props: QuizDashboardProps) 
                     <Participants quiz={quiz}></Participants>
                 </div>
                 <div className="container question">
-                    <Question quiz={quiz}></Question>
-                    <button disabled={quiz.participants.some(p => p.turn)} className={isParticipantActive() ? 'buzzer active' : 'buzzer'} onClick={buzzer}>
-                        {!quiz.participants.some(p => p.turn) ? 
+                    <h5 className="title is-5">Current question</h5>
+                    <button disabled={quiz.participants.some(p => p.turn)} className={isParticipantActive() ? 'buzzer active' : 'buzzer'} onMouseDown={buzzer}>
+                        {isCurrentQuestionOpen() ? 
                             "I know it!" :
                             (!isParticipantActive() ?
                             "Too late!"
@@ -72,6 +91,7 @@ const QuizDashboard: React.FC<QuizDashboardProps> = (props: QuizDashboardProps) 
                         }
                             
                     </button>
+                    {<Question quiz={quiz}></Question>}
                 </div>
             </div>
         </div>
