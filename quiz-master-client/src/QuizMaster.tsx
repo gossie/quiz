@@ -31,15 +31,14 @@ const QuizMaster: React.FC<QuizMasterProps> = (props: QuizMasterProps) => {
     return (
         <div className="container Quiz-dashboard">
             <h4 className="title is-4">{quiz.name} (ID: {quiz.id})</h4>
-            <div className="container Dashboard-content">
-                <div className="container participants">
+            <div className="columns">
+                <div className="column participants">
                     <Participants quiz={quiz}></Participants>
                 </div>
-                <div className="container question">
+                <div className="column question">
                     <Answers quiz={quiz}></Answers>
                     <Questions quiz={quiz}></Questions>
                 </div>
-               
             </div>
         </div>
     )

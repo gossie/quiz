@@ -1,5 +1,5 @@
 
-.App-header {
+.level.App-header {
     font-size: 20px;
     font-weight: 700;
     color: white;
@@ -10,6 +10,7 @@
     width: 100%;
     padding: 10px;
     background-color: rgba(255, 255, 255, 0.1);
+    margin-bottom: 0px;
   }
   
   .App-header .App-logo {
