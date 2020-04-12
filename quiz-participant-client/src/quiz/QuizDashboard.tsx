@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 
 import './QuizDashboard.css';
 import Quiz from '../quiz-client-shared/quiz';
@@ -14,12 +14,12 @@ interface QuizDashboardProps {
 const QuizDashboard: React.FC<QuizDashboardProps> = (props: QuizDashboardProps) => {
 
     const [quiz, setQuiz] = useState(props.quiz);
-    let buzzerAudio; 
-
+    const buzzerAudio = useRef(null);
 
     const buzzer = () => {
        
-        buzzerAudio.play();
+        buzzerAudio.current.muted = false;
+        buzzerAudio.current.play();
         
         const buzzerHref = quiz.participants
                 .find(p => p.id === props.participantId)
@@ -47,15 +47,24 @@ const QuizDashboard: React.FC<QuizDashboardProps> = (props: QuizDashboardProps) 
     }
 
     useEffect(() => {
-        buzzerAudio = new Audio(buzzerfile);
-        buzzerAudio.preload = true;
+        // Trigger preloading of audio to prevent delays when buzzer is pressed
+        buzzerAudio.current.muted = true;
+        buzzerAudio.current.play();
+    }, [])
 
-        document.addEventListener('keydown', (event => {
-            if (event.keyCode === 32 || event.keyCode === 13 && isCurrentQuestionOpen()) {
+    useEffect(() => {
+        const buzzerOnKeydown = (event) => {
+            if ((event.keyCode === 32 || event.keyCode === 13) && isCurrentQuestionOpen()) {
                 buzzer();
             }
-        }));
+        }
+        document.addEventListener('keydown', buzzerOnKeydown);
+        return () => {
+            document.removeEventListener('keydown', buzzerOnKeydown);
+        }
+    }, []);
 
+    useEffect(() => {
         console.log('websocket wird erstellt');
         const clientWebSocket = new WebSocket(`${process.env.REACT_APP_WS_BASE_URL}/event-emitter/${quiz.id}`);
         clientWebSocket.onmessage = ev => {
@@ -70,7 +79,7 @@ const QuizDashboard: React.FC<QuizDashboardProps> = (props: QuizDashboardProps) 
             clientWebSocket.close();
             clearInterval(i);
         };
-    }, []);
+    });
 
     return (
         <div className="Quiz-dashboard">
@@ -81,6 +90,7 @@ const QuizDashboard: React.FC<QuizDashboardProps> = (props: QuizDashboardProps) 
                 </div>
                 <div className="container question">
                     <h5 className="title is-5">Current question</h5>
+                    <audio src={buzzerfile} ref={buzzerAudio} preload='auto'></audio>
                     <button disabled={quiz.participants.some(p => p.turn)} className={isParticipantActive() ? 'buzzer active' : 'buzzer'} onMouseDown={buzzer}>
                         {isCurrentQuestionOpen() ? 
                             "I know it!" :
