@@ -41,7 +41,7 @@ function App() {
     return (
         <div className="App">
             <AppHeader title="Quiz Master"></AppHeader>
-            <div className="container App-content">
+            <div className="App-content">
                 { quiz.id
                     ?
                     <QuizMaster quiz={quiz}></QuizMaster>
