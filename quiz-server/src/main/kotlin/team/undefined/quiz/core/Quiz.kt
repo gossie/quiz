@@ -17,8 +17,12 @@ data class Quiz(val id: UUID = UUID.randomUUID(), val name: String, val particip
         return this
     }
 
+    fun hasNoParticipantWithName(name: String): Boolean {
+        return participants.none { it.name == name }
+    }
+
     fun addParticipantIfNecessary(participant: Participant): Quiz {
-        if (participants.none { it.name == participant.name }) {
+        if (hasNoParticipantWithName(participant.name)) {
             (participants as MutableList).add(participant)
         }
 

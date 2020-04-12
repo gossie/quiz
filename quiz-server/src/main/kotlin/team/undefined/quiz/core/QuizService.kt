@@ -19,12 +19,18 @@ class QuizService(private val eventRepository: EventRepository,
     }
 
     fun createParticipant(command: CreateParticipantCommand): Mono<Unit> {
-        return eventRepository.storeEvent(ParticipantCreatedEvent(command.quizId, command.participant))
+        return eventRepository.determineEvents(command.quizId)
+                .reduce(Quiz(name = "")) { quiz: Quiz, event: Event -> event.process(quiz)}
+                .filter { it.hasNoParticipantWithName(command.participant.name) }
+                .flatMap { eventRepository.storeEvent(ParticipantCreatedEvent(command.quizId, command.participant)) }
                 .map { eventBus.post(it) }
     }
 
     fun buzzer(command: BuzzerCommand): Mono<Unit> {
-        return eventRepository.storeEvent(BuzzeredEvent(command.quizId, command.participantId))
+        return eventRepository.determineEvents(command.quizId)
+                .reduce(Quiz(name = "")) { quiz: Quiz, event: Event -> event.process(quiz)}
+                .filter { it.nobodyHasBuzzered() }
+                .flatMap { eventRepository.storeEvent(BuzzeredEvent(command.quizId, command.participantId)) }
                 .map { eventBus.post(it) }
     }
 

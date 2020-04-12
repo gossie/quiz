@@ -9,12 +9,17 @@ import org.springframework.boot.test.autoconfigure.data.r2dbc.DataR2dbcTest
 import org.springframework.context.annotation.Import
 import reactor.test.StepVerifier
 import team.undefined.quiz.core.Event
+import team.undefined.quiz.core.Quiz
 import team.undefined.quiz.core.QuizProjection
 import team.undefined.quiz.core.QuizService
 import team.undefined.quiz.web.ReactiveWebSocketHandler
 import java.util.*
 
-data class TestEvent(@JsonProperty("quizId") override val quizId: UUID, @JsonProperty("timestamp") override val timestamp: Long, @JsonProperty("payload") val payload: Map<String, String>) : Event
+data class TestEvent(@JsonProperty("quizId") override val quizId: UUID, @JsonProperty("timestamp") override val timestamp: Long, @JsonProperty("payload") val payload: Map<String, String>) : Event {
+    override fun process(quiz: Quiz): Quiz {
+        TODO("Not yet implemented")
+    }
+}
 
 @DataR2dbcTest
 @Import(DefaultEventRepository::class, PersistenceConfiguration::class, QuizService::class, QuizProjection::class, ReactiveWebSocketHandler::class, ObjectMapper::class)

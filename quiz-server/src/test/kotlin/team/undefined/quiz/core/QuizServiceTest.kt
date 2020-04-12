@@ -8,20 +8,22 @@ import reactor.core.publisher.Mono
 import reactor.test.StepVerifier
 import java.util.*
 
+open class TestEventRepository : EventRepository {
+    override fun storeEvent(event: Event): Mono<Event> {
+        return Mono.just(event)
+    }
+
+    override fun determineEvents(quizId: UUID): Flux<Event> {
+        return Flux.empty();
+    }
+}
+
 internal class QuizServiceTest {
 
     private val PARTICIPANTS = listOf(Participant(UUID.randomUUID(), "Sandra"), Participant(UUID.randomUUID(), "Allli"), Participant(UUID.randomUUID(), "Erik"))
 
-    private val quizRepository = object : EventRepository {
-        override fun storeEvent(event: Event): Mono<Event> {
-            return Mono.just(event)
-        }
+    private val quizRepository = spy(TestEventRepository())
 
-        override fun determineEvents(quizId: UUID): Flux<Event> {
-            TODO("Not yet implemented")
-        }
-
-    }
     private val eventBus = mock(EventBus::class.java)
 
     @Test
@@ -38,9 +40,15 @@ internal class QuizServiceTest {
 
     @Test
     fun shouldCreateParticipant() {
+        val quizId = UUID.randomUUID()
+
+        `when`(quizRepository.determineEvents(quizId))
+                .thenReturn(Flux.just(
+                        QuizCreatedEvent(quizId, Quiz(quizId, "Quiz"))
+                ))
+
         val quizService = QuizService(quizRepository, eventBus)
 
-        val quizId = UUID.randomUUID()
         val participant = Participant(UUID.randomUUID(), "Lena")
         StepVerifier.create(quizService.createParticipant(CreateParticipantCommand(quizId, participant)))
                 .consumeNextWith {
@@ -48,69 +56,111 @@ internal class QuizServiceTest {
                 }
                 .verifyComplete()
     }
-/*
+
     @Test
     fun shouldNotCreateParticipantWithTheSameName() {
+        val quizId = UUID.randomUUID()
+        val participantId = UUID.randomUUID()
+
+        `when`(quizRepository.determineEvents(quizId))
+                .thenReturn(Flux.just(
+                        QuizCreatedEvent(quizId, Quiz(quizId, "Quiz")),
+                        ParticipantCreatedEvent(quizId, Participant(participantId, "Sandra"))
+                ))
+
         val quizService = QuizService(quizRepository, eventBus)
 
-        StepVerifier.create(quizService.createParticipant(12, "Sandra"))
-                .expectNext(Quiz(12, "Quiz", listOf(Participant(23, "Sandra"))))
+        val participant = Participant(name = "Sandra")
+        StepVerifier.create(quizService.createParticipant(CreateParticipantCommand(quizId, participant)))
                 .verifyComplete()
 
-        assertThat(observedQuiz.get()).isEqualTo(Quiz(12, "Quiz", listOf(Participant(23, "Sandra"))))
+        verifyNoInteractions(eventBus);
     }
-*/
 
     @Test
     fun shouldBuzzer() {
+        val quizId = UUID.randomUUID()
+        val andresId = UUID.randomUUID()
+        val lenasId = UUID.randomUUID()
+        val questionId = UUID.randomUUID()
+
+        `when`(quizRepository.determineEvents(quizId))
+                .thenReturn(Flux.just(
+                        QuizCreatedEvent(quizId, Quiz(quizId, "Quiz")),
+                        QuestionCreatedEvent(quizId, question = Question(questionId, "Warum ist die Banane krum?")),
+                        ParticipantCreatedEvent(quizId, Participant(andresId, "André")),
+                        ParticipantCreatedEvent(quizId, Participant(lenasId, "Lena")),
+                        QuestionAskedEvent(quizId, questionId)
+                ))
+
         val quizService = QuizService(quizRepository, eventBus)
 
-        val quizId = UUID.randomUUID()
-        val participantId = UUID.randomUUID()
-        val buzzer = quizService.buzzer(BuzzerCommand(quizId, participantId))
+        val buzzer = quizService.buzzer(BuzzerCommand(quizId, lenasId))
         StepVerifier.create(buzzer)
                 .consumeNextWith {
-                    verify(eventBus).post(argThat { (it as BuzzeredEvent).quizId == quizId && it.participantId == participantId })
+                    verify(eventBus).post(argThat { (it as BuzzeredEvent).quizId == quizId && it.participantId == lenasId })
                 }
                 .verifyComplete()
     }
-/*
+
     @Test
     fun shouldNotAllowSecondBuzzer() {
+        val quizId = UUID.randomUUID()
+        val andresId = UUID.randomUUID()
+        val lenasId = UUID.randomUUID()
+        val questionId = UUID.randomUUID()
+
+        `when`(quizRepository.determineEvents(quizId))
+                .thenReturn(Flux.just(
+                        QuizCreatedEvent(quizId, Quiz(quizId, "Quiz")),
+                        QuestionCreatedEvent(quizId, question = Question(questionId, "Warum ist die Banane krum?")),
+                        ParticipantCreatedEvent(quizId, Participant(andresId, "André")),
+                        ParticipantCreatedEvent(quizId, Participant(lenasId, "Lena")),
+                        QuestionAskedEvent(quizId, questionId),
+                        BuzzeredEvent(quizId, lenasId)
+                ))
+
         val quizService = QuizService(quizRepository, eventBus)
 
-        StepVerifier.create(quizService.buzzer(7, 23))
-                .expectNext(Quiz(7, "Quiz", listOf(Participant(23, "Sandra", true), Participant(24, "Allli"), Participant(25, "Erik")), emptyList()))
-                .verifyComplete()
-
-        assertThat(observedQuiz.get()).isEqualTo(Quiz(7, "Quiz", listOf(Participant(23, "Sandra", true), Participant(24, "Allli"), Participant(25, "Erik")), emptyList()))
-
-        val buzzer = quizService.buzzer(7, 24)
+        val buzzer = quizService.buzzer(BuzzerCommand(quizId, andresId))
         StepVerifier.create(buzzer)
                 .verifyComplete()
 
-        assertThat(observedQuiz.get()).isEqualTo(Quiz(7, "Quiz", listOf(Participant(23, "Sandra", true), Participant(24, "Allli"), Participant(25, "Erik")), emptyList()))
+        verifyNoInteractions(eventBus)
     }
-*/
+
     @Test
     fun shouldCreateQuestion() {
+        val quizId = UUID.randomUUID()
+
+        `when`(quizRepository.determineEvents(quizId))
+                .thenReturn(Flux.just(
+                        QuizCreatedEvent(quizId, Quiz(quizId, "Quiz"))
+                ))
+
         val quizService = QuizService(quizRepository, eventBus)
 
-        val quizId = UUID.randomUUID()
         val questionId = UUID.randomUUID()
-        StepVerifier.create(quizService.createQuestion(CreateQuestionCommand(quizId, Question(questionId, "Warum ist die Banane krumm?"))))
+        StepVerifier.create(quizService.createQuestion(CreateQuestionCommand(quizId, Question(questionId, "Warum ist die Banane krum?"))))
                 .consumeNextWith {
-                    verify(eventBus).post(argThat { (it as QuestionCreatedEvent).quizId == quizId && it.question == Question(questionId, "Warum ist die Banane krumm?") })
+                    verify(eventBus).post(argThat { (it as QuestionCreatedEvent).quizId == quizId && it.question == Question(questionId, "Warum ist die Banane krum?") })
                 }
                 .verifyComplete()
     }
 
     @Test
     fun shouldStartNewQuestion() {
-        val quizService = QuizService(quizRepository, eventBus)
-
         val quizId = UUID.randomUUID()
         val questionId = UUID.randomUUID()
+
+        `when`(quizRepository.determineEvents(quizId))
+                .thenReturn(Flux.just(
+                        QuizCreatedEvent(quizId, Quiz(quizId, "Quiz")),
+                        QuestionCreatedEvent(quizId, Question(questionId, "Warum ist die Banane krum?"))
+                ))
+
+        val quizService = QuizService(quizRepository, eventBus)
+
         StepVerifier.create(quizService.startNewQuestion(AskQuestionCommand(quizId, questionId)))
                 .consumeNextWith {
                     verify(eventBus).post(argThat { (it as QuestionAskedEvent).quizId == quizId && it.questionId == questionId })
@@ -124,7 +174,7 @@ internal class QuizServiceTest {
         `when`(quizRepository.determineQuiz(117))
                 .thenReturn(Mono.just(Quiz(117, "Quiz", listOf(Participant(23, "Sandra", true), Participant(24, "Allli"), Participant(25, "Erik")), mutableListOf(Question(12, "Warum ist die Banane krumm?", pending = true), Question(13, "Wie hoch ist die Zugspitze?")))))
         `when`(quizRepository.saveQuiz(Quiz(117, "Quiz", PARTICIPANTS, listOf(Question(12, "Warum ist die Banane krumm?", false, alreadyPlayed = true), Question(13, "Wie hoch ist die Zugspitze?", pending = true)))))
-                .thenReturn(Mono.just(Quiz(117, "Quiz", PARTICIPANTS, listOf(Question(12, "Warum ist die Banane krumm?",false, alreadyPlayed = true), Question(13, "Wie hoch ist die Zugspitze?", true)))))
+                .thenReturn(Mono.just(Quiz(117, "Quiz", PARTICIPANTS, listOf(Question(12, "Warum ist die Banane krumm?", false, alreadyPlayed = true), Question(13, "Wie hoch ist die Zugspitze?", true)))))
 
         val quizService = QuizService(quizRepository)
 
@@ -133,13 +183,12 @@ internal class QuizServiceTest {
                 .subscribe { observedQuiz.set(it) }
 
         StepVerifier.create(quizService.startNewQuestion(117, 13))
-                .expectNext(Quiz(117, "Quiz", PARTICIPANTS, listOf(Question(12, "Warum ist die Banane krumm?",false, alreadyPlayed = true), Question(13, "Wie hoch ist die Zugspitze?", true))))
+                .expectNext(Quiz(117, "Quiz", PARTICIPANTS, listOf(Question(12, "Warum ist die Banane krumm?", false, alreadyPlayed = true), Question(13, "Wie hoch ist die Zugspitze?", true))))
                 .verifyComplete()
 
-        assertThat(observedQuiz.get()).isEqualTo(Quiz(117, "Quiz", PARTICIPANTS, listOf(Question(12, "Warum ist die Banane krumm?",false, alreadyPlayed = true), Question(13, "Wie hoch ist die Zugspitze?", true))))
+        assertThat(observedQuiz.get()).isEqualTo(Quiz(117, "Quiz", PARTICIPANTS, listOf(Question(12, "Warum ist die Banane krumm?", false, alreadyPlayed = true), Question(13, "Wie hoch ist die Zugspitze?", true))))
     }
 */
-
     @Test
     fun shouldCreateNewQuestionWithImage() {
         val quizService = QuizService(quizRepository, eventBus)
