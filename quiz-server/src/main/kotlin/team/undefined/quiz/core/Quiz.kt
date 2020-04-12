@@ -1,13 +1,16 @@
 package team.undefined.quiz.core
 
-data class Quiz(val id: Long? = null, val name: String, val participants: List<Participant> = ArrayList(), val questions: List<Question> = ArrayList()) {
+import java.util.UUID
+import kotlin.collections.ArrayList
+
+data class Quiz(val id: UUID = UUID.randomUUID(), val name: String, val participants: List<Participant> = ArrayList(), val questions: List<Question> = ArrayList()) {
 
     fun nobodyHasBuzzered(): Boolean {
         return participants
                 .none { it.turn }
     }
 
-    fun select(participantId: Long): Quiz {
+    fun select(participantId: UUID): Quiz {
         participants
                 .find { it.id == participantId }
                 ?.turn = true
@@ -27,7 +30,7 @@ data class Quiz(val id: Long? = null, val name: String, val participants: List<P
         return this;
     }
 
-    fun startQuestion(questionId: Long): Quiz {
+    fun startQuestion(questionId: UUID): Quiz {
         participants.forEach { it.turn = false }
         questions
                 .filter { it.pending }

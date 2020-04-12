@@ -1,20 +1,22 @@
 package team.undefined.quiz.core
 
-data class CreateQuizCommand(val quizName: String)
+import java.util.UUID
 
-data class CreateQuestionCommand(val quizId: Long, val question: String, val imageUrl: String? = null)
+data class CreateQuizCommand(val quizId: UUID, val quiz: Quiz)
 
-data class CreateParticipantCommand(val quizId: Long, val participantName: String)
+data class CreateQuestionCommand(val quizId: UUID, val question: Question)
 
-data class AskQuestionCommand(val quizId: Long, val questiomId: Long)
+data class CreateParticipantCommand(val quizId: UUID, val participant: Participant)
 
-data class BuzzerCommand(val quizId: Long, val participantId: Long)
+data class AskQuestionCommand(val quizId: UUID, val questionId: UUID)
 
-data class AnswerCommand(val quizId: Long, val answer: Answer) {
+data class BuzzerCommand(val quizId: UUID, val participantId: UUID)
+
+data class AnswerCommand(val quizId: UUID, val answer: Answer) {
     enum class Answer {
         CORRECT,
         INCORRECT
     }
 }
 
-data class ReopenCurrentQuestionCommand(val quizId: Long)
+data class ReopenCurrentQuestionCommand(val quizId: UUID)

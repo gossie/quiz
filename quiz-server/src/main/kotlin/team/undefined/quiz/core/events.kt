@@ -1,20 +1,23 @@
 package team.undefined.quiz.core
 
+import java.util.Date
+import java.util.UUID
+
 interface Event {
-    val quizId: Long
+    val quizId: UUID
     val timestamp: Long
 }
 
-data class QuizCreatedEvent(override val quizId: Long, override val timestamp: Long, val quiz: Quiz) : Event
+data class QuizCreatedEvent(override val quizId: UUID, val quiz: Quiz, override val timestamp: Long = Date().time) : Event
 
-data class QuestionCreatedEvent(override val quizId: Long, override val timestamp: Long, val question: Question) : Event
+data class QuestionCreatedEvent(override val quizId: UUID, val question: Question, override val timestamp: Long = Date().time) : Event
 
-data class ParticipantCreatedEvent(override val quizId: Long, override val timestamp: Long, val participant: Participant) : Event
+data class ParticipantCreatedEvent(override val quizId: UUID, val participant: Participant, override val timestamp: Long = Date().time) : Event
 
-data class QuestionAskedEvent(override val quizId: Long, override val timestamp: Long, val question: Question) : Event
+data class QuestionAskedEvent(override val quizId: UUID, val questionId: UUID, override val timestamp: Long = Date().time) : Event
 
-data class BuzzeredEvent(override val quizId: Long, override val timestamp: Long, val participant: Participant) : Event
+data class BuzzeredEvent(override val quizId: UUID, val participantId: UUID, override val timestamp: Long = Date().time) : Event
 
-data class AnsweredEvent(override val quizId: Long, override val timestamp: Long, val answer: AnswerCommand.Answer) : Event
+data class AnsweredEvent(override val quizId: UUID, val answer: AnswerCommand.Answer, override val timestamp: Long = Date().time) : Event
 
-data class QuestionReopenedEvent(override val quizId: Long, override val timestamp: Long, val question: Question) : Event
+data class CurrentQuestionReopenedEvent(override val quizId: UUID, override val timestamp: Long = Date().time) : Event

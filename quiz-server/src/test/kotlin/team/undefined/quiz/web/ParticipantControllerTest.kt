@@ -14,6 +14,7 @@ import reactor.core.publisher.Mono
 import team.undefined.quiz.core.Participant
 import team.undefined.quiz.core.Quiz
 import team.undefined.quiz.core.QuizService
+import java.util.*
 
 @WebFluxTest(controllers = [ParticipantsController::class])
 @Import(ReactiveWebSocketHandler::class)
@@ -26,8 +27,8 @@ internal class ParticipantControllerTest {
 
     @Test
     fun shouldCreateParticipant() {
-        `when`(quizService.createParticipant(7, "Erik"))
-                .thenReturn(Mono.just(Quiz(7, "Quiz", listOf(Participant(23, "Erik")))))
+        //`when`(quizService.createParticipant(7, "Erik"))
+        //        .thenReturn(Mono.just(Quiz(7, "Quiz", listOf(Participant(23, "Erik")))))
 
         val result = webTestClient
                 .post()
@@ -48,7 +49,7 @@ internal class ParticipantControllerTest {
         assertThat(quizDTO.id).isEqualTo(7)
         assertThat(quizDTO.name).isEqualTo("Quiz")
         assertThat(quizDTO.participants).hasSize(1)
-        assertThat(quizDTO.participants[0]).isEqualTo(ParticipantDTO(23, "Erik", false, 0))
+        assertThat(quizDTO.participants[0]).isEqualTo(ParticipantDTO(UUID.randomUUID(), "Erik", false, 0))
         assertThat(quizDTO.participants[0].getLink("buzzer"))
                 .map{ it.href }
                 .contains("/api/quiz/7/participants/23/buzzer")
@@ -71,8 +72,8 @@ internal class ParticipantControllerTest {
 
     @Test
     fun shouldBuzzer() {
-        `when`(quizService.buzzer(17, 23))
-                .thenReturn(Mono.just(Quiz(17, "Quiz", listOf(Participant(23, "Sandra", true), Participant(24, "Allli"), Participant(25, "Erik")), emptyList())))
+        //`when`(quizService.buzzer(17, 23))
+        //        .thenReturn(Mono.just(Quiz(17, "Quiz", listOf(Participant(23, "Sandra", true), Participant(24, "Allli"), Participant(25, "Erik")), emptyList())))
 
         webTestClient
                 .put()

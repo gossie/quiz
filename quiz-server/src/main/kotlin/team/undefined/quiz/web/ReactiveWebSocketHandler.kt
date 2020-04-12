@@ -5,15 +5,16 @@ import org.springframework.stereotype.Component
 import org.springframework.web.reactive.socket.WebSocketHandler
 import org.springframework.web.reactive.socket.WebSocketSession
 import reactor.core.publisher.Mono
-import team.undefined.quiz.core.QuizService
+import team.undefined.quiz.core.QuizProjection
+import java.util.*
 
 @Component
-class ReactiveWebSocketHandler(private val quizService: QuizService,
+class ReactiveWebSocketHandler(private val quizProjection: QuizProjection,
                                private val objectMapper: ObjectMapper) : WebSocketHandler {
 
     override fun handle(webSocketSession: WebSocketSession): Mono<Void> {
-        val quizId: Long = determineQuizId(webSocketSession)
-        return webSocketSession.send(quizService.observeQuiz(quizId)
+        val quizId: UUID = determineQuizId(webSocketSession)
+        return webSocketSession.send(quizProjection.observeQuiz(quizId)
                 .flatMap { it.map() }
                 .map { objectMapper.writeValueAsString(it) }
                 .map { webSocketSession.textMessage(it.toString()) })
@@ -21,13 +22,13 @@ class ReactiveWebSocketHandler(private val quizService: QuizService,
                         .map { it.payloadAsText }
                         .log())
                 .doFinally {
-                    quizService.removeObserver(quizId)
+                    quizProjection.removeObserver(quizId)
                 }
     }
 
-    private fun determineQuizId(webSocketSession: WebSocketSession): Long {
+    private fun determineQuizId(webSocketSession: WebSocketSession): UUID {
         val components: List<String> = webSocketSession.handshakeInfo.uri.path.split("/")
-        return components.last().toLong()
+        return UUID.fromString(components.last())
     }
 
 }

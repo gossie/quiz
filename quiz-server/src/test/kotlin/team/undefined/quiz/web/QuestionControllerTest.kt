@@ -14,6 +14,7 @@ import reactor.core.publisher.Mono
 import team.undefined.quiz.core.Question
 import team.undefined.quiz.core.Quiz
 import team.undefined.quiz.core.QuizService
+import java.util.*
 
 @WebFluxTest(controllers = [QuestionController::class])
 @Import(ReactiveWebSocketHandler::class)
@@ -26,8 +27,8 @@ class QuestionControllerTest {
 
     @Test
     fun shouldCreateQuestion() {
-        `when`(quizService.createQuestion(11,"Wofür steht die Abkürzung a.d.?"))
-                .thenReturn(Mono.just(Quiz(11, "Quiz", emptyList(), listOf(Question(question = "Wofür steht die Abkürzung a.d.?", pending = true)))))
+        //`when`(quizService.createQuestion(11,"Wofür steht die Abkürzung a.d.?"))
+        //        .thenReturn(Mono.just(Quiz(11, "Quiz", emptyList(), listOf(Question(question = "Wofür steht die Abkürzung a.d.?", pending = true)))))
 
         webTestClient
                 .post()
@@ -42,8 +43,8 @@ class QuestionControllerTest {
 
     @Test
     fun shouldCreateQuestionWithImage() {
-        `when`(quizService.createQuestion(11, "Wer ist das?", "pathToImage"))
-                .thenReturn(Mono.just(Quiz(11, "Quiz", emptyList(), listOf(Question(23, "Wer ist das?", true, "pathToImage")))))
+        //`when`(quizService.createQuestion(11, "Wer ist das?", "pathToImage"))
+        //        .thenReturn(Mono.just(Quiz(11, "Quiz", emptyList(), listOf(Question(23, "Wer ist das?", true, "pathToImage")))))
 
         webTestClient
                 .post()
@@ -58,8 +59,8 @@ class QuestionControllerTest {
 
     @Test
     fun shouldStartQuestion() {
-        `when`(quizService.startNewQuestion(14, 17))
-                .thenReturn(Mono.just(Quiz(14, "Quiz", emptyList(), listOf(Question(16, "Wer ist das?", false, "pathToImage", true), Question(17, "Was ist das?", true)))))
+        //`when`(quizService.startNewQuestion(14, 17))
+        //        .thenReturn(Mono.just(Quiz(14, "Quiz", emptyList(), listOf(Question(16, "Wer ist das?", false, "pathToImage", true), Question(17, "Was ist das?", true)))))
 
         val quiz: QuizDTO? = webTestClient
                 .put()
@@ -70,6 +71,6 @@ class QuestionControllerTest {
                 .expectBody(QuizDTO::class.java)
                 .returnResult().responseBody
 
-        assertThat(quiz).isEqualTo(QuizDTO(14, "Quiz", emptyList(), listOf(QuestionDTO(16, "Wer ist das?", false, "pathToImage")), listOf(QuestionDTO(17, "Was ist das?", true))))
+        assertThat(quiz).isEqualTo(QuizDTO(UUID.randomUUID(), "Quiz", emptyList(), listOf(QuestionDTO(UUID.randomUUID(), "Wer ist das?", false, "pathToImage")), listOf(QuestionDTO(UUID.randomUUID(), "Was ist das?", true))))
     }
 }
