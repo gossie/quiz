@@ -2,3 +2,7 @@
     margin-left: 10px;
     cursor: pointer;
 }
+
+.question-container {
+  text-align: left;
+}
