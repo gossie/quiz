@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 
 import './QuizDashboard.css';
 import Quiz from '../quiz-client-shared/quiz';
@@ -42,9 +42,9 @@ const QuizDashboard: React.FC<QuizDashboardProps> = (props: QuizDashboardProps) 
        return quiz.participants.some(p => p.turn && p.id === props.participantId)
     }
 
-    const isCurrentQuestionOpen = () => {
+    const isCurrentQuestionOpen = useCallback(() => {
         return !quiz.participants.some(p => p.turn);
-    }
+    }, [quiz.participants]);
 
     useEffect(() => {
         // Trigger preloading of audio to prevent delays when buzzer is pressed
@@ -62,7 +62,7 @@ const QuizDashboard: React.FC<QuizDashboardProps> = (props: QuizDashboardProps) 
         return () => {
             document.removeEventListener('keydown', buzzerOnKeydown);
         }
-    }, []);
+    }, [buzzer, isCurrentQuestionOpen]);
 
     useEffect(() => {
         console.log('websocket wird erstellt');
@@ -79,7 +79,7 @@ const QuizDashboard: React.FC<QuizDashboardProps> = (props: QuizDashboardProps) 
             clientWebSocket.close();
             clearInterval(i);
         };
-    });
+    }, [quiz.id]);
 
     return (
         <div className="Quiz-dashboard">
