@@ -39,7 +39,7 @@ function App() {
     return (
         <div className="App">
             <AppHeader title="Quiz"></AppHeader>
-            <div className="container App-content">
+            <div className="App-content">
             {Object.keys(quiz).length > 0 ? 
                 <QuizDashboard quiz={quiz} participantId={participantId}></QuizDashboard> :
                 <div className="container Login-page">

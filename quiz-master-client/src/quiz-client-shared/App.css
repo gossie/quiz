@@ -36,20 +36,23 @@
   width: 100%;
 }
 
-.Quiz-dashboard .Dashboard-content {
-  width: 100%;
-}
+@media screen and (min-width: 768px) {
+  .App {
+    height: 100vh;
+    overflow: hidden;
+  }
 
-@media screen and (min-width: 600px) {
-  .Quiz-dashboard .Dashboard-content {
-      display: flex;
-      flex-direction: row;
-      justify-content: space-around;
-      max-width: 1200px;
+  .App-content, .Quiz-dashboard, .columns {
+    flex: 1;
+    overflow:hidden;
   }
 
   .Quiz-dashboard .question, .Quiz-dashboard .participants {
-      width: 50%;
+      max-height: 100%;
+      overflow-y: auto;
+      overflow-x: hidden;
+      scrollbar-color: #7f7f7f white; /* thumb and track color */
+      scrollbar-width: thin;
   }
 }
 
@@ -59,3 +62,5 @@
   padding: 10px;
   margin: 10px;
 }
+
+::-webkit-scrollbar{width:10px}::-webkit-scrollbar-track{background:rgba(255, 255, 255, 0.1);border-radius:0px}::-webkit-scrollbar-thumb{background:rgba(255, 255, 255, 0.3);border-radius:0px}

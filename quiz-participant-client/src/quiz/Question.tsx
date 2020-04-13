@@ -13,7 +13,6 @@ const Question: React.FC<QuestionProps> = (props: QuestionProps) => {
 
     return (
         <div>
-            <h5 className="title is-5">Current question</h5>
             <div>
             { pendingQuestion &&
                 <div>
