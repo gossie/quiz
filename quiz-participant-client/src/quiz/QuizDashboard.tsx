@@ -62,11 +62,11 @@ const QuizDashboard: React.FC<QuizDashboardProps> = (props: QuizDashboardProps) 
     return (
         <div className="Quiz-dashboard">
             <h4 className="title is-4">{quiz.name}</h4>
-            <div className="container Dashboard-content">
-                <div className="container participants">
+            <div className="columns Dashboard-content">
+                <div className="column participants">
                     <Participants quiz={quiz}></Participants>
                 </div>
-                <div className="container question">
+                <div className="column question">
                     <h5 className="title is-5">Current question</h5>
                     <Buzzer isCurrentQuestionOpen={isCurrentQuestionOpen()} isParticipantActive={isParticipantActive()} onBuzzer={buzzer}></Buzzer>
                     {<Question quiz={quiz}></Question>}
