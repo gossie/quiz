@@ -67,12 +67,16 @@ const Questions: React.FC<QuestionsProps> = (props: QuestionsProps) => {
             <div className="columns">
                 <div data-testid="open-questions" className="column">
                     <h5 className="title is-5">Open questions</h5>
-                    {openQuestions}
+                    <div className="question-container">
+                        {openQuestions}
+                    </div>
                 </div>
 
                 <div data-testid="played-questions" className="column">
                     <h5 className="title is-5">Played questions</h5>
-                    {playedQuestions}
+                    <div className="question-container">
+                        {playedQuestions}
+                    </div>
                 </div>
             </div>
         </div>
