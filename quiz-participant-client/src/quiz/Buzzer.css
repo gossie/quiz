@@ -1,0 +1,50 @@
+
+.buzzer-button {
+    margin-top: 5px;
+    margin-bottom: 25px;
+    box-shadow: 6px 6px 0px 5px #661f18;
+    width: 150px;
+    height: 150px;
+	background-color:#b31727;
+    border-radius:75px;
+    border: none;
+	display:inline-block;
+	cursor:pointer;
+	color:#ffffff;
+	font-family:Arial;
+	font-size:17px;
+	padding:30px 25px;
+	text-decoration:none;
+    outline: none;
+    font-weight: bold;
+}
+
+
+.buzzer-button:hover {
+	background-color:#f24437;
+}
+.buzzer-button:active {
+    box-shadow: 3px 3px 0px 3px #661f18;
+    background-color:#f24437;
+	position:relative;
+    top:5px;
+    left: 5px;
+}
+
+.buzzer-button[disabled], .buzzer-button[disabled]:hover {
+    background-color:#b31727;
+    opacity: 0.3;
+}
+
+.buzzer-button.active[disabled], .buzzer-button.active[disabled]:hover {
+    box-shadow: 3px 3px 0px 2px #661f18;
+    background-color:#f24437;
+	position:relative;
+    top:5px;
+    left: 3px;
+    opacity: 1;
+}
+
+.buzzer-button:focus, .buzzer-button:hover, .buzzer-button:active, .buzzer-button.active {
+    outline: none;
+}
