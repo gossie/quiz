@@ -43,7 +43,13 @@ const Questions: React.FC<QuestionsProps> = (props: QuestionsProps) => {
 
     const openQuestions = props.quiz.openQuestions
             .sort((q1, q2) => q1.id - q2.id)
-            .map((q, index) => <div key={index}>#{index + 1} {q.question}{!q.pending && <span data-testid={`start-question-${index}`} className="icon has-text-primary" onClick={() => startQuestion(q)}><i className="fas fa-share-square"></i></span>}</div>);
+            .map((q, index) =>
+                    <div key={index}>
+                        #{index + 1} {q.question}
+                        { q.imagePath && q.imagePath.length > 0 && <span className="icon"><i className="fas fa-images"></i></span>}
+                        {!q.pending && <span data-testid={`start-question-${index}`} className="icon has-text-primary" onClick={() => startQuestion(q)}><i className="fas fa-share-square"></i></span>}
+                    </div>);
+    
     return (
         <div>
             <h4 className="title is-4">Questions</h4>
