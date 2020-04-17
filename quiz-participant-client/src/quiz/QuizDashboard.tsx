@@ -6,13 +6,13 @@ import Question from './Question';
 import './QuizDashboard.css';
 
 interface QuizDashboardProps {
-    quiz: Quiz;
-    participantId: number;
+    quizId: number;
+    participantName: string;
 }
 
 const QuizDashboard: React.FC<QuizDashboardProps> = (props: QuizDashboardProps) => {
 
-    const [quiz, setQuiz] = useState(props.quiz);
+    const [quiz, setQuiz] = useState({} as Quiz);
    
 
     const buzzer = () => {
