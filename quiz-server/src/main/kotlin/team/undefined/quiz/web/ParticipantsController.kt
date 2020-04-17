@@ -9,17 +9,16 @@ import java.util.*
 @RestController
 @CrossOrigin(origins = ["*"], allowedHeaders = ["*"])
 @RequestMapping("/api/quiz/{quizId}/participants")
-class ParticipantsController(private val quizService: QuizService,
-                             private val quizProjection: QuizProjection) {
+class ParticipantsController(private val quizService: QuizService) {
 
     @PostMapping(consumes = ["text/plain"], produces = ["application/json"])
-    @ResponseStatus(HttpStatus.ACCEPTED)
+    @ResponseStatus(HttpStatus.CREATED)
     fun create(@PathVariable quizId: UUID, @RequestBody participantName: String): Mono<Unit> {
         return quizService.createParticipant(CreateParticipantCommand(quizId, Participant(name = participantName)))
     }
 
     @PutMapping("/{participantId}/buzzer", produces = ["application/json"])
-    @ResponseStatus(HttpStatus.ACCEPTED)
+    @ResponseStatus(HttpStatus.OK)
     fun buzzer(@PathVariable quizId: UUID, @PathVariable participantId: UUID): Mono<Unit> {
         return quizService.buzzer(BuzzerCommand(quizId, participantId))
     }

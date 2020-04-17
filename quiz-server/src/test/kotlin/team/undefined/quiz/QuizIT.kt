@@ -1,17 +1,15 @@
 package team.undefined.quiz
 
+import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.reactive.AutoConfigureWebTestClient
 import org.springframework.boot.test.context.SpringBootTest
-import org.springframework.http.MediaType
 import org.springframework.test.web.reactive.server.WebTestClient
-import org.springframework.web.reactive.function.BodyInserters
-import team.undefined.quiz.web.QuestionDTO
-import team.undefined.quiz.web.QuizDTO
 
 @SpringBootTest
 @AutoConfigureWebTestClient
+@Disabled
 internal class QuizIT() {
 
     @Autowired
