@@ -12,7 +12,11 @@ interface ParticipantsProps {
 const Participants: React.FC<ParticipantsProps> = (props: ParticipantsProps) => {
     
     const comparePoints = (a: Participant, b: Participant) => {
-        return b.points - a.points;
+        if (b.points === a.points) {
+            return a.name.localeCompare(b.name);
+        } else {
+            return b.points - a.points;
+        }  
     }
 
     const elements = props.quiz.participants?.sort(comparePoints).map(p => 
