@@ -1,10 +1,16 @@
 .participant {
     display: block;
     margin-bottom: 7px;
+    display: flex;
+    flex-direction: row;
+    align-items: flex-start;
+}
+
+.participant-name {
+    margin-right: 30px;
 }
 
 .participant.turn {
-    color: orange;
     font-weight: bold
 }
 
