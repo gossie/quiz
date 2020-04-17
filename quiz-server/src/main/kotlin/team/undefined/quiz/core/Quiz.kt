@@ -1,9 +1,12 @@
 package team.undefined.quiz.core
 
+import java.sql.Timestamp
 import java.util.UUID
 import kotlin.collections.ArrayList
 
 data class Quiz(val id: UUID = UUID.randomUUID(), val name: String, val participants: List<Participant> = ArrayList(), val questions: List<Question> = ArrayList()) {
+
+    private var timestamp: Long? = null;
 
     fun nobodyHasBuzzered(): Boolean {
         return participants
@@ -71,6 +74,15 @@ data class Quiz(val id: UUID = UUID.randomUUID(), val name: String, val particip
     fun reopenQuestion(): Quiz {
         participants.forEach { it.turn = false }
         return this;
+    }
+
+    fun setTimestamp(timestamp: Long): Quiz {
+        this.timestamp = timestamp
+        return this
+    }
+
+    fun getTimestamp(): Long? {
+        return timestamp
     }
 
 }

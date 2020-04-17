@@ -14,18 +14,14 @@ class QuestionController(private val quizService: QuizService,
 
     @PostMapping(consumes = ["application/json"], produces = ["application/json"])
     @ResponseStatus(HttpStatus.CREATED)
-    fun createQuestion(@PathVariable quizId: UUID, @RequestBody question: QuestionDTO?): Mono<QuizDTO> {
+    fun createQuestion(@PathVariable quizId: UUID, @RequestBody question: QuestionDTO?): Mono<Unit> {
         return quizService.createQuestion(CreateQuestionCommand(quizId, Question(question = question!!.question)))
-                .map { quizProjection.determineQuiz(quizId) }
-                .flatMap { it.map() }
     }
 
     @PutMapping("/{questionId}", produces = ["application/json"])
     @ResponseStatus(HttpStatus.OK)
-    fun startQuestion(@PathVariable quizId: UUID, @PathVariable questionId: UUID): Mono<QuizDTO> {
+    fun startQuestion(@PathVariable quizId: UUID, @PathVariable questionId: UUID): Mono<Unit> {
         return quizService.startNewQuestion(AskQuestionCommand(quizId, questionId))
-                .map { quizProjection.determineQuiz(quizId) }
-                .flatMap { it.map() }
     }
 
 }

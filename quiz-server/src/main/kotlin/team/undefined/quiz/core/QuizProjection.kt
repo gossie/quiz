@@ -1,28 +1,19 @@
 package team.undefined.quiz.core
 
-import com.google.common.cache.CacheBuilder
-import com.google.common.cache.CacheLoader
-import com.google.common.cache.LoadingCache
 import com.google.common.eventbus.EventBus
 import com.google.common.eventbus.Subscribe
 import org.springframework.stereotype.Component
+import reactor.core.publisher.EmitterProcessor
 import reactor.core.publisher.Flux
 import java.util.*
-import kotlin.collections.HashMap
+import java.util.concurrent.ConcurrentHashMap
 
 @Component
 class QuizProjection(eventBus: EventBus,
                      private val eventRepository: EventRepository) {
 
-    private val quizCache: LoadingCache<UUID, Quiz> = CacheBuilder
-            .newBuilder()
-            .build(CacheLoader
-                    .from<UUID, Quiz> {
-                        eventRepository
-                                .determineEvents(it!!)
-                                .reduce(Quiz(name = "")) { quiz: Quiz, event: Event -> event.process(quiz)}
-                                .block()
-                    })
+    private val quizCache = ConcurrentHashMap<UUID, Quiz>()
+    private val observables = ConcurrentHashMap<UUID, EmitterProcessor<Quiz>>()
 
     init {
         eventBus.register(this)
@@ -30,21 +21,56 @@ class QuizProjection(eventBus: EventBus,
 
     @Subscribe
     fun handleQuizCreation(event: QuizCreatedEvent) {
-        quizCache.put(event.quizId, event.quiz)
+        quizCache[event.quizId] = event.process(event.quiz)
+        emitQuiz(quizCache[event.quizId]!!)
     }
 
     @Subscribe
-    fun handleQuestionCreation(event: QuestionCreatedEvent) {
-        quizCache.put(event.quizId, event.process(quizCache[event.quizId]))
-    }
+    fun handleQuestionCreation(event: QuestionCreatedEvent) = handleEvent(event)
 
-    fun determineQuiz(quizId: UUID): Quiz {
-        return quizCache[quizId]
+    @Subscribe
+    fun handleParticipantCreation(event: ParticipantCreatedEvent) = handleEvent(event)
+
+    @Subscribe
+    fun handleQuestionAsked(event: QuestionAskedEvent) = handleEvent(event)
+
+    @Subscribe
+    fun handleBuzzer(event: BuzzeredEvent) = handleEvent(event)
+
+    @Subscribe
+    fun handleAnswer(event: AnsweredEvent) = handleEvent(event)
+
+    @Subscribe
+    fun handleReopenedQuestion(event: CurrentQuestionReopenedEvent) = handleEvent(event)
+
+    private fun handleEvent(event: Event) {
+        val quiz = quizCache[event.quizId]
+        if (quiz == null) {
+            eventRepository.determineEvents(event.quizId)
+                    .reduce(Quiz(name = "")) { q: Quiz, e: Event -> e.process(q)}
+                    .subscribe {
+                        if (it.getTimestamp()!! < event.timestamp) {
+                            quizCache[event.quizId] = event.process(it)
+                        } else {
+                            quizCache[event.quizId] = it
+                        }
+                        emitQuiz(quizCache[event.quizId]!!)
+                    }
+        } else if (quiz.getTimestamp()!! < event.timestamp) {
+            quizCache[event.quizId] = event.process(quiz)
+            emitQuiz(quizCache[event.quizId]!!)
+        }
     }
 
     fun observeQuiz(quizId: UUID): Flux<Quiz> {
-        TODO("Not yet implemented")
+        return observables.computeIfAbsent(quizId) {
+            val emitter: EmitterProcessor<Quiz> = EmitterProcessor.create()
+            emitter.doAfterTerminate { observables.remove(quizId) }
+            emitter
+        }
     }
+
+    private fun emitQuiz(quiz: Quiz) = observables[quiz.id]?.onNext(quiz)
 
     fun removeObserver(quizId: UUID) {
         TODO("Not yet implemented")

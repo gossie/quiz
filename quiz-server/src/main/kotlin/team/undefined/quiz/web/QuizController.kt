@@ -19,48 +19,42 @@ class QuizController(private val quizService: QuizService,
 
     @PostMapping(produces = ["application/json"])
     @ResponseStatus(HttpStatus.CREATED)
-    fun createQuiz(@RequestBody quizDTO: QuizDTO): Mono<QuizDTO> {
+    fun createQuiz(@RequestBody quizDTO: QuizDTO): Mono<Unit> {
         val quiz = quizDTO.map()
-        return quizService.createQuiz(CreateQuizCommand(quiz.id, quiz))
-                .map { quizProjection.determineQuiz(quiz.id) }
-                .flatMap { it.map() }
+        return quizService.createQuiz(CreateQuizCommand(quiz.id, quiz));
     }
 
     @PatchMapping("/{quizId}", consumes = ["text/plain"], produces = ["application/json"])
-    fun answer(@PathVariable quizId: UUID, @RequestBody correct: String): Mono<QuizDTO> {
+    fun answer(@PathVariable quizId: UUID, @RequestBody correct: String): Mono<Unit> {
         return if (correct == "true") {
             quizService.answer(AnswerCommand(quizId, AnswerCommand.Answer.CORRECT))
-                    .map { quizProjection.determineQuiz(quizId) }
-                    .flatMap { it.map() }
         } else {
             quizService.answer(AnswerCommand(quizId, AnswerCommand.Answer.INCORRECT))
-                    .map { quizProjection.determineQuiz(quizId) }
-                    .flatMap { it.map() }
         }
     }
 
     @PutMapping("/{quizId}", produces = ["application/json"])
-    fun reopenQuestion(@PathVariable quizId: UUID): Mono<QuizDTO> {
-        return quizService.reopenQuestion(ReopenCurrentQuestionCommand(quizId))
-                .map { quizProjection.determineQuiz(quizId) }
-                .flatMap { it.map() }
+    fun reopenQuestion(@PathVariable quizId: UUID): Mono<Unit> {
+        return quizService.reopenQuestion(ReopenCurrentQuestionCommand(quizId));
     }
-
+/*
     @GetMapping("/{quizId}", produces = ["application/json"])
-    fun determineQuiz(@PathVariable quizId: UUID): Mono<QuizDTO> {
-        return Mono.just(quizProjection.determineQuiz(quizId))
+    fun determineQuiz(@PathVariable quizId: UUID): Mono<Unit> {
+        return quizProjection.determineQuiz(quizId)
                 .flatMap { it.map() }
     }
-
+*/
 }
-
-fun Quiz.map(): Mono<QuizDTO> {
+/*
+fun Quiz.map(): Mono<Unit> {
     return Flux.fromIterable(this.participants)
             .flatMap { it.map(this.id) }
             .collect(Collectors.toList())
             .map { QuizDTO(this.id, this.name, it, this.questions.filter { it.alreadyPlayed }.map { it.map(this.id) }, this.questions.filter { !it.alreadyPlayed }.map { it.map(this.id) }) }
             .flatMap { it.addLinks() }
 }
+
+ */
 
 private fun Participant.map(quizId: UUID): Mono<ParticipantDTO> {
     return ParticipantDTO(this.id, this.name, this.turn, this.points)
@@ -90,8 +84,8 @@ private fun QuestionDTO.addLinks(quizId: UUID): Mono<QuestionDTO> {
 private fun QuizDTO.map(): Quiz {
     return Quiz(name = this.name)
 }
-
-private fun QuizDTO.addLinks(): Mono<QuizDTO> {
+/*
+private fun QuizDTO.addLinks(): Mono<Unit> {
     return linkTo(methodOn(ParticipantsController::class.java).create(this.id!!, ""))
             .withRel("createParticipant")
             .toMono()
@@ -109,3 +103,5 @@ private fun QuizDTO.addLinks(): Mono<QuizDTO> {
             .flatMap { it.toMono() }
             .map { this.add(it) }
 }
+
+ */

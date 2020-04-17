@@ -15,7 +15,7 @@ class ReactiveWebSocketHandler(private val quizProjection: QuizProjection,
     override fun handle(webSocketSession: WebSocketSession): Mono<Void> {
         val quizId: UUID = determineQuizId(webSocketSession)
         return webSocketSession.send(quizProjection.observeQuiz(quizId)
-                .flatMap { it.map() }
+                .map { QuizDTO(name = "muss ich noch fixen") }
                 .map { objectMapper.writeValueAsString(it) }
                 .map { webSocketSession.textMessage(it.toString()) })
                 .and(webSocketSession.receive()
