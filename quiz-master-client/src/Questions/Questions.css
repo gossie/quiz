@@ -1,5 +1,8 @@
 .icon {
     margin-left: 10px;
+}
+
+.icon.has-text-primary {
     cursor: pointer;
 }
 

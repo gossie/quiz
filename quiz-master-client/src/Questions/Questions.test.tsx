@@ -10,6 +10,7 @@ test('should display questions', () => {
         participants: [],
         playedQuestions: [
             {
+                id: 1,
                 question: 'Frage 1',
                 pending: false,
                 links: []
@@ -17,11 +18,13 @@ test('should display questions', () => {
         ],
         openQuestions: [
             {
+                id: 2,
                 question: 'Frage 2',
                 pending: true,
                 links: []
             },
             {
+                id: 3,
                 question: 'Frage 3',
                 pending: false,
                 links: []
@@ -31,13 +34,13 @@ test('should display questions', () => {
     }
     const { getByTestId } = render(<Questions quiz={quiz} />);
 
-    const openQuestions = getByTestId('open-questions').querySelectorAll('div')
+    const openQuestions = getByTestId('open-questions').querySelectorAll('.question-container div')
 
     expect(openQuestions.length).toBe(2);
     expect(openQuestions[0].textContent).toEqual('#1 Frage 2');
     expect(openQuestions[1].textContent).toEqual('#2 Frage 3');
 
-    const playedQuestions = getByTestId('played-questions').querySelectorAll('div')
+    const playedQuestions = getByTestId('played-questions').querySelectorAll('.question-container div')
 
     expect(playedQuestions.length).toBe(1);
     expect(playedQuestions[0].textContent).toEqual('#1 Frage 1');
@@ -67,11 +70,13 @@ test('should add new question', async () => {
         playedQuestions: [],
         openQuestions: [
             {
+                id: 1,
                 question: 'Frage 1',
                 pending: false,
                 links: []
             },
             {
+                id: 2,
                 question: 'Frage 2',
                 pending: true,
                 links: []
@@ -117,6 +122,7 @@ test('should start question', () => {
         participants: [],
         playedQuestions: [
             {
+                id: 1,
                 question: 'Frage 1',
                 pending: false,
                 links: []
@@ -124,11 +130,13 @@ test('should start question', () => {
         ],
         openQuestions: [
             {
+                id: 2,
                 question: 'Frage 2',
                 pending: false,
                 links: [{ href: '/api/quiz/5/questions/11', rel: 'self' }]
             },
             {
+                id: 3,
                 question: 'Frage 3',
                 pending: false,
                 links: []
