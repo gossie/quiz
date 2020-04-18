@@ -1,5 +1,6 @@
 package team.undefined.quiz.core
 
+import com.fasterxml.jackson.annotation.JsonProperty
 import java.util.Date
 import java.util.UUID
 
@@ -10,48 +11,48 @@ interface Event {
     fun process(quiz: Quiz): Quiz
 }
 
-data class QuizCreatedEvent(override val quizId: UUID, val quiz: Quiz, override val timestamp: Long = Date().time) : Event {
+data class QuizCreatedEvent(@JsonProperty("quizId") override val quizId: UUID, @JsonProperty("quiz") val quiz: Quiz, @JsonProperty("timestamp") override val timestamp: Long = Date().time) : Event {
     override fun process(quiz: Quiz): Quiz {
         return this.quiz.setTimestamp(timestamp)
     }
 }
 
-data class QuestionCreatedEvent(override val quizId: UUID, val question: Question, override val timestamp: Long = Date().time) : Event {
+data class QuestionCreatedEvent(@JsonProperty("quizId") override val quizId: UUID, @JsonProperty("question") val question: Question, @JsonProperty("timestamp") override val timestamp: Long = Date().time) : Event {
     override fun process(quiz: Quiz): Quiz {
         return quiz.addQuestion(question)
                 .setTimestamp(timestamp)
     }
 }
 
-data class ParticipantCreatedEvent(override val quizId: UUID, val participant: Participant, override val timestamp: Long = Date().time) : Event {
+data class ParticipantCreatedEvent(@JsonProperty("quizId") override val quizId: UUID, @JsonProperty("participant") val participant: Participant, @JsonProperty("timestamp") override val timestamp: Long = Date().time) : Event {
     override fun process(quiz: Quiz): Quiz {
         return quiz.addParticipantIfNecessary(participant)
                 .setTimestamp(timestamp)
     }
 }
 
-data class QuestionAskedEvent(override val quizId: UUID, val questionId: UUID, override val timestamp: Long = Date().time) : Event {
+data class QuestionAskedEvent(@JsonProperty("quizId") override val quizId: UUID, @JsonProperty("questionId") val questionId: UUID, @JsonProperty("timestamp") override val timestamp: Long = Date().time) : Event {
     override fun process(quiz: Quiz): Quiz {
         return quiz.startQuestion(questionId)
                 .setTimestamp(timestamp)
     }
 }
 
-data class BuzzeredEvent(override val quizId: UUID, val participantId: UUID, override val timestamp: Long = Date().time) : Event {
+data class BuzzeredEvent(@JsonProperty("quizId") override val quizId: UUID, @JsonProperty("participantId") val participantId: UUID, @JsonProperty("timestamp") override val timestamp: Long = Date().time) : Event {
     override fun process(quiz: Quiz): Quiz {
         return quiz.select(participantId)
                 .setTimestamp(timestamp)
     }
 }
 
-data class AnsweredEvent(override val quizId: UUID, val answer: AnswerCommand.Answer, override val timestamp: Long = Date().time) : Event {
+data class AnsweredEvent(@JsonProperty("quizId") override val quizId: UUID, @JsonProperty("answer") val answer: AnswerCommand.Answer, @JsonProperty("timestamp") override val timestamp: Long = Date().time) : Event {
     override fun process(quiz: Quiz): Quiz {
         return answer.performAnswer(quiz)
                 .setTimestamp(timestamp)
     }
 }
 
-data class CurrentQuestionReopenedEvent(override val quizId: UUID, override val timestamp: Long = Date().time) : Event {
+data class CurrentQuestionReopenedEvent(@JsonProperty("quizId") override val quizId: UUID, @JsonProperty("timestamp") override val timestamp: Long = Date().time) : Event {
     override fun process(quiz: Quiz): Quiz {
         return quiz.reopenQuestion()
                 .setTimestamp(timestamp)

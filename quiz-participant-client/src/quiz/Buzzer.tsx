@@ -11,9 +11,9 @@ interface BuzzerProps {
 const Buzzer: React.FC<BuzzerProps> = (props: BuzzerProps) => {
     const buzzerAudio = useRef(null);
 
-    const isParticipantActive = () => props.quiz.participants.some(p => p.turn && p.id === props.participantId);
+    const isParticipantActive = props.quiz.participants.some(p => p.turn && p.id === props.participantId);
 
-    const isCurrentQuestionOpen = useCallback(() => !props.quiz.participants.some(p => p.turn), [props]);
+    const isCurrentQuestionOpen = !props.quiz.participants.some(p => p.turn);
 
     const buzzer = useCallback(() => {
         buzzerAudio.current.muted = false;

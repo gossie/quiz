@@ -21,6 +21,7 @@ class QuizController(private val quizService: QuizService,
     }
 
     @PatchMapping("/{quizId}", consumes = ["text/plain"])
+    @ResponseStatus(HttpStatus.OK)
     fun answer(@PathVariable quizId: UUID, @RequestBody correct: String): Mono<Unit> {
         return if (correct == "true") {
             quizService.answer(AnswerCommand(quizId, AnswerCommand.Answer.CORRECT))
@@ -29,7 +30,8 @@ class QuizController(private val quizService: QuizService,
         }
     }
 
-    @PutMapping("/{quizId}", produces = ["application/json"])
+    @PutMapping("/{quizId}")
+    @ResponseStatus(HttpStatus.OK)
     fun reopenQuestion(@PathVariable quizId: UUID): Mono<Unit> {
         return quizService.reopenQuestion(ReopenCurrentQuestionCommand(quizId));
     }

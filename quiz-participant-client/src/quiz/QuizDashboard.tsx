@@ -40,18 +40,15 @@ const QuizDashboard: React.FC<QuizDashboardProps> = (props: QuizDashboardProps) 
     }, [props.quizId, props.participantName]);
 
     useEffect(() => {
-        if (participantId.length === 0 && Object.keys(quiz).length > 0) {
-            const participantLink = quiz.links.find(link => link.rel === 'createParticipant').href;
-            fetch(`${process.env.REACT_APP_BASE_URL}${participantLink}`, {
+        if (participantId.length === 0) {
+            // const participantLink = quiz.links.find(link => link.rel === 'createParticipant').href;
+            fetch(`${process.env.REACT_APP_BASE_URL}/api/quiz/${props.quizId}/participants`, {
                 method: 'POST',
                 body: props.participantName,
                 headers: {
                     'Content-Type': 'text/plain',
-                    Accept: 'text/plain'
                 }
-            })
-            .then(response => response.text())
-            .then(text => setParticipantId(text))
+            });
         }
     });
     
