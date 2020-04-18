@@ -1,15 +1,10 @@
 package team.undefined.quiz.web
 
-import org.springframework.hateoas.Link
-import org.springframework.hateoas.server.reactive.WebFluxLinkBuilder.linkTo
-import org.springframework.hateoas.server.reactive.WebFluxLinkBuilder.methodOn
 import org.springframework.http.HttpStatus
 import org.springframework.web.bind.annotation.*
-import reactor.core.publisher.Flux
 import reactor.core.publisher.Mono
 import team.undefined.quiz.core.*
 import java.util.*
-import java.util.stream.Collectors
 
 @RestController
 @CrossOrigin(origins = ["*"], allowedHeaders = ["*"])
@@ -17,14 +12,15 @@ import java.util.stream.Collectors
 class QuizController(private val quizService: QuizService,
                      private val quizProjection: QuizProjection) {
 
-    @PostMapping(produces = ["application/json"])
+    @PostMapping(consumes = ["application/json"], produces = ["text/plain"])
     @ResponseStatus(HttpStatus.CREATED)
-    fun createQuiz(@RequestBody quizDTO: QuizDTO): Mono<Unit> {
+    fun createQuiz(@RequestBody quizDTO: QuizDTO): Mono<String> {
         val quiz = quizDTO.map()
-        return quizService.createQuiz(CreateQuizCommand(quiz.id, quiz));
+        return quizService.createQuiz(CreateQuizCommand(quiz.id, quiz))
+                .map { quiz.id.toString() }
     }
 
-    @PatchMapping("/{quizId}", consumes = ["text/plain"], produces = ["application/json"])
+    @PatchMapping("/{quizId}", consumes = ["text/plain"])
     fun answer(@PathVariable quizId: UUID, @RequestBody correct: String): Mono<Unit> {
         return if (correct == "true") {
             quizService.answer(AnswerCommand(quizId, AnswerCommand.Answer.CORRECT))

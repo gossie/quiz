@@ -4,7 +4,7 @@ interface Link {
 }
 
 export interface Participant {
-    id: number;
+    id: string;
     name: string;
     turn: boolean;
     points: number;
@@ -19,7 +19,7 @@ export interface Question{
 }
 
 export default interface Quiz {
-    id: number;
+    id: string;
     name: string;
     turn?: string;
     participants: Array<Participant>;

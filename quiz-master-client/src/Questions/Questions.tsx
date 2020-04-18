@@ -38,11 +38,9 @@ const Questions: React.FC<QuestionsProps> = (props: QuestionsProps) => {
     };
 
     const playedQuestions = props.quiz.playedQuestions
-            .sort((q1, q2) => q2.id - q1.id)
             .map((q, index) => <div key={index}>#{index + 1} {q.question}</div>);
 
     const openQuestions = props.quiz.openQuestions
-            .sort((q1, q2) => q1.id - q2.id)
             .map((q, index) =>
                     <div key={index}>
                         #{index + 1} {q.question}

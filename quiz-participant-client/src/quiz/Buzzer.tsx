@@ -1,20 +1,41 @@
 import React, { useCallback, useEffect, useRef } from 'react';
 import './Buzzer.css';
+import Quiz from '../quiz-client-shared/quiz';
 
 const buzzerfile = require('./../assets/buzzer.mp3');
 interface BuzzerProps {
-    isParticipantActive: boolean;
-    isCurrentQuestionOpen: boolean;
-    onBuzzer: Function;
+    quiz: Quiz;
+    participantId: string;
 }
 
 const Buzzer: React.FC<BuzzerProps> = (props: BuzzerProps) => {
     const buzzerAudio = useRef(null);
 
+    const isParticipantActive = () => props.quiz.participants.some(p => p.turn && p.id === props.participantId);
+
+    const isCurrentQuestionOpen = useCallback(() => !props.quiz.participants.some(p => p.turn), [props]);
+
     const buzzer = useCallback(() => {
         buzzerAudio.current.muted = false;
         buzzerAudio.current.play();
-        props.onBuzzer();
+        const buzzerHref = props.quiz.participants
+                .find(p => p.id === props.participantId)
+                .links
+                .find(link => link.rel === 'buzzer')
+                .href;
+
+        fetch(`${process.env.REACT_APP_BASE_URL}${buzzerHref}`, {
+            method: 'PUT',
+            headers: {
+                Accept: 'application/json'
+            }
+        })
+        .then(response => {
+            if (response.status !== 200) {
+                throw Error('error when hitting buzzer');
+            }
+        })
+        .catch(e => console.error(e));
     }, [props]);
 
     useEffect(() => {
@@ -25,7 +46,7 @@ const Buzzer: React.FC<BuzzerProps> = (props: BuzzerProps) => {
 
     useEffect(() => {
         console.log("add key listener for buzzer if question is open")
-        if (props.isCurrentQuestionOpen) {
+        if (isCurrentQuestionOpen) {
             console.log("question is open")
             const buzzerOnKeydown = (event) => {
                 if ((event.keyCode === 32 || event.keyCode === 13)) {
@@ -39,15 +60,15 @@ const Buzzer: React.FC<BuzzerProps> = (props: BuzzerProps) => {
                 document.removeEventListener('keydown', buzzerOnKeydown);
             }
         }
-    }, [props.isCurrentQuestionOpen, buzzer]);
+    }, [isCurrentQuestionOpen, buzzer]);
 
     return (
         <span>
             <audio src={buzzerfile} ref={buzzerAudio} preload='auto'></audio>
-            <button disabled={!props.isCurrentQuestionOpen} className={props.isParticipantActive ? 'buzzer-button active' : 'buzzer-button'} onMouseDown={buzzer}>
-                {props.isCurrentQuestionOpen ? 
+            <button disabled={!isCurrentQuestionOpen} className={isParticipantActive ? 'buzzer-button active' : 'buzzer-button'} onMouseDown={buzzer}>
+                {isCurrentQuestionOpen ? 
                     "I know it!" :
-                    (!props.isParticipantActive ?
+                    (!isParticipantActive ?
                     "Too late!"
                     :
                     "Your turn!")

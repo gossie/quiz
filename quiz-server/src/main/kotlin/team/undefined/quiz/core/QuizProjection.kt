@@ -70,10 +70,16 @@ class QuizProjection(eventBus: EventBus,
         }
     }
 
-    private fun emitQuiz(quiz: Quiz) = observables[quiz.id]?.onNext(quiz)
+    private fun emitQuiz(quiz: Quiz) {
+        observables.computeIfAbsent(quiz.id) {
+            val emitter: EmitterProcessor<Quiz> = EmitterProcessor.create()
+            emitter.doAfterTerminate { observables.remove(quiz.id) }
+            emitter
+        }.onNext(quiz)
+    }
 
     fun removeObserver(quizId: UUID) {
-        TODO("Not yet implemented")
+        observables.remove(quizId)
     }
 
 }

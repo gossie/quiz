@@ -11,7 +11,7 @@ import java.util.*
 @RequestMapping("/api/quiz/{quizId}/participants")
 class ParticipantsController(private val quizService: QuizService) {
 
-    @PostMapping(consumes = ["text/plain"], produces = ["application/json"])
+    @PostMapping(consumes = ["text/plain"], produces = ["text/plain"])
     @ResponseStatus(HttpStatus.CREATED)
     fun create(@PathVariable quizId: UUID, @RequestBody participantName: String): Mono<Unit> {
         return quizService.createParticipant(CreateParticipantCommand(quizId, Participant(name = participantName)))
