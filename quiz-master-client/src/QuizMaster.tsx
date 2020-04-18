@@ -1,7 +1,6 @@
-import React, { useState, useEffect } from 'react';
-import Participants from './quiz-client-shared/Participants/Participants';
+import React, { useEffect, useState } from 'react';
 import Questions from './Questions/Questions';
-import Answers from './Answers/Answers';
+import Participants from './quiz-client-shared/Participants/Participants';
 import Quiz from './quiz-client-shared/quiz';
 
 interface QuizMasterProps {
@@ -40,7 +39,6 @@ const QuizMaster: React.FC<QuizMasterProps> = (props: QuizMasterProps) => {
                             <Participants quiz={quiz}></Participants>
                         </div>
                         <div className="column question">
-                            <Answers quiz={quiz}></Answers>
                             <Questions quiz={quiz}></Questions>
                         </div>
                     </div>

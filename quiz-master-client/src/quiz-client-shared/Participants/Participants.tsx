@@ -3,6 +3,7 @@ import Quiz, { Participant } from "../quiz";
 import FlipMove from "react-flip-move"
 
 import './Participants.css';
+import Answers from '../../Answers/Answers';
 
 interface ParticipantsProps {
     quiz: Quiz;
@@ -11,10 +12,18 @@ interface ParticipantsProps {
 const Participants: React.FC<ParticipantsProps> = (props: ParticipantsProps) => {
     
     const comparePoints = (a: Participant, b: Participant) => {
-        return b.points - a.points;
+        if (b.points === a.points) {
+            return a.name.localeCompare(b.name);
+        } else {
+            return b.points - a.points;
+        }  
     }
 
-    const elements = props.quiz.participants?.sort(comparePoints).map(p => <span key={p.name} className={"participant " + (p.turn ? 'turn' : '')}>{p.name} ({p.points})</span>)
+    const elements = props.quiz.participants?.sort(comparePoints).map(p => 
+        <div key={p.name} className={"participant " + (p.turn ? 'turn' : '')}>
+            <div className="participant-name">{p.name} ({p.points})</div>
+            {p.turn ? <Answers quiz={props.quiz}></Answers> : ''}
+        </div>)
 
     return (
         <div>

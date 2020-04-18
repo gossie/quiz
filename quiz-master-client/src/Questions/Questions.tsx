@@ -44,7 +44,7 @@ const Questions: React.FC<QuestionsProps> = (props: QuestionsProps) => {
             .map((q, index) =>
                     <div key={index}>
                         #{index + 1} {q.question}
-                        { q.imagePath && q.imagePath.length > 0 && <span className="icon"><i className="fas fa-images"></i></span>}
+                        { q.imagePath && q.imagePath.length > 0 && <span title="Start Question" className="icon"><i className="fas fa-images"></i></span>}
                         {!q.pending && <span data-testid={`start-question-${index}`} className="icon has-text-primary" onClick={() => startQuestion(q)}><i className="fas fa-share-square"></i></span>}
                     </div>);
     
