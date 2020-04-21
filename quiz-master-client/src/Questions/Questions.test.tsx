@@ -148,3 +148,43 @@ test('should start question', () => {
 
     getByTestId('start-question-0').click();
 });
+
+test('should open image modal', () => {
+    const quiz: Quiz = {
+        id: 5,
+        name: "Awesome Quiz",
+        participants: [],
+        openQuestions: [
+            {
+                id: 2,
+                question: 'Frage 2',
+                pending: true,
+                links: []
+            },
+            {
+                id: 3,
+                question: 'Frage 3',
+                pending: false,
+                imagePath: 'https://path_to_image/',
+                links: []
+            }
+        ],
+        playedQuestions: [],
+        links: []
+    }
+
+    const { getByTestId } = render(<Questions quiz={quiz} />);
+
+    expect(() => getByTestId('image-dialog')).toThrowError();
+
+    const imageIcon = getByTestId('image-icon-1');
+    imageIcon.click();
+    expect(() => getByTestId('image-dialog')).not.toThrowError();
+
+    const image = getByTestId('image') as HTMLImageElement;
+    expect(image.src).toEqual('https://path_to_image/');
+
+    const closeButton = getByTestId('close-button');
+    closeButton.click();
+    expect(() => getByTestId('image-dialog')).toThrowError();
+});
