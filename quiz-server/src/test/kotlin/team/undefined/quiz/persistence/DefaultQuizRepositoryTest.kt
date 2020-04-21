@@ -14,7 +14,7 @@ import team.undefined.quiz.core.QuizService
 import java.util.concurrent.atomic.AtomicLong
 
 @DataR2dbcTest
-@Import(DefaultQuizRepository::class, ReactiveWebSocketHandler::class, QuizService::class, ObjectMapper::class)
+@Import(DefaultQuizRepository::class, QuizService::class, ObjectMapper::class)
 internal class DefaultQuizRepositoryTest {
 
     @Autowired
