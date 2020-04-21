@@ -13,7 +13,6 @@ import team.undefined.quiz.core.Participant
 import team.undefined.quiz.core.Question
 import team.undefined.quiz.core.Quiz
 import team.undefined.quiz.core.QuizService
-import java.time.LocalTime
 import java.util.stream.Collectors
 
 
