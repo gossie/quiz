@@ -9,6 +9,7 @@ interface QuestionsProps {
 const Questions: React.FC<QuestionsProps> = (props: QuestionsProps) => {
     const [newQuestion, setNewQuestion] = useState('');
     const [imagePath, setImagePath] = useState('');
+    const [imageToDisplay, setImageToDisplay] = useState('');
 
     const createQuestion = async () => {
         const questionLink = props.quiz.links.find(link => link.rel === 'createQuestion')?.href;
@@ -44,7 +45,7 @@ const Questions: React.FC<QuestionsProps> = (props: QuestionsProps) => {
             .map((q, index) =>
                     <div key={index}>
                         #{index + 1} {q.question}
-                        { q.imagePath && q.imagePath.length > 0 && <span title="Start Question" className="icon"><i className="fas fa-images"></i></span>}
+                        { q.imagePath && q.imagePath.length > 0 && <span data-testid={`image-icon-${index}`} title="Show image" className="icon" onClick={() => setImageToDisplay(q.imagePath!)}><i className="fas fa-images"></i></span>}
                         {!q.pending && <span data-testid={`start-question-${index}`} className="icon has-text-primary" onClick={() => startQuestion(q)}><i className="fas fa-share-square"></i></span>}
                     </div>);
     
@@ -83,7 +84,16 @@ const Questions: React.FC<QuestionsProps> = (props: QuestionsProps) => {
                     </div>
                 </div>
             </div>
-        </div>
+            { imageToDisplay.length > 0 &&
+                <div data-testid="image-dialog" className="modal is-active">
+                    <div className="modal-background"></div>
+                    <div className="modal-content">
+                        <img data-testid="image" src={imageToDisplay} alt="There should be something here" />
+                    </div>
+                    <button data-testid="close-button" className="modal-close is-large" aria-label="close" onClick={() => setImageToDisplay('')}></button>
+                </div>
+            }
+        </div>  
     )
 };
 
