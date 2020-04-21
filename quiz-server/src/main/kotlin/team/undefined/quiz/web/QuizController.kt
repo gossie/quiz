@@ -4,6 +4,8 @@ import org.springframework.hateoas.Link
 import org.springframework.hateoas.server.reactive.WebFluxLinkBuilder.linkTo
 import org.springframework.hateoas.server.reactive.WebFluxLinkBuilder.methodOn
 import org.springframework.http.HttpStatus
+import org.springframework.http.MediaType
+import org.springframework.http.codec.ServerSentEvent
 import org.springframework.web.bind.annotation.*
 import reactor.core.publisher.Flux
 import reactor.core.publisher.Mono
@@ -11,21 +13,23 @@ import team.undefined.quiz.core.Participant
 import team.undefined.quiz.core.Question
 import team.undefined.quiz.core.Quiz
 import team.undefined.quiz.core.QuizService
+import java.time.LocalTime
 import java.util.stream.Collectors
+
 
 @RestController
 @CrossOrigin(origins = ["*"], allowedHeaders = ["*"])
 @RequestMapping("/api/quiz")
 class QuizController(private val quizService: QuizService) {
 
-    @PostMapping(produces = ["application/json"])
+    @PostMapping(produces = [MediaType.APPLICATION_JSON_VALUE])
     @ResponseStatus(HttpStatus.CREATED)
     fun createQuiz(@RequestBody quiz: QuizDTO): Mono<QuizDTO> {
         return quizService.createQuiz(quiz.map())
                 .flatMap { it.map() }
     }
 
-    @PatchMapping("/{quizId}", consumes = ["text/plain"], produces = ["application/json"])
+    @PatchMapping("/{quizId}", consumes = [MediaType.TEXT_PLAIN_VALUE], produces = [MediaType.APPLICATION_JSON_VALUE])
     fun answer(@PathVariable quizId: Long, @RequestBody correct: String): Mono<QuizDTO> {
         return if (correct == "true") {
             quizService.correctAnswer(quizId)
@@ -36,16 +40,28 @@ class QuizController(private val quizService: QuizService) {
         }
     }
 
-    @PutMapping("/{quizId}", produces = ["application/json"])
+    @PutMapping("/{quizId}", produces = [MediaType.APPLICATION_JSON_VALUE])
     fun reopenQuestion(@PathVariable quizId: Long): Mono<QuizDTO> {
         return quizService.reopenQuestion(quizId)
                 .flatMap { it.map() }
     }
 
-    @GetMapping("/{quizId}", produces = ["application/json"])
+    @GetMapping("/{quizId}", produces = [MediaType.APPLICATION_JSON_VALUE])
     fun determineQuiz(@PathVariable quizId: Long): Mono<QuizDTO> {
         return quizService.determineQuiz(quizId)
                 .flatMap { it.map() }
+    }
+
+    @GetMapping(path = ["/{quizId}/stream"], produces = [MediaType.TEXT_EVENT_STREAM_VALUE])
+    fun getQuizStream(@PathVariable quizId: Long): Flux<ServerSentEvent<QuizDTO>> {
+        return quizService.observeQuiz(quizId)
+                .flatMap { it.map() }
+                .map {
+                    ServerSentEvent.builder<QuizDTO>()
+                            .event("quiz")
+                            .data(it)
+                            .build()
+                }
     }
 
 }
