@@ -12,7 +12,6 @@ import team.undefined.quiz.core.Event
 import team.undefined.quiz.core.Quiz
 import team.undefined.quiz.core.QuizProjection
 import team.undefined.quiz.core.QuizService
-import team.undefined.quiz.web.ReactiveWebSocketHandler
 import java.util.*
 
 data class TestEvent(@JsonProperty("quizId") override val quizId: UUID, @JsonProperty("timestamp") override val timestamp: Long, @JsonProperty("payload") val payload: Map<String, String>) : Event {

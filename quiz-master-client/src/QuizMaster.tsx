@@ -11,21 +11,17 @@ const QuizMaster: React.FC<QuizMasterProps> = (props: QuizMasterProps) => {
     const [quiz, setQuiz] = useState({} as Quiz);
 
     useEffect(() => {
-        console.log('websocket wird erstellt');
-        const clientWebSocket = new WebSocket(`${process.env.REACT_APP_WS_BASE_URL}/event-emitter/${props.quizId}`);
-        clientWebSocket.onmessage = ev => {
-            console.log('event', ev);
-            if (Object.keys(JSON.parse(ev.data)).includes('id')) {
-                setQuiz(JSON.parse(ev.data));
-            }
-        };
+        console.debug('register for server sent events');
+        const evtSource = new EventSource(`${process.env.REACT_APP_BASE_URL}/api/quiz/${props.quizId}/stream`);
 
-        const i = setInterval(() => clientWebSocket.send('heartBeat'), 10000);
+        evtSource.addEventListener("quiz", (ev: any) => {
+            console.debug('event', ev);
+            setQuiz(JSON.parse(ev['data']));
+        });
 
         return () => {
-            console.log('websocket wird geschlossen');
-            clientWebSocket.close();
-            clearInterval(i);
+            console.debug('closing event stream');
+            evtSource.close();
         };
     }, [props.quizId]);
 

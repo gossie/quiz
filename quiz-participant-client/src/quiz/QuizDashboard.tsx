@@ -16,26 +16,24 @@ const QuizDashboard: React.FC<QuizDashboardProps> = (props: QuizDashboardProps) 
     const [participantId, setParticipantId] = useState('');
 
     useEffect(() => {
-        console.log('websocket wird erstellt');
-        const clientWebSocket = new WebSocket(`${process.env.REACT_APP_WS_BASE_URL}/event-emitter/${props.quizId}`);
-        clientWebSocket.onmessage = ev => {
+        console.debug('register for server sent events');
+        const evtSource = new EventSource(`${process.env.REACT_APP_BASE_URL}/api/quiz/${props.quizId}/stream`);
+
+        evtSource.addEventListener("quiz", (ev: any) => {
             console.log('event', ev);
             if (Object.keys(JSON.parse(ev.data)).includes('id')) {
-                const newQuiz = JSON.parse(ev.data);
+                const newQuiz: Quiz = JSON.parse(ev.data);
                 const pId = newQuiz.participants.find(p => p.name === props.participantName)?.id
                 if (pId) {
                     setParticipantId(pId);
                 }
                 setQuiz(newQuiz);
             }
-        };
-
-        const i = setInterval(() => clientWebSocket.send('heartBeat'), 10000);
+        });
 
         return () => {
-            console.log('websocket wird geschlossen');
-            clientWebSocket.close();
-            clearInterval(i);
+            console.debug('closing event stream');
+            evtSource.close();
         };
     }, [props.quizId, props.participantName]);
 

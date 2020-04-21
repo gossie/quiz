@@ -16,7 +16,6 @@ import team.undefined.quiz.core.*
 import java.util.*
 
 @WebFluxTest(controllers = [QuizController::class])
-@Import(ReactiveWebSocketHandler::class)
 internal class QuizControllerTest {
 
     @Autowired private lateinit var webTestClient: WebTestClient
