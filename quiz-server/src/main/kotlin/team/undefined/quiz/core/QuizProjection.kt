@@ -64,16 +64,18 @@ class QuizProjection(eventBus: EventBus,
 
     fun observeQuiz(quizId: UUID): Flux<Quiz> {
         return observables.computeIfAbsent(quizId) {
-            val emitter: EmitterProcessor<Quiz> = EmitterProcessor.create()
+            val emitter: EmitterProcessor<Quiz> = EmitterProcessor.create(false)
             emitter.doAfterTerminate { observables.remove(quizId) }
+            emitter.doOnCancel { observables.remove(quizId) }
             emitter
         }
     }
 
     private fun emitQuiz(quiz: Quiz) {
         observables.computeIfAbsent(quiz.id) {
-            val emitter: EmitterProcessor<Quiz> = EmitterProcessor.create()
+            val emitter: EmitterProcessor<Quiz> = EmitterProcessor.create(false)
             emitter.doAfterTerminate { observables.remove(quiz.id) }
+            emitter.doOnCancel { observables.remove(quiz.id) }
             emitter
         }.onNext(quiz)
     }
