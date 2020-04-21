@@ -149,7 +149,7 @@ test('should start question', () => {
     getByTestId('start-question-0').click();
 });
 
-test('should open image modal', () => {
+test('should open and close image modal', () => {
     const quiz: Quiz = {
         id: 5,
         name: "Awesome Quiz",
