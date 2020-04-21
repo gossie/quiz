@@ -14,17 +14,10 @@ const QuizMaster: React.FC<QuizMasterProps> = (props: QuizMasterProps) => {
         console.debug('register for server sent events');
         const evtSource = new EventSource(`${process.env.REACT_APP_BASE_URL}/api/quiz/${quiz.id}/stream`);
 
-        // evtSource.onmessage = ev => {
-        //     console.debug('event', ev);
-        //     setQuiz(ev.data);
-        // };
-
         evtSource.addEventListener("quiz", (ev: any) => {
             console.debug('event', ev);
             setQuiz(JSON.parse(ev['data']));
         });
-
-        // const i = setInterval(() => clientWebSocket.send('heartBeat'), 10000);
 
         return () => {
             console.debug('closing event stream');

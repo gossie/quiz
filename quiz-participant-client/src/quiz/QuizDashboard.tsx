@@ -51,8 +51,6 @@ const QuizDashboard: React.FC<QuizDashboardProps> = (props: QuizDashboardProps) 
             setQuiz(JSON.parse(ev['data']));
         });
 
-        // const i = setInterval(() => clientWebSocket.send('heartBeat'), 10000);
-
         return () => {
             console.debug('closing event stream');
             evtSource.close();
