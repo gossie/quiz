@@ -11,11 +11,10 @@ import team.undefined.quiz.core.Participant
 import team.undefined.quiz.core.Question
 import team.undefined.quiz.core.Quiz
 import team.undefined.quiz.core.QuizService
-import team.undefined.quiz.web.ReactiveWebSocketHandler
 import java.util.concurrent.atomic.AtomicLong
 
 @DataR2dbcTest
-@Import(DefaultQuizRepository::class, ReactiveWebSocketHandler::class, QuizService::class, ObjectMapper::class)
+@Import(DefaultQuizRepository::class, QuizService::class, ObjectMapper::class)
 internal class DefaultQuizRepositoryTest {
 
     @Autowired
