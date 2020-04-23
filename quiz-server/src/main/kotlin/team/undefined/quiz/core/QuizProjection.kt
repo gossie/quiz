@@ -5,6 +5,7 @@ import com.google.common.eventbus.Subscribe
 import org.springframework.stereotype.Component
 import reactor.core.publisher.EmitterProcessor
 import reactor.core.publisher.Flux
+import reactor.core.publisher.Mono
 import java.util.*
 import java.util.concurrent.ConcurrentHashMap
 
@@ -63,21 +64,17 @@ class QuizProjection(eventBus: EventBus,
     }
 
     fun observeQuiz(quizId: UUID): Flux<Quiz> {
-        return observables.computeIfAbsent(quizId) {
-            val emitter: EmitterProcessor<Quiz> = EmitterProcessor.create(false)
-            emitter.doAfterTerminate { observables.remove(quizId) }
-            emitter.doOnCancel { observables.remove(quizId) }
-            emitter
-        }
+//        Mono.just(quizCache[quizId])
+//                .m
+        val observable = observables.computeIfAbsent(quizId) { EmitterProcessor.create(false) }
+//        return observable
+//                .last()
+        return observable
     }
 
     private fun emitQuiz(quiz: Quiz) {
-        observables.computeIfAbsent(quiz.id) {
-            val emitter: EmitterProcessor<Quiz> = EmitterProcessor.create(false)
-            emitter.doAfterTerminate { observables.remove(quiz.id) }
-            emitter.doOnCancel { observables.remove(quiz.id) }
-            emitter
-        }.onNext(quiz)
+        observables.computeIfAbsent(quiz.id) { EmitterProcessor.create(false) }
+                .onNext(quiz)
     }
 
     fun removeObserver(quizId: UUID) {

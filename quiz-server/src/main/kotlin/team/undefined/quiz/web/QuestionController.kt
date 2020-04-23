@@ -9,8 +9,7 @@ import java.util.*
 @RestController
 @CrossOrigin(origins = ["*"], allowedHeaders = ["*"])
 @RequestMapping("/api/quiz/{quizId}/questions")
-class QuestionController(private val quizService: QuizService,
-                         private val quizProjection: QuizProjection) {
+class QuestionController(private val quizService: QuizService) {
 
     @PostMapping(consumes = ["application/json"])
     @ResponseStatus(HttpStatus.CREATED)
