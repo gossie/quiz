@@ -34,6 +34,7 @@ test('has two participants', () => {
 test('has no participants', () => {
     const quiz: Quiz = {
         participants: [],
+        openQuestions: [],
         links: []
     }
     const { getByTestId } = render(<Participants quiz={quiz} />);

@@ -35,7 +35,7 @@ test('has no participants', () => {
     const quiz: Quiz = {
         id: 15,
         name: 'Quiz',
-        questions: [],
+        openQuestions: [],
         participants: [],
         links: []
     }
