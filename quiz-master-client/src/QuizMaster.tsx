@@ -16,6 +16,8 @@ const QuizMaster: React.FC<QuizMasterProps> = (props: QuizMasterProps) => {
         
         evtSource.onerror = (e) => console.error('sse error', e);
 
+        evtSource.addEventListener("ping", (ev: any) => console.debug('received heartbeat', ev));
+
         evtSource.addEventListener("quiz", (ev: any) => {
             console.debug('event', ev);
             setQuiz(JSON.parse(ev['data']));
