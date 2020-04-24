@@ -46,6 +46,10 @@ const QuizDashboard: React.FC<QuizDashboardProps> = (props: QuizDashboardProps) 
         console.debug('register for server sent events');
         const evtSource = new EventSource(`${process.env.REACT_APP_BASE_URL}/api/quiz/${quiz.id}/stream`);
 
+        evtSource.onerror = (e) => console.error('sse error', e);
+
+        evtSource.addEventListener("ping", (ev: any) => console.debug('received heartbeat', ev));
+
         evtSource.addEventListener("quiz", (ev: any) => {
             console.debug('event', ev);
             setQuiz(JSON.parse(ev['data']));
