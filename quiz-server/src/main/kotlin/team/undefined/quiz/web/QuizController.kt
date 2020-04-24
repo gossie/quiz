@@ -9,10 +9,13 @@ import org.springframework.http.codec.ServerSentEvent
 import org.springframework.web.bind.annotation.*
 import reactor.core.publisher.Flux
 import reactor.core.publisher.Mono
+import reactor.core.publisher.SignalType
 import team.undefined.quiz.core.Participant
 import team.undefined.quiz.core.Question
 import team.undefined.quiz.core.Quiz
 import team.undefined.quiz.core.QuizService
+import java.time.Duration
+import java.util.function.Function
 import java.util.stream.Collectors
 
 
@@ -53,12 +56,21 @@ class QuizController(private val quizService: QuizService) {
 
     @GetMapping(path = ["/{quizId}/stream"], produces = [MediaType.TEXT_EVENT_STREAM_VALUE])
     fun getQuizStream(@PathVariable quizId: Long): Flux<ServerSentEvent<QuizDTO>> {
-        return quizService.observeQuiz(quizId)
+        return Flux.merge(quizService.observeQuiz(quizId)
                 .flatMap { it.map() }
                 .map {
                     ServerSentEvent.builder<QuizDTO>()
                             .event("quiz")
                             .data(it)
+                            .build()
+                }, getHeartbeat())
+    }
+
+    private fun getHeartbeat(): Flux<ServerSentEvent<QuizDTO>> {
+        return Flux.interval(Duration.ofSeconds(10))
+                .map {
+                    ServerSentEvent.builder<QuizDTO>()
+                            .event("ping")
                             .build()
                 }
     }
