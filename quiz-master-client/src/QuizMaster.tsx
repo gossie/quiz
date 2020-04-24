@@ -13,6 +13,8 @@ const QuizMaster: React.FC<QuizMasterProps> = (props: QuizMasterProps) => {
     useEffect(() => {
         console.debug('register for server sent events');
         const evtSource = new EventSource(`${process.env.REACT_APP_BASE_URL}/api/quiz/${quiz.id}/stream`);
+        
+        evtSource.onerror = (e) => console.error(e);
 
         evtSource.addEventListener("quiz", (ev: any) => {
             console.debug('event', ev);
