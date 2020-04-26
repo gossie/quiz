@@ -23,6 +23,6 @@ const Question: React.FC<QuestionProps> = (props: QuestionProps) => {
             </div>
         </div>
     )
-};
+}
 
 export default Question;
