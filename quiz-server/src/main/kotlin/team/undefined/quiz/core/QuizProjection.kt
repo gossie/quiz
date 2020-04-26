@@ -44,6 +44,13 @@ class QuizProjection(eventBus: EventBus,
     @Subscribe
     fun handleReopenedQuestion(event: CurrentQuestionReopenedEvent) = handleEvent(event)
 
+    @Subscribe
+    fun handleForceEmitCommand(command: ForceEmitCommand) {
+        eventRepository.determineEvents(command.quizId)
+                .reduce(Quiz(name = "")) { q: Quiz, e: Event -> e.process(q)}
+                .subscribe { emitQuiz(it) }
+    }
+
     private fun handleEvent(event: Event) {
         val quiz = quizCache[event.quizId]
         if (quiz == null) {
@@ -64,12 +71,7 @@ class QuizProjection(eventBus: EventBus,
     }
 
     fun observeQuiz(quizId: UUID): Flux<Quiz> {
-//        Mono.just(quizCache[quizId])
-//                .m
-        val observable = observables.computeIfAbsent(quizId) { EmitterProcessor.create(false) }
-//        return observable
-//                .last()
-        return observable
+        return observables.computeIfAbsent(quizId) { EmitterProcessor.create(false) }
     }
 
     private fun emitQuiz(quiz: Quiz) {

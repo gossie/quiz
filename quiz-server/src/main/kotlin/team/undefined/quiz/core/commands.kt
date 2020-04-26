@@ -24,3 +24,5 @@ data class AnswerCommand(val quizId: UUID, val answer: Answer) {
 }
 
 data class ReopenCurrentQuestionCommand(val quizId: UUID)
+
+data class ForceEmitCommand(val quizId: UUID)

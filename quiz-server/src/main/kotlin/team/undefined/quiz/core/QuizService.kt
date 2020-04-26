@@ -19,6 +19,7 @@ class QuizService(private val eventRepository: EventRepository,
     }
 
     fun createParticipant(command: CreateParticipantCommand): Mono<Unit> {
+        eventBus.post(ForceEmitCommand(command.quizId))
         return eventRepository.determineEvents(command.quizId)
                 .reduce(Quiz(name = "")) { quiz: Quiz, event: Event -> event.process(quiz)}
                 .filter { it.hasNoParticipantWithName(command.participant.name) }
