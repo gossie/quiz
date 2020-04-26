@@ -1,5 +1,6 @@
 package team.undefined.quiz.web
 
+import com.google.common.eventbus.EventBus
 import org.springframework.http.HttpStatus
 import org.springframework.http.MediaType
 import org.springframework.http.codec.ServerSentEvent
@@ -15,7 +16,8 @@ import java.util.*
 @CrossOrigin(origins = ["*"], allowedHeaders = ["*"])
 @RequestMapping("/api/quiz")
 class QuizController(private val quizService: QuizService,
-                     private val quizProjection: QuizProjection) {
+                     private val quizProjection: QuizProjection,
+                     private val eventBus: EventBus) {
 
     @PostMapping(consumes = [MediaType.APPLICATION_JSON_VALUE], produces = [MediaType.TEXT_PLAIN_VALUE])
     @ResponseStatus(HttpStatus.CREATED)
@@ -43,14 +45,20 @@ class QuizController(private val quizService: QuizService,
 
     @GetMapping(path = ["/{quizId}/stream"], produces = [MediaType.TEXT_EVENT_STREAM_VALUE])
     fun getQuizStream(@PathVariable quizId: UUID): Flux<ServerSentEvent<QuizDTO>> {
-        return Flux.merge(quizProjection.observeQuiz(quizId)
+        val observer = getObserver(quizId)
+        eventBus.post(ForceEmitCommand(quizId))
+        return Flux.merge(observer, getHeartbeat())
+    }
+
+    private fun getObserver(quizId: UUID): Flux<ServerSentEvent<QuizDTO>> {
+        return quizProjection.observeQuiz(quizId)
                 .flatMap { it.map() }
                 .map {
                     ServerSentEvent.builder<QuizDTO>()
                             .event("quiz")
                             .data(it)
                             .build()
-                }, getHeartbeat())
+                }
     }
 
     private fun getHeartbeat(): Flux<ServerSentEvent<QuizDTO>> {
