@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.*
 import reactor.core.publisher.Flux
 import reactor.core.publisher.Mono
 import team.undefined.quiz.core.*
+import java.time.Duration
 import java.util.*
 
 
@@ -42,12 +43,21 @@ class QuizController(private val quizService: QuizService,
 
     @GetMapping(path = ["/{quizId}/stream"], produces = [MediaType.TEXT_EVENT_STREAM_VALUE])
     fun getQuizStream(@PathVariable quizId: UUID): Flux<ServerSentEvent<QuizDTO>> {
-        return quizProjection.observeQuiz(quizId)
+        return Flux.merge(quizProjection.observeQuiz(quizId)
                 .flatMap { it.map() }
                 .map {
                     ServerSentEvent.builder<QuizDTO>()
                             .event("quiz")
                             .data(it)
+                            .build()
+                }, getHeartbeat())
+    }
+
+    private fun getHeartbeat(): Flux<ServerSentEvent<QuizDTO>> {
+        return Flux.interval(Duration.ofSeconds(10))
+                .map {
+                    ServerSentEvent.builder<QuizDTO>()
+                            .event("ping")
                             .build()
                 }
     }
