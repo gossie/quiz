@@ -14,7 +14,7 @@ class QuestionController(private val quizService: QuizService) {
     @PostMapping(consumes = ["application/json"])
     @ResponseStatus(HttpStatus.CREATED)
     fun createQuestion(@PathVariable quizId: UUID, @RequestBody question: QuestionDTO?): Mono<Unit> {
-        return quizService.createQuestion(CreateQuestionCommand(quizId, Question(question = question!!.question)))
+        return quizService.createQuestion(CreateQuestionCommand(quizId, Question(question = question!!.question, imageUrl = question.imagePath)))
     }
 
     @PutMapping("/{questionId}")
