@@ -36,7 +36,7 @@ test('has two participants', () => {
 
 test('has no participants', () => {
     const quiz: Quiz = {
-        id: 1,
+        id: '1',
         name: 'Quiz',
         participants: [],
         openQuestions: [],

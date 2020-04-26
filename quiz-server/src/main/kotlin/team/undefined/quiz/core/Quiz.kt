@@ -1,21 +1,31 @@
 package team.undefined.quiz.core
 
-data class Quiz(val id: Long? = null, val name: String, val participants: List<Participant> = ArrayList(), val questions: List<Question> = ArrayList()) {
+import java.sql.Timestamp
+import java.util.UUID
+import kotlin.collections.ArrayList
+
+data class Quiz(val id: UUID = UUID.randomUUID(), val name: String, val participants: List<Participant> = ArrayList(), val questions: List<Question> = ArrayList()) {
+
+    private var timestamp: Long? = null;
 
     fun nobodyHasBuzzered(): Boolean {
         return participants
                 .none { it.turn }
     }
 
-    fun select(participantId: Long): Quiz {
+    fun select(participantId: UUID): Quiz {
         participants
                 .find { it.id == participantId }
                 ?.turn = true
         return this
     }
 
+    fun hasNoParticipantWithName(name: String): Boolean {
+        return participants.none { it.name == name }
+    }
+
     fun addParticipantIfNecessary(participant: Participant): Quiz {
-        if (participants.none { it.name == participant.name }) {
+        if (hasNoParticipantWithName(participant.name)) {
             (participants as MutableList).add(participant)
         }
 
@@ -27,7 +37,7 @@ data class Quiz(val id: Long? = null, val name: String, val participants: List<P
         return this;
     }
 
-    fun startQuestion(questionId: Long): Quiz {
+    fun startQuestion(questionId: UUID): Quiz {
         participants.forEach { it.turn = false }
         questions
                 .filter { it.pending }
@@ -64,6 +74,15 @@ data class Quiz(val id: Long? = null, val name: String, val participants: List<P
     fun reopenQuestion(): Quiz {
         participants.forEach { it.turn = false }
         return this;
+    }
+
+    fun setTimestamp(timestamp: Long): Quiz {
+        this.timestamp = timestamp
+        return this
+    }
+
+    fun getTimestamp(): Long? {
+        return timestamp
     }
 
 }

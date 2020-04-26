@@ -9,7 +9,7 @@ interface ParticipantsProps {
 }
 
 interface ParticipantState {
-    id: number;
+    id: string;
     points: number;
 }
 

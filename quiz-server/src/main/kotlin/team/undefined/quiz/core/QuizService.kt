@@ -1,90 +1,53 @@
 package team.undefined.quiz.core
 
+import com.google.common.eventbus.EventBus
 import org.springframework.stereotype.Service
-import reactor.core.publisher.EmitterProcessor
-import reactor.core.publisher.Flux
 import reactor.core.publisher.Mono
-import java.util.concurrent.ConcurrentHashMap
 
 @Service
-class QuizService(private val quizRepository: QuizRepository) {
+class QuizService(private val eventRepository: EventRepository,
+                  private val eventBus: EventBus) {
 
-    private val observables = ConcurrentHashMap<Long, EmitterProcessor<Quiz>>()
-
-    fun createQuiz(quiz: Quiz): Mono<Quiz> {
-        return quizRepository.createQuiz(quiz)
+    fun createQuiz(command: CreateQuizCommand): Mono<Unit> {
+        return eventRepository.storeEvent(QuizCreatedEvent(command.quizId, command.quiz))
+                .map { eventBus.post(it) }
     }
 
-    fun determineQuiz(quizId: Long): Mono<Quiz> {
-        return quizRepository.determineQuiz(quizId)
+    fun createQuestion(command: CreateQuestionCommand): Mono<Unit> {
+        return eventRepository.storeEvent(QuestionCreatedEvent(command.quizId, command.question))
+                .map { eventBus.post(it) }
     }
 
-    fun createQuestion(quizId: Long, question: String, imagePath: String = ""): Mono<Quiz> {
-        return quizRepository.determineQuiz(quizId)
-                .map { it.addQuestion(Question(question = question, imagePath = imagePath)) }
-                .flatMap { quizRepository.saveQuiz(it) }
-                .map { emitQuiz(it) }
+    fun createParticipant(command: CreateParticipantCommand): Mono<Unit> {
+        eventBus.post(ForceEmitCommand(command.quizId))
+        return eventRepository.determineEvents(command.quizId)
+                .reduce(Quiz(name = "")) { quiz: Quiz, event: Event -> event.process(quiz)}
+                .filter { it.hasNoParticipantWithName(command.participant.name) }
+                .flatMap { eventRepository.storeEvent(ParticipantCreatedEvent(command.quizId, command.participant)) }
+                .map { eventBus.post(it) }
     }
 
-    fun createParticipant(quizId: Long, participantName: String): Mono<Quiz> {
-        return quizRepository.determineQuiz(quizId)
-                .map { it.addParticipantIfNecessary(Participant(name = participantName)) }
-                .flatMap { quizRepository.saveQuiz(it) }
-                .map { emitQuiz(it) }
-    }
-
-    fun buzzer(quizId: Long, participantId: Long): Mono<Quiz> {
-        return quizRepository.determineQuiz(quizId)
+    fun buzzer(command: BuzzerCommand): Mono<Unit> {
+        return eventRepository.determineEvents(command.quizId)
+                .reduce(Quiz(name = "")) { quiz: Quiz, event: Event -> event.process(quiz)}
                 .filter { it.nobodyHasBuzzered() }
-                .map { it.select(participantId) }
-                .flatMap { quizRepository.saveQuiz(it) }
-                .map { emitQuiz(it) }
+                .flatMap { eventRepository.storeEvent(BuzzeredEvent(command.quizId, command.participantId)) }
+                .map { eventBus.post(it) }
     }
 
-    fun startNewQuestion(quizId: Long, questionId: Long): Mono<Quiz> {
-        return quizRepository.determineQuiz(quizId)
-                .map { it.startQuestion(questionId) }
-                .flatMap { quizRepository.saveQuiz(it) }
-                .map { emitQuiz(it) }
+    fun startNewQuestion(command: AskQuestionCommand): Mono<Unit> {
+        return eventRepository.storeEvent(QuestionAskedEvent(command.quizId, command.questionId))
+                .map { eventBus.post(it) }
     }
 
-    fun correctAnswer(quizId: Long): Mono<Quiz> {
-        return quizRepository.determineQuiz(quizId)
-                .map { it.answeredCorrect() }
-                .flatMap { quizRepository.saveQuiz(it) }
-                .map { emitQuiz(it) }
+    fun answer(command: AnswerCommand): Mono<Unit> {
+        return eventRepository.storeEvent(AnsweredEvent(command.quizId, command.answer))
+                .map { eventBus.post(it) }
     }
 
-    fun incorrectAnswer(quizId: Long): Mono<Quiz> {
-        return quizRepository.determineQuiz(quizId)
-                .map { it.answeredInorrect() }
-                .flatMap { quizRepository.saveQuiz(it) }
-                .map { emitQuiz(it) }
-    }
-
-    fun reopenQuestion(quizId: Long): Mono<Quiz> {
-        return quizRepository.determineQuiz(quizId)
-                .map { it.reopenQuestion() }
-                .flatMap { quizRepository.saveQuiz(it) }
-                .map { emitQuiz(it) }
-    }
-
-    fun observeQuiz(quizId: Long): Flux<Quiz> {
-        return observables.computeIfAbsent(quizId) {
-            val emitter: EmitterProcessor<Quiz> = EmitterProcessor.create(false)
-            emitter.doAfterTerminate { observables.remove(quizId) }
-            emitter.doOnCancel { observables.remove(quizId) }
-            emitter
-        }
-    }
-
-    private fun emitQuiz(quiz: Quiz): Quiz {
-        observables[quiz.id]?.onNext(quiz)
-        return quiz
-    }
-
-    fun removeObserver(quizId: Long) {
-        observables.remove(quizId)
+    fun reopenQuestion(command: ReopenCurrentQuestionCommand): Mono<Unit> {
+        return eventRepository.storeEvent(CurrentQuestionReopenedEvent(command.quizId))
+                .map { eventBus.post(it) }
     }
 
 }
