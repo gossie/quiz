@@ -22,7 +22,7 @@ test('should submit on submit button click', (done) => {
     submitButton.click();
 });
 
-xtest('should submit on enter', (done) => {
+test('should submit on enter', (done) => {
     const submitFunction = (value: string) => new Promise<void>(async (resolve) => {
         await wait(() => expect(getByTestId('submit-button').classList.contains('is-loading')).toBeTruthy());
         resolve();
@@ -35,7 +35,6 @@ xtest('should submit on enter', (done) => {
     const inputField = getByTestId('field-0') as HTMLInputElement;
 
     fireEvent.change(inputField, { target: { value: 'Name' } });
-    // await wait(() => expect(inputField.value).toEqual('Name'));w
 
     fireEvent.keyUp(inputField, { key: 'Enter', keyCode: 13 });
 });
