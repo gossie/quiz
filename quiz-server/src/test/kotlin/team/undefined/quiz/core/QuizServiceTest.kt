@@ -20,8 +20,6 @@ open class TestEventRepository : EventRepository {
 
 internal class QuizServiceTest {
 
-    private val PARTICIPANTS = listOf(Participant(UUID.randomUUID(), "Sandra"), Participant(UUID.randomUUID(), "Allli"), Participant(UUID.randomUUID(), "Erik"))
-
     private val quizRepository = spy(TestEventRepository())
 
     private val eventBus = mock(EventBus::class.java)
@@ -50,9 +48,13 @@ internal class QuizServiceTest {
         val quizService = QuizService(quizRepository, eventBus)
 
         val participant = Participant(UUID.randomUUID(), "Lena")
-        StepVerifier.create(quizService.createParticipant(CreateParticipantCommand(quizId, participant)))
+        val mono = quizService.createParticipant(CreateParticipantCommand(quizId, participant))
+        verify(eventBus).post(ForceEmitCommand(quizId))
+        StepVerifier.create(mono)
                 .consumeNextWith {
-                    verify(eventBus).post(argThat { (it as ParticipantCreatedEvent).quizId == quizId && it.participant == participant })
+                    verify(eventBus).post( argThat {
+                        it is ParticipantCreatedEvent && it.quizId == quizId && it.participant == participant }
+                    )
                 }
                 .verifyComplete()
     }
@@ -74,7 +76,8 @@ internal class QuizServiceTest {
         StepVerifier.create(quizService.createParticipant(CreateParticipantCommand(quizId, participant)))
                 .verifyComplete()
 
-        verifyNoInteractions(eventBus);
+        verify(eventBus).post(ForceEmitCommand(quizId))
+        verifyNoMoreInteractions(eventBus)
     }
 
     @Test
