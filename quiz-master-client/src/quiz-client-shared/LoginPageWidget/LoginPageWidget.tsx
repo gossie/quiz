@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import './LoginPageWidget.css';
 
 interface JoinWidgetProps {
-    onSubmit: Function;
+    onSubmit: (inputValue: any) => Promise<void>;
     title: string;
     inputLabels: string[];
     buttonLabel: string;
@@ -10,9 +10,12 @@ interface JoinWidgetProps {
 
 const LoginPageWidget: React.FC<JoinWidgetProps> = (props: JoinWidgetProps) => {
     const [inputValue, setInputValue] = useState({});
+    const [css, setCss] = useState('button is-info');
 
     const onSubmit = () => {
+        setCss('button is-info is-loading');
         props.onSubmit(inputValue)
+            .then(() => setCss('button is-info'));
     }
 
     const fields = props.inputLabels.map((label, index) => 
@@ -33,7 +36,7 @@ const LoginPageWidget: React.FC<JoinWidgetProps> = (props: JoinWidgetProps) => {
                 {fields}
                 
                 <div className="control">
-                    <button data-testid="submit-button" className="button is-info" onClick={onSubmit}>
+                    <button data-testid="submit-button" className={css} onClick={onSubmit}>
                     {props.buttonLabel}
                     </button>
                 </div>
