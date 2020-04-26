@@ -25,7 +25,7 @@ function App() {
         setQuizId(await quizResponse.text());
     };
 
-    const joinQuiz = (value: any) => setQuizId(value[quizIdLabel]);
+    const joinQuiz = (value: any) => Promise.resolve(setQuizId(value[quizIdLabel]));
 
     return (
         <div className="App">
