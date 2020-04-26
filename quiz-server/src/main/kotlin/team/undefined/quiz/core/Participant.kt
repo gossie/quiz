@@ -1,3 +1,5 @@
 package team.undefined.quiz.core
 
-data class Participant(val id: Long? = null, val name: String, var turn: Boolean = false, var points: Long = 0)
+import java.util.UUID
+
+data class Participant(val id: UUID = UUID.randomUUID(), val name: String, var turn: Boolean = false, var points: Long = 0)

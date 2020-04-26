@@ -1,17 +1,15 @@
 package team.undefined.quiz
 
+import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.reactive.AutoConfigureWebTestClient
 import org.springframework.boot.test.context.SpringBootTest
-import org.springframework.http.MediaType
 import org.springframework.test.web.reactive.server.WebTestClient
-import org.springframework.web.reactive.function.BodyInserters
-import team.undefined.quiz.web.QuestionDTO
-import team.undefined.quiz.web.QuizDTO
 
 @SpringBootTest
 @AutoConfigureWebTestClient
+@Disabled
 internal class QuizIT() {
 
     @Autowired
@@ -19,6 +17,7 @@ internal class QuizIT() {
 
     @Test
     fun shouldCreateAndGetQuiz() {
+        /*
         webTestClient
                 .post()
                 .uri("/api/quiz")
@@ -129,5 +128,6 @@ internal class QuizIT() {
                 .exchange()
                 .expectStatus().isCreated
                 .expectBody().json("{\"quiz\":{\"name\":\"Quiz\",\"participants\":[{\"name\":\"André\",\"turn\":true,\"points\":0},{\"name\":\"Lena\",\"turn\":false,\"points\":2}],\"playedQuestions\":[{\"question\":\"Wer schrieb das Buch Animal Farm?\",\"pending\":false}],\"openQuestions\":[{\"question\":\"Wo befindet sich das Kahnbein?\",\"pending\":true}]},\"participantId\":2}")
+         */
     }
 }
