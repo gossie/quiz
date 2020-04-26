@@ -12,7 +12,6 @@ export interface Participant {
 }
 
 export interface Question {
-    id: number;
     question: string;
     imagePath: string;
     pending: boolean;
