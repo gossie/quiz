@@ -8,6 +8,8 @@ data class CreateQuestionCommand(val quizId: UUID, val question: Question)
 
 data class CreateParticipantCommand(val quizId: UUID, val participant: Participant)
 
+data class ForceEmitCommand(val quizId: UUID)
+
 data class AskQuestionCommand(val quizId: UUID, val questionId: UUID)
 
 data class BuzzerCommand(val quizId: UUID, val participantId: UUID)
@@ -25,4 +27,4 @@ data class AnswerCommand(val quizId: UUID, val answer: Answer) {
 
 data class ReopenCurrentQuestionCommand(val quizId: UUID)
 
-data class ForceEmitCommand(val quizId: UUID)
+data class FinishQuizCommand(val quizId: UUID)
