@@ -12,8 +12,8 @@ function App() {
     const quizNameLabel = 'Quiz Name';
     const quizIdLabel = 'Quiz Id';
 
-    const startQuiz = (value: any) => {
-        return fetch(`${process.env.REACT_APP_BASE_URL}/api/quiz/`, {
+    const startQuiz = async (value: any) => {
+        const quizResponse = await fetch(`${process.env.REACT_APP_BASE_URL}/api/quiz/`, {
             method: 'POST',
             body: JSON.stringify({
                 name: value[quizNameLabel]
@@ -22,20 +22,20 @@ function App() {
                 'Content-Type': 'application/json',
                 Accept: 'application/json'
             }
-        })
-        .then(quizResponse => quizResponse.json())
-        .then(newQuiz => setQuiz(newQuiz));
+        });
+        const newQuiz: Quiz = await quizResponse.json();
+        setQuiz(newQuiz);
     };
 
-    const joinQuiz = (value: any) => {
-        return fetch(`${process.env.REACT_APP_BASE_URL}/api/quiz/${value[quizIdLabel]}`, {
+    const joinQuiz = async (value: any) => {
+        const quizResponse = await fetch(`${process.env.REACT_APP_BASE_URL}/api/quiz/${value[quizIdLabel]}`, {
             method: 'GET',
             headers: {
                 Accept: 'application/json'
             }
-        })
-        .then(quizResponse => quizResponse.json())
-        .then(joinedQuiz => setQuiz(joinedQuiz));
+        });
+        const joinedQuiz: Quiz = await quizResponse.json();
+        setQuiz(joinedQuiz)
     };
 
     return (
