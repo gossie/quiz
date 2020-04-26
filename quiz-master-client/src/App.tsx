@@ -25,15 +25,7 @@ function App() {
         setQuizId(await quizResponse.text());
     };
 
-    const joinQuiz = (value: any) => {
-        setQuizId(value[quizIdLabel]);
-        fetch(`${process.env.REACT_APP_BASE_URL}/api/quiz/${value[quizIdLabel]}`, {
-            method: 'GET',
-            headers: {
-                Accept: 'application/json'
-            }
-        });
-    };
+    const joinQuiz = (value: any) => setQuizId(value[quizIdLabel]);
 
     return (
         <div className="App">
