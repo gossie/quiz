@@ -8,5 +8,7 @@ data class QuizDTO(
         var name: String,
         var participants: List<ParticipantDTO> = emptyList(),
         var playedQuestions: List<QuestionDTO> = emptyList(),
-        var openQuestions: List<QuestionDTO> = emptyList()
+        var openQuestions: List<QuestionDTO> = emptyList(),
+        var finished: Boolean = false,
+        var quizStatistics: QuizStatisticsDTO? = null
 ) : RepresentationModel<QuizDTO>()

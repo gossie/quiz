@@ -16,7 +16,7 @@ internal class QuizProjectionQuestionCreatedEventTest {
         val quiz = Quiz(name = "Awesome Quiz")
 
         val eventBus = EventBus()
-        val quizProjection = QuizProjection(eventBus, mock(EventRepository::class.java))
+        val quizProjection = QuizProjection(eventBus, mock(QuizStatisticsProvider::class.java), mock(EventRepository::class.java))
 
         val observedQuiz = AtomicReference<Quiz>()
         quizProjection.observeQuiz(quiz.id)
@@ -27,7 +27,11 @@ internal class QuizProjectionQuestionCreatedEventTest {
         eventBus.post(QuestionCreatedEvent(quiz.id, question, 2))
 
         await until {
-            observedQuiz.get().id == quiz.id && observedQuiz.get().participants.isEmpty() && observedQuiz.get().questions.size == 1 && observedQuiz.get().questions.contains(question)
+            observedQuiz.get().id == quiz.id
+                    && observedQuiz.get().participants.isEmpty()
+                    && observedQuiz.get().questions.size == 1
+                    && observedQuiz.get().questions.contains(question)
+                    && !observedQuiz.get().finished
         }
     }
 
@@ -43,7 +47,7 @@ internal class QuizProjectionQuestionCreatedEventTest {
                 .thenReturn(Flux.just(QuizCreatedEvent(quiz.id, quiz, 1), questionCreatedEvent))
 
         val eventBus = EventBus()
-        val quizProjection = QuizProjection(eventBus, eventRepository)
+        val quizProjection = QuizProjection(eventBus, mock(QuizStatisticsProvider::class.java), eventRepository)
 
         val observedQuiz = AtomicReference<Quiz>()
         quizProjection.observeQuiz(quiz.id)
@@ -52,7 +56,11 @@ internal class QuizProjectionQuestionCreatedEventTest {
         eventBus.post(questionCreatedEvent)
 
         await until {
-            observedQuiz.get().id == quiz.id && observedQuiz.get().participants.isEmpty() && observedQuiz.get().questions.size == 1 && observedQuiz.get().questions.contains(question)
+            observedQuiz.get().id == quiz.id
+                    && observedQuiz.get().participants.isEmpty()
+                    && observedQuiz.get().questions.size == 1
+                    && observedQuiz.get().questions.contains(question)
+                    && !observedQuiz.get().finished
         }
     }
 
@@ -65,7 +73,7 @@ internal class QuizProjectionQuestionCreatedEventTest {
                 .thenReturn(Flux.just(QuizCreatedEvent(quiz.id, quiz, 1)))
 
         val eventBus = EventBus()
-        val quizProjection = QuizProjection(eventBus, eventRepository)
+        val quizProjection = QuizProjection(eventBus, mock(QuizStatisticsProvider::class.java), eventRepository)
 
         val observedQuiz = AtomicReference<Quiz>()
         quizProjection.observeQuiz(quiz.id)
@@ -75,7 +83,11 @@ internal class QuizProjectionQuestionCreatedEventTest {
         eventBus.post(QuestionCreatedEvent(quiz.id, question, 2))
 
         await until {
-            observedQuiz.get().id == quiz.id && observedQuiz.get().participants.isEmpty() && observedQuiz.get().questions.size == 1 && observedQuiz.get().questions.contains(question)
+            observedQuiz.get().id == quiz.id
+                    && observedQuiz.get().participants.isEmpty()
+                    && observedQuiz.get().questions.size == 1
+                    && observedQuiz.get().questions.contains(question)
+                    && !observedQuiz.get().finished
         }
     }
 

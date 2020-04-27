@@ -27,6 +27,12 @@ class QuizController(private val quizService: QuizService,
                 .map { quiz.id.toString() }
     }
 
+    @PostMapping("/{quizId}", consumes = [MediaType.APPLICATION_JSON_VALUE], produces = [MediaType.TEXT_PLAIN_VALUE])
+    @ResponseStatus(HttpStatus.OK)
+    fun finish(@PathVariable quizId: UUID): Mono<Unit> {
+        return quizService.finishQuiz(FinishQuizCommand(quizId))
+    }
+
     @PatchMapping("/{quizId}", consumes = [MediaType.TEXT_PLAIN_VALUE], produces = [MediaType.APPLICATION_JSON_VALUE])
     @ResponseStatus(HttpStatus.OK)
     fun answer(@PathVariable quizId: UUID, @RequestBody correct: String): Mono<Unit> {

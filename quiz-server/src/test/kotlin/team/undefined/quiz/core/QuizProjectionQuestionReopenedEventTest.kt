@@ -16,7 +16,7 @@ internal class QuizProjectionQuestionReopenedEventTest {
         val quiz = Quiz(name = "Awesome Quiz")
 
         val eventBus = EventBus()
-        val quizProjection = QuizProjection(eventBus, mock(EventRepository::class.java))
+        val quizProjection = QuizProjection(eventBus, mock(QuizStatisticsProvider::class.java), mock(EventRepository::class.java))
 
         val observedQuiz = AtomicReference<Quiz>()
         quizProjection.observeQuiz(quiz.id)
@@ -41,6 +41,7 @@ internal class QuizProjectionQuestionReopenedEventTest {
                     && observedQuiz.get().questions.size == 1
                     && observedQuiz.get().questions[0].pending
                     && !observedQuiz.get().questions[0].alreadyPlayed
+                    && !observedQuiz.get().finished
         }
     }
 
@@ -65,7 +66,7 @@ internal class QuizProjectionQuestionReopenedEventTest {
                 ))
 
         val eventBus = EventBus()
-        val quizProjection = QuizProjection(eventBus, eventRepository)
+        val quizProjection = QuizProjection(eventBus, mock(QuizStatisticsProvider::class.java), eventRepository)
 
         val observedQuiz = AtomicReference<Quiz>()
         quizProjection.observeQuiz(quiz.id)
@@ -81,6 +82,7 @@ internal class QuizProjectionQuestionReopenedEventTest {
                     && observedQuiz.get().questions.size == 1
                     && observedQuiz.get().questions[0].pending
                     && !observedQuiz.get().questions[0].alreadyPlayed
+                    && !observedQuiz.get().finished
         }
     }
 
@@ -102,7 +104,7 @@ internal class QuizProjectionQuestionReopenedEventTest {
                 ))
 
         val eventBus = EventBus()
-        val quizProjection = QuizProjection(eventBus, eventRepository)
+        val quizProjection = QuizProjection(eventBus, mock(QuizStatisticsProvider::class.java), eventRepository)
 
         val observedQuiz = AtomicReference<Quiz>()
         quizProjection.observeQuiz(quiz.id)
@@ -118,6 +120,7 @@ internal class QuizProjectionQuestionReopenedEventTest {
                     && observedQuiz.get().questions.size == 1
                     && observedQuiz.get().questions[0].pending
                     && !observedQuiz.get().questions[0].alreadyPlayed
+                    && !observedQuiz.get().finished
         }
     }
 
