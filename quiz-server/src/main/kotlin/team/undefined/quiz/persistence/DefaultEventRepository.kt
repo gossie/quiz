@@ -8,6 +8,7 @@ import team.undefined.quiz.core.Event
 import team.undefined.quiz.core.EventRepository
 import team.undefined.quiz.core.QuizCreatedEvent
 import java.time.LocalDateTime
+import java.util.Comparator
 import java.util.UUID
 
 @Component
@@ -24,6 +25,7 @@ class DefaultEventRepository(private val eventEntityRepository: EventEntityRepos
         return eventEntityRepository.findAllByAggregateId(quizId.toString())
                 .map { objectMapper.readValue(it.domainEvent, Class.forName(it.type)) }
                 .map { Event::class.java.cast(it) }
+                .sort(Comparator.comparing(Event::timestamp))
     }
 
 }
