@@ -47,6 +47,7 @@ class QuizProjection(eventBus: EventBus,
     @Subscribe
     fun handleForceEmitCommand(command: ForceEmitCommand) {
         eventRepository.determineEvents(command.quizId)
+                .sort(Comparator.comparing(Event::timestamp))
                 .reduce(Quiz(name = "")) { q: Quiz, e: Event -> e.process(q)}
                 .subscribe { emitQuiz(it) }
     }
