@@ -45,8 +45,6 @@ class QuizProjection(eventBus: EventBus,
     fun handleReopenedQuestion(event: CurrentQuestionReopenedEvent) = handleEvent(event)
 
     @Subscribe
-
-    @Subscribe
     fun handleForceEmitCommand(command: ForceEmitCommand) {
         eventRepository.determineEvents(command.quizId)
                 .reduce(Quiz(name = "")) { q: Quiz, e: Event -> e.process(q)}
