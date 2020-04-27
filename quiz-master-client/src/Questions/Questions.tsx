@@ -10,8 +10,10 @@ const Questions: React.FC<QuestionsProps> = (props: QuestionsProps) => {
     const [newQuestion, setNewQuestion] = useState('');
     const [imagePath, setImagePath] = useState('');
     const [imageToDisplay, setImageToDisplay] = useState('');
+    const [questionButtonCssClasses, setQuestionButtonCssClasses] = useState('button is-link');
 
     const createQuestion = async () => {
+        setQuestionButtonCssClasses('button is-link is-loading');
         const questionLink = props.quiz.links.find(link => link.rel === 'createQuestion')?.href;
         await fetch(`${process.env.REACT_APP_BASE_URL}${questionLink}`, {
             method: 'POST',
@@ -26,6 +28,7 @@ const Questions: React.FC<QuestionsProps> = (props: QuestionsProps) => {
         });
         setNewQuestion('');
         setImagePath('');
+        setQuestionButtonCssClasses('button is-link');
     };
 
     const startQuestion = async (question: Question) => {
@@ -65,7 +68,7 @@ const Questions: React.FC<QuestionsProps> = (props: QuestionsProps) => {
             </div>
             <div className="field is-grouped">
                 <div className="control">
-                    <button data-testid="create-question-button" onClick={createQuestion} className="button is-link">Add question</button>
+                    <button data-testid="create-question-button" onClick={createQuestion} className={questionButtonCssClasses}>Add question</button>
                 </div>
             </div>
 

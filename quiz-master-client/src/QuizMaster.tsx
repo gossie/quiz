@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import Questions from './Questions/Questions';
 import Participants from './quiz-client-shared/Participants/Participants';
 import Quiz from './quiz-client-shared/quiz';
+import QuizStatistics from './quiz-client-shared/QuizStatistics/QuizStatistics';
 
 interface QuizMasterProps {
     quizId: string;
@@ -9,6 +10,7 @@ interface QuizMasterProps {
 
 const QuizMaster: React.FC<QuizMasterProps> = (props: QuizMasterProps) => {
     const [quiz, setQuiz] = useState({} as Quiz);
+    const [finishButtonCssClasses, setFinishButtonCssClasses] = useState('button is-link')
 
     useEffect(() => {
         console.debug('register for server sent events');
@@ -29,6 +31,14 @@ const QuizMaster: React.FC<QuizMasterProps> = (props: QuizMasterProps) => {
         };
     }, [props.quizId]);
 
+    const finishQuiz = () => {
+        setFinishButtonCssClasses('button is-link is-loading');
+        fetch(`${process.env.REACT_APP_BASE_URL}/api/quiz/${props.quizId}`, {
+            method: 'POST'
+        })
+        .finally(() => setFinishButtonCssClasses('button is-link'));
+    }
+
     return (
         <div className="Quiz-dashboard">
             { Object.keys(quiz).length > 0 &&
@@ -37,6 +47,8 @@ const QuizMaster: React.FC<QuizMasterProps> = (props: QuizMasterProps) => {
                     <div className="columns">
                         <div className="column participants">
                             <Participants quiz={quiz}></Participants>
+                            <button className={finishButtonCssClasses} onClick={finishQuiz}>Finish Quiz</button>
+                            <QuizStatistics quiz={quiz}></QuizStatistics>
                         </div>
                         <div className="column question">
                             <Questions quiz={quiz}></Questions>

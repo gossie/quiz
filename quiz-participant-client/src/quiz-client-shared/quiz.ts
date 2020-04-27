@@ -12,10 +12,26 @@ export interface Participant {
 }
 
 export interface Question {
+    id: string;
     question: string;
     imagePath: string;
     pending: boolean;
     links: Array<Link>;
+}
+
+export interface BuzzerStatistics {
+    participant: Participant;
+    duration: number;
+    answer: string;
+}
+
+export interface QuestionStatistics {
+    question: Question;
+    buzzerStatistics: Array<BuzzerStatistics>;
+}
+
+export interface QuizStatistics {
+    questionStatistics: Array<QuestionStatistics>
 }
 
 export default interface Quiz {
@@ -24,5 +40,6 @@ export default interface Quiz {
     turn?: string;
     participants: Array<Participant>;
     openQuestions: Array<Question>;
+    quizStatistics?: QuizStatistics;
     links: Array<Link>;
 }

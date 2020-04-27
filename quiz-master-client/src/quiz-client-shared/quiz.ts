@@ -19,11 +19,27 @@ export interface Question {
     links: Array<Link>;
 }
 
+export interface BuzzerStatistics {
+    participant: Participant;
+    duration: number;
+    answer: string;
+}
+
+export interface QuestionStatistics {
+    question: Question;
+    buzzerStatistics: Array<BuzzerStatistics>;
+}
+
+export interface QuizStatistics {
+    questionStatistics: Array<QuestionStatistics>
+}
+
 export default interface Quiz {
     id: string;
     name: string;
     participants: Array<Participant>;
     playedQuestions: Array<Question>;
     openQuestions: Array<Question>;
+    quizStatistics?: QuizStatistics;
     links: Array<Link>;
 }
