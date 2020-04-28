@@ -1,11 +1,16 @@
-import React from 'react';
+import React, { useState } from 'react';
 import Quiz, { BuzzerStatistics } from "../quiz";
 
 interface QuizStatisticsProps {
     quiz: Quiz;
+    closeable: boolean;
+    forceOpen?: boolean
+    onClose?: () => void;
 }
 
 const QuizStatistics: React.FC<QuizStatisticsProps> = (props: QuizStatisticsProps) => {
+
+    const [closed, setClosed] = useState(false);
 
     const determineRows = () => {
         const buzzers = (buzzerStatistics: Array<BuzzerStatistics>) => buzzerStatistics.map((buzzerStatistic, index) => 
@@ -18,13 +23,21 @@ const QuizStatistics: React.FC<QuizStatisticsProps> = (props: QuizStatisticsProp
                     <td>
                         <ul>{buzzers(questionStatistic.buzzerStatistics)}</ul>
                     </td>
+                    
                 </tr>
         );
     }
 
+    const close = () => {
+        setClosed(true);
+        if (props.onClose) {
+            props.onClose();
+        }
+    };
+
     return (
         <div>
-            { props.quiz.quizStatistics && 
+            { props.quiz.quizStatistics && (props.forceOpen || !closed) && 
                 <div data-testid="quiz-statistics" className="modal is-active">
                     <div className="modal-background"></div>
                     <div className="modal-content">
@@ -40,6 +53,7 @@ const QuizStatistics: React.FC<QuizStatisticsProps> = (props: QuizStatisticsProp
                             </tbody>
                         </table>
                     </div>
+                    { props.closeable && <button data-testid="close-button" className="modal-close is-large" aria-label="close" onClick={close}></button> }
                 </div>
             }
         </div>

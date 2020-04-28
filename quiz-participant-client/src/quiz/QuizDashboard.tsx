@@ -63,7 +63,7 @@ const QuizDashboard: React.FC<QuizDashboardProps> = (props: QuizDashboardProps) 
                     <div className="columns Dashboard-content">
                         <div className="column participants">
                             <Participants quiz={quiz}></Participants>
-                            <QuizStatistics quiz={quiz}></QuizStatistics>
+                            <QuizStatistics quiz={quiz} closeable={false}></QuizStatistics>
                         </div>
                         <div className="column question">
                             <h5 className="title is-5">Current question</h5>

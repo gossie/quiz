@@ -11,6 +11,7 @@ interface QuizMasterProps {
 const QuizMaster: React.FC<QuizMasterProps> = (props: QuizMasterProps) => {
     const [quiz, setQuiz] = useState({} as Quiz);
     const [finishButtonCssClasses, setFinishButtonCssClasses] = useState('button is-link')
+    const [forceStatistics, setForceStatistics] = useState(false);
 
     useEffect(() => {
         console.debug('register for server sent events');
@@ -47,8 +48,13 @@ const QuizMaster: React.FC<QuizMasterProps> = (props: QuizMasterProps) => {
                     <div className="columns">
                         <div className="column participants">
                             <Participants quiz={quiz}></Participants>
-                            <button className={finishButtonCssClasses} onClick={finishQuiz}>Finish Quiz</button>
-                            <QuizStatistics quiz={quiz}></QuizStatistics>
+                            { quiz.quizStatistics
+                            ?
+                                <button className={finishButtonCssClasses} onClick={() => setForceStatistics(true)}>Show statistics</button>
+                            :
+                                <button className={finishButtonCssClasses} onClick={finishQuiz}>Finish Quiz</button>
+                            }
+                            <QuizStatistics quiz={quiz} closeable={true} forceOpen={forceStatistics} onClose={() => setForceStatistics(false)}></QuizStatistics>
                         </div>
                         <div className="column question">
                             <Questions quiz={quiz}></Questions>
