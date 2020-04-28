@@ -16,7 +16,7 @@ interface ParticipantState {
 const Participants: React.FC<ParticipantsProps> = (props: ParticipantsProps) => {
     const pendingQuestion = props.quiz.openQuestions.find(question => question.pending);
     const [stateAfterLastQuestion, setStateAfterLastQuestion] = useState(new Array<ParticipantState>()); 
-    const [currentQuestionId, setCurrentQuestionId] = useState(-1);
+    const [currentQuestionId, setCurrentQuestionId] = useState('');
  
     const comparePoints = (a: Participant, b: Participant) => {
         return b.points - a.points;
@@ -35,7 +35,7 @@ const Participants: React.FC<ParticipantsProps> = (props: ParticipantsProps) => 
     const elements = props.quiz.participants?.sort(comparePoints).map(p => <div key={p.name}><ParticipantItem participant={p} pointsAfterLastQuestion={getPointsAfterLastQuestionForParticipant(p)}></ParticipantItem></div>)
 
     const updateStateAfterLastQuestion = useCallback(() => {
-        setCurrentQuestionId(pendingQuestion ? pendingQuestion.id : -1);
+        setCurrentQuestionId(pendingQuestion ? pendingQuestion.id : '');
         setStateAfterLastQuestion(props.quiz.participants.map(p => { return {id: p.id, points: p.points}}));
     }, [props.quiz.participants, pendingQuestion]);
 

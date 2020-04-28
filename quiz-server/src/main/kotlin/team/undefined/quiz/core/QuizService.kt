@@ -50,4 +50,9 @@ class QuizService(private val eventRepository: EventRepository,
                 .map { eventBus.post(it) }
     }
 
+    fun finishQuiz(command: FinishQuizCommand): Mono<Unit> {
+        return eventRepository.storeEvent(QuizFinishedEvent(command.quizId))
+                .map { eventBus.post(it) }
+    }
+
 }

@@ -5,18 +5,18 @@ import ParticipantItem from './ParticipantItem';
 
 test('displays participant after a correct answer', () => {
     const quiz: Quiz = {
-        id: 1,
+        id: '1',
         name: 'Quiz',
         participants: [
             {
-                id: 15,
+                id: '15',
                 name: 'Erik',
                 turn: false,
                 points: 0,
                 links: []
             },
             {
-                id: 16,
+                id: '16',
                 name: 'Sandra',
                 turn: false,
                 points: 2,
@@ -42,18 +42,18 @@ test('displays participant after a correct answer', () => {
 
 test('displays participant after an incorrect answer', () => {
     const quiz: Quiz = {
-        id: 1,
+        id: '1',
         name: 'Quiz',
         participants: [
             {
-                id: 15,
+                id: '15',
                 name: 'Erik',
                 turn: false,
                 points: 1,
                 links: []
             },
             {
-                id: 16,
+                id: '16',
                 name: 'Sandra',
                 turn: false,
                 points: 0,
@@ -79,18 +79,18 @@ test('displays participant after an incorrect answer', () => {
 
 test('displays participant that did not answer', () => {
     const quiz: Quiz = {
-        id: 1,
+        id: '1',
         name: 'Quiz',
         participants: [
             {
-                id: 15,
+                id: '15',
                 name: 'Erik',
                 turn: false,
                 points: 2,
                 links: []
             },
             {
-                id: 16,
+                id: '16',
                 name: 'Sandra',
                 turn: false,
                 points: 0,

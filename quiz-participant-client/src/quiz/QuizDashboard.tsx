@@ -4,6 +4,7 @@ import Quiz from '../quiz-client-shared/quiz';
 import Buzzer from './Buzzer';
 import Question from './Question';
 import './QuizDashboard.css';
+import QuizStatistics from '../quiz-client-shared/QuizStatistics/QuizStatistics';
 
 interface QuizDashboardProps {
     quizId: string;
@@ -62,6 +63,7 @@ const QuizDashboard: React.FC<QuizDashboardProps> = (props: QuizDashboardProps) 
                     <div className="columns Dashboard-content">
                         <div className="column participants">
                             <Participants quiz={quiz}></Participants>
+                            <QuizStatistics quiz={quiz} closeable={false}></QuizStatistics>
                         </div>
                         <div className="column question">
                             <h5 className="title is-5">Current question</h5>

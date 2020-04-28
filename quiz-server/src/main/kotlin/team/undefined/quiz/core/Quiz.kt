@@ -1,10 +1,9 @@
 package team.undefined.quiz.core
 
-import java.sql.Timestamp
-import java.util.UUID
+import java.util.*
 import kotlin.collections.ArrayList
 
-data class Quiz(val id: UUID = UUID.randomUUID(), val name: String, val participants: List<Participant> = ArrayList(), val questions: List<Question> = ArrayList()) {
+data class Quiz(val id: UUID = UUID.randomUUID(), val name: String, val participants: List<Participant> = ArrayList(), val questions: List<Question> = ArrayList(), var finished: Boolean = false, var quizStatistics: QuizStatistics? = null) {
 
     private var timestamp: Long? = null;
 
@@ -74,6 +73,11 @@ data class Quiz(val id: UUID = UUID.randomUUID(), val name: String, val particip
     fun reopenQuestion(): Quiz {
         participants.forEach { it.turn = false }
         return this;
+    }
+
+    fun finishQuiz(): Quiz {
+        finished = true
+        return this
     }
 
     fun setTimestamp(timestamp: Long): Quiz {
