@@ -57,7 +57,8 @@ const QuizDashboard: React.FC<QuizDashboardProps> = (props: QuizDashboardProps) 
     
     return (
         <div className="Quiz-dashboard">
-            { Object.keys(quiz).length > 0 && 
+            { Object.keys(quiz).length > 0
+            ?
                 <div>
                     <h4 className="title is-4">{quiz.name}</h4>
                     <div className="columns Dashboard-content">
@@ -71,6 +72,10 @@ const QuizDashboard: React.FC<QuizDashboardProps> = (props: QuizDashboardProps) 
                             {<Question quiz={quiz}></Question>}
                         </div>
                     </div>
+                </div>
+            :
+                <div>
+                   The quiz is being loaded. This might take a moment if the application has to be woken up.
                 </div>
             }
         </div>
