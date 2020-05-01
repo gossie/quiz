@@ -49,7 +49,7 @@ const QuizMaster: React.FC<QuizMasterProps> = (props: QuizMasterProps) => {
                     <div className="columns">
                         <div className="column participants">
                             <Participants quiz={quiz}></Participants>
-                            When you push this button, the quiz will be closed and cannot be opened again. The final statisticts will be displayed.
+                            <div>When you push this button, the quiz will be closed and cannot be opened again. The final statisticts will be displayed.</div>
                             { quiz.quizStatistics
                             ?
                                 <button className={finishButtonCssClasses} onClick={() => setForceStatistics(true)}>Show statistics</button>
