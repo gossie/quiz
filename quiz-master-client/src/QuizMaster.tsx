@@ -65,7 +65,7 @@ const QuizMaster: React.FC<QuizMasterProps> = (props: QuizMasterProps) => {
                 </div>
             :
                 <div>
-                   The quiz is loaded. This might take a moment if the application has to be woken up.
+                   The quiz is being loaded. This might take a moment if the application has to be woken up.
                 </div>
             }
         </div>
