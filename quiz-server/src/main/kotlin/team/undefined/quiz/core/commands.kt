@@ -2,19 +2,23 @@ package team.undefined.quiz.core
 
 import java.util.UUID
 
-data class CreateQuizCommand(val quizId: UUID, val quiz: Quiz)
+interface Command {
+    val quizId: UUID
+}
 
-data class CreateQuestionCommand(val quizId: UUID, val question: Question)
+data class CreateQuizCommand(override val quizId: UUID, val quiz: Quiz) : Command
 
-data class CreateParticipantCommand(val quizId: UUID, val participant: Participant)
+data class CreateQuestionCommand(override val quizId: UUID, val question: Question) : Command
 
-data class ForceEmitCommand(val quizId: UUID)
+data class CreateParticipantCommand(override val quizId: UUID, val participant: Participant) : Command
 
-data class AskQuestionCommand(val quizId: UUID, val questionId: UUID)
+data class ForceEmitCommand(override val quizId: UUID) : Command
 
-data class BuzzerCommand(val quizId: UUID, val participantId: UUID)
+data class AskQuestionCommand(override val quizId: UUID, val questionId: UUID) : Command
 
-data class AnswerCommand(val quizId: UUID, val answer: Answer) {
+data class BuzzerCommand(override val quizId: UUID, val participantId: UUID) : Command
+
+data class AnswerCommand(override val quizId: UUID, val answer: Answer) : Command {
     enum class Answer(private val handler: (Quiz) -> Quiz) {
         CORRECT({it.answeredCorrect()}),
         INCORRECT({it.answeredInorrect()});
@@ -25,6 +29,6 @@ data class AnswerCommand(val quizId: UUID, val answer: Answer) {
     }
 }
 
-data class ReopenCurrentQuestionCommand(val quizId: UUID)
+data class ReopenCurrentQuestionCommand(override val quizId: UUID) : Command
 
-data class FinishQuizCommand(val quizId: UUID)
+data class FinishQuizCommand(override val quizId: UUID) : Command
