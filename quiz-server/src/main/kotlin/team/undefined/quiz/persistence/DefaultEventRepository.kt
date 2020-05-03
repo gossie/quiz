@@ -28,4 +28,10 @@ class DefaultEventRepository(private val eventEntityRepository: EventEntityRepos
                 .sort(Comparator.comparing(Event::timestamp))
     }
 
+    override fun determineEvents(): Flux<Event> {
+        return eventEntityRepository.findAll()
+                .map { objectMapper.readValue(it.domainEvent, Class.forName(it.type)) }
+                .map { Event::class.java.cast(it) }
+    }
+
 }

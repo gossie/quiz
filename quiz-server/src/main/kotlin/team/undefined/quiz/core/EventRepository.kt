@@ -10,4 +10,6 @@ interface EventRepository {
 
     fun determineEvents(quizId: UUID): Flux<Event>
 
+    fun determineEvents(): Flux<Event>
+
 }
