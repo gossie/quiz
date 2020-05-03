@@ -9,7 +9,7 @@ import java.util.*
 import java.util.concurrent.ConcurrentHashMap
 
 @Component
-final class QuizProjection(eventBus: EventBus,
+class QuizProjection(eventBus: EventBus,
                            private val quizStatisticsProvider: QuizStatisticsProvider,
                            private val eventRepository: EventRepository) {
 
