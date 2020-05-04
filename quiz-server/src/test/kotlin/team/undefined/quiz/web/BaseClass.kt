@@ -40,7 +40,7 @@ abstract class BaseClass {
                 }
 
                 override fun deleteQuestion(command: DeleteQuestionCommand): Mono<Unit> {
-                    TODO("Not yet implemented")
+                    return Mono.just(Unit)
                 }
 
                 override fun createParticipant(command: CreateParticipantCommand): Mono<Unit> {
