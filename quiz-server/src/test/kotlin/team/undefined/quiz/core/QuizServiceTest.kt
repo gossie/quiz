@@ -26,7 +26,7 @@ internal class QuizServiceTest {
 
     @Test
     fun shouldCreateQuiz() {
-        val quizService = QuizService(quizRepository, eventBus)
+        val quizService = DefaultQuizService(quizRepository, eventBus)
         val quizId = UUID.randomUUID()
         val quiz = Quiz(quizId, "Quiz")
         StepVerifier.create(quizService.createQuiz(CreateQuizCommand(quizId, quiz)))
@@ -45,7 +45,7 @@ internal class QuizServiceTest {
                         QuizCreatedEvent(quizId, Quiz(quizId, "Quiz"))
                 ))
 
-        val quizService = QuizService(quizRepository, eventBus)
+        val quizService = DefaultQuizService(quizRepository, eventBus)
 
         val participant = Participant(UUID.randomUUID(), "Lena")
         val mono = quizService.createParticipant(CreateParticipantCommand(quizId, participant))
@@ -70,7 +70,7 @@ internal class QuizServiceTest {
                         ParticipantCreatedEvent(quizId, Participant(participantId, "Sandra"))
                 ))
 
-        val quizService = QuizService(quizRepository, eventBus)
+        val quizService = DefaultQuizService(quizRepository, eventBus)
 
         val participant = Participant(name = "Sandra")
         StepVerifier.create(quizService.createParticipant(CreateParticipantCommand(quizId, participant)))
@@ -96,7 +96,7 @@ internal class QuizServiceTest {
                         QuestionAskedEvent(quizId, questionId)
                 ))
 
-        val quizService = QuizService(quizRepository, eventBus)
+        val quizService = DefaultQuizService(quizRepository, eventBus)
 
         val buzzer = quizService.buzzer(BuzzerCommand(quizId, lenasId))
         StepVerifier.create(buzzer)
@@ -123,7 +123,7 @@ internal class QuizServiceTest {
                         BuzzeredEvent(quizId, lenasId)
                 ))
 
-        val quizService = QuizService(quizRepository, eventBus)
+        val quizService = DefaultQuizService(quizRepository, eventBus)
 
         val buzzer = quizService.buzzer(BuzzerCommand(quizId, andresId))
         StepVerifier.create(buzzer)
@@ -141,7 +141,7 @@ internal class QuizServiceTest {
                         QuizCreatedEvent(quizId, Quiz(quizId, "Quiz"))
                 ))
 
-        val quizService = QuizService(quizRepository, eventBus)
+        val quizService = DefaultQuizService(quizRepository, eventBus)
 
         val questionId = UUID.randomUUID()
         StepVerifier.create(quizService.createQuestion(CreateQuestionCommand(quizId, Question(questionId, "Warum ist die Banane krum?"))))
@@ -162,7 +162,7 @@ internal class QuizServiceTest {
                         QuestionCreatedEvent(quizId, Question(questionId, "Warum ist die Banane krum?"))
                 ))
 
-        val quizService = QuizService(quizRepository, eventBus)
+        val quizService = DefaultQuizService(quizRepository, eventBus)
 
         StepVerifier.create(quizService.startNewQuestion(AskQuestionCommand(quizId, questionId)))
                 .consumeNextWith {
@@ -194,7 +194,7 @@ internal class QuizServiceTest {
 */
     @Test
     fun shouldCreateNewQuestionWithImage() {
-        val quizService = QuizService(quizRepository, eventBus)
+        val quizService = DefaultQuizService(quizRepository, eventBus)
 
         val quizId = UUID.randomUUID()
         val questionId = UUID.randomUUID()
@@ -207,7 +207,7 @@ internal class QuizServiceTest {
 
     @Test
     fun shouldAnswerQuestionCorrect() {
-        val quizService = QuizService(quizRepository, eventBus)
+        val quizService = DefaultQuizService(quizRepository, eventBus)
 
         val quizId = UUID.randomUUID()
         StepVerifier.create(quizService.answer(AnswerCommand(quizId, AnswerCommand.Answer.CORRECT)))
@@ -220,7 +220,7 @@ internal class QuizServiceTest {
     @Test
     fun shouldAnswerQuestionIncorrect() {
 
-        val quizService = QuizService(quizRepository, eventBus)
+        val quizService = DefaultQuizService(quizRepository, eventBus)
 
         val quizId = UUID.randomUUID()
         StepVerifier.create(quizService.answer(AnswerCommand(quizId, AnswerCommand.Answer.INCORRECT)))
@@ -232,7 +232,7 @@ internal class QuizServiceTest {
 
     @Test
     fun shouldReopenQuestion() {
-        val quizService = QuizService(quizRepository, eventBus)
+        val quizService = DefaultQuizService(quizRepository, eventBus)
 
         val quizId = UUID.randomUUID()
         StepVerifier.create(quizService.reopenQuestion(ReopenCurrentQuestionCommand(quizId)))
@@ -244,7 +244,7 @@ internal class QuizServiceTest {
 
     @Test
     fun shouldFinishQuiz() {
-        val quizService = QuizService(quizRepository, eventBus)
+        val quizService = DefaultQuizService(quizRepository, eventBus)
 
         val quizId = UUID.randomUUID()
         StepVerifier.create(quizService.finishQuiz(FinishQuizCommand(quizId)))
