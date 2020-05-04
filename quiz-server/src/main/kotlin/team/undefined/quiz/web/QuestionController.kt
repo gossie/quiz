@@ -23,4 +23,9 @@ class QuestionController(private val quizService: QuizService) {
         return quizService.startNewQuestion(AskQuestionCommand(quizId, questionId))
     }
 
+    @DeleteMapping("/{questionId}")
+    fun deleteQuestion(@PathVariable quizId: UUID, @PathVariable questionId: UUID): Mono<Unit> {
+        return quizService.deleteQuestion(DeleteQuestionCommand(quizId, questionId))
+    }
+
 }

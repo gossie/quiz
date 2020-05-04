@@ -10,8 +10,6 @@ import java.util.*
 import java.util.stream.Collectors
 
 fun Quiz.map(): Mono<QuizDTO> {
-    val statistis =
-
     return Flux.fromIterable(this.participants)
             .flatMap { it.map(this.id) }
             .collect(Collectors.toList())
