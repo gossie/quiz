@@ -8,9 +8,6 @@ import reactor.core.publisher.Mono
 class DefaultQuizService(private val eventRepository: EventRepository,
                          private val eventBus: EventBus) : QuizService {
 
-
-
-
     override fun createQuiz(command: CreateQuizCommand): Mono<Unit> {
         return eventRepository.storeEvent(QuizCreatedEvent(command.quizId, command.quiz))
                 .map { eventBus.post(it) }

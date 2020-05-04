@@ -42,12 +42,14 @@ const QuizMaster: React.FC<QuizMasterProps> = (props: QuizMasterProps) => {
 
     return (
         <div className="Quiz-dashboard">
-            { Object.keys(quiz).length > 0 &&
+            { Object.keys(quiz).length > 0
+            ?
                 <div>
                     <h4 className="title is-4">{quiz.name} (ID: {quiz.id})</h4>
                     <div className="columns">
                         <div className="column participants">
                             <Participants quiz={quiz}></Participants>
+                            <div>When you push this button, the quiz will be closed and cannot be opened again. The final statisticts will be displayed.</div>
                             { quiz.quizStatistics
                             ?
                                 <button className={finishButtonCssClasses} onClick={() => setForceStatistics(true)}>Show statistics</button>
@@ -60,6 +62,10 @@ const QuizMaster: React.FC<QuizMasterProps> = (props: QuizMasterProps) => {
                             <Questions quiz={quiz}></Questions>
                         </div>
                     </div>
+                </div>
+            :
+                <div>
+                   The quiz is being loaded. This might take a moment if the application has to be woken up.
                 </div>
             }
         </div>
