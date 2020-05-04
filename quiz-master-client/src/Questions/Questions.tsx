@@ -41,6 +41,13 @@ const Questions: React.FC<QuestionsProps> = (props: QuestionsProps) => {
         });
     };
 
+    const deleteQuestion = async (question: Question) => {
+        const questionLink = question.links.find(link => link.rel === 'self')?.href;
+        await fetch(`${process.env.REACT_APP_BASE_URL}${questionLink}`, {
+            method: 'DELETE'
+        });
+    };
+
     const playedQuestions = props.quiz.playedQuestions
             .map((q, index) => <div key={index}>#{index + 1} {q.question}</div>);
 
@@ -48,8 +55,9 @@ const Questions: React.FC<QuestionsProps> = (props: QuestionsProps) => {
             .map((q, index) =>
                     <div key={index}>
                         #{index + 1} {q.question}
-                        { q.imagePath && q.imagePath.length > 0 && <span data-testid={`image-icon-${index}`} title="Show image" className="icon" onClick={() => setImageToDisplay(q.imagePath!)}><i className="fas fa-images"></i></span>}
                         {!q.pending && <span data-testid={`start-question-${index}`} className="icon has-text-primary" onClick={() => startQuestion(q)}><i className="fas fa-share-square"></i></span>}
+                        { q.imagePath && q.imagePath.length > 0 && <span data-testid={`image-icon-${index}`} title="Show image" className="icon" onClick={() => setImageToDisplay(q.imagePath!)}><i className="fas fa-images"></i></span>}
+                        {!q.pending && <span data-testid={`delete-question-${index}`} className="icon has-text-danger" onClick={() => deleteQuestion(q)}><i className="fas fa-trash"></i></span>}
                     </div>);
     
     return (

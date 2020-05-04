@@ -5,12 +5,12 @@ import Quiz from '../quiz-client-shared/quiz';
 
 test('should display questions', () => {
     const quiz: Quiz = {
-        id: 5,
+        id: '5',
         name: "Awesome Quiz",
         participants: [],
         playedQuestions: [
             {
-                id: 1,
+                id: '1',
                 question: 'Frage 1',
                 pending: false,
                 links: []
@@ -18,13 +18,13 @@ test('should display questions', () => {
         ],
         openQuestions: [
             {
-                id: 2,
+                id: '2',
                 question: 'Frage 2',
                 pending: true,
                 links: []
             },
             {
-                id: 3,
+                id: '3',
                 question: 'Frage 3',
                 pending: false,
                 links: []
@@ -64,19 +64,19 @@ test('should add new question', async () => {
     });
 
     const quiz: Quiz = {
-        id: 5,
+        id: '5',
         name: "Awesome Quiz",
         participants: [],
         playedQuestions: [],
         openQuestions: [
             {
-                id: 1,
+                id: '1',
                 question: 'Frage 1',
                 pending: false,
                 links: []
             },
             {
-                id: 2,
+                id: '2',
                 question: 'Frage 2',
                 pending: true,
                 links: []
@@ -117,12 +117,12 @@ test('should start question', () => {
     });
 
     const quiz: Quiz = {
-        id: 5,
+        id: '5',
         name: "Awesome Quiz",
         participants: [],
         playedQuestions: [
             {
-                id: 1,
+                id: '1',
                 question: 'Frage 1',
                 pending: false,
                 links: []
@@ -130,13 +130,13 @@ test('should start question', () => {
         ],
         openQuestions: [
             {
-                id: 2,
+                id: '2',
                 question: 'Frage 2',
                 pending: false,
                 links: [{ href: '/api/quiz/5/questions/11', rel: 'self' }]
             },
             {
-                id: 3,
+                id: '3',
                 question: 'Frage 3',
                 pending: false,
                 links: []
@@ -149,20 +149,62 @@ test('should start question', () => {
     getByTestId('start-question-0').click();
 });
 
+test('should delete question', () => {
+    jest.spyOn(global, 'fetch').mockImplementation((url: string, request: object) => {
+        expect(url).toEqual('http://localhost:5000/api/quiz/5/questions/11');
+        expect(request).toEqual({
+            method: 'DELETE'
+        });
+        Promise.resolve();
+    });
+
+    const quiz: Quiz = {
+        id: '5',
+        name: "Awesome Quiz",
+        participants: [],
+        playedQuestions: [
+            {
+                id: '1',
+                question: 'Frage 1',
+                pending: false,
+                links: []
+            },
+        ],
+        openQuestions: [
+            {
+                id: '2',
+                question: 'Frage 2',
+                pending: false,
+                links: [{ href: '/api/quiz/5/questions/11', rel: 'self' }]
+            },
+            {
+                id: '3',
+                question: 'Frage 3',
+                pending: false,
+                links: []
+            }
+        ],
+        links: []
+    }
+    const { getByTestId } = render(<Questions quiz={quiz} />);
+
+    getByTestId('delete-question-0').click();
+});
+
 test('should open and close image modal', () => {
     const quiz: Quiz = {
-        id: 5,
+        id: '5',
         name: "Awesome Quiz",
         participants: [],
         openQuestions: [
             {
-                id: 2,
+                id: '2',
                 question: 'Frage 2',
                 pending: true,
                 links: []
             },
             {
-                id: 3,
+                id: '3',
                 question: 'Frage 3',
                 pending: false,
                 imagePath: 'https://path_to_image/',
