@@ -20,4 +20,6 @@ interface QuizService {
 
     fun finishQuiz(command: FinishQuizCommand): Mono<Unit>
 
+    fun deleteQuestion(command: DeleteQuestionCommand): Mono<Unit>
+
 }

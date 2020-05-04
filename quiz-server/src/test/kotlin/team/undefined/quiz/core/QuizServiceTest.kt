@@ -152,6 +152,26 @@ internal class QuizServiceTest {
     }
 
     @Test
+    fun shouldDeleteQuestion() {
+        val quizId = UUID.randomUUID()
+        val questionId = UUID.randomUUID()
+
+        `when`(quizRepository.determineEvents(quizId))
+                .thenReturn(Flux.just(
+                        QuizCreatedEvent(quizId, Quiz(quizId, "Quiz")),
+                        QuestionCreatedEvent(quizId, Question(questionId, "Warum ist die Banane krum?"))
+                ))
+
+        val quizService = DefaultQuizService(quizRepository, eventBus)
+
+        StepVerifier.create(quizService.deleteQuestion(DeleteQuestionCommand(quizId, questionId)))
+                .consumeNextWith {
+                    verify(eventBus).post(argThat { (it as QuestionDeletedEvent).quizId == quizId && it.questionId == questionId })
+                }
+                .verifyComplete()
+    }
+
+    @Test
     fun shouldStartNewQuestion() {
         val quizId = UUID.randomUUID()
         val questionId = UUID.randomUUID()
@@ -170,28 +190,7 @@ internal class QuizServiceTest {
                 }
                 .verifyComplete()
     }
-/*
-    @Test
-    fun shouldStopPendingOldQuestionWhenNewQuestionIsStarted() {
-        val quizRepository = mock(EventRepository::class.java)
-        `when`(quizRepository.determineQuiz(117))
-                .thenReturn(Mono.just(Quiz(117, "Quiz", listOf(Participant(23, "Sandra", true), Participant(24, "Allli"), Participant(25, "Erik")), mutableListOf(Question(12, "Warum ist die Banane krumm?", pending = true), Question(13, "Wie hoch ist die Zugspitze?")))))
-        `when`(quizRepository.saveQuiz(Quiz(117, "Quiz", PARTICIPANTS, listOf(Question(12, "Warum ist die Banane krumm?", false, alreadyPlayed = true), Question(13, "Wie hoch ist die Zugspitze?", pending = true)))))
-                .thenReturn(Mono.just(Quiz(117, "Quiz", PARTICIPANTS, listOf(Question(12, "Warum ist die Banane krumm?", false, alreadyPlayed = true), Question(13, "Wie hoch ist die Zugspitze?", true)))))
 
-        val quizService = QuizService(quizRepository)
-
-        val observedQuiz = AtomicReference<Quiz>()
-        quizService.observeQuiz(117)
-                .subscribe { observedQuiz.set(it) }
-
-        StepVerifier.create(quizService.startNewQuestion(117, 13))
-                .expectNext(Quiz(117, "Quiz", PARTICIPANTS, listOf(Question(12, "Warum ist die Banane krumm?", false, alreadyPlayed = true), Question(13, "Wie hoch ist die Zugspitze?", true))))
-                .verifyComplete()
-
-        assertThat(observedQuiz.get()).isEqualTo(Quiz(117, "Quiz", PARTICIPANTS, listOf(Question(12, "Warum ist die Banane krumm?", false, alreadyPlayed = true), Question(13, "Wie hoch ist die Zugspitze?", true))))
-    }
-*/
     @Test
     fun shouldCreateNewQuestionWithImage() {
         val quizService = DefaultQuizService(quizRepository, eventBus)
