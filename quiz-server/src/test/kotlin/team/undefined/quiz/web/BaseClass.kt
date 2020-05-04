@@ -86,6 +86,11 @@ abstract class BaseClass {
         fun quizController(): QuizController {
             return QuizController(quizService(), quizProjection(), eventBus())
         }
+
+        @Bean
+        fun questionController(): QuestionController {
+            return QuestionController(quizService())
+        }
     }
 
 }
