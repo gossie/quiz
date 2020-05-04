@@ -78,6 +78,11 @@ abstract class BaseClass {
         }
 
         @Bean
+        fun questionProjection(): QuestionProjection {
+            return mock(QuestionProjection::class.java)
+        }
+
+        @Bean
         fun eventBus(): EventBus {
             return mock(EventBus::class.java)
         }
@@ -89,7 +94,7 @@ abstract class BaseClass {
 
         @Bean
         fun questionController(): QuestionController {
-            return QuestionController(quizService())
+            return QuestionController(quizService(), questionProjection())
         }
     }
 

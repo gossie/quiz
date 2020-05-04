@@ -5,6 +5,7 @@ import com.google.common.eventbus.Subscribe
 import org.springframework.stereotype.Component
 import java.util.*
 import java.util.concurrent.ConcurrentHashMap
+import java.util.stream.Collectors
 
 @Component
 final class QuestionProjection(eventBus: EventBus,
@@ -16,8 +17,14 @@ final class QuestionProjection(eventBus: EventBus,
         eventBus.register(this)
 
         eventRepository.determineEvents()
-                .filter { it is QuestionCreatedEvent }
-                .subscribe { handleQuestionCreation(it as QuestionCreatedEvent) }
+                .filter { it is QuestionCreatedEvent || it is QuestionDeletedEvent }
+                .subscribe {
+                    if (it is QuestionCreatedEvent) {
+                        handleQuestionCreation(it)
+                    } else if (it is QuestionDeletedEvent) {
+                        handleQuestionDeletion(it)
+                    }
+                }
     }
 
     @Subscribe
@@ -25,8 +32,16 @@ final class QuestionProjection(eventBus: EventBus,
         questions[event.question.id] = event.question
     }
 
-    fun determineQuestions(): Collection<Question> {
-        return questions.values
+    @Subscribe
+    fun handleQuestionDeletion(event: QuestionDeletedEvent) {
+        questions.remove(event.questionId)
+    }
+
+    fun determineQuestions(): Collection<String> {
+        return questions.values.stream()
+                .map { it.question }
+                .distinct()
+                .collect(Collectors.toList())
     }
 
 }
