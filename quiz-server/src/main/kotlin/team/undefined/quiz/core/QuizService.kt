@@ -8,16 +8,19 @@ import reactor.core.publisher.Mono
 class QuizService(private val eventRepository: EventRepository,
                   private val eventBus: EventBus) {
 
+    @WriteLock
     fun createQuiz(command: CreateQuizCommand): Mono<Unit> {
         return eventRepository.storeEvent(QuizCreatedEvent(command.quizId, command.quiz))
                 .map { eventBus.post(it) }
     }
 
+    @WriteLock
     fun createQuestion(command: CreateQuestionCommand): Mono<Unit> {
         return eventRepository.storeEvent(QuestionCreatedEvent(command.quizId, command.question))
                 .map { eventBus.post(it) }
     }
 
+    @WriteLock
     fun createParticipant(command: CreateParticipantCommand): Mono<Unit> {
         eventBus.post(ForceEmitCommand(command.quizId))
         return eventRepository.determineEvents(command.quizId)
@@ -27,6 +30,7 @@ class QuizService(private val eventRepository: EventRepository,
                 .map { eventBus.post(it) }
     }
 
+    @WriteLock
     fun buzzer(command: BuzzerCommand): Mono<Unit> {
         return eventRepository.determineEvents(command.quizId)
                 .reduce(Quiz(name = "")) { quiz: Quiz, event: Event -> event.process(quiz)}
@@ -35,21 +39,25 @@ class QuizService(private val eventRepository: EventRepository,
                 .map { eventBus.post(it) }
     }
 
+    @WriteLock
     fun startNewQuestion(command: AskQuestionCommand): Mono<Unit> {
         return eventRepository.storeEvent(QuestionAskedEvent(command.quizId, command.questionId))
                 .map { eventBus.post(it) }
     }
 
+    @WriteLock
     fun answer(command: AnswerCommand): Mono<Unit> {
         return eventRepository.storeEvent(AnsweredEvent(command.quizId, command.answer))
                 .map { eventBus.post(it) }
     }
 
+    @WriteLock
     fun reopenQuestion(command: ReopenCurrentQuestionCommand): Mono<Unit> {
         return eventRepository.storeEvent(CurrentQuestionReopenedEvent(command.quizId))
                 .map { eventBus.post(it) }
     }
 
+    @WriteLock
     fun finishQuiz(command: FinishQuizCommand): Mono<Unit> {
         return eventRepository.storeEvent(QuizFinishedEvent(command.quizId))
                 .map { eventBus.post(it) }
