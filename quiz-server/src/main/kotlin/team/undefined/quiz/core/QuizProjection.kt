@@ -30,6 +30,9 @@ class QuizProjection(private val eventBus: EventBus,
     fun handleQuestionCreation(event: QuestionCreatedEvent) = handleEvent(event)
 
     @Subscribe
+    fun handleQuestionDeletion(event: QuestionDeletedEvent) = handleEvent(event)
+
+    @Subscribe
     fun handleParticipantCreation(event: ParticipantCreatedEvent) = handleEvent(event)
 
     @Subscribe

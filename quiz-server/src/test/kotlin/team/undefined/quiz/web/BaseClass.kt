@@ -3,7 +3,6 @@ package team.undefined.quiz.web
 import com.google.common.eventbus.EventBus
 import io.restassured.RestAssured
 import org.junit.jupiter.api.BeforeEach
-import org.mockito.Mockito
 import org.mockito.Mockito.mock
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration
 import org.springframework.boot.test.context.SpringBootTest
@@ -38,6 +37,10 @@ abstract class BaseClass {
 
                 override fun createQuestion(command: CreateQuestionCommand): Mono<Unit> {
                     TODO("Not yet implemented")
+                }
+
+                override fun deleteQuestion(command: DeleteQuestionCommand): Mono<Unit> {
+                    return Mono.just(Unit)
                 }
 
                 override fun createParticipant(command: CreateParticipantCommand): Mono<Unit> {
@@ -82,6 +85,11 @@ abstract class BaseClass {
         @Bean
         fun quizController(): QuizController {
             return QuizController(quizService(), quizProjection(), eventBus())
+        }
+
+        @Bean
+        fun questionController(): QuestionController {
+            return QuestionController(quizService())
         }
     }
 
