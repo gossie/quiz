@@ -26,8 +26,11 @@ internal class QuestionProjectionTest {
         `when`(eventRepository.determineEvents()).thenReturn(Flux.just(
                 QuizCreatedEvent(quizId, Quiz(name = "Awesome Quiz")),
                 QuestionCreatedEvent(quizId, question1),
+                QuestionAskedEvent(quizId, question1.id),
                 QuestionCreatedEvent(quizId, question2),
+                QuestionAskedEvent(quizId, question2.id),
                 QuestionCreatedEvent(quizId, question3),
+                QuestionAskedEvent(quizId, question3.id),
                 QuestionCreatedEvent(quizId, question4),
                 QuestionDeletedEvent(quizId, question4.id)
         ))
@@ -36,25 +39,24 @@ internal class QuestionProjectionTest {
 
         await until {
             questionProjection.determineQuestions().size == 2
-                    &&  questionProjection.determineQuestions().contains("Warum ist das so?")
-                    &&  questionProjection.determineQuestions().contains("Wo ist das?")
+                    &&  questionProjection.determineQuestions().contains(question1)
+                    &&  questionProjection.determineQuestions().contains(question2)
         }
 
         eventBus.post(QuestionCreatedEvent(quizId, question5))
 
         await until {
-            questionProjection.determineQuestions().size == 3
-                    &&  questionProjection.determineQuestions().contains("Warum ist das so?")
-                    &&  questionProjection.determineQuestions().contains("Wo ist das?")
-                    &&  questionProjection.determineQuestions().contains("Wie ist das?")
+            questionProjection.determineQuestions().size == 2
+                    &&  questionProjection.determineQuestions().contains(question1)
+                    &&  questionProjection.determineQuestions().contains(question2)
         }
 
         eventBus.post(QuestionDeletedEvent(quizId, question5.id))
 
         await until {
             questionProjection.determineQuestions().size == 2
-                    &&  questionProjection.determineQuestions().contains("Warum ist das so?")
-                    &&  questionProjection.determineQuestions().contains("Wo ist das?")
+                    &&  questionProjection.determineQuestions().contains(question1)
+                    &&  questionProjection.determineQuestions().contains(question2)
         }
     }
 

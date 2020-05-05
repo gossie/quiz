@@ -31,8 +31,12 @@ class QuestionController(private val quizService: QuizService,
     }
 
     @GetMapping
-    fun getQuestions(): Flux<String> {
-        return Flux.fromIterable(questionProjection.determineQuestions())
+    fun getQuestions(@PathVariable quizId: UUID): Flux<QuestionDTO> {
+        return Flux.fromIterable(
+                questionProjection
+                        .determineQuestions()
+                        .map { it.map(quizId) }
+        )
     }
 
 }
