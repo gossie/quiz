@@ -7,7 +7,7 @@ import java.util.concurrent.CopyOnWriteArrayList
 import java.util.stream.Collectors
 
 @Component
-final class QuestionProjection(eventBus: EventBus,
+class QuestionProjection(eventBus: EventBus,
                                eventRepository: EventRepository) {
 
     private val questions = CopyOnWriteArrayList<Question>()
