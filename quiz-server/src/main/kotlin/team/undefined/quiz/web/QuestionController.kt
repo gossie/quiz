@@ -1,6 +1,7 @@
 package team.undefined.quiz.web
 
 import org.springframework.http.HttpStatus
+import org.springframework.http.MediaType
 import org.springframework.web.bind.annotation.*
 import reactor.core.publisher.Flux
 import reactor.core.publisher.Mono
@@ -30,7 +31,7 @@ class QuestionController(private val quizService: QuizService,
         return quizService.deleteQuestion(DeleteQuestionCommand(quizId, questionId))
     }
 
-    @GetMapping
+    @GetMapping(produces = [MediaType.APPLICATION_JSON_VALUE])
     fun getQuestions(@PathVariable quizId: UUID): Flux<QuestionDTO> {
         return Flux.fromIterable(
                 questionProjection

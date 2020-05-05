@@ -5,14 +5,20 @@ import com.google.common.eventbus.Subscribe
 import org.springframework.stereotype.Component
 import java.util.concurrent.CopyOnWriteArrayList
 import java.util.stream.Collectors
+import javax.annotation.PostConstruct
 
 @Component
 class QuestionProjection(eventBus: EventBus,
-                               eventRepository: EventRepository) {
+                         eventRepository: EventRepository) {
 
     private val questions = CopyOnWriteArrayList<Question>()
 
     init {
+        eventBus.register(this)
+    }
+/*
+    @PostConstruct
+    fun init() {
         eventBus.register(this)
 
         eventRepository.determineEvents()
@@ -27,7 +33,7 @@ class QuestionProjection(eventBus: EventBus,
                     }
                 }
     }
-
+*/
     @Subscribe
     fun handleQuestionCreation(event: QuestionCreatedEvent) {
         questions.add(event.question)
@@ -40,8 +46,9 @@ class QuestionProjection(eventBus: EventBus,
 
     @Subscribe
     private fun handleQuestionAsked(event: QuestionAskedEvent) {
-        questions.find { it.id == event.questionId }
-                ?.alreadyPlayed = true
+        val question = questions.find { it.id == event.questionId }
+        question?.alreadyPlayed = true
+        question?.pending = true
     }
 
     fun determineQuestions(): Collection<Question> {
