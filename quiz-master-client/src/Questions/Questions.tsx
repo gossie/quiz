@@ -24,15 +24,15 @@ const Questions: React.FC<QuestionsProps> = (props: QuestionsProps) => {
             <h4 className="title is-4">Questions</h4>
             <div className="tabs is-boxed">
                 <ul>
-                    <li className="is-active">
+                    <li className={tabIndex === 0 ? "is-active" : ""}>
                         <a href="/#" onClick={() => setTabIndex(0)}>
-                            <span className="icon is-small"><i className="fas fa-image" aria-hidden="true"></i></span>
-                            <span>Eigene Frage</span>
+                            <span className="icon is-small"><i className="far fa-lightbulb" aria-hidden="true"></i></span>
+                            <span>Create a question</span>
                         </a>
                     </li>
-                    <li>
+                    <li className={tabIndex === 1 ? "is-active" : ""}>
                         <a href="/#" onClick={() => setTabIndex(1)}>
-                            <span className="icon is-small"><i className="fas fa-image" aria-hidden="true"></i></span>
+                            <span className="icon is-small"><i className="fas fa-cart-arrow-down" aria-hidden="true"></i></span>
                             <span>Pick from played questions</span>
                         </a>
                     </li>
@@ -42,7 +42,7 @@ const Questions: React.FC<QuestionsProps> = (props: QuestionsProps) => {
             { tabIndex === 0 && <QuestionForm quiz={props.quiz}></QuestionForm> }
             { tabIndex === 1 && <QuestionPool quiz={props.quiz} setImageToDisplay={setImageToDisplay}></QuestionPool> }
 
-            <div className="columns">
+            <div className="columns question-columns">
                 <div data-testid="open-questions" className="column">
                     <h5 className="title is-5">Open questions</h5>
                     <div className="question-container">

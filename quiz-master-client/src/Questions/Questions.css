@@ -1,3 +1,7 @@
 .question-container {
-  text-align: left;
+    text-align: left;
+}
+
+.question-columns {
+    margin-top: 50px;
 }
