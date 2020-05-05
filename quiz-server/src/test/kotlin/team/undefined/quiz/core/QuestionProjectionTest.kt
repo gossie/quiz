@@ -39,24 +39,30 @@ internal class QuestionProjectionTest {
 
         await until {
             questionProjection.determineQuestions().size == 2
-                    &&  questionProjection.determineQuestions().contains(question1)
-                    &&  questionProjection.determineQuestions().contains(question2)
+                    &&  questionProjection.determineQuestions()[0].question == "Warum ist das so?"
+                    &&  questionProjection.determineQuestions()[0].pending
+                    &&  questionProjection.determineQuestions()[1].question == "Wo ist das?"
+                    &&  questionProjection.determineQuestions()[1].pending
         }
 
         eventBus.post(QuestionCreatedEvent(quizId, question5))
 
         await until {
             questionProjection.determineQuestions().size == 2
-                    &&  questionProjection.determineQuestions().contains(question1)
-                    &&  questionProjection.determineQuestions().contains(question2)
+                    &&  questionProjection.determineQuestions()[0].question == "Warum ist das so?"
+                    &&  questionProjection.determineQuestions()[0].pending
+                    &&  questionProjection.determineQuestions()[1].question == "Wo ist das?"
+                    &&  questionProjection.determineQuestions()[1].pending
         }
 
         eventBus.post(QuestionDeletedEvent(quizId, question5.id))
 
         await until {
             questionProjection.determineQuestions().size == 2
-                    &&  questionProjection.determineQuestions().contains(question1)
-                    &&  questionProjection.determineQuestions().contains(question2)
+                    &&  questionProjection.determineQuestions()[0].question == "Warum ist das so?"
+                    &&  questionProjection.determineQuestions()[0].pending
+                    &&  questionProjection.determineQuestions()[1].question == "Wo ist das?"
+                    &&  questionProjection.determineQuestions()[1].pending
         }
     }
 

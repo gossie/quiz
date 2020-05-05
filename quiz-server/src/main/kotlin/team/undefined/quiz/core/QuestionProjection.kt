@@ -3,6 +3,10 @@ package team.undefined.quiz.core
 import com.google.common.eventbus.EventBus
 import com.google.common.eventbus.Subscribe
 import org.springframework.stereotype.Component
+import reactor.core.publisher.Flux
+import reactor.core.publisher.Mono
+import java.time.Duration
+import java.time.Duration.ofSeconds
 import java.util.concurrent.CopyOnWriteArrayList
 import java.util.stream.Collectors
 import javax.annotation.PostConstruct
@@ -15,13 +19,9 @@ class QuestionProjection(eventBus: EventBus,
 
     init {
         eventBus.register(this)
-    }
-/*
-    @PostConstruct
-    fun init() {
-        eventBus.register(this)
 
-        eventRepository.determineEvents()
+        Mono.delay(ofSeconds(10))
+                .flatMapMany { eventRepository.determineEvents() }
                 .filter { it is QuestionCreatedEvent || it is QuestionDeletedEvent || it is QuestionAskedEvent }
                 .subscribe {
                     if (it is QuestionCreatedEvent) {
@@ -33,7 +33,7 @@ class QuestionProjection(eventBus: EventBus,
                     }
                 }
     }
-*/
+
     @Subscribe
     fun handleQuestionCreation(event: QuestionCreatedEvent) {
         questions.add(event.question)
@@ -51,7 +51,7 @@ class QuestionProjection(eventBus: EventBus,
         question?.pending = true
     }
 
-    fun determineQuestions(): Collection<Question> {
+    fun determineQuestions(): List<Question> {
         return questions
                 .filter { it.alreadyPlayed }
                 .distinctBy { it.question }
