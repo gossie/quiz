@@ -31,7 +31,7 @@ const Questions: React.FC<QuestionsProps> = (props: QuestionsProps) => {
         setQuestionButtonCssClasses('button is-link');
     };
 
-    const startQuestion = async (question: Question) => {
+    const toggleQuestion = async (question: Question) => {
         const questionLink = question.links.find(link => link.rel === 'self')?.href;
         await fetch(`${process.env.REACT_APP_BASE_URL}${questionLink}`, {
             method: 'PUT',
@@ -55,7 +55,8 @@ const Questions: React.FC<QuestionsProps> = (props: QuestionsProps) => {
             .map((q, index) =>
                     <div key={index}>
                         #{index + 1} {q.question}
-                        {!q.pending && <span data-testid={`start-question-${index}`} className="icon has-text-primary" onClick={() => startQuestion(q)}><i className="fas fa-share-square"></i></span>}
+                        {!q.pending && <span data-testid={`start-question-${index}`} className="icon has-text-primary" onClick={() => toggleQuestion(q)}><i className="fas fa-share-square"></i></span>}
+                        {q.pending && <span data-testid={`revert-question-${index}`} className="icon has-text-primary" onClick={() => toggleQuestion(q)}><i className="fas fa-undo"></i></span>}
                         { q.imagePath && q.imagePath.length > 0 && <span data-testid={`image-icon-${index}`} title="Show image" className="icon" onClick={() => setImageToDisplay(q.imagePath!)}><i className="fas fa-images"></i></span>}
                         {!q.pending && <span data-testid={`delete-question-${index}`} className="icon has-text-danger" onClick={() => deleteQuestion(q)}><i className="fas fa-trash"></i></span>}
                     </div>);
