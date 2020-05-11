@@ -52,7 +52,7 @@ abstract class BaseClass {
                 }
 
                 override fun startNewQuestion(command: AskQuestionCommand): Mono<Unit> {
-                    TODO("Not yet implemented")
+                    return Mono.just(Unit)
                 }
 
                 override fun answer(command: AnswerCommand): Mono<Unit> {
