@@ -10,6 +10,5 @@ Contract.make {
     }
     response {
         status OK()
-        body []
     }
 }
