@@ -11,8 +11,7 @@ import java.util.*
 @RestController
 @CrossOrigin(origins = ["*"], allowedHeaders = ["*"])
 @RequestMapping("/api/quiz/{quizId}/questions")
-class QuestionController(private val quizService: QuizService,
-                         private val questionProjection: QuestionProjection) {
+class QuestionController(private val quizService: QuizService) {
 
     @PostMapping(consumes = ["application/json"])
     @ResponseStatus(HttpStatus.CREATED)
@@ -29,15 +28,6 @@ class QuestionController(private val quizService: QuizService,
     @DeleteMapping("/{questionId}")
     fun deleteQuestion(@PathVariable quizId: UUID, @PathVariable questionId: UUID): Mono<Unit> {
         return quizService.deleteQuestion(DeleteQuestionCommand(quizId, questionId))
-    }
-
-    @GetMapping(produces = [MediaType.APPLICATION_JSON_VALUE])
-    fun getQuestions(@PathVariable quizId: UUID): Flux<QuestionDTO> {
-        return Flux.fromIterable(
-                questionProjection
-                        .determineQuestions()
-                        .map { it.map(quizId) }
-        )
     }
 
 }

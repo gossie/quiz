@@ -3,6 +3,8 @@ package team.undefined.quiz.web
 import com.google.common.eventbus.EventBus
 import io.restassured.RestAssured
 import org.junit.jupiter.api.BeforeEach
+import org.mockito.Mockito
+import org.mockito.Mockito.`when`
 import org.mockito.Mockito.mock
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration
 import org.springframework.boot.test.context.SpringBootTest
@@ -79,7 +81,9 @@ abstract class BaseClass {
 
         @Bean
         fun questionProjection(): QuestionProjection {
-            return mock(QuestionProjection::class.java)
+            val questionProjection = mock(QuestionProjection::class.java)
+            `when`(questionProjection.determineQuestions()).thenReturn(emptyMap())
+            return questionProjection
         }
 
         @Bean
@@ -94,7 +98,12 @@ abstract class BaseClass {
 
         @Bean
         fun questionController(): QuestionController {
-            return QuestionController(quizService(), questionProjection())
+            return QuestionController(quizService())
+        }
+
+        @Bean
+        fun questionPoolController(): QuestionPoolController {
+            return QuestionPoolController(questionProjection())
         }
     }
 

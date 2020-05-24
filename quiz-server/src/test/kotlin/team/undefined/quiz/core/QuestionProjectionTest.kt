@@ -13,7 +13,8 @@ internal class QuestionProjectionTest {
 
     @Test
     fun shouldInitializeProjectionAndHandleEvent() {
-        val quizId = UUID.randomUUID()
+        val quiz1Id = UUID.randomUUID()
+        val quiz2Id = UUID.randomUUID()
 
         val eventBus = EventBus()
 
@@ -24,45 +25,72 @@ internal class QuestionProjectionTest {
         val question5 = Question(question = "Wie ist das?")
         val eventRepository = mock(EventRepository::class.java)
         `when`(eventRepository.determineEvents()).thenReturn(Flux.just(
-                QuizCreatedEvent(quizId, Quiz(name = "Awesome Quiz")),
-                QuestionCreatedEvent(quizId, question1),
-                QuestionAskedEvent(quizId, question1.id),
-                QuestionCreatedEvent(quizId, question2),
-                QuestionAskedEvent(quizId, question2.id),
-                QuestionCreatedEvent(quizId, question3),
-                QuestionAskedEvent(quizId, question3.id),
-                QuestionCreatedEvent(quizId, question4),
-                QuestionDeletedEvent(quizId, question4.id)
+                QuizCreatedEvent(quiz1Id, Quiz(name = "Awesome Quiz1")),
+                QuestionCreatedEvent(quiz1Id, question1),
+                QuestionAskedEvent(quiz1Id, question1.id),
+                QuestionCreatedEvent(quiz1Id, question2),
+                QuestionAskedEvent(quiz1Id, question2.id),
+                QuestionCreatedEvent(quiz1Id, question3),
+                QuestionAskedEvent(quiz1Id, question3.id),
+                QuestionCreatedEvent(quiz1Id, question4),
+                QuestionDeletedEvent(quiz1Id, question4.id),
+                QuizCreatedEvent(quiz2Id, Quiz(name = "Awesome Quiz2")),
+                QuestionCreatedEvent(quiz2Id, question1),
+                QuestionAskedEvent(quiz2Id, question1.id),
+                QuestionCreatedEvent(quiz2Id, question2),
+                QuestionAskedEvent(quiz2Id, question2.id),
+                QuestionCreatedEvent(quiz2Id, question3),
+                QuestionAskedEvent(quiz2Id, question3.id),
+                QuestionCreatedEvent(quiz2Id, question4),
+                QuestionDeletedEvent(quiz2Id, question4.id)
         ))
 
         val questionProjection = QuestionProjection(eventBus, eventRepository)
 
         await until {
             questionProjection.determineQuestions().size == 2
-                    &&  questionProjection.determineQuestions()[0].question == "Warum ist das so?"
-                    &&  questionProjection.determineQuestions()[0].pending
-                    &&  questionProjection.determineQuestions()[1].question == "Wo ist das?"
-                    &&  questionProjection.determineQuestions()[1].pending
+                    && questionProjection.determineQuestions()[quiz1Id]!!.size == 2
+                    && questionProjection.determineQuestions()[quiz1Id]!![0].question == "Warum ist das so?"
+                    && questionProjection.determineQuestions()[quiz1Id]!![0].pending
+                    && questionProjection.determineQuestions()[quiz1Id]!![1].question == "Wo ist das?"
+                    && questionProjection.determineQuestions()[quiz1Id]!![1].pending
+                    && questionProjection.determineQuestions()[quiz2Id]!!.size == 2
+                    && questionProjection.determineQuestions()[quiz2Id]!![0].question == "Warum ist das so?"
+                    && questionProjection.determineQuestions()[quiz2Id]!![0].pending
+                    && questionProjection.determineQuestions()[quiz2Id]!![1].question == "Wo ist das?"
+                    && questionProjection.determineQuestions()[quiz2Id]!![1].pending
         }
 
-        eventBus.post(QuestionCreatedEvent(quizId, question5))
+        eventBus.post(QuestionCreatedEvent(quiz1Id, question5))
 
         await until {
             questionProjection.determineQuestions().size == 2
-                    &&  questionProjection.determineQuestions()[0].question == "Warum ist das so?"
-                    &&  questionProjection.determineQuestions()[0].pending
-                    &&  questionProjection.determineQuestions()[1].question == "Wo ist das?"
-                    &&  questionProjection.determineQuestions()[1].pending
+                    && questionProjection.determineQuestions()[quiz1Id]!!.size == 2
+                    && questionProjection.determineQuestions()[quiz1Id]!![0].question == "Warum ist das so?"
+                    && questionProjection.determineQuestions()[quiz1Id]!![0].pending
+                    && questionProjection.determineQuestions()[quiz1Id]!![1].question == "Wo ist das?"
+                    && questionProjection.determineQuestions()[quiz1Id]!![1].pending
+                    && questionProjection.determineQuestions()[quiz2Id]!!.size == 2
+                    && questionProjection.determineQuestions()[quiz2Id]!![0].question == "Warum ist das so?"
+                    && questionProjection.determineQuestions()[quiz2Id]!![0].pending
+                    && questionProjection.determineQuestions()[quiz2Id]!![1].question == "Wo ist das?"
+                    && questionProjection.determineQuestions()[quiz2Id]!![1].pending
         }
 
-        eventBus.post(QuestionDeletedEvent(quizId, question5.id))
+        eventBus.post(QuestionDeletedEvent(quiz1Id, question5.id))
 
         await until {
             questionProjection.determineQuestions().size == 2
-                    &&  questionProjection.determineQuestions()[0].question == "Warum ist das so?"
-                    &&  questionProjection.determineQuestions()[0].pending
-                    &&  questionProjection.determineQuestions()[1].question == "Wo ist das?"
-                    &&  questionProjection.determineQuestions()[1].pending
+                    && questionProjection.determineQuestions()[quiz1Id]!!.size == 2
+                    && questionProjection.determineQuestions()[quiz1Id]!![0].question == "Warum ist das so?"
+                    && questionProjection.determineQuestions()[quiz1Id]!![0].pending
+                    && questionProjection.determineQuestions()[quiz1Id]!![1].question == "Wo ist das?"
+                    && questionProjection.determineQuestions()[quiz1Id]!![1].pending
+                    && questionProjection.determineQuestions()[quiz2Id]!!.size == 2
+                    && questionProjection.determineQuestions()[quiz2Id]!![0].question == "Warum ist das so?"
+                    && questionProjection.determineQuestions()[quiz2Id]!![0].pending
+                    && questionProjection.determineQuestions()[quiz2Id]!![1].question == "Wo ist das?"
+                    && questionProjection.determineQuestions()[quiz2Id]!![1].pending
         }
     }
 

@@ -3,6 +3,7 @@ import './Question.css'
 import { Question } from '../../quiz-client-shared/quiz';
 
 interface QuestionElementProps {
+    enableOperations?: boolean;
     question: Question;
     index: number;
     setImageToDisplay: (path: string) => void;
@@ -29,9 +30,9 @@ const QuestionElement: React.FC<QuestionElementProps> = (props: QuestionElementP
     return (
         <div>
             #{props.index + 1} {props.question.question}
-            {!props.question.pending && <span data-testid={`start-question-${props.index}`} className="icon has-text-primary" onClick={() => startQuestion(props.question)}><i className="fas fa-share-square"></i></span>}
+            { props.enableOperations && !props.question.pending && <span data-testid={`start-question-${props.index}`} className="icon has-text-primary" onClick={() => startQuestion(props.question)}><i className="fas fa-share-square"></i></span>}
             { props.question.imagePath && props.question.imagePath.length > 0 && <span data-testid={`image-icon-${props.index}`} title="Show image" className="icon" onClick={() => props.setImageToDisplay(props.question.imagePath!)}><i className="fas fa-images"></i></span>}
-            {!props.question.pending && <span data-testid={`delete-question-${props.index}`} className="icon has-text-danger" onClick={() => deleteQuestion(props.question)}><i className="fas fa-trash"></i></span>}
+            { props.enableOperations && !props.question.pending && <span data-testid={`delete-question-${props.index}`} className="icon has-text-danger" onClick={() => deleteQuestion(props.question)}><i className="fas fa-trash"></i></span>}
         </div>
     )
 };

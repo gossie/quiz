@@ -11,7 +11,7 @@ const QuestionPool: React.FC<QuestionPoolProps> = (props: QuestionPoolProps) => 
     const [questions, setQuestions] = useState(undefined as any);
     
     useEffect(() => {
-        fetch(`${process.env.REACT_APP_BASE_URL}/api/quiz/${props.quiz.id}/questions`, {
+        fetch(`${process.env.REACT_APP_BASE_URL}/api/questionPool`, {
             method: 'GET',
             headers: {
                 Accept: 'application/json'

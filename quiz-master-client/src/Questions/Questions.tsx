@@ -14,10 +14,10 @@ const Questions: React.FC<QuestionsProps> = (props: QuestionsProps) => {
     const [tabIndex, setTabIndex] = useState(0);
     
     const playedQuestions = props.quiz.playedQuestions
-            .map((q, index) => <div key={index}>#{index + 1} {q.question}</div>);
+            .map((q, index) => <QuestionElement key={q.id} question={q} index={index} setImageToDisplay={setImageToDisplay}></QuestionElement>);
 
     const openQuestions = props.quiz.openQuestions
-            .map((q, index) => <QuestionElement key={q.id} question={q} index={index} setImageToDisplay={setImageToDisplay}></QuestionElement>);
+            .map((q, index) => <QuestionElement key={q.id} question={q} index={index} setImageToDisplay={setImageToDisplay} enableOperations={true}></QuestionElement>);
     
     return (
         <div>
