@@ -27,7 +27,7 @@ const Questions: React.FC<QuestionsProps> = (props: QuestionsProps) => {
                     <li className={tabIndex === 0 ? "is-active" : ""}>
                         <a href="/#" onClick={() => setTabIndex(0)}>
                             <span className="icon is-small"><i className="far fa-lightbulb" aria-hidden="true"></i></span>
-                            <span>Create a question</span>
+                            <span>Create a new question</span>
                         </a>
                     </li>
                     <li className={tabIndex === 1 ? "is-active" : ""}>
