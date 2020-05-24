@@ -69,7 +69,7 @@ private fun ParticipantDTO.addLinks(quizId: UUID): Mono<ParticipantDTO> {
             .map { this.add(it) }
 }
 
-private fun Question.map(quizId: UUID): QuestionDTO {
+fun Question.map(quizId: UUID): QuestionDTO {
     val questionDTO = QuestionDTO(this.id, this.question, this.pending, this.imageUrl)
     questionDTO.add(Link("/api/quiz/" + quizId + "/questions/" + this.id, "self"))
     return if (this.imageUrl == "") questionDTO else questionDTO.add(Link(this.imageUrl, "image"))

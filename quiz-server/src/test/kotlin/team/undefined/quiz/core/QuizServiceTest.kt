@@ -16,6 +16,10 @@ open class TestEventRepository : EventRepository {
     override fun determineEvents(quizId: UUID): Flux<Event> {
         return Flux.empty();
     }
+
+    override fun determineEvents(): Flux<Event> {
+        return Flux.empty();
+    }
 }
 
 internal class QuizServiceTest {

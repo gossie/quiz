@@ -9,9 +9,9 @@ import java.util.*
 import java.util.concurrent.ConcurrentHashMap
 
 @Component
-class QuizProjection(private val eventBus: EventBus,
-                     private val quizStatisticsProvider: QuizStatisticsProvider,
-                     private val eventRepository: EventRepository) {
+class QuizProjection(eventBus: EventBus,
+                           private val quizStatisticsProvider: QuizStatisticsProvider,
+                           private val eventRepository: EventRepository) {
 
     private val quizCache = ConcurrentHashMap<UUID, Quiz>()
     private val observables = ConcurrentHashMap<UUID, EmitterProcessor<Quiz>>()
