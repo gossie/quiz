@@ -34,13 +34,13 @@ test('should display questions', () => {
     }
     const { getByTestId } = render(<Questions quiz={quiz} />);
 
-    const openQuestions = getByTestId('open-questions').querySelectorAll('.question-container div')
+    const openQuestions = getByTestId('open-questions').querySelectorAll('.question-container li')
 
     expect(openQuestions.length).toBe(2);
     expect(openQuestions[0].textContent).toEqual('#1 Frage 2');
     expect(openQuestions[1].textContent).toEqual('#2 Frage 3');
 
-    const playedQuestions = getByTestId('played-questions').querySelectorAll('.question-container div')
+    const playedQuestions = getByTestId('played-questions').querySelectorAll('.question-container li')
 
     expect(playedQuestions.length).toBe(1);
     expect(playedQuestions[0].textContent).toEqual('#1 Frage 1');

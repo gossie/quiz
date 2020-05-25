@@ -49,11 +49,7 @@ internal class QuestionProjectionTest {
 
         await until {
             questionProjection.determineQuestions().size == 2
-                    && questionProjection.determineQuestions()[quiz1Id]!!.size == 2
-                    && questionProjection.determineQuestions()[quiz1Id]!![0].question == "Warum ist das so?"
-                    && questionProjection.determineQuestions()[quiz1Id]!![0].pending
-                    && questionProjection.determineQuestions()[quiz1Id]!![1].question == "Wo ist das?"
-                    && questionProjection.determineQuestions()[quiz1Id]!![1].pending
+                    && questionProjection.determineQuestions()[quiz1Id]!!.isEmpty()
                     && questionProjection.determineQuestions()[quiz2Id]!!.size == 2
                     && questionProjection.determineQuestions()[quiz2Id]!![0].question == "Warum ist das so?"
                     && questionProjection.determineQuestions()[quiz2Id]!![0].pending
@@ -65,11 +61,7 @@ internal class QuestionProjectionTest {
 
         await until {
             questionProjection.determineQuestions().size == 2
-                    && questionProjection.determineQuestions()[quiz1Id]!!.size == 2
-                    && questionProjection.determineQuestions()[quiz1Id]!![0].question == "Warum ist das so?"
-                    && questionProjection.determineQuestions()[quiz1Id]!![0].pending
-                    && questionProjection.determineQuestions()[quiz1Id]!![1].question == "Wo ist das?"
-                    && questionProjection.determineQuestions()[quiz1Id]!![1].pending
+                    && questionProjection.determineQuestions()[quiz1Id]!!.isEmpty()
                     && questionProjection.determineQuestions()[quiz2Id]!!.size == 2
                     && questionProjection.determineQuestions()[quiz2Id]!![0].question == "Warum ist das so?"
                     && questionProjection.determineQuestions()[quiz2Id]!![0].pending
@@ -81,11 +73,7 @@ internal class QuestionProjectionTest {
 
         await until {
             questionProjection.determineQuestions().size == 2
-                    && questionProjection.determineQuestions()[quiz1Id]!!.size == 2
-                    && questionProjection.determineQuestions()[quiz1Id]!![0].question == "Warum ist das so?"
-                    && questionProjection.determineQuestions()[quiz1Id]!![0].pending
-                    && questionProjection.determineQuestions()[quiz1Id]!![1].question == "Wo ist das?"
-                    && questionProjection.determineQuestions()[quiz1Id]!![1].pending
+                    && questionProjection.determineQuestions()[quiz1Id]!!.isEmpty()
                     && questionProjection.determineQuestions()[quiz2Id]!!.size == 2
                     && questionProjection.determineQuestions()[quiz2Id]!![0].question == "Warum ist das so?"
                     && questionProjection.determineQuestions()[quiz2Id]!![0].pending
