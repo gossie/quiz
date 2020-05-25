@@ -40,7 +40,7 @@ const Questions: React.FC<QuestionsProps> = (props: QuestionsProps) => {
             </div>
             
             { tabIndex === 0 && <QuestionForm quiz={props.quiz}></QuestionForm> }
-            { tabIndex === 1 && <QuestionPool quiz={props.quiz} setImageToDisplay={setImageToDisplay}></QuestionPool> }
+            { tabIndex === 1 && <div>The feature has not been completely implemented yet.</div> }
 
             <div className="columns question-columns">
                 <div data-testid="open-questions" className="column">
