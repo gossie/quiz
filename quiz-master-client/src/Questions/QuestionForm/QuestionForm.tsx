@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import Quiz from '../../quiz-client-shared/quiz';
 
+import './QuestionForm.css';
+
 interface QuestionFormProps {
     quiz: Quiz;
 }
@@ -48,7 +50,7 @@ const QuestionForm: React.FC<QuestionFormProps> = (props: QuestionFormProps) => 
             <div className="field">
                 <div className="control">
                     <label className="checkbox">
-                        <input data-testid="visibility" type="checkbox" onChange={ev => setVisibility(ev.target.value === 'on')} />
+                        <input data-testid="visibility" type="checkbox" onChange={ev => setVisibility(ev.target.checked)} />
                         Question can be used by others after it is played
                     </label>
                 </div>

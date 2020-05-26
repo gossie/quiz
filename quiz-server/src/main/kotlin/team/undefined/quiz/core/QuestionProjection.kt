@@ -35,7 +35,7 @@ class QuestionProjection(eventBus: EventBus,
     @Subscribe
     fun handleQuestionCreation(event: QuestionCreatedEvent) {
         if (event.question.visibility === Question.QuestionVisibility.PUBLIC) {
-            questions.put(event.quizId, event.question)
+            questions.put(event.quizId, event.question.copy())
         }
     }
 
