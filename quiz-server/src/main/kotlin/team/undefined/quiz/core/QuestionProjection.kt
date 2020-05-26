@@ -56,7 +56,7 @@ class QuestionProjection(eventBus: EventBus,
 
         val distinct = HashSet<String>()
 
-        questions.asMap().toSortedMap(Comparator.reverseOrder()).entries.forEach { entry ->
+        questions.asMap().entries.forEach { entry ->
             proposedQuestions[entry.key] = entry.value
                     .filter { it.alreadyPlayed }
                     .filter { distinct.add(it.question + it.imageUrl) }
