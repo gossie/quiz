@@ -31,7 +31,6 @@ const QuestionForm: React.FC<QuestionFormProps> = (props: QuestionFormProps) => 
         setNewQuestion('');
         setImagePath('');
         setQuestionButtonCssClasses('button is-link');
-        setVisibility(false);
     };
 
     return (
