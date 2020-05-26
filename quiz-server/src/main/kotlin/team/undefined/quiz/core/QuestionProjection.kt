@@ -7,6 +7,7 @@ import org.springframework.stereotype.Component
 import reactor.core.publisher.Mono
 import java.time.Duration.ofSeconds
 import java.util.*
+import kotlin.collections.HashSet
 
 @Component
 class QuestionProjection(eventBus: EventBus,
@@ -33,7 +34,9 @@ class QuestionProjection(eventBus: EventBus,
 
     @Subscribe
     fun handleQuestionCreation(event: QuestionCreatedEvent) {
-        questions.put(event.quizId, event.question)
+        if (event.question.visibility === Question.QuestionVisibility.PUBLIC) {
+            questions.put(event.quizId, event.question.copy())
+        }
     }
 
     @Subscribe
@@ -51,10 +54,12 @@ class QuestionProjection(eventBus: EventBus,
     fun determineQuestions(): Map<UUID, List<Question>> {
         val proposedQuestions = HashMap<UUID, List<Question>>()
 
-        questions.asMap().entries.forEach { entry ->
+        val distinct = HashSet<String>()
+
+        questions.asMap().toSortedMap(Comparator.reverseOrder()).entries.forEach { entry ->
             proposedQuestions[entry.key] = entry.value
                     .filter { it.alreadyPlayed }
-                    .distinctBy { it.question }
+                    .filter { distinct.add(it.question + it.imageUrl) }
         }
 
         return proposedQuestions

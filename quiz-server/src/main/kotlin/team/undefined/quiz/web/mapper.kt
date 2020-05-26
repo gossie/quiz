@@ -82,6 +82,10 @@ private fun QuestionDTO.addLinks(quizId: UUID): Mono<QuestionDTO> {
             .map { this.add(it) }
 }
 
+fun QuestionDTO.map(): Question {
+    return Question(question = this.question, imageUrl = this.imagePath, visibility = if (this.publicVisible) Question.QuestionVisibility.PUBLIC else Question.QuestionVisibility.PRIVATE)
+}
+
 fun QuizDTO.map(): Quiz {
     return Quiz(name = this.name)
 }

@@ -14,10 +14,10 @@ const Questions: React.FC<QuestionsProps> = (props: QuestionsProps) => {
     const [tabIndex, setTabIndex] = useState(0);
     
     const playedQuestions = props.quiz.playedQuestions
-            .map((q, index) => <QuestionElement key={q.id} question={q} index={index} setImageToDisplay={setImageToDisplay}></QuestionElement>);
+            .map((q, index) => <li key={q.id}><QuestionElement question={q} index={index} setImageToDisplay={setImageToDisplay}></QuestionElement></li>);
 
     const openQuestions = props.quiz.openQuestions
-            .map((q, index) => <QuestionElement key={q.id} question={q} index={index} setImageToDisplay={setImageToDisplay} enableOperations={true}></QuestionElement>);
+            .map((q, index) => <li key={q.id}><QuestionElement question={q} index={index} setImageToDisplay={setImageToDisplay} enableOperations={true}></QuestionElement></li>);
     
     return (
         <div>
@@ -40,20 +40,24 @@ const Questions: React.FC<QuestionsProps> = (props: QuestionsProps) => {
             </div>
             
             { tabIndex === 0 && <QuestionForm quiz={props.quiz}></QuestionForm> }
-            { tabIndex === 1 && <div>The feature has not been completely implemented yet.</div> }
+            { tabIndex === 1 && <QuestionPool quiz={props.quiz} setImageToDisplay={setImageToDisplay}></QuestionPool> }
 
             <div className="columns question-columns">
                 <div data-testid="open-questions" className="column">
                     <h5 className="title is-5">Open questions</h5>
                     <div className="question-container">
-                        {openQuestions}
+                        <ul>
+                            {openQuestions}
+                        </ul>
                     </div>
                 </div>
 
                 <div data-testid="played-questions" className="column">
                     <h5 className="title is-5">Played questions</h5>
                     <div className="question-container">
-                        {playedQuestions}
+                        <ul>
+                            {playedQuestions}
+                        </ul>
                     </div>
                 </div>
             </div>

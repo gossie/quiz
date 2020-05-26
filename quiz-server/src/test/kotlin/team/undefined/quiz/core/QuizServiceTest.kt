@@ -137,7 +137,7 @@ internal class QuizServiceTest {
     }
 
     @Test
-    fun shouldCreateQuestion() {
+    fun shouldCreatePrivateQuestion() {
         val quizId = UUID.randomUUID()
 
         `when`(quizRepository.determineEvents(quizId))
@@ -150,7 +150,26 @@ internal class QuizServiceTest {
         val questionId = UUID.randomUUID()
         StepVerifier.create(quizService.createQuestion(CreateQuestionCommand(quizId, Question(questionId, "Warum ist die Banane krum?"))))
                 .consumeNextWith {
-                    verify(eventBus).post(argThat { (it as QuestionCreatedEvent).quizId == quizId && it.question == Question(questionId, "Warum ist die Banane krum?") })
+                    verify(eventBus).post(argThat { (it as QuestionCreatedEvent).quizId == quizId && it.question == Question(questionId, "Warum ist die Banane krum?", false, "", Question.QuestionVisibility.PRIVATE, false) })
+                }
+                .verifyComplete()
+    }
+
+    @Test
+    fun shouldCreatePublicQuestion() {
+        val quizId = UUID.randomUUID()
+
+        `when`(quizRepository.determineEvents(quizId))
+                .thenReturn(Flux.just(
+                        QuizCreatedEvent(quizId, Quiz(quizId, "Quiz"))
+                ))
+
+        val quizService = DefaultQuizService(quizRepository, eventBus)
+
+        val questionId = UUID.randomUUID()
+        StepVerifier.create(quizService.createQuestion(CreateQuestionCommand(quizId, Question(questionId, "Warum ist die Banane krum?", visibility = Question.QuestionVisibility.PUBLIC))))
+                .consumeNextWith {
+                    verify(eventBus).post(argThat { (it as QuestionCreatedEvent).quizId == quizId && it.question == Question(questionId, "Warum ist die Banane krum?", false, "", Question.QuestionVisibility.PUBLIC, false) })
                 }
                 .verifyComplete()
     }
