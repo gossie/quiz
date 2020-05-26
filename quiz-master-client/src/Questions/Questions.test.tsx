@@ -46,14 +46,15 @@ test('should display questions', () => {
     expect(playedQuestions[0].textContent).toEqual('#1 Frage 1');
 });
 
-test('should add new question', async () => {
+test('should add new private question', async () => {
     jest.spyOn(global, 'fetch').mockImplementation((url: string, request: object) => {
         expect(url).toEqual('http://localhost:5000/api/createQuestion');
         expect(request).toEqual({
             method: 'POST',
             body: JSON.stringify({
                 question: 'Frage 3',
-                imagePath: 'https://pathToImage'
+                imagePath: 'https://pathToImage',
+                publicVisible: false
             }),
             headers: {
                 'Content-Type': 'application/json',
@@ -92,6 +93,67 @@ test('should add new question', async () => {
 
     fireEvent.change(questionField, { target: { value: 'Frage 3' } });
     fireEvent.change(imagePathField, { target: { value: 'https://pathToImage' } });
+
+    expect(questionField.value).toBe('Frage 3');
+    expect(imagePathField.value).toBe('https://pathToImage');
+
+    questionButton.click();
+
+    await wait(() =>{
+        expect(questionField.value).toBe('');
+        expect(imagePathField.value).toBe('');
+    });
+});
+
+test('should add new public question', async () => {
+    jest.spyOn(global, 'fetch').mockImplementation((url: string, request: object) => {
+        expect(url).toEqual('http://localhost:5000/api/createQuestion');
+        expect(request).toEqual({
+            method: 'POST',
+            body: JSON.stringify({
+                question: 'Frage 3',
+                imagePath: 'https://pathToImage',
+                publicVisible: true
+            }),
+            headers: {
+                'Content-Type': 'application/json',
+                Accept: 'application/json'
+            }
+        });
+        Promise.resolve();
+    });
+
+    const quiz: Quiz = {
+        id: '5',
+        name: "Awesome Quiz",
+        participants: [],
+        playedQuestions: [],
+        openQuestions: [
+            {
+                id: '1',
+                question: 'Frage 1',
+                pending: false,
+                links: []
+            },
+            {
+                id: '2',
+                question: 'Frage 2',
+                pending: true,
+                links: []
+            }
+        ],
+        links: [{href: '/api/createQuestion', rel: 'createQuestion'}]
+    }
+    const { getByTestId } = render(<Questions quiz={quiz} />);
+
+    const questionButton = getByTestId('create-question-button');
+    const questionField = getByTestId('new-question')  as HTMLInputElement;
+    const imagePathField = getByTestId('image-path')  as HTMLInputElement;
+    const visibilityField = getByTestId('visibility')  as HTMLInputElement;
+
+    fireEvent.change(questionField, { target: { value: 'Frage 3' } });
+    fireEvent.change(imagePathField, { target: { value: 'https://pathToImage' } });
+    visibilityField.click();
 
     expect(questionField.value).toBe('Frage 3');
     expect(imagePathField.value).toBe('https://pathToImage');

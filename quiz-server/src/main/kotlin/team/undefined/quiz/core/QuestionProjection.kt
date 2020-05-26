@@ -34,7 +34,9 @@ class QuestionProjection(eventBus: EventBus,
 
     @Subscribe
     fun handleQuestionCreation(event: QuestionCreatedEvent) {
-        questions.put(event.quizId, event.question)
+        if (event.question.visibility === Question.QuestionVisibility.PUBLIC) {
+            questions.put(event.quizId, event.question)
+        }
     }
 
     @Subscribe
@@ -54,7 +56,7 @@ class QuestionProjection(eventBus: EventBus,
 
         val distinct = HashSet<String>()
 
-        questions.asMap().toSortedMap().entries.forEach { entry ->
+        questions.asMap().toSortedMap(Comparator.reverseOrder()).entries.forEach { entry ->
             proposedQuestions[entry.key] = entry.value
                     .filter { it.alreadyPlayed }
                     .filter { distinct.add(it.question + it.imageUrl) }

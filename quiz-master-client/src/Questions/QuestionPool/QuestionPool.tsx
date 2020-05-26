@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import Quiz, { Question } from '../../quiz-client-shared/quiz';
 import QuestionElement from '../Question/Question';
 
@@ -12,7 +12,7 @@ interface QuestionPoolProps {
 const QuestionPool: React.FC<QuestionPoolProps> = (props: QuestionPoolProps) => {
     const [questions, setQuestions] = useState(undefined as any);
     
-    const createQuestion = (question: Question) => {
+    const createQuestion = useCallback((question: Question) => {
         const questionLink = props.quiz.links.find(link => link.rel === 'createQuestion')?.href;
         fetch(`${process.env.REACT_APP_BASE_URL}${questionLink}`, {
             method: 'POST',
@@ -25,25 +25,27 @@ const QuestionPool: React.FC<QuestionPoolProps> = (props: QuestionPoolProps) => 
                 Accept: 'application/json'
             }
         });
-    };
-    
-    useEffect(() => {
-        fetch(`${process.env.REACT_APP_BASE_URL}/api/questionPool`, {
+    }, [props.quiz.links]);
+
+    const fetchQuestionPool = useCallback(async () => {
+        const response = await fetch(`${process.env.REACT_APP_BASE_URL}/api/questionPool`, {
             method: 'GET',
             headers: {
                 Accept: 'application/json'
             }
-        })
-        .then(response => response.json())
-        .then((pooledQuestions: Array<Question>) => {
-            setQuestions(pooledQuestions.map((q, index) => 
-                <li>
-                    <QuestionElement key={q.id} question={q} index={index} setImageToDisplay={props.setImageToDisplay}></QuestionElement>
-                    <span data-testid={'create-question'} title="Add question" className="icon has-text-primary" onClick={() => createQuestion(q)}><i className="fas fa-save"></i></span>
-                </li>
-            ));
-        })
-    });
+        });
+        const pooledQuestions = await response.json();
+        setQuestions(pooledQuestions.map((q: Question, index: number) =>
+            <li key={q.id} >
+                <QuestionElement question={q} index={index} setImageToDisplay={props.setImageToDisplay}></QuestionElement>
+                <span data-testid={`add-question-${index}`} title="Add question" className="icon has-text-primary" onClick={() => createQuestion(q)}><i className="fas fa-save"></i></span>
+            </li>
+        ));
+    }, [props.setImageToDisplay, createQuestion])
+    
+    useEffect(() => {
+        fetchQuestionPool();
+    }, [fetchQuestionPool]);
 
     return (
         <div className="question-list">

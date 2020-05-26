@@ -1,8 +1,9 @@
 package team.undefined.quiz.core
 
 import com.google.common.eventbus.EventBus
+import org.assertj.core.api.Assertions.assertThat
 import org.awaitility.kotlin.await
-import org.awaitility.kotlin.until
+import org.awaitility.kotlin.untilAsserted
 import org.junit.jupiter.api.Test
 import org.mockito.Mockito.`when`
 import org.mockito.Mockito.mock
@@ -18,11 +19,12 @@ internal class QuestionProjectionTest {
 
         val eventBus = EventBus()
 
-        val question1 = Question(question = "Warum ist das so?")
-        val question2 = Question(question = "Wo ist das?")
-        val question3 = Question(question = "Wo ist das?")
-        val question4 = Question(question = "Wer ist das?")
-        val question5 = Question(question = "Wie ist das?")
+        val question1 = Question(question = "Warum ist das so?", visibility = Question.QuestionVisibility.PUBLIC)
+        val question2 = Question(question = "Wo ist das?", visibility = Question.QuestionVisibility.PUBLIC)
+        val question3 = Question(question = "Wo ist das?", visibility = Question.QuestionVisibility.PUBLIC)
+        val privateQuestion = Question(question = "Frage mit privatem Inhalt?")
+        val question4 = Question(question = "Wer ist das?", visibility = Question.QuestionVisibility.PUBLIC)
+        val question5 = Question(question = "Wie ist das?", visibility = Question.QuestionVisibility.PUBLIC)
         val eventRepository = mock(EventRepository::class.java)
         `when`(eventRepository.determineEvents()).thenReturn(Flux.just(
                 QuizCreatedEvent(quiz1Id, Quiz(name = "Awesome Quiz1")),
@@ -32,6 +34,8 @@ internal class QuestionProjectionTest {
                 QuestionAskedEvent(quiz1Id, question2.id),
                 QuestionCreatedEvent(quiz1Id, question3),
                 QuestionAskedEvent(quiz1Id, question3.id),
+                QuestionCreatedEvent(quiz1Id, privateQuestion),
+                QuestionAskedEvent(quiz1Id, privateQuestion.id),
                 QuestionCreatedEvent(quiz1Id, question4),
                 QuestionDeletedEvent(quiz1Id, question4.id),
                 QuizCreatedEvent(quiz2Id, Quiz(name = "Awesome Quiz2")),
@@ -47,38 +51,44 @@ internal class QuestionProjectionTest {
 
         val questionProjection = QuestionProjection(eventBus, eventRepository)
 
-        await until {
-            questionProjection.determineQuestions().size == 2
-                    && questionProjection.determineQuestions()[quiz1Id]!!.isEmpty()
-                    && questionProjection.determineQuestions()[quiz2Id]!!.size == 2
-                    && questionProjection.determineQuestions()[quiz2Id]!![0].question == "Warum ist das so?"
-                    && questionProjection.determineQuestions()[quiz2Id]!![0].pending
-                    && questionProjection.determineQuestions()[quiz2Id]!![1].question == "Wo ist das?"
-                    && questionProjection.determineQuestions()[quiz2Id]!![1].pending
+        await untilAsserted {
+            val questions = questionProjection.determineQuestions()
+
+            assertThat(questions).hasSize(2)
+            assertThat(questions[quiz1Id]).isEmpty()
+            assertThat(questions[quiz2Id]).hasSize(2)
+            assertThat(questions[quiz2Id]!![0].question).isEqualTo("Warum ist das so?")
+            assertThat(questions[quiz2Id]!![0].pending).isTrue()
+            assertThat(questions[quiz2Id]!![1].question).isEqualTo("Wo ist das?")
+            assertThat(questions[quiz2Id]!![1].pending).isTrue()
         }
 
         eventBus.post(QuestionCreatedEvent(quiz1Id, question5))
 
-        await until {
-            questionProjection.determineQuestions().size == 2
-                    && questionProjection.determineQuestions()[quiz1Id]!!.isEmpty()
-                    && questionProjection.determineQuestions()[quiz2Id]!!.size == 2
-                    && questionProjection.determineQuestions()[quiz2Id]!![0].question == "Warum ist das so?"
-                    && questionProjection.determineQuestions()[quiz2Id]!![0].pending
-                    && questionProjection.determineQuestions()[quiz2Id]!![1].question == "Wo ist das?"
-                    && questionProjection.determineQuestions()[quiz2Id]!![1].pending
+        await untilAsserted {
+            val questions = questionProjection.determineQuestions()
+
+            assertThat(questions).hasSize(2)
+            assertThat(questions[quiz1Id]).isEmpty()
+            assertThat(questions[quiz2Id]).hasSize(2)
+            assertThat(questions[quiz2Id]!![0].question).isEqualTo("Warum ist das so?")
+            assertThat(questions[quiz2Id]!![0].pending).isTrue()
+            assertThat(questions[quiz2Id]!![1].question).isEqualTo("Wo ist das?")
+            assertThat(questions[quiz2Id]!![1].pending).isTrue()
         }
 
         eventBus.post(QuestionDeletedEvent(quiz1Id, question5.id))
 
-        await until {
-            questionProjection.determineQuestions().size == 2
-                    && questionProjection.determineQuestions()[quiz1Id]!!.isEmpty()
-                    && questionProjection.determineQuestions()[quiz2Id]!!.size == 2
-                    && questionProjection.determineQuestions()[quiz2Id]!![0].question == "Warum ist das so?"
-                    && questionProjection.determineQuestions()[quiz2Id]!![0].pending
-                    && questionProjection.determineQuestions()[quiz2Id]!![1].question == "Wo ist das?"
-                    && questionProjection.determineQuestions()[quiz2Id]!![1].pending
+        await untilAsserted {
+            val questions = questionProjection.determineQuestions()
+
+            assertThat(questions).hasSize(2)
+            assertThat(questions[quiz1Id]).isEmpty()
+            assertThat(questions[quiz2Id]).hasSize(2)
+            assertThat(questions[quiz2Id]!![0].question).isEqualTo("Warum ist das so?")
+            assertThat(questions[quiz2Id]!![0].pending).isTrue()
+            assertThat(questions[quiz2Id]!![1].question).isEqualTo("Wo ist das?")
+            assertThat(questions[quiz2Id]!![1].pending).isTrue()
         }
     }
 
