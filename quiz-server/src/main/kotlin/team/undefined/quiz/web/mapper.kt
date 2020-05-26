@@ -10,8 +10,6 @@ import java.util.*
 import java.util.stream.Collectors
 
 fun Quiz.map(): Mono<QuizDTO> {
-    val statistis =
-
     return Flux.fromIterable(this.participants)
             .flatMap { it.map(this.id) }
             .collect(Collectors.toList())
@@ -71,7 +69,7 @@ private fun ParticipantDTO.addLinks(quizId: UUID): Mono<ParticipantDTO> {
             .map { this.add(it) }
 }
 
-private fun Question.map(quizId: UUID): QuestionDTO {
+fun Question.map(quizId: UUID): QuestionDTO {
     val questionDTO = QuestionDTO(this.id, this.question, this.pending, this.imageUrl)
     questionDTO.add(Link("/api/quiz/" + quizId + "/questions/" + this.id, "self"))
     return if (this.imageUrl == "") questionDTO else questionDTO.add(Link(this.imageUrl, "image"))
@@ -82,6 +80,10 @@ private fun QuestionDTO.addLinks(quizId: UUID): Mono<QuestionDTO> {
             .withSelfRel()
             .toMono()
             .map { this.add(it) }
+}
+
+fun QuestionDTO.map(): Question {
+    return Question(question = this.question, imageUrl = this.imagePath, visibility = if (this.publicVisible) Question.QuestionVisibility.PUBLIC else Question.QuestionVisibility.PRIVATE)
 }
 
 fun QuizDTO.map(): Quiz {

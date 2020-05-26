@@ -53,7 +53,6 @@ internal class QuizProjectionQuizFinishedEventTest {
                     && observedQuiz.get().quizStatistics!!.questionStatistics[0].buzzerStatistics[0].duration == 1L
                     && observedQuiz.get().quizStatistics!!.questionStatistics[0].buzzerStatistics[0].participantId == participant.id
                     && observedQuiz.get().quizStatistics!!.questionStatistics[0].buzzerStatistics[0].answer == AnswerCommand.Answer.CORRECT
-
         }
     }
 

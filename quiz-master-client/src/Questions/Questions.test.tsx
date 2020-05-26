@@ -5,12 +5,12 @@ import Quiz from '../quiz-client-shared/quiz';
 
 test('should display questions', () => {
     const quiz: Quiz = {
-        id: 5,
+        id: '5',
         name: "Awesome Quiz",
         participants: [],
         playedQuestions: [
             {
-                id: 1,
+                id: '1',
                 question: 'Frage 1',
                 pending: false,
                 links: []
@@ -18,13 +18,13 @@ test('should display questions', () => {
         ],
         openQuestions: [
             {
-                id: 2,
+                id: '2',
                 question: 'Frage 2',
                 pending: true,
                 links: []
             },
             {
-                id: 3,
+                id: '3',
                 question: 'Frage 3',
                 pending: false,
                 links: []
@@ -34,26 +34,27 @@ test('should display questions', () => {
     }
     const { getByTestId } = render(<Questions quiz={quiz} />);
 
-    const openQuestions = getByTestId('open-questions').querySelectorAll('.question-container div')
+    const openQuestions = getByTestId('open-questions').querySelectorAll('.question-container li')
 
     expect(openQuestions.length).toBe(2);
     expect(openQuestions[0].textContent).toEqual('#1 Frage 2');
     expect(openQuestions[1].textContent).toEqual('#2 Frage 3');
 
-    const playedQuestions = getByTestId('played-questions').querySelectorAll('.question-container div')
+    const playedQuestions = getByTestId('played-questions').querySelectorAll('.question-container li')
 
     expect(playedQuestions.length).toBe(1);
     expect(playedQuestions[0].textContent).toEqual('#1 Frage 1');
 });
 
-test('should add new question', async () => {
+test('should add new private question', async () => {
     jest.spyOn(global, 'fetch').mockImplementation((url: string, request: object) => {
         expect(url).toEqual('http://localhost:5000/api/createQuestion');
         expect(request).toEqual({
             method: 'POST',
             body: JSON.stringify({
                 question: 'Frage 3',
-                imagePath: 'https://pathToImage'
+                imagePath: 'https://pathToImage',
+                publicVisible: false
             }),
             headers: {
                 'Content-Type': 'application/json',
@@ -64,19 +65,19 @@ test('should add new question', async () => {
     });
 
     const quiz: Quiz = {
-        id: 5,
+        id: '5',
         name: "Awesome Quiz",
         participants: [],
         playedQuestions: [],
         openQuestions: [
             {
-                id: 1,
+                id: '1',
                 question: 'Frage 1',
                 pending: false,
                 links: []
             },
             {
-                id: 2,
+                id: '2',
                 question: 'Frage 2',
                 pending: true,
                 links: []
@@ -104,6 +105,67 @@ test('should add new question', async () => {
     });
 });
 
+test('should add new public question', async () => {
+    jest.spyOn(global, 'fetch').mockImplementation((url: string, request: object) => {
+        expect(url).toEqual('http://localhost:5000/api/createQuestion');
+        expect(request).toEqual({
+            method: 'POST',
+            body: JSON.stringify({
+                question: 'Frage 3',
+                imagePath: 'https://pathToImage',
+                publicVisible: true
+            }),
+            headers: {
+                'Content-Type': 'application/json',
+                Accept: 'application/json'
+            }
+        });
+        Promise.resolve();
+    });
+
+    const quiz: Quiz = {
+        id: '5',
+        name: "Awesome Quiz",
+        participants: [],
+        playedQuestions: [],
+        openQuestions: [
+            {
+                id: '1',
+                question: 'Frage 1',
+                pending: false,
+                links: []
+            },
+            {
+                id: '2',
+                question: 'Frage 2',
+                pending: true,
+                links: []
+            }
+        ],
+        links: [{href: '/api/createQuestion', rel: 'createQuestion'}]
+    }
+    const { getByTestId } = render(<Questions quiz={quiz} />);
+
+    const questionButton = getByTestId('create-question-button');
+    const questionField = getByTestId('new-question')  as HTMLInputElement;
+    const imagePathField = getByTestId('image-path')  as HTMLInputElement;
+    const visibilityField = getByTestId('visibility')  as HTMLInputElement;
+
+    fireEvent.change(questionField, { target: { value: 'Frage 3' } });
+    fireEvent.change(imagePathField, { target: { value: 'https://pathToImage' } });
+    visibilityField.click();
+
+    expect(questionField.value).toBe('Frage 3');
+    expect(imagePathField.value).toBe('https://pathToImage');
+
+    questionButton.click();
+
+    await wait(() =>{
+        expect(questionField.value).toBe('');
+        expect(imagePathField.value).toBe('');
+    });
+});
+
 test('should start question', () => {
     jest.spyOn(global, 'fetch').mockImplementation((url: string, request: object) => {
         expect(url).toEqual('http://localhost:5000/api/quiz/5/questions/11');
@@ -117,12 +179,12 @@ test('should start question', () => {
     });
 
     const quiz: Quiz = {
-        id: 5,
+        id: '5',
         name: "Awesome Quiz",
         participants: [],
         playedQuestions: [
             {
-                id: 1,
+                id: '1',
                 question: 'Frage 1',
                 pending: false,
                 links: []
@@ -130,13 +192,13 @@ test('should start question', () => {
         ],
         openQuestions: [
             {
-                id: 2,
+                id: '2',
                 question: 'Frage 2',
                 pending: false,
                 links: [{ href: '/api/quiz/5/questions/11', rel: 'self' }]
             },
             {
-                id: 3,
+                id: '3',
                 question: 'Frage 3',
                 pending: false,
                 links: []
@@ -149,20 +211,107 @@ test('should start question', () => {
     getByTestId('start-question-0').click();
 });
 
+test('should revert question', () => {
+    jest.spyOn(global, 'fetch').mockImplementation((url: string, request: object) => {
+        expect(url).toEqual('http://localhost:5000/api/quiz/5/questions/11');
+        expect(request).toEqual({
+            method: 'PUT',
+            headers: {
+                Accept: 'application/json'
+            }
+        });
+        Promise.resolve();
+    });
+
+    const quiz: Quiz = {
+        id: '5',
+        name: "Awesome Quiz",
+        participants: [],
+        playedQuestions: [
+            {
+                id: '1',
+                question: 'Frage 1',
+                pending: false,
+                links: []
+            },
+        ],
+        openQuestions: [
+            {
+                id: '2',
+                question: 'Frage 2',
+                pending: true,
+                links: [{ href: '/api/quiz/5/questions/11', rel: 'self' }]
+            },
+            {
+                id: '3',
+                question: 'Frage 3',
+                pending: false,
+                links: []
+            }
+        ],
+        links: []
+    }
+    const { getByTestId } = render(<Questions quiz={quiz} />);
+
+    getByTestId('revert-question-0').click();
+});
+
+test('should delete question', () => {
+    jest.spyOn(global, 'fetch').mockImplementation((url: string, request: object) => {
+        expect(url).toEqual('http://localhost:5000/api/quiz/5/questions/11');
+        expect(request).toEqual({
+            method: 'DELETE'
+        });
+        Promise.resolve();
+    });
+
+    const quiz: Quiz = {
+        id: '5',
+        name: "Awesome Quiz",
+        participants: [],
+        playedQuestions: [
+            {
+                id: '1',
+                question: 'Frage 1',
+                pending: false,
+                links: []
+            },
+        ],
+        openQuestions: [
+            {
+                id: '2',
+                question: 'Frage 2',
+                pending: false,
+                links: [{ href: '/api/quiz/5/questions/11', rel: 'self' }]
+            },
+            {
+                id: '3',
+                question: 'Frage 3',
+                pending: false,
+                links: []
+            }
+        ],
+        links: []
+    }
+    const { getByTestId } = render(<Questions quiz={quiz} />);
+
+    getByTestId('delete-question-0').click();
+});
+
 test('should open and close image modal', () => {
     const quiz: Quiz = {
-        id: 5,
+        id: '5',
         name: "Awesome Quiz",
         participants: [],
         openQuestions: [
             {
-                id: 2,
+                id: '2',
                 question: 'Frage 2',
                 pending: true,
                 links: []
             },
             {
-                id: 3,
+                id: '3',
                 question: 'Frage 3',
                 pending: false,
                 imagePath: 'https://path_to_image/',

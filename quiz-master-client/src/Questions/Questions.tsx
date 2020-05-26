@@ -1,89 +1,63 @@
 import React, { useState } from 'react';
-import Quiz, { Question } from '../quiz-client-shared/quiz';
+import Quiz from '../quiz-client-shared/quiz';
 import './Questions.css'
+import QuestionElement from './Question/Question';
+import QuestionForm from './QuestionForm/QuestionForm';
+import QuestionPool from './QuestionPool/QuestionPool';
 
 interface QuestionsProps {
     quiz: Quiz;
 }
 
 const Questions: React.FC<QuestionsProps> = (props: QuestionsProps) => {
-    const [newQuestion, setNewQuestion] = useState('');
-    const [imagePath, setImagePath] = useState('');
     const [imageToDisplay, setImageToDisplay] = useState('');
-    const [questionButtonCssClasses, setQuestionButtonCssClasses] = useState('button is-link');
-
-    const createQuestion = async () => {
-        setQuestionButtonCssClasses('button is-link is-loading');
-        const questionLink = props.quiz.links.find(link => link.rel === 'createQuestion')?.href;
-        await fetch(`${process.env.REACT_APP_BASE_URL}${questionLink}`, {
-            method: 'POST',
-            body: JSON.stringify({
-                question: newQuestion,
-                imagePath: imagePath
-            }),
-            headers: {
-                'Content-Type': 'application/json',
-                Accept: 'application/json'
-            }
-        });
-        setNewQuestion('');
-        setImagePath('');
-        setQuestionButtonCssClasses('button is-link');
-    };
-
-    const startQuestion = async (question: Question) => {
-        const questionLink = question.links.find(link => link.rel === 'self')?.href;
-        await fetch(`${process.env.REACT_APP_BASE_URL}${questionLink}`, {
-            method: 'PUT',
-            headers: {
-                Accept: 'application/json'
-            }
-        });
-    };
-
+    const [tabIndex, setTabIndex] = useState(0);
+    
     const playedQuestions = props.quiz.playedQuestions
-            .map((q, index) => <div key={index}>#{index + 1} {q.question}</div>);
+            .map((q, index) => <li key={q.id}><QuestionElement question={q} index={index} setImageToDisplay={setImageToDisplay}></QuestionElement></li>);
 
     const openQuestions = props.quiz.openQuestions
-            .map((q, index) =>
-                    <div key={index}>
-                        #{index + 1} {q.question}
-                        { q.imagePath && q.imagePath.length > 0 && <span data-testid={`image-icon-${index}`} title="Show image" className="icon" onClick={() => setImageToDisplay(q.imagePath!)}><i className="fas fa-images"></i></span>}
-                        {!q.pending && <span data-testid={`start-question-${index}`} className="icon has-text-primary" onClick={() => startQuestion(q)}><i className="fas fa-share-square"></i></span>}
-                    </div>);
+            .map((q, index) => <li key={q.id}><QuestionElement question={q} index={index} setImageToDisplay={setImageToDisplay} enableOperations={true}></QuestionElement></li>);
     
     return (
         <div>
             <h4 className="title is-4">Questions</h4>
-            <div className="field">
-                <div className="control">
-                    <input data-testid="new-question" value={newQuestion} onChange={ev => setNewQuestion(ev.target.value)} className="input" type="text" placeholder="Question" />
-                </div>
+            <div className="tabs is-boxed">
+                <ul>
+                    <li className={tabIndex === 0 ? "is-active" : ""}>
+                        <a href="/#" onClick={() => setTabIndex(0)}>
+                            <span className="icon is-small"><i className="far fa-lightbulb" aria-hidden="true"></i></span>
+                            <span>Create a new question</span>
+                        </a>
+                    </li>
+                    <li className={tabIndex === 1 ? "is-active" : ""}>
+                        <a href="/#" onClick={() => setTabIndex(1)}>
+                            <span className="icon is-small"><i className="fas fa-cart-arrow-down" aria-hidden="true"></i></span>
+                            <span>Pick from played questions</span>
+                        </a>
+                    </li>
+                </ul>
             </div>
             
-            <div className="field">
-                <div className="control">
-                    <input data-testid="image-path" value={imagePath} onChange={ev => setImagePath(ev.target.value)} className="input" type="text" placeholder="Image path" />
-                </div>
-            </div>
-            <div className="field is-grouped">
-                <div className="control">
-                    <button data-testid="create-question-button" onClick={createQuestion} className={questionButtonCssClasses}>Add question</button>
-                </div>
-            </div>
+            { tabIndex === 0 && <QuestionForm quiz={props.quiz}></QuestionForm> }
+            { tabIndex === 1 && <QuestionPool quiz={props.quiz} setImageToDisplay={setImageToDisplay}></QuestionPool> }
 
-            <div className="columns">
+            <div className="columns question-columns">
                 <div data-testid="open-questions" className="column">
                     <h5 className="title is-5">Open questions</h5>
                     <div className="question-container">
-                        {openQuestions}
+                        <ul>
+                            {openQuestions}
+                        </ul>
                     </div>
                 </div>
 
                 <div data-testid="played-questions" className="column">
                     <h5 className="title is-5">Played questions</h5>
                     <div className="question-container">
-                        {playedQuestions}
+                        <ul>
+                            {playedQuestions}
+                        </ul>
                     </div>
                 </div>
             </div>
