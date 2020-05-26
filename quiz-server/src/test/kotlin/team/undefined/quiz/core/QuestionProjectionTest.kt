@@ -55,12 +55,24 @@ internal class QuestionProjectionTest {
             val questions = questionProjection.determineQuestions()
 
             assertThat(questions).hasSize(2)
-            assertThat(questions[quiz1Id]).isEmpty()
-            assertThat(questions[quiz2Id]).hasSize(2)
-            assertThat(questions[quiz2Id]!![0].question).isEqualTo("Warum ist das so?")
-            assertThat(questions[quiz2Id]!![0].pending).isTrue()
-            assertThat(questions[quiz2Id]!![1].question).isEqualTo("Wo ist das?")
-            assertThat(questions[quiz2Id]!![1].pending).isTrue()
+
+            var emptyQuiz: UUID
+            var filledQuiz: UUID
+
+            if (questions[quiz1Id]!!.isEmpty()) {
+                emptyQuiz = quiz1Id
+                filledQuiz = quiz2Id
+            } else {
+                emptyQuiz = quiz2Id
+                filledQuiz = quiz1Id
+            }
+
+            assertThat(questions[emptyQuiz]).isEmpty()
+            assertThat(questions[filledQuiz]).hasSize(2)
+            assertThat(questions[filledQuiz]!![0].question).isEqualTo("Warum ist das so?")
+            assertThat(questions[filledQuiz]!![0].pending).isTrue()
+            assertThat(questions[filledQuiz]!![1].question).isEqualTo("Wo ist das?")
+            assertThat(questions[filledQuiz]!![1].pending).isTrue()
         }
 
         eventBus.post(QuestionCreatedEvent(quiz1Id, question5))
@@ -69,12 +81,24 @@ internal class QuestionProjectionTest {
             val questions = questionProjection.determineQuestions()
 
             assertThat(questions).hasSize(2)
-            assertThat(questions[quiz1Id]).isEmpty()
-            assertThat(questions[quiz2Id]).hasSize(2)
-            assertThat(questions[quiz2Id]!![0].question).isEqualTo("Warum ist das so?")
-            assertThat(questions[quiz2Id]!![0].pending).isTrue()
-            assertThat(questions[quiz2Id]!![1].question).isEqualTo("Wo ist das?")
-            assertThat(questions[quiz2Id]!![1].pending).isTrue()
+
+            var emptyQuiz: UUID
+            var filledQuiz: UUID
+
+            if (questions[quiz1Id]!!.isEmpty()) {
+                emptyQuiz = quiz1Id
+                filledQuiz = quiz2Id
+            } else {
+                emptyQuiz = quiz2Id
+                filledQuiz = quiz1Id
+            }
+
+            assertThat(questions[emptyQuiz]).isEmpty()
+            assertThat(questions[filledQuiz]).hasSize(2)
+            assertThat(questions[filledQuiz]!![0].question).isEqualTo("Warum ist das so?")
+            assertThat(questions[filledQuiz]!![0].pending).isTrue()
+            assertThat(questions[filledQuiz]!![1].question).isEqualTo("Wo ist das?")
+            assertThat(questions[filledQuiz]!![1].pending).isTrue()
         }
 
         eventBus.post(QuestionDeletedEvent(quiz1Id, question5.id))
@@ -83,12 +107,24 @@ internal class QuestionProjectionTest {
             val questions = questionProjection.determineQuestions()
 
             assertThat(questions).hasSize(2)
-            assertThat(questions[quiz1Id]).isEmpty()
-            assertThat(questions[quiz2Id]).hasSize(2)
-            assertThat(questions[quiz2Id]!![0].question).isEqualTo("Warum ist das so?")
-            assertThat(questions[quiz2Id]!![0].pending).isTrue()
-            assertThat(questions[quiz2Id]!![1].question).isEqualTo("Wo ist das?")
-            assertThat(questions[quiz2Id]!![1].pending).isTrue()
+
+            var emptyQuiz: UUID
+            var filledQuiz: UUID
+
+            if (questions[quiz1Id]!!.isEmpty()) {
+                emptyQuiz = quiz1Id
+                filledQuiz = quiz2Id
+            } else {
+                emptyQuiz = quiz2Id
+                filledQuiz = quiz1Id
+            }
+
+            assertThat(questions[emptyQuiz]).isEmpty()
+            assertThat(questions[filledQuiz]).hasSize(2)
+            assertThat(questions[filledQuiz]!![0].question).isEqualTo("Warum ist das so?")
+            assertThat(questions[filledQuiz]!![0].pending).isTrue()
+            assertThat(questions[filledQuiz]!![1].question).isEqualTo("Wo ist das?")
+            assertThat(questions[filledQuiz]!![1].pending).isTrue()
         }
     }
 
