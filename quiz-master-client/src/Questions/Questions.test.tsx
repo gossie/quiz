@@ -170,7 +170,7 @@ test('should start question', () => {
     jest.spyOn(global, 'fetch').mockImplementation((url: string, request: object) => {
         expect(url).toEqual('http://localhost:5000/api/quiz/5/questions/11');
         expect(request).toEqual({
-            method: 'PUT',
+            method: 'PATCH',
             headers: {
                 Accept: 'application/json'
             }
@@ -215,7 +215,7 @@ test('should revert question', () => {
     jest.spyOn(global, 'fetch').mockImplementation((url: string, request: object) => {
         expect(url).toEqual('http://localhost:5000/api/quiz/5/questions/11');
         expect(request).toEqual({
-            method: 'PUT',
+            method: 'PATCH',
             headers: {
                 Accept: 'application/json'
             }

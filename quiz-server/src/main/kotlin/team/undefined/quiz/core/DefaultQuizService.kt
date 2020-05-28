@@ -21,6 +21,12 @@ class DefaultQuizService(private val eventRepository: EventRepository,
     }
 
     @WriteLock
+    override fun editQuestion(command: EditQuestionCommand): Mono<Unit> {
+        return eventRepository.storeEvent(QuestionEditedEvent(command.quizId, command.question))
+                .map { eventBus.post(it) }
+    }
+
+    @WriteLock
     override fun createParticipant(command: CreateParticipantCommand): Mono<Unit> {
         eventBus.post(ForceEmitCommand(command.quizId))
         return eventRepository.determineEvents(command.quizId)

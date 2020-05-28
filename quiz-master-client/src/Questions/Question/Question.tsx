@@ -13,7 +13,7 @@ const QuestionElement: React.FC<QuestionElementProps> = (props: QuestionElementP
     const toggleQuestion = async (question: Question) => {
         const questionLink = question.links.find(link => link.rel === 'self')?.href;
         await fetch(`${process.env.REACT_APP_BASE_URL}${questionLink}`, {
-            method: 'PUT',
+            method: 'PATCH',
             headers: {
                 Accept: 'application/json'
             }
