@@ -1,23 +1,34 @@
 import React, { useState } from 'react';
-import Quiz from '../../quiz-client-shared/quiz';
+import Quiz, { Question } from '../../quiz-client-shared/quiz';
 
 import './QuestionForm.css';
 
 interface QuestionFormProps {
     quiz: Quiz;
+    questionToChange?: Question;
+    onSubmit?: () => void;
 }
 
 const QuestionForm: React.FC<QuestionFormProps> = (props: QuestionFormProps) => {
-    const [newQuestion, setNewQuestion] = useState('');
-    const [imagePath, setImagePath] = useState('');
+    const [newQuestion, setNewQuestion] = useState(props.questionToChange?.question);
+    const [imagePath, setImagePath] = useState(props.questionToChange?.imagePath);
     const [questionButtonCssClasses, setQuestionButtonCssClasses] = useState('button is-link');
-    const [visibility, setVisibility] = useState(false);
+    const [visibility, setVisibility] = useState(props.questionToChange ? props.questionToChange.publicVisible : false);
     
     const createQuestion = async () => {
         setQuestionButtonCssClasses('button is-link is-loading');
-        const questionLink = props.quiz.links.find(link => link.rel === 'createQuestion')?.href;
+        let questionLink;
+        let method;
+        if (props.questionToChange) {
+            questionLink = props.questionToChange.links.find(link => link.rel === 'self')?.href;
+            method = 'PUT';
+        } else {
+            questionLink = props.quiz.links.find(link => link.rel === 'createQuestion')?.href;
+            method = 'POST';
+        }
+
         await fetch(`${process.env.REACT_APP_BASE_URL}${questionLink}`, {
-            method: 'POST',
+            method: method,
             body: JSON.stringify({
                 question: newQuestion,
                 imagePath: imagePath,
@@ -28,22 +39,25 @@ const QuestionForm: React.FC<QuestionFormProps> = (props: QuestionFormProps) => 
                 Accept: 'application/json'
             }
         });
+        
         setNewQuestion('');
         setImagePath('');
         setQuestionButtonCssClasses('button is-link');
+
+        props.onSubmit && props.onSubmit();
     };
 
     return (
         <div>
             <div className="field">
                 <div className="control">
-                    <input data-testid="new-question" value={newQuestion} onChange={ev => setNewQuestion(ev.target.value)} className="input" type="text" placeholder="Question" />
+                    <input data-testid={props.questionToChange ? 'question-to-edit' : 'new-question'} value={newQuestion} onChange={ev => setNewQuestion(ev.target.value)} className="input" type="text" placeholder="Question" />
                 </div>
             </div>
             
             <div className="field">
                 <div className="control">
-                    <input data-testid="image-path" value={imagePath} onChange={ev => setImagePath(ev.target.value)} className="input" type="text" placeholder="Image path" />
+                    <input data-testid={props.questionToChange ? 'image-path-to-edit' : 'image-path'} value={imagePath} onChange={ev => setImagePath(ev.target.value)} className="input" type="text" placeholder="Image path" />
                 </div>
             </div>
             <div className="field">
@@ -56,7 +70,9 @@ const QuestionForm: React.FC<QuestionFormProps> = (props: QuestionFormProps) => 
             </div>
             <div className="field is-grouped">
                 <div className="control">
-                    <button data-testid="create-question-button" onClick={createQuestion} className={questionButtonCssClasses}>Add question</button>
+                    <button data-testid={props.questionToChange ? 'edit-question-button' : 'create-question-button'} onClick={createQuestion} className={questionButtonCssClasses}>
+                        {props.questionToChange ? 'Edit question' : 'Add question'}
+                    </button>
                 </div>
             </div>
         </div>
