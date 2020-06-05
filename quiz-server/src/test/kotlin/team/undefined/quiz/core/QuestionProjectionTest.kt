@@ -128,4 +128,37 @@ internal class QuestionProjectionTest {
         }
     }
 
+    @Test
+    fun shouldHandleQuestionChange() {
+        val quizId = UUID.randomUUID()
+
+        val eventBus = EventBus()
+
+        val question1 = Question(question = "Warum ist das so?", visibility = Question.QuestionVisibility.PUBLIC)
+        val question2 = Question(question = "Wo ist das?", visibility = Question.QuestionVisibility.PRIVATE)
+        val eventRepository = mock(EventRepository::class.java)
+        `when`(eventRepository.determineEvents()).thenReturn(Flux.just(
+                QuizCreatedEvent(quizId, Quiz(name = "Awesome Quiz1")),
+                QuestionCreatedEvent(quizId, question1),
+                QuestionEditedEvent(quizId, Question(question1.id, question = "Warum ist das so?", visibility = Question.QuestionVisibility.PRIVATE)),
+                QuestionAskedEvent(quizId, question1.id),
+                QuestionCreatedEvent(quizId, question2),
+                QuestionEditedEvent(quizId, Question(question2.id, question = "Wo ist das?", imageUrl = "pathToImage", visibility = Question.QuestionVisibility.PUBLIC)),
+                QuestionAskedEvent(quizId, question2.id)
+        ))
+
+        val questionProjection = QuestionProjection(eventBus, eventRepository)
+
+        await untilAsserted {
+            val questions = questionProjection.determineQuestions()
+
+            assertThat(questions).hasSize(1)
+
+            assertThat(questions[quizId]).hasSize(1)
+            assertThat(questions[quizId]!![0].question).isEqualTo("Wo ist das?")
+            assertThat(questions[quizId]!![0].imageUrl).isEqualTo("pathToImage")
+            assertThat(questions[quizId]!![0].pending).isTrue()
+        }
+    }
+
 }

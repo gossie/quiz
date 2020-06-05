@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import Quiz from '../quiz-client-shared/quiz';
+import Quiz, { Question } from '../quiz-client-shared/quiz';
 import './Questions.css'
 import QuestionElement from './Question/Question';
 import QuestionForm from './QuestionForm/QuestionForm';
@@ -12,12 +12,17 @@ interface QuestionsProps {
 const Questions: React.FC<QuestionsProps> = (props: QuestionsProps) => {
     const [imageToDisplay, setImageToDisplay] = useState('');
     const [tabIndex, setTabIndex] = useState(0);
+    const [questionToEdit, setQuestionToEdit] = useState<Question | undefined>(undefined);
+
+    const onEdit = (question: Question) => {
+        setQuestionToEdit(question);
+    };
     
     const playedQuestions = props.quiz.playedQuestions
             .map((q, index) => <li key={q.id}><QuestionElement question={q} index={index} setImageToDisplay={setImageToDisplay}></QuestionElement></li>);
 
     const openQuestions = props.quiz.openQuestions
-            .map((q, index) => <li key={q.id}><QuestionElement question={q} index={index} setImageToDisplay={setImageToDisplay} enableOperations={true}></QuestionElement></li>);
+            .map((q, index) => <li key={q.id}><QuestionElement question={q} index={index} setImageToDisplay={setImageToDisplay} enableOperations={true} onEdit={onEdit}></QuestionElement></li>);
     
     return (
         <div>
@@ -68,6 +73,15 @@ const Questions: React.FC<QuestionsProps> = (props: QuestionsProps) => {
                         <img data-testid="image" src={imageToDisplay} alt="There should be something here" />
                     </div>
                     <button data-testid="close-button" className="modal-close is-large" aria-label="close" onClick={() => setImageToDisplay('')}></button>
+                </div>
+            }
+            { questionToEdit &&
+                <div data-testid="edit-dialog" className="modal is-active">
+                    <div className="modal-background"></div>
+                    <div className="modal-content">
+                        <QuestionForm quiz={props.quiz} questionToChange={questionToEdit} onSubmit={() => setQuestionToEdit(undefined)}></QuestionForm>
+                    </div>
+                    <button data-testid="close-button" className="modal-close is-large" aria-label="close" onClick={() => setQuestionToEdit(undefined)}></button>
                 </div>
             }
         </div>  

@@ -41,6 +41,10 @@ abstract class BaseClass {
                     return Mono.just(Unit)
                 }
 
+                override fun editQuestion(editQuestionCommand: EditQuestionCommand): Mono<Unit> {
+                    return Mono.just(Unit)
+                }
+
                 override fun deleteQuestion(command: DeleteQuestionCommand): Mono<Unit> {
                     return Mono.just(Unit)
                 }

@@ -20,12 +20,14 @@ class QuestionProjection(eventBus: EventBus,
 
         Mono.delay(ofSeconds(5))
                 .flatMapMany { eventRepository.determineEvents() }
-                .filter { it is QuestionCreatedEvent || it is QuestionDeletedEvent || it is QuestionAskedEvent }
+                .filter { it is QuestionCreatedEvent || it is QuestionDeletedEvent || it is QuestionEditedEvent || it is QuestionAskedEvent }
                 .subscribe {
                     if (it is QuestionCreatedEvent) {
                         handleQuestionCreation(it)
                     } else if (it is QuestionDeletedEvent) {
                         handleQuestionDeletion(it)
+                    } else if (it is QuestionEditedEvent) {
+                        handleQuestionEdit(it)
                     } else if (it is QuestionAskedEvent) {
                         handleQuestionAsked(it)
                     }
@@ -34,14 +36,23 @@ class QuestionProjection(eventBus: EventBus,
 
     @Subscribe
     fun handleQuestionCreation(event: QuestionCreatedEvent) {
-        if (event.question.visibility === Question.QuestionVisibility.PUBLIC) {
-            questions.put(event.quizId, event.question.copy())
-        }
+        questions.put(event.quizId, event.question.copy())
     }
 
     @Subscribe
     fun handleQuestionDeletion(event: QuestionDeletedEvent) {
         questions[event.quizId].removeIf { it.id == event.questionId }
+    }
+
+    @Subscribe
+    fun handleQuestionEdit(event: QuestionEditedEvent) {
+        questions[event.quizId].replaceAll {
+            if (it.id == event.question.id) {
+                event.question.copy()
+            } else {
+                it
+            }
+        }
     }
 
     @Subscribe
@@ -59,6 +70,7 @@ class QuestionProjection(eventBus: EventBus,
         questions.asMap().entries.forEach { entry ->
             proposedQuestions[entry.key] = entry.value
                     .filter { it.alreadyPlayed }
+                    .filter { it.visibility == Question.QuestionVisibility.PUBLIC }
                     .filter { distinct.add(it.question + it.imageUrl) }
         }
 
