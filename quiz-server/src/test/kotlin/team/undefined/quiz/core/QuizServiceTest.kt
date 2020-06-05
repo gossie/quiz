@@ -175,6 +175,26 @@ internal class QuizServiceTest {
     }
 
     @Test
+    fun shouldEditQuestionQuestion() {
+        val quizId = UUID.randomUUID()
+        val questionId = UUID.randomUUID()
+
+        `when`(quizRepository.determineEvents(quizId))
+                .thenReturn(Flux.just(
+                        QuizCreatedEvent(quizId, Quiz(quizId, "Quiz")),
+                        QuestionCreatedEvent(quizId, Question(questionId, question = "Wer ist das", visibility = Question.QuestionVisibility.PRIVATE))
+                ))
+
+        val quizService = DefaultQuizService(quizRepository, eventBus)
+
+        StepVerifier.create(quizService.editQuestion(EditQuestionCommand(quizId, questionId, Question(questionId,"Wer ist das?", imageUrl = "urlToImage", visibility = Question.QuestionVisibility.PUBLIC))))
+                .consumeNextWith {
+                    verify(eventBus).post(argThat { (it as QuestionEditedEvent).quizId == quizId && it.question == Question(questionId, "Wer ist das?", false, "urlToImage", Question.QuestionVisibility.PUBLIC, false) })
+                }
+                .verifyComplete()
+    }
+
+    @Test
     fun shouldDeleteQuestion() {
         val quizId = UUID.randomUUID()
         val questionId = UUID.randomUUID()

@@ -36,6 +36,17 @@ data class Quiz(val id: UUID = UUID.randomUUID(), val name: String, val particip
         return this;
     }
 
+    fun editQuestion(question: Question): Quiz {
+        (questions as MutableList).replaceAll {
+            if (it.id == question.id) {
+                question
+            } else {
+                it
+            }
+        }
+        return this;
+    }
+
     fun deleteQuestion(questionId: UUID): Quiz {
         (questions as MutableList).removeIf { it.id == questionId }
         return this;

@@ -53,7 +53,7 @@ const Participants: React.FC<ParticipantsProps> = (props: ParticipantsProps) => 
 
     return (
         <div>
-            <h5 className="title is-5">Participants</h5>
+            <h4 className="title is-4">Participants</h4>
             <div data-testid="participants" className="participants-list">
                 <FlipMove>
                     {elements}

@@ -22,4 +22,6 @@ interface QuizService {
 
     fun deleteQuestion(command: DeleteQuestionCommand): Mono<Unit>
 
+    fun editQuestion(editQuestionCommand: EditQuestionCommand): Mono<Unit>
+
 }

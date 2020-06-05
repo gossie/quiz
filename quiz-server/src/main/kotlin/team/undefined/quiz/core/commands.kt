@@ -10,6 +10,8 @@ data class CreateQuizCommand(override val quizId: UUID, val quiz: Quiz) : Comman
 
 data class CreateQuestionCommand(override val quizId: UUID, val question: Question) : Command
 
+data class EditQuestionCommand(override val quizId: UUID, val questionId: UUID, val question: Question) : Command
+
 data class DeleteQuestionCommand(override val quizId: UUID, val questionId: UUID) : Command
 
 data class CreateParticipantCommand(override val quizId: UUID, val participant: Participant) : Command
