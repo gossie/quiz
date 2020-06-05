@@ -63,7 +63,7 @@ const QuestionForm: React.FC<QuestionFormProps> = (props: QuestionFormProps) => 
             <div className="field">
                 <div className="control">
                     <label className="checkbox">
-                        <input data-testid="visibility" type="checkbox" onChange={ev => setVisibility(ev.target.checked)} />
+                        <input data-testid={props.questionToChange ? 'visibility-to-edit' : 'visibility'} type="checkbox" checked={visibility} onChange={ev => setVisibility(ev.target.checked)} />
                         Question can be used by others after it is played
                     </label>
                 </div>

@@ -391,7 +391,7 @@ test('should edit question', async () => {
                 question: 'Frage 3',
                 pending: false,
                 imagePath: 'https://path_to_image/',
-                publicVisible: false,
+                publicVisible: true,
                 links: [{ href: '/api/quiz/5/questions/3', rel: 'self' }]
             }
         ],
@@ -410,15 +410,19 @@ test('should edit question', async () => {
     const questionButton = getByTestId('edit-question-button');
     const questionField = getByTestId('question-to-edit')  as HTMLInputElement;
     const imagePathField = getByTestId('image-path-to-edit')  as HTMLInputElement;
+    const visibilityField = getByTestId('visibility-to-edit')  as HTMLInputElement;
 
     expect(questionField.value).toBe('Frage 3');
     expect(imagePathField.value).toBe('https://path_to_image/');
+    expect(visibilityField.checked).toBe(true);
 
     fireEvent.change(questionField, { target: { value: 'Frage 4' } });
     fireEvent.change(imagePathField, { target: { value: 'https://path_to_image_changed/' } });
+    visibilityField.click();
 
     expect(questionField.value).toBe('Frage 4');
     expect(imagePathField.value).toBe('https://path_to_image_changed/');
+    expect(visibilityField.checked).toBe(false);
 
     questionButton.click();
 

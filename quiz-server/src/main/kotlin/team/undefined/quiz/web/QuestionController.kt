@@ -22,7 +22,7 @@ class QuestionController(private val quizService: QuizService) {
     @PutMapping("/{questionId}")
     @ResponseStatus(HttpStatus.OK)
     fun editQuestion(@PathVariable quizId: UUID, @PathVariable questionId: UUID, @RequestBody question: QuestionDTO): Mono<Unit> {
-        return quizService.editQuestion(EditQuestionCommand(quizId, questionId, question.map()))
+        return quizService.editQuestion(EditQuestionCommand(quizId, questionId, question.map(questionId)))
     }
 
     @PatchMapping("/{questionId}")

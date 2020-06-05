@@ -70,7 +70,7 @@ private fun ParticipantDTO.addLinks(quizId: UUID): Mono<ParticipantDTO> {
 }
 
 fun Question.map(quizId: UUID): QuestionDTO {
-    val questionDTO = QuestionDTO(this.id, this.question, this.pending, this.imageUrl)
+    val questionDTO = QuestionDTO(this.id, this.question, this.pending, this.imageUrl, this.visibility.asBoolean())
     questionDTO.add(Link("/api/quiz/" + quizId + "/questions/" + this.id, "self"))
     return if (this.imageUrl == "") questionDTO else questionDTO.add(Link(this.imageUrl, "image"))
 }
@@ -80,6 +80,10 @@ private fun QuestionDTO.addLinks(quizId: UUID): Mono<QuestionDTO> {
             .withSelfRel()
             .toMono()
             .map { this.add(it) }
+}
+
+fun QuestionDTO.map(questionId: UUID): Question {
+    return Question(questionId, question = this.question, imageUrl = this.imagePath, visibility = if (this.publicVisible) Question.QuestionVisibility.PUBLIC else Question.QuestionVisibility.PRIVATE)
 }
 
 fun QuestionDTO.map(): Question {
