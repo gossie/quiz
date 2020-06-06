@@ -12,4 +12,8 @@ interface EventRepository {
 
     fun determineEvents(): Flux<Event>
 
+    fun deleteEvents(quizId: UUID): Mono<Unit>
+
+    fun determineQuizIds(): Flux<UUID>
+
 }

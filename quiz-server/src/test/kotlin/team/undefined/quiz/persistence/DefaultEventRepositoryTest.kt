@@ -25,7 +25,7 @@ internal class DefaultEventRepositoryTest {
     private lateinit var defaultEventRepository: DefaultEventRepository
 
     @Test
-    fun shouldStoreAndRetreiveEvents() {
+    fun shouldStoreRetrieveAndDeleteEvents() {
         val firstQuizId = UUID.randomUUID()
         val secondQuizId = UUID.randomUUID()
 
@@ -59,6 +59,18 @@ internal class DefaultEventRepositoryTest {
                     assertThat(it.quizId).isEqualTo(firstQuizId)
                     assertThat((it as TestEvent).payload).isEqualTo(mapOf(Pair("key2", "value2")))
                 }
+                .verifyComplete()
+
+        StepVerifier.create(defaultEventRepository.determineQuizIds())
+                .consumeNextWith { it == firstQuizId }
+                .consumeNextWith { it == secondQuizId }
+                .verifyComplete()
+
+        StepVerifier.create(defaultEventRepository.deleteEvents(firstQuizId))
+                .consumeNextWith { it is Unit }
+                .verifyComplete()
+
+        StepVerifier.create(defaultEventRepository.determineEvents(firstQuizId))
                 .verifyComplete()
     }
 

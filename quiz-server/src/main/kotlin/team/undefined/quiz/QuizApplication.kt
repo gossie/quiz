@@ -5,7 +5,9 @@ import org.springframework.boot.CommandLineRunner
 import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.boot.runApplication
 import org.springframework.context.annotation.Bean
+import team.undefined.quiz.core.DeleteQuizCommand
 import team.undefined.quiz.core.QuizService
+import java.util.*
 
 @SpringBootApplication
 class QuizApplication {
@@ -17,7 +19,11 @@ class QuizApplication {
 
 	@Bean
 	fun databaseCleaner(quizService: QuizService): CommandLineRunner {
-		return (CommandLineRunner { TODO("Not yet implemented") })
+		return (CommandLineRunner {
+			quizService.determineQuizzes()
+					.filter { it.getTimestamp() < Date().time - 2_419_200_000 }
+					.subscribe { quizService.deleteQuiz(DeleteQuizCommand(it.id)) }
+		})
 	}
 
 }

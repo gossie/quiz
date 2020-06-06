@@ -1,5 +1,6 @@
 package team.undefined.quiz.core
 
+import reactor.core.publisher.Flux
 import reactor.core.publisher.Mono
 
 interface QuizService {
@@ -14,14 +15,18 @@ interface QuizService {
 
     fun startNewQuestion(command: AskQuestionCommand): Mono<Unit>
 
+    fun deleteQuestion(command: DeleteQuestionCommand): Mono<Unit>
+
+    fun editQuestion(editQuestionCommand: EditQuestionCommand): Mono<Unit>
+
     fun answer(command: AnswerCommand): Mono<Unit>
 
     fun reopenQuestion(command: ReopenCurrentQuestionCommand): Mono<Unit>
 
     fun finishQuiz(command: FinishQuizCommand): Mono<Unit>
 
-    fun deleteQuestion(command: DeleteQuestionCommand): Mono<Unit>
+    fun deleteQuiz(command: DeleteQuizCommand): Mono<Unit>
 
-    fun editQuestion(editQuestionCommand: EditQuestionCommand): Mono<Unit>
+    fun determineQuizzes(): Flux<Quiz>
 
 }

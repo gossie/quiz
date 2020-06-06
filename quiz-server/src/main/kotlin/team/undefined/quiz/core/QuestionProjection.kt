@@ -20,7 +20,7 @@ class QuestionProjection(eventBus: EventBus,
 
         Mono.delay(ofSeconds(5))
                 .flatMapMany { eventRepository.determineEvents() }
-                .filter { it is QuestionCreatedEvent || it is QuestionDeletedEvent || it is QuestionEditedEvent || it is QuestionAskedEvent }
+                .filter { it is QuestionCreatedEvent || it is QuestionDeletedEvent || it is QuestionEditedEvent || it is QuestionAskedEvent || it is QuizDeletedEvent }
                 .subscribe {
                     if (it is QuestionCreatedEvent) {
                         handleQuestionCreation(it)
@@ -30,6 +30,8 @@ class QuestionProjection(eventBus: EventBus,
                         handleQuestionEdit(it)
                     } else if (it is QuestionAskedEvent) {
                         handleQuestionAsked(it)
+                    } else if (it is QuizDeletedEvent) {
+                        handleQuizDeletion(it)
                     }
                 }
     }
@@ -56,10 +58,15 @@ class QuestionProjection(eventBus: EventBus,
     }
 
     @Subscribe
-    private fun handleQuestionAsked(event: QuestionAskedEvent) {
+    fun handleQuestionAsked(event: QuestionAskedEvent) {
         val question = questions.get(event.quizId).find { it.id == event.questionId }
         question?.alreadyPlayed = true
         question?.pending = true
+    }
+
+    @Subscribe
+    fun handleQuizDeletion(event: QuizDeletedEvent) {
+        questions.removeAll(event.quizId)
     }
 
     fun determineQuestions(): Map<UUID, List<Question>> {

@@ -11,6 +11,7 @@ import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.boot.web.server.LocalServerPort
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
+import reactor.core.publisher.Flux
 import reactor.core.publisher.Mono
 import team.undefined.quiz.core.*
 import java.util.*
@@ -73,6 +74,14 @@ abstract class BaseClass {
                     return Mono.just(command.quizId)
                             .filter { it == UUID.fromString("123e4567-e89b-12d3-a456-426655440000") }
                             .map { Unit }
+                }
+
+                override fun deleteQuiz(command: DeleteQuizCommand): Mono<Unit> {
+                    TODO("Not yet implemented")
+                }
+
+                override fun determineQuizzes(): Flux<Quiz> {
+                    TODO("Not yet implemented")
                 }
 
             })

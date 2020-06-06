@@ -16,7 +16,20 @@ class LockingAspect {
     private val locks = ConcurrentHashMap<UUID, Semaphore>()
 
     @Around("execution(@WriteLock * *(*))")
-    fun performLock(point: ProceedingJoinPoint): Mono<*> {
+    fun performWriteLock(point: ProceedingJoinPoint): Mono<*> {
+        val command = point.args[0] as Command
+        val quizId = command.quizId
+        val lock = locks.computeIfAbsent(quizId) { Semaphore(1) }
+
+        lock.acquire()
+        val mono = point.proceed() as Mono<*>
+        return mono
+                .doFinally { lock.release() }
+    }
+
+
+    @Around("execution(@ReadLock * *(*))")
+    fun performReadLock(point: ProceedingJoinPoint): Mono<*> {
         val command = point.args[0] as Command
         val quizId = command.quizId
         val lock = locks.computeIfAbsent(quizId) { Semaphore(1) }

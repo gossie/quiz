@@ -5,7 +5,7 @@ import kotlin.collections.ArrayList
 
 data class Quiz(val id: UUID = UUID.randomUUID(), val name: String, val participants: List<Participant> = ArrayList(), val questions: List<Question> = ArrayList(), var finished: Boolean = false, var quizStatistics: QuizStatistics? = null) {
 
-    private var timestamp: Long? = null;
+    private var timestamp: Long = Date().time;
 
     fun nobodyHasBuzzered(): Boolean {
         return participants
@@ -101,7 +101,7 @@ data class Quiz(val id: UUID = UUID.randomUUID(), val name: String, val particip
         return this
     }
 
-    fun getTimestamp(): Long? {
+    fun getTimestamp(): Long {
         return timestamp
     }
 

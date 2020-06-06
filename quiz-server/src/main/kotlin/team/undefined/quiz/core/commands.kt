@@ -36,3 +36,5 @@ data class AnswerCommand(override val quizId: UUID, val answer: Answer) : Comman
 data class ReopenCurrentQuestionCommand(override val quizId: UUID) : Command
 
 data class FinishQuizCommand(override val quizId: UUID) : Command
+
+data class DeleteQuizCommand(override val quizId: UUID) : Command

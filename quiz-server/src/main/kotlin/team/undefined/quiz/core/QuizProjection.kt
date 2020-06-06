@@ -79,6 +79,11 @@ class QuizProjection(eventBus: EventBus,
     }
 
     @Subscribe
+    fun handleQuizDeletion(event: QuizDeletedEvent) {
+        quizCache.remove(event.quizId)
+    }
+
+    @Subscribe
     fun handleForceEmitCommand(command: ForceEmitCommand) {
         eventRepository.determineEvents(command.quizId)
                 .reduce(Quiz(name = "")) { q: Quiz, e: Event -> e.process(q) }
