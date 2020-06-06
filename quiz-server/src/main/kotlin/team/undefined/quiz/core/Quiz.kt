@@ -5,7 +5,7 @@ import kotlin.collections.ArrayList
 
 data class Quiz(val id: UUID = UUID.randomUUID(), val name: String, val participants: List<Participant> = ArrayList(), val questions: List<Question> = ArrayList(), var finished: Boolean = false, var quizStatistics: QuizStatistics? = null) {
 
-    private var timestamp: Long = Date().time;
+    private var timestamp: Long = Date().time
 
     fun nobodyHasBuzzered(): Boolean {
         return participants
@@ -27,13 +27,12 @@ data class Quiz(val id: UUID = UUID.randomUUID(), val name: String, val particip
         if (hasNoParticipantWithName(participant.name)) {
             (participants as MutableList).add(participant)
         }
-
-        return this;
+        return this
     }
 
     fun addQuestion(question: Question): Quiz {
         (questions as MutableList).add(question)
-        return this;
+        return this
     }
 
     fun editQuestion(question: Question): Quiz {
@@ -44,12 +43,12 @@ data class Quiz(val id: UUID = UUID.randomUUID(), val name: String, val particip
                 it
             }
         }
-        return this;
+        return this
     }
 
     fun deleteQuestion(questionId: UUID): Quiz {
         (questions as MutableList).removeIf { it.id == questionId }
-        return this;
+        return this
     }
 
     fun startQuestion(questionId: UUID): Quiz {
@@ -68,19 +67,19 @@ data class Quiz(val id: UUID = UUID.randomUUID(), val name: String, val particip
         participants
                 .filter { it.turn }
                 .forEach { it.points = it.points + 2 }
-        return this;
+        return this
     }
 
-    fun answeredInorrect(): Quiz {
+    fun answeredIncorrect(): Quiz {
         participants
                 .filter { it.turn }
-                .forEach { it.points = Math.max(it.points - 1, 0) }
-        return this;
+                .forEach { it.points = (it.points - 1).coerceAtLeast(0) }
+        return this
     }
 
     fun reopenQuestion(): Quiz {
         participants.forEach { it.turn = false }
-        return this;
+        return this
     }
 
     fun finishQuiz(): Quiz {

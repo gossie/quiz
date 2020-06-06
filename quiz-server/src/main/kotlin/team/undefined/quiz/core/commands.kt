@@ -25,7 +25,7 @@ data class BuzzerCommand(override val quizId: UUID, val participantId: UUID) : C
 data class AnswerCommand(override val quizId: UUID, val answer: Answer) : Command {
     enum class Answer(private val handler: (Quiz) -> Quiz) {
         CORRECT({it.answeredCorrect()}),
-        INCORRECT({it.answeredInorrect()});
+        INCORRECT({it.answeredIncorrect()});
 
         fun performAnswer(quiz: Quiz): Quiz {
             return handler(quiz)
