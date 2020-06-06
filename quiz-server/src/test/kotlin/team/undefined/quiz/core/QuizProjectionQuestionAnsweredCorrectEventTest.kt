@@ -37,8 +37,8 @@ internal class QuizProjectionQuestionAnsweredCorrectEventTest {
                     && observedQuiz.get().participants.size == 1
                     && observedQuiz.get().participants[0].points == 2L
                     && observedQuiz.get().questions.size == 1
-                    && !observedQuiz.get().questions[0].pending
-                    && observedQuiz.get().questions[0].alreadyPlayed
+                    && observedQuiz.get().questions[0].pending
+                    && !observedQuiz.get().questions[0].alreadyPlayed
                     && !observedQuiz.get().finished
         }
     }
@@ -76,8 +76,8 @@ internal class QuizProjectionQuestionAnsweredCorrectEventTest {
                     && observedQuiz.get().participants.size == 1
                     && observedQuiz.get().participants[0].points == 2L
                     && observedQuiz.get().questions.size == 1
-                    && !observedQuiz.get().questions[0].pending
-                    && observedQuiz.get().questions[0].alreadyPlayed
+                    && observedQuiz.get().questions[0].pending
+                    && !observedQuiz.get().questions[0].alreadyPlayed
                     && !observedQuiz.get().finished
         }
     }
@@ -112,8 +112,8 @@ internal class QuizProjectionQuestionAnsweredCorrectEventTest {
                     && observedQuiz.get().participants.size == 1
                     && observedQuiz.get().participants[0].points == 2L
                     && observedQuiz.get().questions.size == 1
-                    && !observedQuiz.get().questions[0].pending
-                    && observedQuiz.get().questions[0].alreadyPlayed
+                    && observedQuiz.get().questions[0].pending
+                    && !observedQuiz.get().questions[0].alreadyPlayed
                     && !observedQuiz.get().finished
         }
     }

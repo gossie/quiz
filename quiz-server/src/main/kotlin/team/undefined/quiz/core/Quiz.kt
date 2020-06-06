@@ -68,14 +68,6 @@ data class Quiz(val id: UUID = UUID.randomUUID(), val name: String, val particip
         participants
                 .filter { it.turn }
                 .forEach { it.points = it.points + 2 }
-
-        questions
-                .filter { it.pending }
-                .forEach {
-                    it.pending = false
-                    it.alreadyPlayed = true
-                }
-
         return this;
     }
 
