@@ -2,6 +2,7 @@ package team.undefined.quiz.core
 
 import com.google.common.eventbus.EventBus
 import org.springframework.stereotype.Service
+import reactor.core.publisher.Flux
 import reactor.core.publisher.Mono
 
 @Service
@@ -45,7 +46,7 @@ class DefaultQuizService(private val eventRepository: EventRepository,
     @WriteLock
     override fun buzzer(command: BuzzerCommand): Mono<Unit> {
         return eventRepository.determineEvents(command.quizId)
-                .reduce(Quiz(name = "")) { quiz: Quiz, event: Event -> event.process(quiz)}
+                .reduce(Quiz(name = "")) { quiz: Quiz, event: Event -> event.process(quiz) }
                 .filter { it.nobodyHasBuzzered() }
                 .flatMap { eventRepository.storeEvent(BuzzeredEvent(command.quizId, command.participantId)) }
                 .map { eventBus.post(it) }
@@ -73,6 +74,21 @@ class DefaultQuizService(private val eventRepository: EventRepository,
     override fun finishQuiz(command: FinishQuizCommand): Mono<Unit> {
         return eventRepository.storeEvent(QuizFinishedEvent(command.quizId))
                 .map { eventBus.post(it) }
+    }
+
+    @WriteLock
+    override fun deleteQuiz(command: DeleteQuizCommand): Mono<Unit> {
+        return eventRepository.deleteEvents(command.quizId)
+                .map { eventBus.post(QuizDeletedEvent(command.quizId)) }
+    }
+
+    @ReadLock
+    override fun determineQuizzes(): Flux<Quiz> {
+        return eventRepository.determineQuizIds()
+                .flatMap {
+                    eventRepository.determineEvents(it)
+                            .reduce(Quiz(name = "")) { quiz: Quiz, event: Event -> event.process(quiz) }
+                }
     }
 
 }

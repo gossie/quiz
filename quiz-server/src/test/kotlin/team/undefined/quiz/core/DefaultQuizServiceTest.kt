@@ -20,9 +20,17 @@ open class TestEventRepository : EventRepository {
     override fun determineEvents(): Flux<Event> {
         return Flux.empty();
     }
+
+    override fun deleteEvents(quizId: UUID): Mono<Unit> {
+        return Mono.just(Unit)
+    }
+
+    override fun determineQuizIds(): Flux<UUID> {
+        return Flux.empty()
+    }
 }
 
-internal class QuizServiceTest {
+internal class DefaultQuizServiceTest {
 
     private val quizRepository = spy(TestEventRepository())
 
@@ -292,6 +300,54 @@ internal class QuizServiceTest {
         StepVerifier.create(quizService.finishQuiz(FinishQuizCommand(quizId)))
                 .consumeNextWith {
                     verify(eventBus).post(argThat { (it as QuizFinishedEvent).quizId == quizId })
+                }
+                .verifyComplete()
+    }
+
+    @Test
+    fun shouldDeleteQuiz() {
+        val quizService = DefaultQuizService(quizRepository, eventBus)
+
+        val quizId = UUID.randomUUID()
+        StepVerifier.create(quizService.deleteQuiz(DeleteQuizCommand(quizId)))
+                .consumeNextWith {
+                    verify(eventBus).post(argThat { (it as QuizDeletedEvent).quizId == quizId })
+                }
+                .verifyComplete()
+    }
+
+    @Test
+    fun shouldDetermineQuizzes() {
+        val quiz1Id = UUID.randomUUID()
+        val quiz2Id = UUID.randomUUID()
+
+        `when`(quizRepository.determineQuizIds())
+                .thenReturn(Flux.just(quiz1Id, quiz2Id))
+
+        `when`(quizRepository.determineEvents(quiz1Id))
+                .thenReturn(Flux.just(
+                        QuizCreatedEvent(quiz1Id, Quiz(quiz1Id, "Quiz")),
+                        QuestionCreatedEvent(quiz1Id, question = Question(question = "Warum ist die Banane krum?")),
+                        ParticipantCreatedEvent(quiz1Id, Participant(name = "André")),
+                        ParticipantCreatedEvent(quiz1Id, Participant(name = "Lena"))
+                ))
+
+        `when`(quizRepository.determineEvents(quiz2Id))
+                .thenReturn(Flux.just(
+                        QuizCreatedEvent(quiz2Id, Quiz(quiz2Id, "Quiz")),
+                        QuestionCreatedEvent(quiz2Id, question = Question(question = "Warum ist die Banane krum?")),
+                        ParticipantCreatedEvent(quiz2Id, Participant(name = "André")),
+                        ParticipantCreatedEvent(quiz2Id, Participant(name = "Lena"))
+                ))
+
+        val quizService = DefaultQuizService(quizRepository, eventBus)
+
+        StepVerifier.create(quizService.determineQuizzes())
+                .consumeNextWith {
+                    it.id == quiz1Id
+                }
+                .consumeNextWith {
+                    it.id == quiz2Id
                 }
                 .verifyComplete()
     }

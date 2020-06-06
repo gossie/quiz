@@ -34,4 +34,16 @@ class DefaultEventRepository(private val eventEntityRepository: EventEntityRepos
                 .map { Event::class.java.cast(it) }
     }
 
+    override fun deleteEvents(quizId: UUID): Mono<Unit> {
+        return eventEntityRepository.deleteAllByAggregateId(quizId.toString())
+                .then(Mono.just(Unit))
+    }
+
+    override fun determineQuizIds(): Flux<UUID> {
+        return eventEntityRepository.findAll()
+                .map { it.aggregateId }
+                .distinct()
+                .map { UUID.fromString(it) }
+    }
+
 }
