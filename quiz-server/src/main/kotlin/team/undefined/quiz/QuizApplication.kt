@@ -21,7 +21,7 @@ class QuizApplication {
 	fun databaseCleaner(quizService: QuizService): CommandLineRunner {
 		return (CommandLineRunner {
 			quizService.determineQuizzes()
-					.filter { it.getTimestamp() < Date().time - 2_419_200_000 }
+					.filter { it.getTimestamp() < (Date().time - 2_419_200_000) }
 					.subscribe { quizService.deleteQuiz(DeleteQuizCommand(it.id)) }
 		})
 	}
