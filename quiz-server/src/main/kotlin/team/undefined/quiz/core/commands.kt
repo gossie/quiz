@@ -20,6 +20,8 @@ data class ForceEmitCommand(override val quizId: UUID) : Command
 
 data class AskQuestionCommand(override val quizId: UUID, val questionId: UUID) : Command
 
+data class EstimationCommand(override val quizId: UUID, val questionId: UUID, val participantId: UUID, val estimatedValue: String) : Command
+
 data class BuzzerCommand(override val quizId: UUID, val participantId: UUID) : Command
 
 data class AnswerCommand(override val quizId: UUID, val answer: Answer) : Command {

@@ -13,6 +13,8 @@ interface QuizService {
 
     fun buzzer(command: BuzzerCommand): Mono<Unit>
 
+    fun estimate(command: EstimationCommand): Mono<Unit>
+
     fun startNewQuestion(command: AskQuestionCommand): Mono<Unit>
 
     fun deleteQuestion(command: DeleteQuestionCommand): Mono<Unit>

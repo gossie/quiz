@@ -19,6 +19,13 @@ data class Quiz(val id: UUID = UUID.randomUUID(), val name: String, val particip
         return this
     }
 
+    fun estimate(participantId: UUID, estimatedValue: String): Quiz {
+        questions
+                .find { it.pending }
+                ?.estimate(participantId, estimatedValue)
+        return this
+    }
+
     fun hasNoParticipantWithName(name: String): Boolean {
         return participants.none { it.name == name }
     }
