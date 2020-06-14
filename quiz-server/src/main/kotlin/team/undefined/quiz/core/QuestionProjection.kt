@@ -4,6 +4,7 @@ import com.google.common.collect.MultimapBuilder
 import com.google.common.eventbus.EventBus
 import com.google.common.eventbus.Subscribe
 import org.springframework.stereotype.Component
+import org.springframework.util.StringUtils
 import reactor.core.publisher.Mono
 import java.time.Duration.ofSeconds
 import java.util.*
@@ -75,10 +76,12 @@ class QuestionProjection(eventBus: EventBus,
         val distinct = HashSet<String>()
 
         questions.asMap().entries.forEach { entry ->
-            proposedQuestions[entry.key] = entry.value
+            proposedQuestions[entry.key] = entry.value.asSequence()
                     .filter { it.alreadyPlayed }
                     .filter { it.visibility == Question.QuestionVisibility.PUBLIC }
+                    .filter { StringUtils.isEmpty(it.imageUrl) }
                     .filter { distinct.add(it.question + it.imageUrl) }
+                    .toList()
         }
 
         return proposedQuestions
