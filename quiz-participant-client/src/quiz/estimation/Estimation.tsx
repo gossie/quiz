@@ -8,8 +8,11 @@ interface EstimationProps {
 
 const Estimation: React.FC<EstimationProps> = (props: EstimationProps) => {
     const [estimation, setEstimation] = useState('');
+    const [sendButtonCssClasses, setSendButtonCssClasses] = useState('button is-primary');
 
     const sendEstimation = () => {
+        setSendButtonCssClasses('button is-primary is-loading');
+
         const buzzerHref = props.quiz.participants
             .find(p => p.id === props.participantId)
             .links
@@ -28,7 +31,8 @@ const Estimation: React.FC<EstimationProps> = (props: EstimationProps) => {
                 throw Error('error when estimating');
             }
         })
-        .catch(e => console.error(e));
+        .catch(e => console.error(e))
+        .finally(() => setSendButtonCssClasses('button is-primary'));
     }
 
     return (
@@ -40,7 +44,7 @@ const Estimation: React.FC<EstimationProps> = (props: EstimationProps) => {
             </div>
             <div className="field is-grouped">
                 <div className="control">
-                    <button data-testid="send" onClick={sendEstimation} className="button is-primary">
+                    <button data-testid="send" onClick={sendEstimation} className={sendButtonCssClasses}>
                         Estimate
                     </button>
                 </div>
