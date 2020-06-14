@@ -3,64 +3,28 @@ import { render } from '@testing-library/react';
 import Answers from './Answers';
 import Quiz from '../quiz-client-shared/quiz';
 
-test('should not show buttons because there are no participants', () => {
-    const quiz: Quiz = {
-        id: 17,
-        name: 'Test',
-        participants: [],
-        questions: [],
-        links: []
-    }
-
-    const { getByTestId } = render(<Answers quiz={quiz} />);
-
-    expect(() => getByTestId('correct-button')).toThrowError('');
-    expect(() => getByTestId('incorrect-button')).toThrowError('');
-});
-
-test('should not show buttons because it is nobodys turn', () => {
-    const quiz: Quiz = {
-        id: 17,
-        name: 'Test',
-        participants: [{
-            id: 12,
-            name: 'Lena',
-            turn: false,
-            points: 13,
-            links: []
-        }],
-        questions: [],
-        links: []
-    }
-
-    const { getByTestId } = render(<Answers quiz={quiz} />);
-
-    expect(() => getByTestId('correct-button')).toThrowError('');
-    expect(() => getByTestId('incorrect-button')).toThrowError('');
-    expect(() => getByTestId('reopen-button')).toThrowError('');
-});
-
 test('should show buttons', () => {
     const quiz: Quiz = {
-        id: 17,
+        id: '17',
         name: 'Test',
         participants: [
             {
-                id: 12,
+                id: '12',
                 name: 'Lena',
                 turn: false,
                 points: 13,
                 links: []
             },
             {
-                id: 13,
+                id: '13',
                 name: 'Erik',
                 turn: true,
                 points: 13,
                 links: []
             }
         ],
-        questions: [],
+        openQuestions: [],
+        playedQuestions: [],
         links: []
     }
 
@@ -86,11 +50,11 @@ test('should answer correctly', () => {
     });
 
     const quiz: Quiz = {
-        id: 17,
+        id: '17',
         name: 'Test',
         participants: [
             {
-                id: 12,
+                id: '12',
                 name: 'Lena',
                 turn: false,
                 points: 13,
@@ -104,7 +68,8 @@ test('should answer correctly', () => {
                 links: []
             }
         ],
-        questions: [],
+        openQuestions: [],
+        playedQuestions: [],
         links: [{ rel: 'answer', href: '/api/answer' }]
     }
 
@@ -128,18 +93,18 @@ test('should answer correctly', () => {
     });
 
     const quiz: Quiz = {
-        id: 17,
+        id: '17',
         name: 'Test',
         participants: [
             {
-                id: 12,
+                id: '12',
                 name: 'Lena',
                 turn: false,
                 points: 13,
                 links: []
             },
             {
-                id: 13,
+                id: '13',
                 name: 'Erik',
                 turn: true,
                 points: 13,
@@ -169,18 +134,18 @@ test('should reopen question', () => {
     });
 
     const quiz: Quiz = {
-        id: 17,
+        id: '17',
         name: 'Test',
         participants: [
             {
-                id: 12,
+                id: '12',
                 name: 'Lena',
                 turn: false,
                 points: 13,
                 links: []
             },
             {
-                id: 13,
+                id: '13',
                 name: 'Erik',
                 turn: true,
                 points: 13,
