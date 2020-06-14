@@ -245,14 +245,13 @@ internal class DefaultQuizServiceTest {
     @Test
     fun shouldEstimate() {
         val quizId = UUID.randomUUID()
-        val questionId = UUID.randomUUID()
         val participant = UUID.randomUUID()
 
         val quizService = DefaultQuizService(quizRepository, eventBus)
 
-        StepVerifier.create(quizService.estimate(EstimationCommand(quizId, questionId, participant, "myEstimatedValue")))
+        StepVerifier.create(quizService.estimate(EstimationCommand(quizId, participant, "myEstimatedValue")))
                 .consumeNextWith {
-                    verify(eventBus).post(argThat { (it as EstimatedEvent).quizId == quizId && it.questionId == questionId && it.participantId == participant && it.estimatedValue == "myEstimatedValue" })
+                    verify(eventBus).post(argThat { (it as EstimatedEvent).quizId == quizId && it.participantId == participant && it.estimatedValue == "myEstimatedValue" })
                 }
                 .verifyComplete()
     }

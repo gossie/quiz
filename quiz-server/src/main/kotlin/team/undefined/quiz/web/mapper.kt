@@ -63,7 +63,7 @@ private fun Participant.map(quizId: UUID): Mono<ParticipantDTO> {
 }
 
 private fun ParticipantDTO.addLinks(quizId: UUID): Mono<ParticipantDTO> {
-    return linkTo(methodOn(ParticipantsController::class.java).buzzer(quizId, this.id))
+    return linkTo(methodOn(ParticipantsController::class.java).buzzer(quizId, this.id, ""))
             .withRel("buzzer")
             .toMono()
             .map { this.add(it) }

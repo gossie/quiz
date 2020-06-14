@@ -54,7 +54,7 @@ class DefaultQuizService(private val eventRepository: EventRepository,
 
     @WriteLock
     override fun estimate(command: EstimationCommand): Mono<Unit> {
-        return eventRepository.storeEvent(EstimatedEvent(command.quizId, command.questionId, command.participantId, command.estimatedValue))
+        return eventRepository.storeEvent(EstimatedEvent(command.quizId, command.participantId, command.estimatedValue))
                 .map { eventBus.post(it) }
     }
 

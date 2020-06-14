@@ -15,6 +15,7 @@ export interface Question {
     id: string;
     question: string;
     imagePath?: string;
+    estimates?: {},
     pending: boolean;
     links: Array<Link>;
 }

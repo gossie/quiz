@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import Participants from '../quiz-client-shared/Participants/Participants';
 import Quiz from '../quiz-client-shared/quiz';
-import Buzzer from './Buzzer';
+import Buzzer from './buzzer/Buzzer';
 import Question from './Question';
 import './QuizDashboard.css';
 import QuizStatistics from '../quiz-client-shared/QuizStatistics/QuizStatistics';

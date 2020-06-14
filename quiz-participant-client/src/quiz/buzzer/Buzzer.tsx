@@ -1,8 +1,8 @@
 import React, { useCallback, useEffect, useRef } from 'react';
 import './Buzzer.css';
-import Quiz from '../quiz-client-shared/quiz';
+import Quiz from '../../quiz-client-shared/quiz';
 
-const buzzerfile = require('./../assets/buzzer.mp3');
+const buzzerfile = require('./../../assets/buzzer.mp3');
 interface BuzzerProps {
     quiz: Quiz;
     participantId: string;
@@ -27,7 +27,8 @@ const Buzzer: React.FC<BuzzerProps> = (props: BuzzerProps) => {
         fetch(`${process.env.REACT_APP_BASE_URL}${buzzerHref}`, {
             method: 'PUT',
             headers: {
-                Accept: 'application/json'
+                Accept: 'application/json',
+                'Content-Type': 'text/plain'
             }
         })
         .then(response => {
@@ -65,13 +66,13 @@ const Buzzer: React.FC<BuzzerProps> = (props: BuzzerProps) => {
     return (
         <span>
             <audio src={buzzerfile} ref={buzzerAudio} preload='auto'></audio>
-            <button disabled={!isCurrentQuestionOpen} className={isParticipantActive ? 'buzzer-button active' : 'buzzer-button'} onMouseDown={buzzer}>
+            <button data-testid="buzzer" disabled={!isCurrentQuestionOpen} className={isParticipantActive ? 'buzzer-button active' : 'buzzer-button'} onMouseDown={buzzer}>
                 {isCurrentQuestionOpen ? 
-                    "I know it!" :
+                    'I know it!' :
                     (!isParticipantActive ?
-                    "Too late!"
+                    'Too late!'
                     :
-                    "Your turn!")
+                    'Your turn!')
                 }    
             </button>
         </span>
