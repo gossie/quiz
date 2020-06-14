@@ -8,6 +8,7 @@ test('should start editing', async done => {
         id: '1',
         question: 'Warum?',
         imagePath: 'pathToImage',
+        publicVisible: false,
         pending: false,
         links: []
     }

@@ -16,6 +16,7 @@ export interface Question {
     question: string;
     imagePath?: string;
     publicVisible: boolean;
+    estimates?: object;
     pending: boolean;
     links: Array<Link>;
 }

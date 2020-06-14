@@ -14,6 +14,7 @@ const QuestionForm: React.FC<QuestionFormProps> = (props: QuestionFormProps) => 
     const [imagePath, setImagePath] = useState(props.questionToChange?.imagePath);
     const [questionButtonCssClasses, setQuestionButtonCssClasses] = useState('button is-link');
     const [visibility, setVisibility] = useState(props.questionToChange ? props.questionToChange.publicVisible : false);
+    const [estimation, setEstimation] = useState(props.questionToChange ? props.questionToChange.estimates !== undefined : false);
     
     const createQuestion = async () => {
         setQuestionButtonCssClasses('button is-link is-loading');
@@ -32,7 +33,8 @@ const QuestionForm: React.FC<QuestionFormProps> = (props: QuestionFormProps) => 
             body: JSON.stringify({
                 question: newQuestion,
                 imagePath: imagePath,
-                publicVisible: visibility
+                publicVisible: visibility,
+                estimates: estimation ? {} : undefined
             }),
             headers: {
                 'Content-Type': 'application/json',
@@ -58,6 +60,14 @@ const QuestionForm: React.FC<QuestionFormProps> = (props: QuestionFormProps) => 
             <div className="field">
                 <div className="control">
                     <input data-testid={props.questionToChange ? 'image-path-to-edit' : 'image-path'} value={imagePath} onChange={ev => setImagePath(ev.target.value)} className="input" type="text" placeholder="Image path" />
+                </div>
+            </div>
+            <div className="field">
+                <div className="control">
+                    <label className="checkbox">
+                        <input data-testid={props.questionToChange ? 'estimation-to-edit' : 'estimation'} type="checkbox" checked={estimation} onChange={ev => setEstimation(ev.target.checked)} />
+                        Estimation question
+                    </label>
                 </div>
             </div>
             <div className="field">
