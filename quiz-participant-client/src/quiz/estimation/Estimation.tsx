@@ -32,7 +32,10 @@ const Estimation: React.FC<EstimationProps> = (props: EstimationProps) => {
             }
         })
         .catch(e => console.error(e))
-        .finally(() => setSendButtonCssClasses('button is-primary'));
+        .finally(() => {
+            setEstimation('');
+            setSendButtonCssClasses('button is-primary')
+        });
     }
 
     return (

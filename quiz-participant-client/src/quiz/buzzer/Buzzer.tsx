@@ -27,7 +27,6 @@ const Buzzer: React.FC<BuzzerProps> = (props: BuzzerProps) => {
         fetch(`${process.env.REACT_APP_BASE_URL}${buzzerHref}`, {
             method: 'PUT',
             headers: {
-                Accept: 'application/json',
                 'Content-Type': 'text/plain'
             }
         })

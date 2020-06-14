@@ -1,5 +1,5 @@
 import React from 'react';
-import { render, fireEvent } from '@testing-library/react';
+import { render, fireEvent, wait } from '@testing-library/react';
 import Estimation from './Estimation';
 import Quiz from '../../quiz-client-shared/quiz';
 
@@ -59,4 +59,6 @@ test('should estimate', async () => {
     expect(estimationField.value).toEqual('1000');
 
     sendButton.click();
+
+    await wait(() => expect(estimationField.value).toEqual(''));
 });

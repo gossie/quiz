@@ -19,7 +19,7 @@ class ParticipantsController(private val quizService: QuizService) {
 
     @PutMapping("/{participantId}/buzzer", consumes = ["text/plain"])
     @ResponseStatus(HttpStatus.OK)
-    fun buzzer(@PathVariable quizId: UUID, @PathVariable participantId: UUID, @RequestBody estimation: String): Mono<Unit> {
+    fun buzzer(@PathVariable quizId: UUID, @PathVariable participantId: UUID, @RequestBody(required = false) estimation: String?): Mono<Unit> {
         if (estimation == null) {
             return quizService.buzzer(BuzzerCommand(quizId, participantId))
         } else {

@@ -5,6 +5,7 @@ import Buzzer from './buzzer/Buzzer';
 import Question from './Question';
 import './QuizDashboard.css';
 import QuizStatistics from '../quiz-client-shared/QuizStatistics/QuizStatistics';
+import Estimation from './estimation/Estimation';
 
 interface QuizDashboardProps {
     quizId: string;
@@ -54,6 +55,11 @@ const QuizDashboard: React.FC<QuizDashboardProps> = (props: QuizDashboardProps) 
             });
         }
     });
+
+    const isEstimationQuestion = (quiz: Quiz) => {
+        const pendingQuestion = quiz.openQuestions.find(q => q.pending);
+        return pendingQuestion !== undefined && pendingQuestion.estimates !== null;
+    }
     
     return (
         <div className="Quiz-dashboard">
@@ -68,7 +74,12 @@ const QuizDashboard: React.FC<QuizDashboardProps> = (props: QuizDashboardProps) 
                         </div>
                         <div className="column question">
                             <h5 className="title is-5">Current question</h5>
-                            <Buzzer quiz={quiz} participantId={participantId}></Buzzer>
+                            { isEstimationQuestion(quiz)
+                            ?
+                                <Estimation quiz={quiz} participantId={participantId}></Estimation>
+                            :
+                                <Buzzer quiz={quiz} participantId={participantId}></Buzzer>
+                            }
                             {<Question quiz={quiz}></Question>}
                         </div>
                     </div>

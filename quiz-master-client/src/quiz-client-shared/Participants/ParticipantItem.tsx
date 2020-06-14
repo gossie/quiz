@@ -16,12 +16,28 @@ const ParticipantItem: React.FC<ParticipantProps> = (props: ParticipantProps) =>
         }
     }
 
-    return <div data-testid="participant-wrapper" className={"participant " + (props.participant.turn ? 'turn' : '')}>
-                <span data-testid="participant-name">{props.participant.name} </span>
-                <div className="points">({props.pointsAfterLastQuestion}{pointDifference()})</div>
-                {props.participant.turn ? <Answers quiz={props.quiz}></Answers> : ''}
-            </div>;
+    const isEstimationQuestion = () => {
+        const pendingQuestion = props.quiz.openQuestions.find(q => q.pending);
+        return pendingQuestion !== undefined && pendingQuestion.estimates !== null;
+    }
 
+    const getEstimatedValue = () => {
+        const pendingQuestion = props.quiz.openQuestions.find(q => q.pending);
+        return pendingQuestion !== undefined && pendingQuestion.estimates !== null
+                ? pendingQuestion.estimates[props.participant.id]
+                : '';
+    }
+
+    return <div>
+                <div data-testid="participant-wrapper" className={"participant " + (props.participant.turn ? 'turn' : '')}>
+                    <span data-testid="participant-name">{props.participant.name} </span>
+                    <div className="points">({props.pointsAfterLastQuestion}{pointDifference()})</div>
+                    {(props.participant.turn || isEstimationQuestion()) ? <Answers quiz={props.quiz}></Answers> : ''}
+                </div>
+                { isEstimationQuestion() &&
+                    <div><b>Estimated value:</b> {getEstimatedValue()}</div>
+                }
+            </div>
 }
 
 export default ParticipantItem;
