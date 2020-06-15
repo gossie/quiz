@@ -28,7 +28,7 @@ test('should show buttons', () => {
         links: []
     }
 
-    const { getByTestId } = render(<Answers quiz={quiz} />);
+    const { getByTestId } = render(<Answers quiz={quiz} participant={quiz.participants[1]} />);
 
     expect(getByTestId('correct-button')).toBeDefined();
     expect(getByTestId('incorrect-button')).toBeDefined();
@@ -37,9 +37,9 @@ test('should show buttons', () => {
 
 test('should answer correctly', () => {
     jest.spyOn(global, 'fetch').mockImplementation((url: string, request: object) => {
-        expect(url).toEqual('http://localhost:5000/api/answer');
+        expect(url).toEqual('http://localhost:5000/api/quiz/17/participants/13/answers');
         expect(request).toEqual({
-            method: 'PATCH',
+            method: 'POST',
             body: 'true',
             headers: {
                 'Content-Type': 'text/plain',
@@ -61,7 +61,7 @@ test('should answer correctly', () => {
                 links: []
             },
             {
-                id: 13,
+                id: '13',
                 name: 'Erik',
                 turn: true,
                 points: 13,
@@ -70,19 +70,19 @@ test('should answer correctly', () => {
         ],
         openQuestions: [],
         playedQuestions: [],
-        links: [{ rel: 'answer', href: '/api/answer' }]
+        links: []
     }
 
-    const { getByTestId } = render(<Answers quiz={quiz} />);
+    const { getByTestId } = render(<Answers quiz={quiz} participant={quiz.participants[1]} />);
 
     getByTestId('correct-button').click();
 });
 
 test('should answer correctly', () => {
     jest.spyOn(global, 'fetch').mockImplementation((url: string, request: object) => {
-        expect(url).toEqual('http://localhost:5000/api/answer');
+        expect(url).toEqual('http://localhost:5000/api/quiz/17/participants/13/answers');
         expect(request).toEqual({
-            method: 'PATCH',
+            method: 'POST',
             body: 'false',
             headers: {
                 'Content-Type': 'text/plain',
@@ -113,10 +113,10 @@ test('should answer correctly', () => {
         ],
         playedQuestions: [],
         openQuestions: [],
-        links: [{ rel: 'answer', href: '/api/answer' }]
+        links: []
     }
 
-    const { getByTestId } = render(<Answers quiz={quiz} />);
+    const { getByTestId } = render(<Answers quiz={quiz} participant={quiz.participants[1]} />);
 
     getByTestId('incorrect-button').click();
 });
@@ -157,7 +157,7 @@ test('should reopen question', () => {
         links: [{ rel: 'reopenQuestion', href: '/api/reopen' }]
     }
 
-    const { getByTestId } = render(<Answers quiz={quiz} />);
+    const { getByTestId } = render(<Answers quiz={quiz} participant={quiz.participants[1]} />);
 
     getByTestId('reopen-button').click();
 });

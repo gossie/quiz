@@ -66,7 +66,7 @@ class DefaultQuizService(private val eventRepository: EventRepository,
 
     @WriteLock
     override fun answer(command: AnswerCommand): Mono<Unit> {
-        return eventRepository.storeEvent(AnsweredEvent(command.quizId, command.answer))
+        return eventRepository.storeEvent(AnsweredEvent(command.quizId, command.participantId, command.answer))
                 .map { eventBus.post(it) }
     }
 

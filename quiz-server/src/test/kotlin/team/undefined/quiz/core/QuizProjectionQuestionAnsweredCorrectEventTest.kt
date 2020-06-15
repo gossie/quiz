@@ -30,7 +30,7 @@ internal class QuizProjectionQuestionAnsweredCorrectEventTest {
         eventBus.post(ParticipantCreatedEvent(quiz.id, participant, 3))
         eventBus.post(QuestionAskedEvent(quiz.id, question.id, 4))
         eventBus.post(BuzzeredEvent(quiz.id, participant.id, 5))
-        eventBus.post(AnsweredEvent(quiz.id, AnswerCommand.Answer.CORRECT, 6))
+        eventBus.post(AnsweredEvent(quiz.id, participant.id, AnswerCommand.Answer.CORRECT, 6))
 
         await until {
             observedQuiz.get().id == quiz.id
@@ -49,7 +49,7 @@ internal class QuizProjectionQuestionAnsweredCorrectEventTest {
 
         val question = Question(question = "Wofür steht die Abkürzung a.D.?")
         val participant = Participant(name = "Lena")
-        val answeredEvent = AnsweredEvent(quiz.id, AnswerCommand.Answer.CORRECT, 6)
+        val answeredEvent = AnsweredEvent(quiz.id, participant.id, AnswerCommand.Answer.CORRECT, 6)
 
         val eventRepository = mock(EventRepository::class.java)
         `when`(eventRepository.determineEvents(quiz.id))
@@ -105,7 +105,7 @@ internal class QuizProjectionQuestionAnsweredCorrectEventTest {
         quizProjection.observeQuiz(quiz.id)
                 .subscribe { observedQuiz.set(it) }
 
-        eventBus.post(AnsweredEvent(quiz.id, AnswerCommand.Answer.CORRECT, 6))
+        eventBus.post(AnsweredEvent(quiz.id, participant.id, AnswerCommand.Answer.CORRECT, 6))
 
         await until {
             observedQuiz.get().id == quiz.id

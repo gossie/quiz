@@ -1,20 +1,16 @@
 import React from 'react';
-import Quiz from '../quiz-client-shared/quiz';
+import Quiz, { Participant } from '../quiz-client-shared/quiz';
 import './Answers.css'
 
 interface AnswersProps {
     quiz: Quiz;
+    participant: Participant;
 }
 
 const Answers: React.FC<AnswersProps> = (props: AnswersProps) => {
     const answer = async (correct: string) => {
-        const answerHref = props.quiz
-                .links
-                .find(link => link.rel === 'answer')
-                ?.href;
-
-        await fetch(`${process.env.REACT_APP_BASE_URL}${answerHref}`, {
-            method: 'PATCH',
+        await fetch(`${process.env.REACT_APP_BASE_URL}/api/quiz/${props.quiz.id}/participants/${props.participant.id}/answers`, {
+            method: 'POST',
             body: correct,
             headers: {
                 'Content-Type': 'text/plain',

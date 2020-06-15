@@ -32,7 +32,7 @@ const ParticipantItem: React.FC<ParticipantProps> = (props: ParticipantProps) =>
                 <div data-testid="participant-wrapper" className={"participant " + (props.participant.turn ? 'turn' : '')}>
                     <span data-testid="participant-name">{props.participant.name} </span>
                     <div className="points">({props.pointsAfterLastQuestion}{pointDifference()})</div>
-                    {(props.participant.turn || isEstimationQuestion()) ? <Answers quiz={props.quiz}></Answers> : ''}
+                    {(props.participant.turn || isEstimationQuestion()) ? <Answers quiz={props.quiz} participant={props.participant}></Answers> : ''}
                 </div>
                 { isEstimationQuestion() &&
                     <div><b>Estimated value:</b> {getEstimatedValue()}</div>

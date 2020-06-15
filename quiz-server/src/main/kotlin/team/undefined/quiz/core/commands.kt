@@ -24,13 +24,13 @@ data class EstimationCommand(override val quizId: UUID, val participantId: UUID,
 
 data class BuzzerCommand(override val quizId: UUID, val participantId: UUID) : Command
 
-data class AnswerCommand(override val quizId: UUID, val answer: Answer) : Command {
-    enum class Answer(private val handler: (Quiz) -> Quiz) {
-        CORRECT({it.answeredCorrect()}),
-        INCORRECT({it.answeredIncorrect()});
+data class AnswerCommand(override val quizId: UUID, val participantId: UUID, val answer: Answer) : Command {
+    enum class Answer(private val handler: (Quiz, UUID) -> Quiz) {
+        CORRECT({quiz, participantId -> quiz.answeredCorrect(participantId)}),
+        INCORRECT({quiz, participantId -> quiz.answeredIncorrect(participantId)});
 
-        fun performAnswer(quiz: Quiz): Quiz {
-            return handler(quiz)
+        fun performAnswer(quiz: Quiz, participantId: UUID): Quiz {
+            return handler(quiz, participantId)
         }
     }
 }

@@ -274,9 +274,10 @@ internal class DefaultQuizServiceTest {
         val quizService = DefaultQuizService(quizRepository, eventBus)
 
         val quizId = UUID.randomUUID()
-        StepVerifier.create(quizService.answer(AnswerCommand(quizId, AnswerCommand.Answer.CORRECT)))
+        val participantId = UUID.randomUUID()
+        StepVerifier.create(quizService.answer(AnswerCommand(quizId, participantId, AnswerCommand.Answer.CORRECT)))
                 .consumeNextWith {
-                    verify(eventBus).post(argThat { (it as AnsweredEvent).quizId == quizId && it.answer == AnswerCommand.Answer.CORRECT })
+                    verify(eventBus).post(argThat { (it as AnsweredEvent).quizId == quizId && it.participantId == participantId && it.answer == AnswerCommand.Answer.CORRECT })
                 }
                 .verifyComplete()
     }
@@ -287,9 +288,10 @@ internal class DefaultQuizServiceTest {
         val quizService = DefaultQuizService(quizRepository, eventBus)
 
         val quizId = UUID.randomUUID()
-        StepVerifier.create(quizService.answer(AnswerCommand(quizId, AnswerCommand.Answer.INCORRECT)))
+        val participantId = UUID.randomUUID()
+        StepVerifier.create(quizService.answer(AnswerCommand(quizId, participantId, AnswerCommand.Answer.INCORRECT)))
                 .consumeNextWith {
-                    verify(eventBus).post(argThat { (it as AnsweredEvent).quizId == quizId && it.answer == AnswerCommand.Answer.INCORRECT })
+                    verify(eventBus).post(argThat { (it as AnsweredEvent).quizId == quizId && it.participantId == participantId && it.answer == AnswerCommand.Answer.INCORRECT })
                 }
                 .verifyComplete()
     }
