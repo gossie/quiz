@@ -14,12 +14,12 @@ const QuestionForm: React.FC<QuestionFormProps> = (props: QuestionFormProps) => 
     const [imagePath, setImagePath] = useState(props.questionToChange?.imagePath);
     const [questionButtonCssClasses, setQuestionButtonCssClasses] = useState('button is-link');
     const [visibility, setVisibility] = useState(props.questionToChange ? props.questionToChange.publicVisible : false);
-    const [estimation, setEstimation] = useState(props.questionToChange ? props.questionToChange.estimates !== undefined : false);
+    const [estimation, setEstimation] = useState(props.questionToChange ? (props.questionToChange.estimates !== null && props.questionToChange.estimates !== undefined) : false);
     
     const createQuestion = async () => {
         setQuestionButtonCssClasses('button is-link is-loading');
-        let questionLink;
-        let method;
+        let questionLink: string;
+        let method: string;
         if (props.questionToChange) {
             questionLink = props.questionToChange.links.find(link => link.rel === 'self')?.href;
             method = 'PUT';
