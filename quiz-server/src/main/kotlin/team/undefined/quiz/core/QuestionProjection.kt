@@ -80,7 +80,7 @@ class QuestionProjection(eventBus: EventBus,
                     .filter { it.alreadyPlayed }
                     .filter { it.visibility == Question.QuestionVisibility.PUBLIC }
                     .filter { StringUtils.isEmpty(it.imageUrl) }
-                    .filter { distinct.add(it.question + it.imageUrl) }
+                    .filter { distinct.add(it.question) }
                     .toList()
         }
 
