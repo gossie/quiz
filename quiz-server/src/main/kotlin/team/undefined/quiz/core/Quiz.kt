@@ -19,6 +19,13 @@ data class Quiz(val id: UUID = UUID.randomUUID(), val name: String, val particip
         return this
     }
 
+    fun estimate(participantId: UUID, estimatedValue: String): Quiz {
+        questions
+                .find { it.pending }
+                ?.estimate(participantId, estimatedValue)
+        return this
+    }
+
     fun hasNoParticipantWithName(name: String): Boolean {
         return participants.none { it.name == name }
     }
@@ -63,16 +70,16 @@ data class Quiz(val id: UUID = UUID.randomUUID(), val name: String, val particip
         return this
     }
 
-    fun answeredCorrect(): Quiz {
+    fun answeredCorrect(participantId: UUID): Quiz {
         participants
-                .filter { it.turn }
+                .filter { it.id == participantId }
                 .forEach { it.points = it.points + 2 }
         return this
     }
 
-    fun answeredIncorrect(): Quiz {
+    fun answeredIncorrect(participantId: UUID): Quiz {
         participants
-                .filter { it.turn }
+                .filter { it.id == participantId }
                 .forEach { it.points = (it.points - 1).coerceAtLeast(0) }
         return this
     }

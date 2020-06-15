@@ -30,7 +30,7 @@ internal class QuizProjectionQuestionReopenedEventTest {
         eventBus.post(ParticipantCreatedEvent(quiz.id, participant, 3))
         eventBus.post(QuestionAskedEvent(quiz.id, question.id, 4))
         eventBus.post(BuzzeredEvent(quiz.id, participant.id, 5))
-        eventBus.post(AnsweredEvent(quiz.id, AnswerCommand.Answer.INCORRECT, 6))
+        eventBus.post(AnsweredEvent(quiz.id, participant.id, AnswerCommand.Answer.INCORRECT, 6))
         eventBus.post(CurrentQuestionReopenedEvent(quiz.id, 7))
 
         await until {
@@ -61,7 +61,7 @@ internal class QuizProjectionQuestionReopenedEventTest {
                         ParticipantCreatedEvent(quiz.id, Participant(name = "Lena"), 3),
                         QuestionAskedEvent(quiz.id, question.id, 4),
                         BuzzeredEvent(quiz.id, participant.id, 5),
-                        AnsweredEvent(quiz.id, AnswerCommand.Answer.INCORRECT, 6),
+                        AnsweredEvent(quiz.id, participant.id, AnswerCommand.Answer.INCORRECT, 6),
                         reopenedEvent
                 ))
 
@@ -100,7 +100,7 @@ internal class QuizProjectionQuestionReopenedEventTest {
                         ParticipantCreatedEvent(quiz.id, participant, 3),
                         QuestionAskedEvent(quiz.id, question.id, 4),
                         BuzzeredEvent(quiz.id, participant.id, 5),
-                        AnsweredEvent(quiz.id, AnswerCommand.Answer.INCORRECT, 6)
+                        AnsweredEvent(quiz.id, participant.id, AnswerCommand.Answer.INCORRECT, 6)
                 ))
 
         val eventBus = EventBus()

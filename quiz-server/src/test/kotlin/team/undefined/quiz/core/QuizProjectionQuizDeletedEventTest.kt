@@ -29,7 +29,7 @@ internal class QuizProjectionQuizDeletedEventTest {
                         ParticipantCreatedEvent(quiz.id, participant, 3),
                         QuestionAskedEvent(quiz.id, question.id, 4),
                         BuzzeredEvent(quiz.id, participant.id, 5),
-                        AnsweredEvent(quiz.id, AnswerCommand.Answer.CORRECT, 6),
+                        AnsweredEvent(quiz.id, participant.id, AnswerCommand.Answer.CORRECT, 6),
                         QuizFinishedEvent(quiz.id, 7)
                 ))
         val quizProjection = QuizProjection(eventBus, QuizStatisticsProvider(eventRepository), eventRepository)
@@ -43,7 +43,7 @@ internal class QuizProjectionQuizDeletedEventTest {
         eventBus.post(ParticipantCreatedEvent(quiz.id, participant, 3))
         eventBus.post(QuestionAskedEvent(quiz.id, question.id, 4))
         eventBus.post(BuzzeredEvent(quiz.id, participant.id, 5))
-        eventBus.post(AnsweredEvent(quiz.id, AnswerCommand.Answer.CORRECT, 6))
+        eventBus.post(AnsweredEvent(quiz.id, participant.id, AnswerCommand.Answer.CORRECT, 6))
         eventBus.post(QuizFinishedEvent(quiz.id, 7))
 
         await untilAsserted  {

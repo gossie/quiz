@@ -9,10 +9,10 @@ import org.mockito.Mockito.mock
 import reactor.core.publisher.Flux
 import java.util.concurrent.atomic.AtomicReference
 
-internal class QuizProjectionQuestionAnsweredIncorrectEventTest {
+internal class QuizProjectionEstimationQuestionAnsweredCorrectEventTest {
 
     @Test
-    fun shouldHandleQuestionAnsweredIncorrectEventWhenQuizIsAlreadyInCache() {
+    fun shouldHandleQuestionAnsweredCorrectEventWhenQuizIsAlreadyInCache() {
         val quiz = Quiz(name = "Awesome Quiz")
 
         val eventBus = EventBus()
@@ -22,21 +22,24 @@ internal class QuizProjectionQuestionAnsweredIncorrectEventTest {
         quizProjection.observeQuiz(quiz.id)
                 .subscribe { observedQuiz.set(it) }
 
-        val question = Question(question = "Wofür steht die Abkürzung a.D.?")
-        val participant = Participant(name = "Lena")
+        val question = Question(question = "Wie hoch ist das?", estimates = HashMap())
+        val participant1 = Participant(name = "Lena")
+        val participant2 = Participant(name = "André")
 
         eventBus.post(QuizCreatedEvent(quiz.id, quiz, 1))
         eventBus.post(QuestionCreatedEvent(quiz.id, question, 2))
-        eventBus.post(ParticipantCreatedEvent(quiz.id, participant, 3))
-        eventBus.post(QuestionAskedEvent(quiz.id, question.id, 4))
-        eventBus.post(BuzzeredEvent(quiz.id, participant.id, 5))
-        eventBus.post(AnsweredEvent(quiz.id, participant.id, AnswerCommand.Answer.INCORRECT, 6))
+        eventBus.post(ParticipantCreatedEvent(quiz.id, participant1, 3))
+        eventBus.post(ParticipantCreatedEvent(quiz.id, participant2, 4))
+        eventBus.post(QuestionAskedEvent(quiz.id, question.id, 5))
+        eventBus.post(EstimatedEvent(quiz.id, participant1.id, "1000",6))
+        eventBus.post(EstimatedEvent(quiz.id, participant2.id, "1500",7))
+        eventBus.post(AnsweredEvent(quiz.id, participant1.id, AnswerCommand.Answer.CORRECT, 8))
 
         await until {
             observedQuiz.get().id == quiz.id
-                    && observedQuiz.get().participants.size == 1
-                    && observedQuiz.get().participants[0].turn
-                    && observedQuiz.get().participants[0].points == 0L
+                    && observedQuiz.get().participants.size == 2
+                    && observedQuiz.get().participants[0].points == 2L
+                    && observedQuiz.get().participants[1].points == 0L
                     && observedQuiz.get().questions.size == 1
                     && observedQuiz.get().questions[0].pending
                     && !observedQuiz.get().questions[0].alreadyPlayed
@@ -45,21 +48,24 @@ internal class QuizProjectionQuestionAnsweredIncorrectEventTest {
     }
 
     @Test
-    fun shouldHandleQuestionAnsweredIncorrectEventWhenQuizIsNotInCacheAndLastEventWasAlreadyPersisted() {
+    fun shouldHandleQuestionAnsweredCorrectEventWhenQuizIsNotInCacheAndLastEventWasAlreadyPersisted() {
         val quiz = Quiz(name = "Awesome Quiz")
 
-        val question = Question(question = "Wofür steht die Abkürzung a.D.?")
-        val participant = Participant(name = "Lena")
-        val answeredEvent = AnsweredEvent(quiz.id, participant.id, AnswerCommand.Answer.INCORRECT, 6)
+        val question = Question(question = "Wie hoch ist das?", estimates = HashMap())
+        val participant1 = Participant(name = "Lena")
+        val participant2 = Participant(name = "André")
+        val answeredEvent = AnsweredEvent(quiz.id, participant1.id, AnswerCommand.Answer.CORRECT, 8)
 
         val eventRepository = mock(EventRepository::class.java)
         `when`(eventRepository.determineEvents(quiz.id))
                 .thenReturn(Flux.just(
                         QuizCreatedEvent(quiz.id, quiz, 1),
                         QuestionCreatedEvent(quiz.id, question, 2),
-                        ParticipantCreatedEvent(quiz.id, participant, 3),
-                        QuestionAskedEvent(quiz.id, question.id, 4),
-                        BuzzeredEvent(quiz.id, participant.id, 5),
+                        ParticipantCreatedEvent(quiz.id, participant1, 3),
+                        ParticipantCreatedEvent(quiz.id, participant2, 4),
+                        QuestionAskedEvent(quiz.id, question.id, 5),
+                        EstimatedEvent(quiz.id, participant1.id, "1000",6),
+                        EstimatedEvent(quiz.id, participant2.id, "1000",7),
                         answeredEvent
                 ))
 
@@ -74,9 +80,9 @@ internal class QuizProjectionQuestionAnsweredIncorrectEventTest {
 
         await until {
             observedQuiz.get().id == quiz.id
-                    && observedQuiz.get().participants.size == 1
-                    && observedQuiz.get().participants[0].turn
-                    && observedQuiz.get().participants[0].points == 0L
+                    && observedQuiz.get().participants.size == 2
+                    && observedQuiz.get().participants[0].points == 2L
+                    && observedQuiz.get().participants[1].points == 0L
                     && observedQuiz.get().questions.size == 1
                     && observedQuiz.get().questions[0].pending
                     && !observedQuiz.get().questions[0].alreadyPlayed
@@ -85,19 +91,22 @@ internal class QuizProjectionQuestionAnsweredIncorrectEventTest {
     }
 
     @Test
-    fun shouldHandleQuestionAnsweredIncorrectEventCreationWhenQuizIsNotInCacheAndLastEventWasNotYetPersisted() {
+    fun shouldHandleQuestionAnsweredCorrectEventCreationWhenQuizIsNotInCacheAndLastEventWasNotYetPersisted() {
         val quiz = Quiz(name = "Awesome Quiz")
-        val question = Question(question = "Wofür steht die Abkürzung a.D.?")
-        val participant = Participant(name = "Lena")
+        val question = Question(question = "Wie hoch ist das?", estimates = HashMap())
+        val participant1 = Participant(name = "Lena")
+        val participant2 = Participant(name = "André")
 
         val eventRepository = mock(EventRepository::class.java)
         `when`(eventRepository.determineEvents(quiz.id))
                 .thenReturn(Flux.just(
                         QuizCreatedEvent(quiz.id, quiz, 1),
                         QuestionCreatedEvent(quiz.id, question, 2),
-                        ParticipantCreatedEvent(quiz.id, participant, 3),
-                        QuestionAskedEvent(quiz.id, question.id, 4),
-                        BuzzeredEvent(quiz.id, participant.id, 5)
+                        ParticipantCreatedEvent(quiz.id, participant1, 3),
+                        ParticipantCreatedEvent(quiz.id, participant2, 4),
+                        QuestionAskedEvent(quiz.id, question.id, 5),
+                        EstimatedEvent(quiz.id, participant1.id, "1000",6),
+                        EstimatedEvent(quiz.id, participant2.id, "1000",7)
                 ))
 
         val eventBus = EventBus()
@@ -107,13 +116,13 @@ internal class QuizProjectionQuestionAnsweredIncorrectEventTest {
         quizProjection.observeQuiz(quiz.id)
                 .subscribe { observedQuiz.set(it) }
 
-        eventBus.post(AnsweredEvent(quiz.id, participant.id, AnswerCommand.Answer.INCORRECT, 6))
+        eventBus.post(AnsweredEvent(quiz.id, participant1.id, AnswerCommand.Answer.CORRECT, 8))
 
         await until {
             observedQuiz.get().id == quiz.id
-                    && observedQuiz.get().participants.size == 1
-                    && observedQuiz.get().participants[0].turn
-                    && observedQuiz.get().participants[0].points == 0L
+                    && observedQuiz.get().participants.size == 2
+                    && observedQuiz.get().participants[0].points == 2L
+                    && observedQuiz.get().participants[1].points == 0L
                     && observedQuiz.get().questions.size == 1
                     && observedQuiz.get().questions[0].pending
                     && !observedQuiz.get().questions[0].alreadyPlayed

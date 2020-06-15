@@ -58,6 +58,10 @@ abstract class BaseClass {
                     TODO("Not yet implemented")
                 }
 
+                override fun estimate(command: EstimationCommand): Mono<Unit> {
+                    TODO("Not yet implemented")
+                }
+
                 override fun startNewQuestion(command: AskQuestionCommand): Mono<Unit> {
                     return Mono.just(Unit)
                 }

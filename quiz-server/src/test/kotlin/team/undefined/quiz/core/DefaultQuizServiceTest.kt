@@ -158,7 +158,7 @@ internal class DefaultQuizServiceTest {
         val questionId = UUID.randomUUID()
         StepVerifier.create(quizService.createQuestion(CreateQuestionCommand(quizId, Question(questionId, "Warum ist die Banane krum?"))))
                 .consumeNextWith {
-                    verify(eventBus).post(argThat { (it as QuestionCreatedEvent).quizId == quizId && it.question == Question(questionId, "Warum ist die Banane krum?", false, "", Question.QuestionVisibility.PRIVATE, false) })
+                    verify(eventBus).post(argThat { (it as QuestionCreatedEvent).quizId == quizId && it.question == Question(questionId, "Warum ist die Banane krum?", false, "", visibility = Question.QuestionVisibility.PRIVATE, alreadyPlayed = false) })
                 }
                 .verifyComplete()
     }
@@ -177,7 +177,7 @@ internal class DefaultQuizServiceTest {
         val questionId = UUID.randomUUID()
         StepVerifier.create(quizService.createQuestion(CreateQuestionCommand(quizId, Question(questionId, "Warum ist die Banane krum?", visibility = Question.QuestionVisibility.PUBLIC))))
                 .consumeNextWith {
-                    verify(eventBus).post(argThat { (it as QuestionCreatedEvent).quizId == quizId && it.question == Question(questionId, "Warum ist die Banane krum?", false, "", Question.QuestionVisibility.PUBLIC, false) })
+                    verify(eventBus).post(argThat { (it as QuestionCreatedEvent).quizId == quizId && it.question == Question(questionId, "Warum ist die Banane krum?", false, "", visibility = Question.QuestionVisibility.PUBLIC, alreadyPlayed = false) })
                 }
                 .verifyComplete()
     }
@@ -197,7 +197,7 @@ internal class DefaultQuizServiceTest {
 
         StepVerifier.create(quizService.editQuestion(EditQuestionCommand(quizId, questionId, Question(questionId,"Wer ist das?", imageUrl = "urlToImage", visibility = Question.QuestionVisibility.PUBLIC))))
                 .consumeNextWith {
-                    verify(eventBus).post(argThat { (it as QuestionEditedEvent).quizId == quizId && it.question == Question(questionId, "Wer ist das?", false, "urlToImage", Question.QuestionVisibility.PUBLIC, false) })
+                    verify(eventBus).post(argThat { (it as QuestionEditedEvent).quizId == quizId && it.question == Question(questionId, "Wer ist das?", false, "urlToImage", visibility = Question.QuestionVisibility.PUBLIC, alreadyPlayed = false) })
                 }
                 .verifyComplete()
     }
@@ -243,6 +243,20 @@ internal class DefaultQuizServiceTest {
     }
 
     @Test
+    fun shouldEstimate() {
+        val quizId = UUID.randomUUID()
+        val participant = UUID.randomUUID()
+
+        val quizService = DefaultQuizService(quizRepository, eventBus)
+
+        StepVerifier.create(quizService.estimate(EstimationCommand(quizId, participant, "myEstimatedValue")))
+                .consumeNextWith {
+                    verify(eventBus).post(argThat { (it as EstimatedEvent).quizId == quizId && it.participantId == participant && it.estimatedValue == "myEstimatedValue" })
+                }
+                .verifyComplete()
+    }
+
+    @Test
     fun shouldCreateNewQuestionWithImage() {
         val quizService = DefaultQuizService(quizRepository, eventBus)
 
@@ -260,9 +274,10 @@ internal class DefaultQuizServiceTest {
         val quizService = DefaultQuizService(quizRepository, eventBus)
 
         val quizId = UUID.randomUUID()
-        StepVerifier.create(quizService.answer(AnswerCommand(quizId, AnswerCommand.Answer.CORRECT)))
+        val participantId = UUID.randomUUID()
+        StepVerifier.create(quizService.answer(AnswerCommand(quizId, participantId, AnswerCommand.Answer.CORRECT)))
                 .consumeNextWith {
-                    verify(eventBus).post(argThat { (it as AnsweredEvent).quizId == quizId && it.answer == AnswerCommand.Answer.CORRECT })
+                    verify(eventBus).post(argThat { (it as AnsweredEvent).quizId == quizId && it.participantId == participantId && it.answer == AnswerCommand.Answer.CORRECT })
                 }
                 .verifyComplete()
     }
@@ -273,9 +288,10 @@ internal class DefaultQuizServiceTest {
         val quizService = DefaultQuizService(quizRepository, eventBus)
 
         val quizId = UUID.randomUUID()
-        StepVerifier.create(quizService.answer(AnswerCommand(quizId, AnswerCommand.Answer.INCORRECT)))
+        val participantId = UUID.randomUUID()
+        StepVerifier.create(quizService.answer(AnswerCommand(quizId, participantId, AnswerCommand.Answer.INCORRECT)))
                 .consumeNextWith {
-                    verify(eventBus).post(argThat { (it as AnsweredEvent).quizId == quizId && it.answer == AnswerCommand.Answer.INCORRECT })
+                    verify(eventBus).post(argThat { (it as AnsweredEvent).quizId == quizId && it.participantId == participantId && it.answer == AnswerCommand.Answer.INCORRECT })
                 }
                 .verifyComplete()
     }

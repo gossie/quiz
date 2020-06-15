@@ -33,13 +33,13 @@ class QuizController(private val quizService: QuizService,
         return quizService.finishQuiz(FinishQuizCommand(quizId))
     }
 
-    @PatchMapping("/{quizId}", consumes = [MediaType.TEXT_PLAIN_VALUE], produces = [MediaType.APPLICATION_JSON_VALUE])
+    @PostMapping("/{quizId}/participants/{participantId}/answers", consumes = [MediaType.TEXT_PLAIN_VALUE])
     @ResponseStatus(HttpStatus.OK)
-    fun answer(@PathVariable quizId: UUID, @RequestBody correct: String): Mono<Unit> {
+    fun answer(@PathVariable quizId: UUID, @PathVariable participantId: UUID, @RequestBody correct: String): Mono<Unit> {
         return if (correct == "true") {
-            quizService.answer(AnswerCommand(quizId, AnswerCommand.Answer.CORRECT))
+            quizService.answer(AnswerCommand(quizId, participantId, AnswerCommand.Answer.CORRECT))
         } else {
-            quizService.answer(AnswerCommand(quizId, AnswerCommand.Answer.INCORRECT))
+            quizService.answer(AnswerCommand(quizId, participantId, AnswerCommand.Answer.INCORRECT))
         }
     }
 

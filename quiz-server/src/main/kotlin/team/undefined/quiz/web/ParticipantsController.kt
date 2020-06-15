@@ -17,10 +17,14 @@ class ParticipantsController(private val quizService: QuizService) {
         return quizService.createParticipant(CreateParticipantCommand(quizId, Participant(name = participantName)))
     }
 
-    @PutMapping("/{participantId}/buzzer")
+    @PutMapping("/{participantId}/buzzer", consumes = ["text/plain"])
     @ResponseStatus(HttpStatus.OK)
-    fun buzzer(@PathVariable quizId: UUID, @PathVariable participantId: UUID): Mono<Unit> {
-        return quizService.buzzer(BuzzerCommand(quizId, participantId))
+    fun buzzer(@PathVariable quizId: UUID, @PathVariable participantId: UUID, @RequestBody(required = false) estimation: String?): Mono<Unit> {
+        if (estimation == null) {
+            return quizService.buzzer(BuzzerCommand(quizId, participantId))
+        } else {
+            return quizService.estimate(EstimationCommand(quizId, participantId, estimation))
+        }
     }
 
 }

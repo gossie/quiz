@@ -53,6 +53,12 @@ class DefaultQuizService(private val eventRepository: EventRepository,
     }
 
     @WriteLock
+    override fun estimate(command: EstimationCommand): Mono<Unit> {
+        return eventRepository.storeEvent(EstimatedEvent(command.quizId, command.participantId, command.estimatedValue))
+                .map { eventBus.post(it) }
+    }
+
+    @WriteLock
     override fun startNewQuestion(command: AskQuestionCommand): Mono<Unit> {
         return eventRepository.storeEvent(QuestionAskedEvent(command.quizId, command.questionId))
                 .map { eventBus.post(it) }
@@ -60,7 +66,7 @@ class DefaultQuizService(private val eventRepository: EventRepository,
 
     @WriteLock
     override fun answer(command: AnswerCommand): Mono<Unit> {
-        return eventRepository.storeEvent(AnsweredEvent(command.quizId, command.answer))
+        return eventRepository.storeEvent(AnsweredEvent(command.quizId, command.participantId, command.answer))
                 .map { eventBus.post(it) }
     }
 

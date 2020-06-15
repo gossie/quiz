@@ -4,6 +4,8 @@ import Participants from './quiz-client-shared/Participants/Participants';
 import Quiz from './quiz-client-shared/quiz';
 import QuizStatistics from './quiz-client-shared/QuizStatistics/QuizStatistics';
 
+import './QuizMaster.css';
+
 interface QuizMasterProps {
     quizId: string;
 }
@@ -49,7 +51,7 @@ const QuizMaster: React.FC<QuizMasterProps> = (props: QuizMasterProps) => {
                     <div className="columns">
                         <div className="column participants">
                             <Participants quiz={quiz}></Participants>
-                            <div>When you push this button, the quiz will be closed and cannot be opened again. The final statisticts will be displayed.</div>
+                            <div id="finish-hint">When you push this button, the quiz will be closed and cannot be opened again. The final statisticts will be displayed.</div>
                             { quiz.quizStatistics
                             ?
                                 <button className={finishButtonCssClasses} onClick={() => setForceStatistics(true)}>Show statistics</button>
