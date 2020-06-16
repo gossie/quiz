@@ -10,5 +10,6 @@ data class QuizDTO(
         var playedQuestions: List<QuestionDTO> = emptyList(),
         var openQuestions: List<QuestionDTO> = emptyList(),
         var finished: Boolean = false,
-        var quizStatistics: QuizStatisticsDTO? = null
+        var quizStatistics: QuizStatisticsDTO? = null,
+        var timestamp: Long
 ) : RepresentationModel<QuizDTO>()
