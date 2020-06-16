@@ -47,7 +47,7 @@ const QuizMaster: React.FC<QuizMasterProps> = (props: QuizMasterProps) => {
             { Object.keys(quiz).length > 0
             ?
                 <div>
-                    <div className="timestamp">{quiz.timestamp}</div>
+                    <div id="timestamp">{quiz.timestamp}</div>
                     <h4 className="title is-4">{quiz.name} (ID: {quiz.id})</h4>
                     <div className="columns">
                         <div className="column participants">
