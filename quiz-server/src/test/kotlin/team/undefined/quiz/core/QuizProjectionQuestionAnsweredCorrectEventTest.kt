@@ -44,6 +44,38 @@ internal class QuizProjectionQuestionAnsweredCorrectEventTest {
     }
 
     @Test
+    fun shouldHandleOldQuestionAnsweredCorrectEventWhenQuizIsAlreadyInCache() {
+        val quiz = Quiz(name = "Awesome Quiz")
+
+        val eventBus = EventBus()
+        val quizProjection = QuizProjection(eventBus, mock(QuizStatisticsProvider::class.java), mock(EventRepository::class.java))
+
+        val observedQuiz = AtomicReference<Quiz>()
+        quizProjection.observeQuiz(quiz.id)
+                .subscribe { observedQuiz.set(it) }
+
+        val question = Question(question = "Wofür steht die Abkürzung a.D.?")
+        val participant = Participant(name = "Lena")
+
+        eventBus.post(QuizCreatedEvent(quiz.id, quiz, 1))
+        eventBus.post(QuestionCreatedEvent(quiz.id, question, 2))
+        eventBus.post(ParticipantCreatedEvent(quiz.id, participant, 3))
+        eventBus.post(QuestionAskedEvent(quiz.id, question.id, 4))
+        eventBus.post(BuzzeredEvent(quiz.id, participant.id, 5))
+        eventBus.post(AnsweredEvent(quiz.id, null, AnswerCommand.Answer.CORRECT, 6))
+
+        await until {
+            observedQuiz.get().id == quiz.id
+                    && observedQuiz.get().participants.size == 1
+                    && observedQuiz.get().participants[0].points == 2L
+                    && observedQuiz.get().questions.size == 1
+                    && observedQuiz.get().questions[0].pending
+                    && !observedQuiz.get().questions[0].alreadyPlayed
+                    && !observedQuiz.get().finished
+        }
+    }
+
+    @Test
     fun shouldHandleQuestionAnsweredCorrectEventWhenQuizIsNotInCacheAndLastEventWasAlreadyPersisted() {
         val quiz = Quiz(name = "Awesome Quiz")
 

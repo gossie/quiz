@@ -70,16 +70,24 @@ data class Quiz(val id: UUID = UUID.randomUUID(), val name: String, val particip
         return this
     }
 
-    fun answeredCorrect(participantId: UUID): Quiz {
+    private fun checkParticipant(participant: Participant, participantId: UUID?): Boolean {
+        return if (participantId == null) {
+            participant.turn
+        } else {
+            participant.id == participantId
+        }
+    }
+
+    fun answeredCorrect(participantId: UUID?): Quiz {
         participants
-                .filter { it.id == participantId }
+                .filter { checkParticipant(it, participantId) }
                 .forEach { it.points = it.points + 2 }
         return this
     }
 
-    fun answeredIncorrect(participantId: UUID): Quiz {
+    fun answeredIncorrect(participantId: UUID?): Quiz {
         participants
-                .filter { it.id == participantId }
+                .filter { checkParticipant(it, participantId) }
                 .forEach { it.points = (it.points - 1).coerceAtLeast(0) }
         return this
     }
