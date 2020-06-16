@@ -34,6 +34,8 @@ const QuizMaster: React.FC<QuizMasterProps> = (props: QuizMasterProps) => {
         };
     }, [props.quizId]);
 
+    const lastChanged = () => new Date(quiz.timestamp).toDateString();
+
     const finishQuiz = () => {
         setFinishButtonCssClasses('button is-link is-loading');
         fetch(`${process.env.REACT_APP_BASE_URL}/api/quiz/${props.quizId}`, {
@@ -47,7 +49,7 @@ const QuizMaster: React.FC<QuizMasterProps> = (props: QuizMasterProps) => {
             { Object.keys(quiz).length > 0
             ?
                 <div>
-                    <div id="timestamp">{quiz.timestamp}</div>
+                    <div id="timestamp">{lastChanged()}</div>
                     <h4 className="title is-4">{quiz.name} (ID: {quiz.id})</h4>
                     <div className="columns">
                         <div className="column participants">
