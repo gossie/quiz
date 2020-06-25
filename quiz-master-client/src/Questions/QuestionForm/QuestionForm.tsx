@@ -11,7 +11,7 @@ interface QuestionFormProps {
 
 const QuestionForm: React.FC<QuestionFormProps> = (props: QuestionFormProps) => {
     const [newQuestion, setNewQuestion] = useState(props.questionToChange?.question);
-    const [category, setCategory] = useState(props.questionToChange?.category);
+    const [category, setCategory] = useState(props.questionToChange ? props.questionToChange.category : 'other');
     const [imagePath, setImagePath] = useState(props.questionToChange?.imagePath);
     const [questionButtonCssClasses, setQuestionButtonCssClasses] = useState('button is-link');
     const [visibility, setVisibility] = useState(props.questionToChange ? props.questionToChange.publicVisible : false);

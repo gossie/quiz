@@ -99,7 +99,7 @@ abstract class BaseClass {
         @Bean
         fun questionProjection(): QuestionProjection {
             val questionProjection = mock(QuestionProjection::class.java)
-            `when`(questionProjection.determineQuestions()).thenReturn(emptyMap())
+            `when`(questionProjection.determineQuestions(QuestionCategory("category1"))).thenReturn(emptyMap())
             return questionProjection
         }
 
