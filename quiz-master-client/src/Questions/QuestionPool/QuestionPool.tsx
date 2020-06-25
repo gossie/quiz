@@ -10,6 +10,7 @@ interface QuestionPoolProps {
 }
 
 const QuestionPool: React.FC<QuestionPoolProps> = (props: QuestionPoolProps) => {
+    const [category, setCategory] = useState('other');
     const [questions, setQuestions] = useState(undefined as any);
     
     const createQuestion = useCallback((question: Question) => {
@@ -26,29 +27,33 @@ const QuestionPool: React.FC<QuestionPoolProps> = (props: QuestionPoolProps) => 
             }
         });
     }, [props.quiz.links]);
-
-    const fetchQuestionPool = useCallback(async () => {
-        const response = await fetch(`${process.env.REACT_APP_BASE_URL}/api/questionPool`, {
+    
+    useEffect(() => {
+        fetch(`${process.env.REACT_APP_BASE_URL}/api/questionPool?category=${category}`, {
             method: 'GET',
             headers: {
                 Accept: 'application/json'
             }
+        })
+        .then(response => response.json())
+        .then(pooledQuestions => {
+            setQuestions(pooledQuestions.map((q: Question, index: number) =>
+                <li key={q.id} >
+                    <QuestionElement question={q} index={index} setImageToDisplay={props.setImageToDisplay}></QuestionElement>
+                    <span data-testid={`add-question-${index}`} title="Add question" className="icon has-text-primary" onClick={() => createQuestion(q)}><i className="fas fa-save"></i></span>
+                </li>
+            ));
         });
-        const pooledQuestions = await response.json();
-        setQuestions(pooledQuestions.map((q: Question, index: number) =>
-            <li key={q.id} >
-                <QuestionElement question={q} index={index} setImageToDisplay={props.setImageToDisplay}></QuestionElement>
-                <span data-testid={`add-question-${index}`} title="Add question" className="icon has-text-primary" onClick={() => createQuestion(q)}><i className="fas fa-save"></i></span>
-            </li>
-        ));
-    }, [props.setImageToDisplay, createQuestion])
-    
-    useEffect(() => {
-        fetchQuestionPool();
-    }, [fetchQuestionPool]);
+    }, [category, createQuestion, props.setImageToDisplay]);
 
     return (
         <div className="question-list">
+            <div id="categories">
+                <span onClick={() => setCategory('other')} className="category">Other</span>
+                <span onClick={() => setCategory('history')} className="category">History</span>
+                <span onClick={() => setCategory('science')} className="category">Science</span>
+                <span onClick={() => setCategory('politics')} className="category">Politics</span>
+            </div>
             <ul>
                 { questions !== undefined && questions }
             </ul>

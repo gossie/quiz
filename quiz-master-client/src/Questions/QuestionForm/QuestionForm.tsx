@@ -11,6 +11,7 @@ interface QuestionFormProps {
 
 const QuestionForm: React.FC<QuestionFormProps> = (props: QuestionFormProps) => {
     const [newQuestion, setNewQuestion] = useState(props.questionToChange?.question);
+    const [category, setCategory] = useState(props.questionToChange ? props.questionToChange.category : 'other');
     const [imagePath, setImagePath] = useState(props.questionToChange?.imagePath);
     const [questionButtonCssClasses, setQuestionButtonCssClasses] = useState('button is-link');
     const [visibility, setVisibility] = useState(props.questionToChange ? props.questionToChange.publicVisible : false);
@@ -32,6 +33,7 @@ const QuestionForm: React.FC<QuestionFormProps> = (props: QuestionFormProps) => 
             method: method,
             body: JSON.stringify({
                 question: newQuestion,
+                category: category,
                 imagePath: imagePath,
                 publicVisible: visibility,
                 estimates: estimation ? {} : undefined
@@ -43,6 +45,7 @@ const QuestionForm: React.FC<QuestionFormProps> = (props: QuestionFormProps) => 
         });
         
         setNewQuestion('');
+        setCategory('other');
         setImagePath('');
         setQuestionButtonCssClasses('button is-link');
 
@@ -54,6 +57,19 @@ const QuestionForm: React.FC<QuestionFormProps> = (props: QuestionFormProps) => 
             <div className="field">
                 <div className="control">
                     <input data-testid={props.questionToChange ? 'question-to-edit' : 'new-question'} value={newQuestion} onChange={ev => setNewQuestion(ev.target.value)} className="input" type="text" placeholder="Question" />
+                </div>
+            </div>
+            
+            <div className="field">
+                <div className="control">
+                    <div className="select">
+                        <select data-testid={props.questionToChange ? 'category-to-edit' : 'category'} value={category} onChange={ev => setCategory(ev.target.value)}>
+                            <option value="other">Other</option>
+                            <option value="history">History</option>
+                            <option value="science">Science</option>
+                            <option value="politics">Politics</option>
+                        </select>
+                    </div>
                 </div>
             </div>
             

@@ -8,29 +8,29 @@ import reactor.core.publisher.Mono
 import reactor.test.StepVerifier
 import java.util.*
 
-open class TestEventRepository : EventRepository {
-    override fun storeEvent(event: Event): Mono<Event> {
-        return Mono.just(event)
-    }
-
-    override fun determineEvents(quizId: UUID): Flux<Event> {
-        return Flux.empty();
-    }
-
-    override fun determineEvents(): Flux<Event> {
-        return Flux.empty();
-    }
-
-    override fun deleteEvents(quizId: UUID): Mono<Unit> {
-        return Mono.just(Unit)
-    }
-
-    override fun determineQuizIds(): Flux<UUID> {
-        return Flux.empty()
-    }
-}
-
 internal class DefaultQuizServiceTest {
+
+    open class TestEventRepository : EventRepository {
+        override fun storeEvent(event: Event): Mono<Event> {
+            return Mono.just(event)
+        }
+
+        override fun determineEvents(quizId: UUID): Flux<Event> {
+            return Flux.empty();
+        }
+
+        override fun determineEvents(): Flux<Event> {
+            return Flux.empty();
+        }
+
+        override fun deleteEvents(quizId: UUID): Mono<Unit> {
+            return Mono.just(Unit)
+        }
+
+        override fun determineQuizIds(): Flux<UUID> {
+            return Flux.empty()
+        }
+    }
 
     private val quizRepository = spy(TestEventRepository())
 
@@ -265,6 +265,19 @@ internal class DefaultQuizServiceTest {
         StepVerifier.create(quizService.createQuestion(CreateQuestionCommand(quizId, Question(questionId, "Wer ist das?", imageUrl = "pathToImage"))))
                 .consumeNextWith {
                     verify(eventBus).post(argThat { (it as QuestionCreatedEvent).quizId == quizId && it.question == Question(questionId, "Wer ist das?", imageUrl = "pathToImage") })
+                }
+                .verifyComplete()
+    }
+
+    @Test
+    fun shouldCreateNewQuestionWithCategory() {
+        val quizService = DefaultQuizService(quizRepository, eventBus)
+
+        val quizId = UUID.randomUUID()
+        val questionId = UUID.randomUUID()
+        StepVerifier.create(quizService.createQuestion(CreateQuestionCommand(quizId, Question(questionId, "Wer ist das?", category = QuestionCategory("Geschichte")))))
+                .consumeNextWith {
+                    verify(eventBus).post(argThat { (it as QuestionCreatedEvent).quizId == quizId && it.question == Question(questionId, "Wer ist das?", category = QuestionCategory("Geschichte")) })
                 }
                 .verifyComplete()
     }

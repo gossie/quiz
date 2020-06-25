@@ -70,7 +70,7 @@ private fun ParticipantDTO.addLinks(quizId: UUID): Mono<ParticipantDTO> {
 }
 
 fun Question.map(quizId: UUID): QuestionDTO {
-    val questionDTO = QuestionDTO(this.id, this.question, this.pending, this.imageUrl, this.estimates, this.visibility.asBoolean())
+    val questionDTO = QuestionDTO(this.id, this.question, this.pending, this.imageUrl, this.estimates, this.visibility.asBoolean(),this.category?.category ?: "other")
     questionDTO.add(Link("/api/quiz/" + quizId + "/questions/" + this.id, "self"))
     return if (this.imageUrl == "") questionDTO else questionDTO.add(Link(this.imageUrl, "image"))
 }
@@ -83,11 +83,11 @@ private fun QuestionDTO.addLinks(quizId: UUID): Mono<QuestionDTO> {
 }
 
 fun QuestionDTO.map(questionId: UUID): Question {
-    return Question(questionId, question = this.question, imageUrl = this.imagePath, estimates = this.estimates, visibility = if (this.publicVisible) Question.QuestionVisibility.PUBLIC else Question.QuestionVisibility.PRIVATE)
+    return Question(questionId, question = this.question, imageUrl = this.imagePath, estimates = this.estimates, visibility = if (this.publicVisible) Question.QuestionVisibility.PUBLIC else Question.QuestionVisibility.PRIVATE, category = if (this.category == "") null else QuestionCategory(this.category))
 }
 
 fun QuestionDTO.map(): Question {
-    return Question(question = this.question, imageUrl = this.imagePath, estimates = this.estimates, visibility = if (this.publicVisible) Question.QuestionVisibility.PUBLIC else Question.QuestionVisibility.PRIVATE)
+    return Question(question = this.question, imageUrl = this.imagePath, estimates = this.estimates, visibility = if (this.publicVisible) Question.QuestionVisibility.PUBLIC else Question.QuestionVisibility.PRIVATE, category = if (this.category == "") null else QuestionCategory(this.category))
 }
 
 fun QuizDTO.map(): Quiz {

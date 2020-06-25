@@ -1,7 +1,10 @@
 import React from 'react';
-import { render, fireEvent, wait } from '@testing-library/react';
+import { render, fireEvent, wait, cleanup } from '@testing-library/react';
 import Questions from './Questions';
 import Quiz from '../quiz-client-shared/quiz';
+
+beforeEach(() => () => cleanup()); 
+afterEach(() => cleanup());
 
 test('should display questions', () => {
     const quiz: Quiz = {
@@ -12,6 +15,7 @@ test('should display questions', () => {
             {
                 id: '1',
                 question: 'Frage 1',
+                category: 'other',
                 publicVisible: false,
                 pending: false,
                 links: []
@@ -21,6 +25,7 @@ test('should display questions', () => {
             {
                 id: '2',
                 question: 'Frage 2',
+                category: 'other',
                 publicVisible: false,
                 pending: true,
                 links: []
@@ -28,11 +33,13 @@ test('should display questions', () => {
             {
                 id: '3',
                 question: 'Frage 3',
+                category: 'other',
                 publicVisible: false,
                 pending: false,
                 links: []
             }
         ],
+        timestamp: 1234,
         links: []
     }
     const { getByTestId } = render(<Questions quiz={quiz} />);
@@ -56,6 +63,7 @@ test('should add new private question', async () => {
             method: 'POST',
             body: JSON.stringify({
                 question: 'Frage 3',
+                category: 'other',
                 imagePath: 'https://pathToImage',
                 publicVisible: false
             }),
@@ -76,6 +84,7 @@ test('should add new private question', async () => {
             {
                 id: '1',
                 question: 'Frage 1',
+                category: 'other',
                 publicVisible: false,
                 pending: false,
                 links: []
@@ -83,11 +92,13 @@ test('should add new private question', async () => {
             {
                 id: '2',
                 question: 'Frage 2',
+                category: 'other',
                 publicVisible: false,
                 pending: true,
                 links: []
             }
         ],
+        timestamp: 1234,
         links: [{href: '/api/createQuestion', rel: 'createQuestion'}]
     }
     const { getByTestId } = render(<Questions quiz={quiz} />);
@@ -117,6 +128,7 @@ test('should add new public question', async () => {
             method: 'POST',
             body: JSON.stringify({
                 question: 'Frage 3',
+                category: 'other',
                 imagePath: 'https://pathToImage',
                 publicVisible: true
             }),
@@ -137,6 +149,7 @@ test('should add new public question', async () => {
             {
                 id: '1',
                 question: 'Frage 1',
+                category: 'other',
                 publicVisible: false,
                 pending: false,
                 links: []
@@ -144,11 +157,13 @@ test('should add new public question', async () => {
             {
                 id: '2',
                 question: 'Frage 2',
+                category: 'other',
                 publicVisible: false,
                 pending: true,
                 links: []
             }
         ],
+        timestamp: 1234,
         links: [{href: '/api/createQuestion', rel: 'createQuestion'}]
     }
     const { getByTestId } = render(<Questions quiz={quiz} />);
@@ -193,6 +208,7 @@ test('should start question', () => {
             {
                 id: '1',
                 question: 'Frage 1',
+                category: 'other',
                 publicVisible: false,
                 pending: false,
                 links: []
@@ -202,6 +218,7 @@ test('should start question', () => {
             {
                 id: '2',
                 question: 'Frage 2',
+                category: 'other',
                 publicVisible: false,
                 pending: false,
                 links: [{ href: '/api/quiz/5/questions/11', rel: 'self' }]
@@ -209,11 +226,13 @@ test('should start question', () => {
             {
                 id: '3',
                 question: 'Frage 3',
+                category: 'other',
                 publicVisible: false,
                 pending: false,
                 links: []
             }
         ],
+        timestamp: 1234,
         links: []
     }
     const { getByTestId } = render(<Questions quiz={quiz} />);
@@ -241,6 +260,7 @@ test('should revert question', () => {
             {
                 id: '1',
                 question: 'Frage 1',
+                category: 'other',
                 publicVisible: false,
                 pending: false,
                 links: []
@@ -250,6 +270,7 @@ test('should revert question', () => {
             {
                 id: '2',
                 question: 'Frage 2',
+                category: 'other',
                 publicVisible: false,
                 pending: true,
                 links: [{ href: '/api/quiz/5/questions/11', rel: 'self' }]
@@ -257,11 +278,13 @@ test('should revert question', () => {
             {
                 id: '3',
                 question: 'Frage 3',
+                category: 'other',
                 publicVisible: false,
                 pending: false,
                 links: []
             }
         ],
+        timestamp: 1234,
         links: []
     }
     const { getByTestId } = render(<Questions quiz={quiz} />);
@@ -286,6 +309,7 @@ test('should delete question', () => {
             {
                 id: '1',
                 question: 'Frage 1',
+                category: 'other',
                 publicVisible: false,
                 pending: false,
                 links: []
@@ -295,6 +319,7 @@ test('should delete question', () => {
             {
                 id: '2',
                 question: 'Frage 2',
+                category: 'other',
                 publicVisible: false,
                 pending: false,
                 links: [{ href: '/api/quiz/5/questions/11', rel: 'self' }]
@@ -302,11 +327,13 @@ test('should delete question', () => {
             {
                 id: '3',
                 question: 'Frage 3',
+                category: 'other',
                 publicVisible: false,
                 pending: false,
                 links: []
             }
         ],
+        timestamp: 1234,
         links: []
     }
     const { getByTestId } = render(<Questions quiz={quiz} />);
@@ -323,6 +350,7 @@ test('should open and close image modal', () => {
             {
                 id: '2',
                 question: 'Frage 2',
+                category: 'other',
                 publicVisible: false,
                 pending: true,
                 links: []
@@ -330,6 +358,7 @@ test('should open and close image modal', () => {
             {
                 id: '3',
                 question: 'Frage 3',
+                category: 'other',
                 pending: false,
                 imagePath: 'https://path_to_image/',
                 publicVisible: false,
@@ -337,6 +366,7 @@ test('should open and close image modal', () => {
             }
         ],
         playedQuestions: [],
+        timestamp: 1234,
         links: []
     }
 
@@ -363,6 +393,7 @@ test('should edit question', async () => {
             method: 'PUT',
             body: JSON.stringify({
                 question: 'Frage 4',
+                category: 'history',
                 imagePath: 'https://path_to_image_changed/',
                 publicVisible: false,
                 estimates: {}
@@ -383,6 +414,7 @@ test('should edit question', async () => {
             {
                 id: '2',
                 question: 'Frage 2',
+                category: 'other',
                 publicVisible: false,
                 pending: true,
                 links: []
@@ -390,6 +422,7 @@ test('should edit question', async () => {
             {
                 id: '3',
                 question: 'Frage 3',
+                category: 'other',
                 pending: false,
                 imagePath: 'https://path_to_image/',
                 publicVisible: true,
@@ -397,6 +430,7 @@ test('should edit question', async () => {
             }
         ],
         playedQuestions: [],
+        timestamp: 1234,
         links: []
     }
 
@@ -410,21 +444,25 @@ test('should edit question', async () => {
 
     const questionButton = getByTestId('edit-question-button');
     const questionField = getByTestId('question-to-edit')  as HTMLInputElement;
+    const categoryField = getByTestId('category-to-edit')  as HTMLSelectElement;
     const imagePathField = getByTestId('image-path-to-edit')  as HTMLInputElement;
     const estimationField = getByTestId('estimation-to-edit')  as HTMLInputElement;
     const visibilityField = getByTestId('visibility-to-edit')  as HTMLInputElement;
 
     expect(questionField.value).toBe('Frage 3');
+    expect(categoryField.value).toBe('other');
     expect(imagePathField.value).toBe('https://path_to_image/');
     expect(estimationField.checked).toBe(false);
     expect(visibilityField.checked).toBe(true);
 
     fireEvent.change(questionField, { target: { value: 'Frage 4' } });
+    fireEvent.change(categoryField, { target: { value: 'history' } });
     fireEvent.change(imagePathField, { target: { value: 'https://path_to_image_changed/' } });
     estimationField.click();
     visibilityField.click();
 
     expect(questionField.value).toBe('Frage 4');
+    expect(categoryField.value).toBe('history');
     expect(imagePathField.value).toBe('https://path_to_image_changed/');
     expect(estimationField.checked).toBe(true);
     expect(visibilityField.checked).toBe(false);
@@ -433,6 +471,7 @@ test('should edit question', async () => {
 
     await wait(() =>{
         expect(questionField.value).toBe('');
+        expect(categoryField.value).toBe('other');
         expect(imagePathField.value).toBe('');
     });
 });

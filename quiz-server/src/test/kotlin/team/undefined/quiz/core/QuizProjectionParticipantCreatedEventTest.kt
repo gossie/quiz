@@ -1,8 +1,9 @@
 package team.undefined.quiz.core
 
 import com.google.common.eventbus.EventBus
+import org.assertj.core.api.Assertions.assertThat
 import org.awaitility.kotlin.await
-import org.awaitility.kotlin.until
+import org.awaitility.kotlin.untilAsserted
 import org.junit.jupiter.api.Test
 import org.mockito.Mockito.`when`
 import org.mockito.Mockito.mock
@@ -26,12 +27,14 @@ internal class QuizProjectionParticipantCreatedEventTest {
         eventBus.post(QuizCreatedEvent(quiz.id, quiz, 1))
         eventBus.post(ParticipantCreatedEvent(quiz.id, participant, 2))
 
-        await until {
-            observedQuiz.get().id == quiz.id
-                    && observedQuiz.get().participants.size == 1
-                    && observedQuiz.get().participants.contains(participant)
-                    && observedQuiz.get().questions.isEmpty()
-                    && !observedQuiz.get().finished
+        await untilAsserted  {
+            val q = observedQuiz.get()
+
+            assertThat(q.id).isEqualTo(quiz.id)
+            assertThat(q.participants).hasSize(1)
+            assertThat(q.participants).contains(participant)
+            assertThat(q.questions).isEmpty()
+            assertThat(q.finished).isFalse()
         }
     }
 
@@ -55,12 +58,14 @@ internal class QuizProjectionParticipantCreatedEventTest {
 
         eventBus.post(participantCreatedEvent)
 
-        await until {
-            observedQuiz.get().id == quiz.id
-                    && observedQuiz.get().participants.size == 1
-                    && observedQuiz.get().participants.contains(participant)
-                    && observedQuiz.get().questions.isEmpty()
-                    && !observedQuiz.get().finished
+        await untilAsserted  {
+            val q = observedQuiz.get()
+
+            assertThat(q.id).isEqualTo(quiz.id)
+            assertThat(q.participants).hasSize(1)
+            assertThat(q.participants).contains(participant)
+            assertThat(q.questions).isEmpty()
+            assertThat(q.finished).isFalse()
         }
     }
 
@@ -82,12 +87,14 @@ internal class QuizProjectionParticipantCreatedEventTest {
         val participant = Participant(name = "Lena")
         eventBus.post(ParticipantCreatedEvent(quiz.id, participant, 2))
 
-        await until {
-            observedQuiz.get().id == quiz.id
-                    && observedQuiz.get().participants.size == 1
-                    && observedQuiz.get().participants.contains(participant)
-                    && observedQuiz.get().questions.isEmpty()
-                    && !observedQuiz.get().finished
+        await untilAsserted  {
+            val q = observedQuiz.get()
+
+            assertThat(q.id).isEqualTo(quiz.id)
+            assertThat(q.participants).hasSize(1)
+            assertThat(q.participants).contains(participant)
+            assertThat(q.questions).isEmpty()
+            assertThat(q.finished).isFalse()
         }
     }
 

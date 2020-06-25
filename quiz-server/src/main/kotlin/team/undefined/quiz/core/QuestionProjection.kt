@@ -70,18 +70,23 @@ class QuestionProjection(eventBus: EventBus,
         questions.removeAll(event.quizId)
     }
 
-    fun determineQuestions(): Map<UUID, List<Question>> {
+    fun determineQuestions(category: QuestionCategory): Map<UUID, List<Question>> {
         val proposedQuestions = HashMap<UUID, List<Question>>()
 
         val distinct = HashSet<String>()
 
         questions.asMap().entries.forEach { entry ->
-            proposedQuestions[entry.key] = entry.value.asSequence()
+            val filteredQuestions = entry.value.asSequence()
+                    .filter { it.category == category }
                     .filter { it.alreadyPlayed }
                     .filter { it.visibility == Question.QuestionVisibility.PUBLIC }
                     .filter { StringUtils.isEmpty(it.imageUrl) }
                     .filter { distinct.add(it.question) }
                     .toList()
+
+            if (filteredQuestions.isNotEmpty()) {
+                proposedQuestions[entry.key] = filteredQuestions
+            }
         }
 
         return proposedQuestions

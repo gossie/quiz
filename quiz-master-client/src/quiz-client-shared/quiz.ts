@@ -14,6 +14,7 @@ export interface Participant {
 export interface Question {
     id: string;
     question: string;
+    category: string;
     imagePath?: string;
     publicVisible: boolean;
     estimates?: object;

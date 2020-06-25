@@ -19,7 +19,7 @@ afterEach(() => {
 
 test('should determine question pool', async () => {
     jest.spyOn(global, 'fetch').mockImplementation((url: string, request: object) => {
-        if (url === 'http://localhost:5000/api/questionPool') {
+        if (url === 'http://localhost:5000/api/questionPool?category=other') {
             expect(request).toEqual({
                 method: 'GET',
                 headers: {
@@ -64,6 +64,7 @@ test('should determine question pool', async () => {
         participants: [],
         playedQuestions: [],
         openQuestions: [],
+        timestamp: 1234,
         links: [{href: '/api/createQuestion', rel: 'createQuestion'}]
     }
 

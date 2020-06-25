@@ -1,6 +1,9 @@
 import React from 'react';
-import { render, fireEvent, wait } from '@testing-library/react';
+import { render, fireEvent, wait, cleanup } from '@testing-library/react';
 import LoginPageWidget from './LoginPageWidget';
+
+beforeEach(() => () => cleanup()); 
+afterEach(() => cleanup());
 
 test('should submit on submit button click', (done) => {
     const submitFunction = (value: string) => new Promise<void>(async (resolve) => {
