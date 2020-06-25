@@ -2,7 +2,16 @@ package team.undefined.quiz.core
 
 import java.util.UUID
 
-data class Question(val id: UUID = UUID.randomUUID(), val question: String, var pending: Boolean = false, val imageUrl: String = "", val estimates: Map<UUID, String>? = null, var visibility: QuestionVisibility = QuestionVisibility.PRIVATE, var alreadyPlayed: Boolean = false) {
+data class Question(
+        val id: UUID = UUID.randomUUID(),
+        val question: String,
+        var pending: Boolean = false,
+        val imageUrl: String = "",
+        val estimates: Map<UUID, String>? = null,
+        var visibility: QuestionVisibility = QuestionVisibility.PRIVATE,
+        var alreadyPlayed: Boolean = false,
+        val category: QuestionCategory? = null
+) {
 
     enum class QuestionVisibility(private val b: Boolean) {
         PUBLIC(true),
