@@ -1,7 +1,10 @@
 import React from 'react';
-import { render } from '@testing-library/react';
+import { render, cleanup } from '@testing-library/react';
 import Quiz from '../quiz';
 import QuizStatistics from './QuizStatistics';
+
+beforeEach(() => () => cleanup()); 
+afterEach(() => cleanup());
 
 test('does not display statistics', () => {
     const quiz: Quiz = {
@@ -25,6 +28,7 @@ test('does not display statistics', () => {
         ],
         openQuestions: [],
         playedQuestions: [],
+        timestamp: 1234,
         links: []
     }
 
@@ -61,6 +65,8 @@ test('displays statistics', () => {
                     question: {
                         id: '7',
                         question: "Warum?",
+                        category: 'other',
+                        publicVisible: true,
                         pending: false,
                         links: []
                     },
@@ -68,6 +74,7 @@ test('displays statistics', () => {
                 }
             ]
         },
+        timestamp: 1234,
         links: []
     }
 
@@ -104,6 +111,8 @@ test('should close statistics', () => {
                     question: {
                         id: '7',
                         question: "Warum?",
+                        category: 'other',
+                        publicVisible: true,
                         pending: false,
                         links: []
                     },
@@ -111,6 +120,7 @@ test('should close statistics', () => {
                 }
             ]
         },
+        timestamp: 1234,
         links: []
     }
 
@@ -151,6 +161,8 @@ test('should not be closeable', () => {
                     question: {
                         id: '7',
                         question: "Warum?",
+                        category: 'other',
+                        publicVisible: true,
                         pending: false,
                         links: []
                     },
@@ -158,6 +170,7 @@ test('should not be closeable', () => {
                 }
             ]
         },
+        timestamp: 1234,
         links: []
     }
 

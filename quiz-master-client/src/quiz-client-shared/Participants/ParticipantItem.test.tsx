@@ -1,7 +1,10 @@
 import React from 'react';
-import { render } from '@testing-library/react';
+import { render, cleanup } from '@testing-library/react';
 import Quiz from '../quiz';
 import ParticipantItem from './ParticipantItem';
+
+beforeEach(() => () => cleanup()); 
+afterEach(() => cleanup());
 
 test('displays participant after a correct answer', () => {
     const quiz: Quiz = {
@@ -25,6 +28,7 @@ test('displays participant after a correct answer', () => {
         ],
         openQuestions: [],
         playedQuestions: [],
+        timestamp: 1234,
         links: []
     }
 
@@ -62,6 +66,7 @@ test('displays participant after an incorrect answer', () => {
         ],
         openQuestions: [],
         playedQuestions: [],
+        timestamp: 1234,
         links: []
     }
 
@@ -99,6 +104,7 @@ test('displays participant that did not answer', () => {
         ],
         openQuestions: [],
         playedQuestions: [],
+        timestamp: 1234,
         links: []
     }
 

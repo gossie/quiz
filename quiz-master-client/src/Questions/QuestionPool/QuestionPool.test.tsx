@@ -4,7 +4,6 @@ import { render, unmountComponentAtNode } from "react-dom";
 import Quiz from '../../quiz-client-shared/quiz';
 import QuestionPool from './QuestionPool';
 import { act } from 'react-dom/test-utils';
-import { wait } from '@testing-library/react';
 
 let container: HTMLDivElement | null;
 beforeEach(() => {
@@ -18,7 +17,7 @@ afterEach(() => {
   container = null;
 });
 
-xtest('should determine question pool', async () => {
+test('should determine question pool', async () => {
     jest.spyOn(global, 'fetch').mockImplementation((url: string, request: object) => {
         if (url === 'http://localhost:5000/api/questionPool?category=other') {
             expect(request).toEqual({

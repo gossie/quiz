@@ -1,7 +1,10 @@
 import React from 'react';
-import { render, fireEvent, wait } from '@testing-library/react';
+import { render, fireEvent, wait, cleanup } from '@testing-library/react';
 import Questions from './Questions';
 import Quiz from '../quiz-client-shared/quiz';
+
+beforeEach(() => () => cleanup()); 
+afterEach(() => cleanup());
 
 test('should display questions', () => {
     const quiz: Quiz = {
@@ -60,6 +63,7 @@ test('should add new private question', async () => {
             method: 'POST',
             body: JSON.stringify({
                 question: 'Frage 3',
+                category: 'other',
                 imagePath: 'https://pathToImage',
                 publicVisible: false
             }),
@@ -124,6 +128,7 @@ test('should add new public question', async () => {
             method: 'POST',
             body: JSON.stringify({
                 question: 'Frage 3',
+                category: 'other',
                 imagePath: 'https://pathToImage',
                 publicVisible: true
             }),

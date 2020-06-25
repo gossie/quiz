@@ -1,7 +1,10 @@
 import React from 'react';
-import { render, fireEvent, wait } from '@testing-library/react';
+import { render, fireEvent, wait, cleanup } from '@testing-library/react';
 import Quiz from '../../quiz-client-shared/quiz';
 import QuestionForm from './QuestionForm';
+
+beforeEach(() => () => cleanup()); 
+afterEach(() => cleanup());
 
 test('should add new estimation question', async () => {
     jest.spyOn(global, 'fetch').mockImplementation((url: string, request: object) => {

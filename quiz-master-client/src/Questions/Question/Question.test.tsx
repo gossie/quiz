@@ -1,12 +1,16 @@
 import React from 'react';
-import { render } from '@testing-library/react';
+import { render, cleanup } from '@testing-library/react';
 import { Question } from '../../quiz-client-shared/quiz';
 import QuestionElement from './Question';
+
+beforeEach(() => () => cleanup()); 
+afterEach(() => cleanup());
 
 test('should start editing', async done => {
     const question: Question = {
         id: '1',
         question: 'Warum?',
+        category: 'other',
         imagePath: 'pathToImage',
         publicVisible: false,
         pending: false,

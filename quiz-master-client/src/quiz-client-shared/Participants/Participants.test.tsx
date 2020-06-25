@@ -1,7 +1,10 @@
 import React from 'react';
-import { render } from '@testing-library/react';
+import { render, cleanup } from '@testing-library/react';
 import Participants from './Participants';
 import Quiz from '../quiz';
+
+beforeEach(() => () => cleanup()); 
+afterEach(() => cleanup());
 
 test('has two participants', () => {
     const quiz: Quiz = {
@@ -25,6 +28,7 @@ test('has two participants', () => {
         ],
         openQuestions: [],
         playedQuestions: [],
+        timestamp: 1234,
         links: []
     }
     
@@ -41,6 +45,7 @@ test('has no participants', () => {
         participants: [],
         openQuestions: [],
         playedQuestions: [],
+        timestamp: 1234,
         links: []
     }
     const { getByTestId } = render(<Participants quiz={quiz} />);
