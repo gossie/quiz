@@ -66,7 +66,7 @@ const QuestionForm: React.FC<QuestionFormProps> = (props: QuestionFormProps) => 
                 <div className="control">
                     <label className="checkbox">
                         <input data-testid={props.questionToChange ? 'estimation-to-edit' : 'estimation'} type="checkbox" checked={estimation} onChange={ev => setEstimation(ev.target.checked)} />
-                        Estimation question
+                        If checked, participants won't see the buzzer, but a textfield where each participant can submit an answer
                     </label>
                 </div>
             </div>
