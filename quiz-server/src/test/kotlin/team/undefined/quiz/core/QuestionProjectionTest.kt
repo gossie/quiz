@@ -50,6 +50,7 @@ internal class QuestionProjectionTest {
         ))
 
         val questionProjection = QuestionProjection(eventBus, eventRepository)
+        questionProjection.initializeEvents()
 
         await untilAsserted {
             val questions = questionProjection.determineQuestions(QuestionCategory("category1"))
@@ -134,6 +135,7 @@ internal class QuestionProjectionTest {
         ))
 
         val questionProjection = QuestionProjection(eventBus, eventRepository)
+        questionProjection.initializeEvents()
 
         await untilAsserted {
             val questions = questionProjection.determineQuestions(QuestionCategory("category1"))
@@ -166,6 +168,7 @@ internal class QuestionProjectionTest {
         ))
 
         val questionProjection = QuestionProjection(eventBus, eventRepository)
+        questionProjection.initializeEvents()
 
         await untilAsserted {
             val questions = questionProjection.determineQuestions(QuestionCategory("category1"))
@@ -214,6 +217,7 @@ internal class QuestionProjectionTest {
         ))
 
         val questionProjection = QuestionProjection(eventBus, eventRepository)
+        questionProjection.initializeEvents()
 
         await untilAsserted {
             val questions = questionProjection.determineQuestions(QuestionCategory("category1"))
