@@ -44,7 +44,7 @@
 
 }
 
-.Quiz-dashboard .question, .Quiz-dashboard .participants {
+.Quiz-dashboard .questions, .Quiz-dashboard .participants {
   color: white;
   background: rgba(255,255,255,0.05);
   padding: 15px;

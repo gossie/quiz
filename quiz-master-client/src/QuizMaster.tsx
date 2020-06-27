@@ -63,7 +63,7 @@ const QuizMaster: React.FC<QuizMasterProps> = (props: QuizMasterProps) => {
                             }
                             <QuizStatistics quiz={quiz} closeable={true} forceOpen={forceStatistics} onClose={() => setForceStatistics(false)}></QuizStatistics>
                         </div>
-                        <div className="column question">
+                        <div className="column questions">
                             <Questions quiz={quiz}></Questions>
                         </div>
                     </div>
