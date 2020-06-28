@@ -72,6 +72,7 @@ const QuestionForm: React.FC<QuestionFormProps> = (props: QuestionFormProps) => 
                             <option value="literature">Literature</option>
                             <option value="music">Music</option>
                             <option value="movies">Movies / TV</option>
+                            <option value="sport">Sport</option>
                         </select>
                     </div>
                 </div>
