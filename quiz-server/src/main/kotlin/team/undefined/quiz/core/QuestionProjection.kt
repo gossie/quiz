@@ -3,6 +3,7 @@ package team.undefined.quiz.core
 import com.google.common.collect.MultimapBuilder
 import com.google.common.eventbus.EventBus
 import com.google.common.eventbus.Subscribe
+import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Component
 import org.springframework.util.StringUtils
 import reactor.core.publisher.Mono
@@ -14,6 +15,7 @@ import kotlin.collections.HashSet
 class QuestionProjection(eventBus: EventBus,
                          eventRepository: EventRepository) {
 
+    private val logger = LoggerFactory.getLogger(QuestionProjection::class.java)
     private val questions = MultimapBuilder.hashKeys().arrayListValues().build<UUID, Question>()
 
     init {
@@ -64,6 +66,8 @@ class QuestionProjection(eventBus: EventBus,
         if (question != null) {
             question.alreadyPlayed = !question.alreadyPlayed
             question.pending = question.alreadyPlayed
+        } else {
+            logger.warn("tried to work with question '{}' in quiz '{}', but the question does not exist", event.questionId, event.quizId)
         }
     }
 
