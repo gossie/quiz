@@ -236,4 +236,35 @@ internal class QuestionProjectionTest {
         }
     }
 
+    @Test
+    fun shouldHandleRevertOfQuestions() {
+        val quiz1Id = UUID.randomUUID()
+
+        val eventBus = EventBus()
+
+        val question1 = Question(question = "Warum ist das so?", visibility = Question.QuestionVisibility.PUBLIC, category = QuestionCategory("category1"))
+        val question2 = Question(question = "Wo ist das?", visibility = Question.QuestionVisibility.PUBLIC, category = QuestionCategory("category1"))
+        val eventRepository = mock(EventRepository::class.java)
+        `when`(eventRepository.determineEvents()).thenReturn(Flux.just(
+                QuizCreatedEvent(quiz1Id, Quiz(name = "Awesome Quiz1")),
+                QuestionCreatedEvent(quiz1Id, question1),
+                QuestionCreatedEvent(quiz1Id, question2),
+                QuestionAskedEvent(quiz1Id, question1.id),
+                QuestionAskedEvent(quiz1Id, question2.id),
+                QuestionAskedEvent(quiz1Id, question2.id)
+        ))
+
+        val questionProjection = QuestionProjection(eventBus, eventRepository)
+
+        await untilAsserted {
+            val questions = questionProjection.determineQuestions(QuestionCategory("category1"))
+
+            assertThat(questions).hasSize(1)
+
+            assertThat(questions[quiz1Id]).hasSize(1)
+            assertThat(questions[quiz1Id]!![0].question).isEqualTo("Warum ist das so?")
+            assertThat(questions[quiz1Id]!![0].pending).isTrue()
+        }
+    }
+
 }

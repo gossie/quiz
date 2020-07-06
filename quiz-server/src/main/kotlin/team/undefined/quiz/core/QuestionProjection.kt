@@ -60,9 +60,9 @@ class QuestionProjection(eventBus: EventBus,
 
     @Subscribe
     fun handleQuestionAsked(event: QuestionAskedEvent) {
-        val question = questions.get(event.quizId).find { it.id == event.questionId }
-        question?.alreadyPlayed = true
-        question?.pending = true
+        val question = questions.get(event.quizId).find { it.id == event.questionId }!!
+        question.alreadyPlayed = !question.alreadyPlayed
+        question.pending = question.alreadyPlayed
     }
 
     @Subscribe
