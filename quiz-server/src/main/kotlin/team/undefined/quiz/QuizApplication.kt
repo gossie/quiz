@@ -1,6 +1,7 @@
 package team.undefined.quiz
 
 import com.google.common.eventbus.EventBus
+import org.slf4j.LoggerFactory
 import org.springframework.boot.CommandLineRunner
 import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.boot.runApplication
@@ -12,6 +13,8 @@ import java.util.*
 @SpringBootApplication
 class QuizApplication {
 
+	private val logger = LoggerFactory.getLogger(QuizApplication::class.java)
+
 	@Bean
 	fun eventBus(): EventBus {
 		return EventBus()
@@ -22,7 +25,10 @@ class QuizApplication {
 		return (CommandLineRunner {
 			quizService.determineQuizzes()
 					.filter { it.getTimestamp() < (Date().time - 2_419_200_000) }
-					.subscribe { quizService.deleteQuiz(DeleteQuizCommand(it.id)) }
+					.flatMap { quizService.deleteQuiz(DeleteQuizCommand(it.id)) }
+					.subscribe {
+						logger.info("deleted old quiz")
+					}
 		})
 	}
 
