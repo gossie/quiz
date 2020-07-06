@@ -32,6 +32,7 @@ class DefaultEventRepository(private val eventEntityRepository: EventEntityRepos
         return eventEntityRepository.findAll()
                 .map { objectMapper.readValue(it.domainEvent, Class.forName(it.type)) }
                 .map { Event::class.java.cast(it) }
+                .sort(Comparator.comparing(Event::timestamp))
     }
 
     override fun deleteEvents(quizId: UUID): Mono<Unit> {
