@@ -26,7 +26,7 @@ class QuizApplication {
 			quizService.determineQuizzes()
 					.filter { it.getTimestamp() < (Date().time - 2_419_200_000) }
 					.flatMap {
-						logger.info("deleting quiz because it is form {}", Date(it.getTimestamp()))
+						logger.info("deleting quiz {} because it is form {}", it, Date(it.getTimestamp()))
 						quizService.deleteQuiz(DeleteQuizCommand(it.id))
 					}
 					.subscribe {
