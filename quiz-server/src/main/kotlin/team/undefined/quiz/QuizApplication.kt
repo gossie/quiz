@@ -25,7 +25,10 @@ class QuizApplication {
 		return (CommandLineRunner {
 			quizService.determineQuizzes()
 					.filter { it.getTimestamp() < (Date().time - 2_419_200_000) }
-					.flatMap { quizService.deleteQuiz(DeleteQuizCommand(it.id)) }
+					.flatMap {
+						logger.info("deleting quiz because it is form {}", Date(it.getTimestamp()))
+						quizService.deleteQuiz(DeleteQuizCommand(it.id))
+					}
 					.subscribe {
 						logger.info("deleted old quiz")
 					}
