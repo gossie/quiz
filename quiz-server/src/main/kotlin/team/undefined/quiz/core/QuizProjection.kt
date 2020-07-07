@@ -60,7 +60,7 @@ class QuizProjection(eventBus: EventBus,
             eventRepository.determineEvents(event.quizId)
                     .reduce(Quiz(name = "")) { q: Quiz, e: Event -> e.process(q)}
                     .subscribe {
-                        if (it.getTimestamp()!! < event.timestamp) {
+                        if (it.getTimestamp() < event.timestamp) {
                             quizCache[event.quizId] = event.process(it)
                         } else {
                             quizCache[event.quizId] = it
@@ -71,7 +71,7 @@ class QuizProjection(eventBus: EventBus,
                                     emitQuiz(quizCache[event.quizId]!!)
                                 }
                     }
-        } else if (quiz.getTimestamp()!! < event.timestamp) {
+        } else if (quiz.getTimestamp() < event.timestamp) {
             quizCache[event.quizId] = event.process(quiz)
             quizStatisticsProvider.generateStatistics(event.quizId)
                     .subscribe {

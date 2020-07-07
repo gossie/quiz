@@ -1,6 +1,7 @@
 package team.undefined.quiz
 
 import com.google.common.eventbus.EventBus
+import org.slf4j.LoggerFactory
 import org.springframework.boot.CommandLineRunner
 import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.boot.runApplication
@@ -12,6 +13,9 @@ import java.util.*
 @SpringBootApplication
 class QuizApplication {
 
+	private val logger = LoggerFactory.getLogger(QuizApplication::class.java)
+	private val TWELVE_WEEKS = 7_257_600_000
+
 	@Bean
 	fun eventBus(): EventBus {
 		return EventBus()
@@ -21,8 +25,14 @@ class QuizApplication {
 	fun databaseCleaner(quizService: QuizService): CommandLineRunner {
 		return (CommandLineRunner {
 			quizService.determineQuizzes()
-					.filter { it.getTimestamp() < (Date().time - 2_419_200_000) }
-					.subscribe { quizService.deleteQuiz(DeleteQuizCommand(it.id)) }
+					.filter { it.getTimestamp() < (Date().time - TWELVE_WEEKS) }
+					.flatMap {
+						logger.info("deleting quiz {} because it is form {}", it, Date(it.getTimestamp()))
+						quizService.deleteQuiz(DeleteQuizCommand(it.id))
+					}
+					.subscribe {
+						logger.info("deleted old quiz")
+					}
 		})
 	}
 

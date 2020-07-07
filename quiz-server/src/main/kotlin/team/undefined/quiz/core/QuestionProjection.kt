@@ -3,6 +3,7 @@ package team.undefined.quiz.core
 import com.google.common.collect.MultimapBuilder
 import com.google.common.eventbus.EventBus
 import com.google.common.eventbus.Subscribe
+import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Component
 import org.springframework.util.StringUtils
 import java.util.*
@@ -16,6 +17,7 @@ class QuestionProjection(eventBus: EventBus,
 
     private val lock = ReentrantReadWriteLock()
 
+    private val logger = LoggerFactory.getLogger(QuestionProjection::class.java)
     private val questions = MultimapBuilder.hashKeys().arrayListValues().build<UUID, Question>()
 
     init {
@@ -82,8 +84,12 @@ class QuestionProjection(eventBus: EventBus,
         try {
             lock.writeLock().lock()
             val question = questions.get(event.quizId).find { it.id == event.questionId }
-            question?.alreadyPlayed = true
-            question?.pending = true
+            if (question != null) {
+                question.alreadyPlayed = !question.alreadyPlayed
+                question.pending = question.alreadyPlayed
+            } else {
+                logger.warn("tried to work with question '{}' in quiz '{}', but the question does not exist", event.questionId, event.quizId)
+            }
         } finally {
             lock.writeLock().unlock()
         }
