@@ -28,7 +28,7 @@ const ParticipantItem: React.FC<ParticipantProps> = (props: ParticipantProps) =>
                 : '';
     }
 
-    return <div>
+    return <div className="participant-answer">
                 <div data-testid="participant-wrapper" className={"participant " + (props.participant.turn ? 'turn' : '')}>
                     <span data-testid="participant-name">{props.participant.name} </span>
                     <div className="points">({props.pointsAfterLastQuestion}{pointDifference()})</div>
