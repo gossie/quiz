@@ -42,7 +42,7 @@ const Estimation: React.FC<EstimationProps> = (props: EstimationProps) => {
         <span>
             <div className="field">
                 <div className="control">
-                    <input data-testid="estimation" value={estimation} onChange={ev => setEstimation(ev.target.value)} className="input" type="text" placeholder="Estimation" />
+                    <input data-testid="estimation" value={estimation} onChange={ev => setEstimation(ev.target.value)} onKeyUp={ev => {if (ev.keyCode === 13) sendEstimation()}} className="input" type="text" placeholder="Estimation" />
                 </div>
             </div>
             <div className="field is-grouped">
