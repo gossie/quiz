@@ -35,7 +35,7 @@ const ParticipantItem: React.FC<ParticipantProps> = (props: ParticipantProps) =>
                     {(props.participant.turn || isEstimationQuestion()) ? <Answers quiz={props.quiz} participant={props.participant}></Answers> : ''}
                 </div>
                 { isEstimationQuestion() &&
-                    <div><b>Estimated value:</b> {getEstimatedValue()}</div>
+                    <div><b>{props.participant.name}'s answer:</b> {getEstimatedValue()}</div>
                 }
             </div>
 }
