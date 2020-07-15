@@ -30,7 +30,7 @@ const QuestionElement: React.FC<QuestionElementProps> = (props: QuestionElementP
 
     return (
         <span>
-            #{props.index + 1} {props.question.question}
+            <span data-testid="question">#{props.index + 1} {props.question.question}{props.question.estimates != null && '*'}</span>
             { props.enableOperations && !props.question.pending && <span data-testid={`start-question-${props.index}`} className="icon has-text-primary" title="Ask question" onClick={() => toggleQuestion(props.question)}><i className="fas fa-share-square"></i></span>}
             { props.enableOperations && !props.question.pending && props.onEdit && <span data-testid={`edit-question-${props.index}`} className="icon has-text-link" title="Edit question" onClick={() => props.onEdit!(props.question)}><i className="fas fa-edit"></i></span>}
             { props.enableOperations && props.question.pending && <span data-testid={`revert-question-${props.index}`} className="icon has-text-primary"  onClick={() => toggleQuestion(props.question)}><i className="fas fa-undo"></i></span> }

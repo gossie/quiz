@@ -27,3 +27,36 @@ test('should start editing', async done => {
     const editModeButton = getByTestId('edit-question-0') as HTMLButtonElement;
     editModeButton.click();
 });
+
+test('should should show *', async () => {
+    const question: Question = {
+        id: '1',
+        question: 'Warum?',
+        estimates: {},
+        category: 'other',
+        imagePath: 'pathToImage',
+        publicVisible: false,
+        pending: false,
+        links: []
+    }
+
+    const { getByTestId } = render(<QuestionElement enableOperations={true} question={question} index={0} setImageToDisplay={(path) => {}} />);
+    
+    expect(getByTestId('question').textContent).toEqual('#1 Warum?*');
+});
+
+test('should not should show *', async () => {
+    const question: Question = {
+        id: '1',
+        question: 'Warum?',
+        category: 'other',
+        imagePath: 'pathToImage',
+        publicVisible: false,
+        pending: false,
+        links: []
+    }
+
+    const { getByTestId } = render(<QuestionElement enableOperations={true} question={question} index={0} setImageToDisplay={(path) => {}} />);
+
+    expect(getByTestId('question').textContent).toEqual('#1 Warum?');
+});
