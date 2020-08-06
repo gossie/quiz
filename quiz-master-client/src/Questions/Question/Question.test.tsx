@@ -28,7 +28,7 @@ test('should start editing', async done => {
     editModeButton.click();
 });
 
-test('should should show *', async () => {
+test('should be a freetext question', async () => {
     const question: Question = {
         id: '1',
         question: 'Warum?',
@@ -42,10 +42,12 @@ test('should should show *', async () => {
 
     const { getByTestId } = render(<QuestionElement enableOperations={true} question={question} index={0} setImageToDisplay={(path) => {}} />);
     
-    expect(getByTestId('question').textContent).toEqual('#1 Warum?*');
+    expect(getByTestId('question').textContent).toEqual('#1 Warum?');
+    expect(() => getByTestId('freetext-question-0')).not.toThrowError();
+    expect(() => getByTestId('buzzer-question-0')).toThrowError();
 });
 
-test('should not should show *', async () => {
+test('should be a buzzer question', async () => {
     const question: Question = {
         id: '1',
         question: 'Warum?',
@@ -59,4 +61,6 @@ test('should not should show *', async () => {
     const { getByTestId } = render(<QuestionElement enableOperations={true} question={question} index={0} setImageToDisplay={(path) => {}} />);
 
     expect(getByTestId('question').textContent).toEqual('#1 Warum?');
+    expect(() => getByTestId('freetext-question-0')).toThrowError();
+    expect(() => getByTestId('buzzer-question-0')).not.toThrowError();
 });
