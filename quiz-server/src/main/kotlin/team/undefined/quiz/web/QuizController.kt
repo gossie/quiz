@@ -49,11 +49,26 @@ class QuizController(private val quizService: QuizService,
         return quizService.reopenQuestion(ReopenCurrentQuestionCommand(quizId));
     }
 
-    @GetMapping(path = ["/{quizId}/stream"], produces = [MediaType.TEXT_EVENT_STREAM_VALUE])
-    fun getQuizStream(@PathVariable quizId: UUID): Flux<ServerSentEvent<QuizDTO>> {
+    @GetMapping(path = ["/{quizId}/quiz-master"], produces = [MediaType.TEXT_EVENT_STREAM_VALUE])
+    fun getQuizStreamForQuizMaster(@PathVariable quizId: UUID): Flux<ServerSentEvent<QuizDTO>> {
         val observer = getObserver(quizId)
         eventBus.post(ForceEmitCommand(quizId))
         return Flux.merge(observer, getHeartbeat())
+    }
+
+    @GetMapping(path = ["/{quizId}/quiz-participant"], produces = [MediaType.TEXT_EVENT_STREAM_VALUE])
+    fun getQuizStreamForQuizParticipants(@PathVariable quizId: UUID): Flux<ServerSentEvent<QuizDTO>> {
+        val observer = getObserver(quizId)
+        eventBus.post(ForceEmitCommand(quizId))
+        return Flux.merge(observer, getHeartbeat())
+                .map {
+                    it.data()?.openQuestions?.forEach { question ->
+                        question.estimates?.keys?.forEach { id ->
+                            (question.estimates as MutableMap)[id] = "*****";
+                        }
+                    }
+                    it
+                }
     }
 
     private fun getObserver(quizId: UUID): Flux<ServerSentEvent<QuizDTO>> {

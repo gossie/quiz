@@ -5,7 +5,7 @@ import ParticipantItem from './ParticipantItem';
 
 test('displays participant after a correct answer', () => {
     const participant: Participant = {
-        id: 16,
+        id: '16',
         name: 'Sandra',
         turn: false,
         points: 2,
@@ -26,7 +26,7 @@ test('displays participant after a correct answer', () => {
 
 test('displays participant after an incorrect answer', () => {
     const participant: Participant = {
-        id: 15,
+        id: '15',
         name: 'Erik',
         turn: false,
         points: 1,
@@ -47,7 +47,7 @@ test('displays participant after an incorrect answer', () => {
 
 test('displays participant that did not answer', () => {
     const participant: Participant = {
-        id: 15,
+        id: '15',
         name: 'Erik',
         turn: false,
         points: 2,
@@ -64,4 +64,8 @@ test('displays participant that did not answer', () => {
     const points = participantWrapper.querySelector('.points')!;
 
     expect(points.textContent).toEqual('(2)');
+});
+
+test('displays answer hint for freetext questions', () => {
+    
 });

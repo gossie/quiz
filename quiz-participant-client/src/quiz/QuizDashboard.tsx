@@ -19,7 +19,7 @@ const QuizDashboard: React.FC<QuizDashboardProps> = (props: QuizDashboardProps) 
 
     useEffect(() => {
         console.debug('register for server sent events');
-        const evtSource = new EventSource(`${process.env.REACT_APP_BASE_URL}/api/quiz/${props.quizId}/stream`);
+        const evtSource = new EventSource(`${process.env.REACT_APP_BASE_URL}/api/quiz/${props.quizId}/quiz-participant`);
 
         evtSource.onerror = (e) => console.error('sse error', e);
 
