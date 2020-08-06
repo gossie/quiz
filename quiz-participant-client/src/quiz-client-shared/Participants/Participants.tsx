@@ -32,7 +32,7 @@ const Participants: React.FC<ParticipantsProps> = (props: ParticipantsProps) => 
         }
     }
 
-    const elements = props.quiz.participants?.sort(comparePoints).map(p => <div key={p.name}><ParticipantItem participant={p} pointsAfterLastQuestion={getPointsAfterLastQuestionForParticipant(p)}></ParticipantItem></div>)
+    const elements = props.quiz.participants?.sort(comparePoints).map(p => <div key={p.name}><ParticipantItem participant={p} pointsAfterLastQuestion={getPointsAfterLastQuestionForParticipant(p)} question={pendingQuestion}></ParticipantItem></div>)
 
     const updateStateAfterLastQuestion = useCallback(() => {
         setCurrentQuestionId(pendingQuestion ? pendingQuestion.id : '');
