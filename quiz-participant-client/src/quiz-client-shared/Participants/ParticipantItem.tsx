@@ -4,7 +4,7 @@ import { Participant, Question } from "../quiz";
 interface ParticipantProps {
     participant: Participant;
     pointsAfterLastQuestion: number;
-    question: Question;
+    question?: Question;
 }
 
 const ParticipantItem: React.FC<ParticipantProps> = (props: ParticipantProps) => {
