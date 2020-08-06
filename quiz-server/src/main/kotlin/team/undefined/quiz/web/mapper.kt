@@ -70,7 +70,7 @@ private fun ParticipantDTO.addLinks(quizId: UUID): Mono<ParticipantDTO> {
 }
 
 fun Question.map(quizId: UUID): QuestionDTO {
-    val questionDTO = QuestionDTO(this.id, this.question, this.pending, this.imageUrl, HashMap(this.estimates), this.visibility.asBoolean(), this.category.category)
+    val questionDTO = QuestionDTO(this.id, this.question, this.pending, this.imageUrl, if (this.estimates != null) { HashMap(this.estimates) } else { this.estimates }, this.visibility.asBoolean(), this.category.category)
     questionDTO.add(Link("/api/quiz/" + quizId + "/questions/" + this.id, "self"))
     return if (this.imageUrl == "") questionDTO else questionDTO.add(Link(this.imageUrl, "image"))
 }
