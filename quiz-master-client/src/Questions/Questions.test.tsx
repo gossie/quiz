@@ -64,6 +64,7 @@ test('should add new private question', async () => {
             body: JSON.stringify({
                 question: 'Frage 3',
                 category: 'other',
+                timeToAnswer: null,
                 imagePath: 'https://pathToImage',
                 publicVisible: false
             }),
@@ -129,6 +130,7 @@ test('should add new public question', async () => {
             body: JSON.stringify({
                 question: 'Frage 3',
                 category: 'other',
+                timeToAnswer: null,
                 imagePath: 'https://pathToImage',
                 publicVisible: true
             }),
@@ -394,6 +396,7 @@ test('should edit question', async () => {
             body: JSON.stringify({
                 question: 'Frage 4',
                 category: 'history',
+                timeToAnswer: 45,
                 imagePath: 'https://path_to_image_changed/',
                 publicVisible: false,
                 estimates: {}
@@ -445,6 +448,7 @@ test('should edit question', async () => {
     const questionButton = getByTestId('edit-question-button');
     const questionField = getByTestId('question-to-edit')  as HTMLInputElement;
     const categoryField = getByTestId('category-to-edit')  as HTMLSelectElement;
+    const timeToAnswerField = getByTestId('time-to-answer-to-edit')  as HTMLInputElement;
     const imagePathField = getByTestId('image-path-to-edit')  as HTMLInputElement;
     const estimationField = getByTestId('estimation-to-edit')  as HTMLInputElement;
     const visibilityField = getByTestId('visibility-to-edit')  as HTMLInputElement;
@@ -452,18 +456,21 @@ test('should edit question', async () => {
     expect(questionField.value).toBe('Frage 3');
     expect(categoryField.value).toBe('other');
     expect(imagePathField.value).toBe('https://path_to_image/');
+    expect(timeToAnswerField.value).toBe('');
     expect(estimationField.checked).toBe(false);
     expect(visibilityField.checked).toBe(true);
 
     fireEvent.change(questionField, { target: { value: 'Frage 4' } });
     fireEvent.change(categoryField, { target: { value: 'history' } });
     fireEvent.change(imagePathField, { target: { value: 'https://path_to_image_changed/' } });
+    fireEvent.change(timeToAnswerField, { target: { value: '45' } });
     estimationField.click();
     visibilityField.click();
 
     expect(questionField.value).toBe('Frage 4');
     expect(categoryField.value).toBe('history');
     expect(imagePathField.value).toBe('https://path_to_image_changed/');
+    expect(timeToAnswerField.value).toBe('45');
     expect(estimationField.checked).toBe(true);
     expect(visibilityField.checked).toBe(false);
 
@@ -473,5 +480,6 @@ test('should edit question', async () => {
         expect(questionField.value).toBe('');
         expect(categoryField.value).toBe('other');
         expect(imagePathField.value).toBe('');
+        expect(timeToAnswerField.value).toBe('');
     });
 });

@@ -15,6 +15,7 @@ export interface Question {
     id: string;
     question: string;
     category: string;
+    timeToAnswer?: number;
     imagePath?: string;
     publicVisible: boolean;
     estimates?: object;

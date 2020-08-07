@@ -13,6 +13,7 @@ const QuestionForm: React.FC<QuestionFormProps> = (props: QuestionFormProps) => 
     const [newQuestion, setNewQuestion] = useState(props.questionToChange?.question);
     const [category, setCategory] = useState(props.questionToChange ? props.questionToChange.category : 'other');
     const [imagePath, setImagePath] = useState(props.questionToChange?.imagePath);
+    const [timeToAnswer, setTimeToAnswer] = useState(props.questionToChange?.timeToAnswer ? `${props.questionToChange?.timeToAnswer}` : '');
     const [questionButtonCssClasses, setQuestionButtonCssClasses] = useState('button is-link');
     const [visibility, setVisibility] = useState(props.questionToChange ? props.questionToChange.publicVisible : false);
     const [estimation, setEstimation] = useState(props.questionToChange ? (props.questionToChange.estimates !== null && props.questionToChange.estimates !== undefined) : false);
@@ -34,6 +35,7 @@ const QuestionForm: React.FC<QuestionFormProps> = (props: QuestionFormProps) => 
             body: JSON.stringify({
                 question: newQuestion,
                 category: category,
+                timeToAnswer: parseInt(timeToAnswer),
                 imagePath: imagePath,
                 publicVisible: visibility,
                 estimates: estimation ? {} : undefined
@@ -46,6 +48,7 @@ const QuestionForm: React.FC<QuestionFormProps> = (props: QuestionFormProps) => 
         
         setNewQuestion('');
         setCategory('other');
+        setTimeToAnswer('');
         setImagePath('');
         setQuestionButtonCssClasses('button is-link');
 
@@ -77,7 +80,13 @@ const QuestionForm: React.FC<QuestionFormProps> = (props: QuestionFormProps) => 
                     </div>
                 </div>
             </div>
-            
+
+            <div className="field">
+                <div className="control">
+                    <input data-testid={props.questionToChange ? 'time-to-answer-to-edit' : 'time-to-answer'} value={timeToAnswer} onChange={ev => setTimeToAnswer(ev.target.value)} className="input" type="text" pattern="[0-9]*" placeholder="Question" />
+                </div>
+            </div>
+
             <div className="field">
                 <div className="control">
                     <input data-testid={props.questionToChange ? 'image-path-to-edit' : 'image-path'} value={imagePath} onChange={ev => setImagePath(ev.target.value)} className="input" type="text" placeholder="Image path" />
