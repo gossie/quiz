@@ -83,7 +83,7 @@ const QuestionForm: React.FC<QuestionFormProps> = (props: QuestionFormProps) => 
 
             <div className="field">
                 <div className="control">
-                    <input data-testid={props.questionToChange ? 'time-to-answer-to-edit' : 'time-to-answer'} value={timeToAnswer} onChange={ev => setTimeToAnswer(ev.target.value)} className="input" type="text" pattern="[0-9]*" placeholder="Question" />
+                    <input data-testid={props.questionToChange ? 'time-to-answer-to-edit' : 'time-to-answer'} value={timeToAnswer} onChange={ev => setTimeToAnswer(ev.target.value)} className="input" type="text" pattern="[0-9]*" placeholder="Time to answer" />
                 </div>
             </div>
 
