@@ -11,7 +11,8 @@ data class Question(
         var visibility: QuestionVisibility = QuestionVisibility.PRIVATE,
         var alreadyPlayed: Boolean = false,
         val category: QuestionCategory = QuestionCategory("other"),
-        val timeToAnswer: Int? = null
+        val initialTimeToAnswer: Int? = null,
+        val secondsLeft: Int? = null
 ) {
 
     enum class QuestionVisibility(private val b: Boolean) {

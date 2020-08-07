@@ -78,10 +78,10 @@ class DefaultQuizService(private val eventRepository: EventRepository,
                 .reduce(Quiz(name = "")) { quiz: Quiz, event: Event -> event.process(quiz) }
                 .map {
                     val pendingQuestion = it.pendingQuestion
-                    if (pendingQuestion?.timeToAnswer != null) {
+                    if (pendingQuestion?.initialTimeToAnswer != null) {
                         Flux.interval(Duration.ofSeconds(1))
-                                .takeUntil { second -> second <= pendingQuestion.timeToAnswer }
-                                .subscribe { eventBus.post(ForceEmitCommand(command.quizId)) }
+                                .takeUntil { second -> second == pendingQuestion.initialTimeToAnswer.toLong() }
+                                .subscribe { eventBus.post(TimeToAnswerDecreasedEvent(command.quizId, command.questionId)) }
                     }
                     Unit
                 }
