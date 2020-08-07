@@ -11,5 +11,6 @@ data class QuestionDTO(
         var estimates: Map<UUID, String>? = null,
         var publicVisible: Boolean = false,
         var category: String = "",
-        var timeToAnswer: Int? = null
+        var timeToAnswer: Int? = null,
+        var secondsLeft: Int? = null
 ) : RepresentationModel<QuestionDTO>()

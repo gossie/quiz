@@ -80,7 +80,7 @@ class DefaultQuizService(private val eventRepository: EventRepository,
                     val pendingQuestion = it.pendingQuestion
                     if (pendingQuestion?.initialTimeToAnswer != null) {
                         Flux.interval(Duration.ofSeconds(1))
-                                .takeUntil { second -> second == pendingQuestion.initialTimeToAnswer.toLong() }
+                                .takeUntil { second -> second + 1 >= pendingQuestion.initialTimeToAnswer.toLong() }
                                 .subscribe { eventBus.post(TimeToAnswerDecreasedEvent(command.quizId, command.questionId)) }
                     }
                     Unit

@@ -12,7 +12,7 @@ data class Question(
         var alreadyPlayed: Boolean = false,
         val category: QuestionCategory = QuestionCategory("other"),
         val initialTimeToAnswer: Int? = null,
-        val secondsLeft: Int? = null
+        var secondsLeft: Int? = null
 ) {
 
     enum class QuestionVisibility(private val b: Boolean) {

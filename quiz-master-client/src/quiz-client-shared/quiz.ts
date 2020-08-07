@@ -16,6 +16,7 @@ export interface Question {
     question: string;
     category: string;
     timeToAnswer?: number;
+    secondsLeft?: number;
     imagePath?: string;
     publicVisible: boolean;
     estimates?: object;

@@ -21,6 +21,12 @@ data class Quiz(
                 .none { it.turn }
     }
 
+    fun decreaseTimeToAnswer(questionId: UUID): Quiz {
+        val question = questions.find { it.id == questionId }!!
+        question.secondsLeft = question.secondsLeft!! - 1
+        return this
+    }
+
     fun select(participantId: UUID): Quiz {
         participants
                 .find { it.id == participantId }
