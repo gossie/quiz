@@ -32,8 +32,8 @@ const QuestionElement: React.FC<QuestionElementProps> = (props: QuestionElementP
         <span>
             <div>
                 <span data-testid="question">#{props.index + 1} {props.question.question}</span>
-                { props.question.estimates != null && <span data-testid={`freetext-question-${props.index}`} className="icon"><i className="far fa-keyboard"></i></span> }
-                { props.question.estimates == null && <span data-testid={`buzzer-question-${props.index}`} className="icon has-text-danger"><i className="fas fa-circle"></i></span> }
+                { props.question.estimates != null && <span data-testid={`freetext-question-${props.index}`} className="icon" title="Freetext question"><i className="far fa-keyboard"></i></span> }
+                { props.question.estimates == null && <span data-testid={`buzzer-question-${props.index}`} className="icon has-text-danger" title="Buzzer question"><i className="fas fa-circle"></i></span> }
             </div>
             <div>
                 { props.enableOperations && !props.question.pending && <span data-testid={`start-question-${props.index}`} className="icon has-text-primary" title="Ask question" onClick={() => toggleQuestion(props.question)}><i className="fas fa-share-square"></i></span>}
