@@ -70,7 +70,7 @@ private fun ParticipantDTO.addLinks(quizId: UUID): Mono<ParticipantDTO> {
 }
 
 fun Question.map(quizId: UUID): QuestionDTO {
-    val questionDTO = QuestionDTO(this.id, this.question, this.pending, this.imageUrl, if (this.estimates != null) { HashMap(this.estimates) } else { this.estimates }, this.visibility.asBoolean(), this.category.category)
+    val questionDTO = QuestionDTO(this.id, this.question, this.pending, this.imageUrl, if (this.estimates != null) { HashMap(this.estimates) } else { this.estimates }, this.visibility.asBoolean(), this.category.category, this.initialTimeToAnswer, this.secondsLeft)
     questionDTO.add(Link("/api/quiz/" + quizId + "/questions/" + this.id, "self"))
     return if (this.imageUrl == "") questionDTO else questionDTO.add(Link(this.imageUrl, "image"))
 }
@@ -83,11 +83,28 @@ private fun QuestionDTO.addLinks(quizId: UUID): Mono<QuestionDTO> {
 }
 
 fun QuestionDTO.map(questionId: UUID): Question {
-    return Question(questionId, question = this.question, imageUrl = this.imagePath, estimates = this.estimates, visibility = if (this.publicVisible) Question.QuestionVisibility.PUBLIC else Question.QuestionVisibility.PRIVATE, category = if (this.category == "") QuestionCategory("other") else QuestionCategory(this.category))
+    return Question(
+            questionId,
+            question = this.question,
+            imageUrl = this.imagePath,
+            estimates = this.estimates,
+            visibility = if (this.publicVisible) Question.QuestionVisibility.PUBLIC else Question.QuestionVisibility.PRIVATE,
+            category = if (this.category == "") QuestionCategory("other") else QuestionCategory(this.category),
+            initialTimeToAnswer = this.timeToAnswer,
+            secondsLeft = this.timeToAnswer
+    )
 }
 
 fun QuestionDTO.map(): Question {
-    return Question(question = this.question, imageUrl = this.imagePath, estimates = this.estimates, visibility = if (this.publicVisible) Question.QuestionVisibility.PUBLIC else Question.QuestionVisibility.PRIVATE, category = if (this.category == "") QuestionCategory("other") else QuestionCategory(this.category))
+    return Question(
+            question = this.question,
+            imageUrl = this.imagePath,
+            estimates = this.estimates,
+            visibility = if (this.publicVisible) Question.QuestionVisibility.PUBLIC else Question.QuestionVisibility.PRIVATE,
+            category = if (this.category == "") QuestionCategory("other") else QuestionCategory(this.category),
+            initialTimeToAnswer = this.timeToAnswer,
+            secondsLeft = this.timeToAnswer
+    )
 }
 
 fun QuizDTO.map(): Quiz {

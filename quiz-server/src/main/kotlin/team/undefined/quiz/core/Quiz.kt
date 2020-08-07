@@ -3,13 +3,28 @@ package team.undefined.quiz.core
 import java.util.*
 import kotlin.collections.ArrayList
 
-data class Quiz(val id: UUID = UUID.randomUUID(), val name: String, val participants: List<Participant> = ArrayList(), val questions: List<Question> = ArrayList(), var finished: Boolean = false, var quizStatistics: QuizStatistics? = null) {
+data class Quiz(
+        val id: UUID = UUID.randomUUID(),
+        val name: String,
+        val participants: List<Participant> = ArrayList(),
+        val questions: List<Question> = ArrayList(),
+        var finished: Boolean = false,
+        var quizStatistics: QuizStatistics? = null) {
 
     private var timestamp: Long = Date().time
+
+    val pendingQuestion: Question?
+        get() = questions.filter { it.pending }.firstOrNull()
 
     fun nobodyHasBuzzered(): Boolean {
         return participants
                 .none { it.turn }
+    }
+
+    fun decreaseTimeToAnswer(questionId: UUID): Quiz {
+        val question = questions.find { it.id == questionId }!!
+        question.secondsLeft = question.secondsLeft!! - 1
+        return this
     }
 
     fun select(participantId: UUID): Quiz {

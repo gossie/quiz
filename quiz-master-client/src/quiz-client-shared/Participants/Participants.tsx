@@ -69,6 +69,7 @@ const Participants: React.FC<ParticipantsProps> = (props: ParticipantsProps) => 
                     {elements}
                 </FlipMove>     
             </div>
+            { pendingQuestion && pendingQuestion.secondsLeft && <span data-testid="question-counter">{pendingQuestion.secondsLeft} seconds left</span> }
         </div>
     )
 };

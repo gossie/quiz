@@ -5,6 +5,7 @@ import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
 import reactor.core.publisher.Flux
 import reactor.core.publisher.Mono
+import java.time.Duration
 
 @Service
 class DefaultQuizService(private val eventRepository: EventRepository,
@@ -73,6 +74,17 @@ class DefaultQuizService(private val eventRepository: EventRepository,
         logger.debug("starting question '{}' in quiz '{}'", command.questionId, command.quizId)
         return eventRepository.storeEvent(QuestionAskedEvent(command.quizId, command.questionId))
                 .map { eventBus.post(it) }
+                .flatMapMany { eventRepository.determineEvents(command.quizId) }
+                .reduce(Quiz(name = "")) { quiz: Quiz, event: Event -> event.process(quiz) }
+                .map {
+                    val pendingQuestion = it.pendingQuestion
+                    if (pendingQuestion?.initialTimeToAnswer != null) {
+                        Flux.interval(Duration.ofSeconds(1))
+                                .takeUntil { second -> second + 1 >= pendingQuestion.initialTimeToAnswer.toLong() }
+                                .subscribe { eventBus.post(TimeToAnswerDecreasedEvent(command.quizId, command.questionId)) }
+                    }
+                    Unit
+                }
     }
 
     @WriteLock

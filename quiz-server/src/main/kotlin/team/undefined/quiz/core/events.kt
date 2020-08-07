@@ -52,6 +52,13 @@ data class QuestionAskedEvent(@JsonProperty("quizId") override val quizId: UUID,
     }
 }
 
+data class TimeToAnswerDecreasedEvent(@JsonProperty("quizId") override val quizId: UUID, @JsonProperty("questionId") val questionId: UUID, @JsonProperty("timestamp") override val timestamp: Long = Date().time) : Event {
+    override fun process(quiz: Quiz): Quiz {
+        return quiz.decreaseTimeToAnswer(questionId)
+                .setTimestamp(timestamp)
+    }
+}
+
 data class BuzzeredEvent(@JsonProperty("quizId") override val quizId: UUID, @JsonProperty("participantId") val participantId: UUID, @JsonProperty("timestamp") override val timestamp: Long = Date().time) : Event {
     override fun process(quiz: Quiz): Quiz {
         return quiz.select(participantId)

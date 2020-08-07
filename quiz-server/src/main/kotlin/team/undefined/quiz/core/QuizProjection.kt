@@ -42,6 +42,9 @@ class QuizProjection(eventBus: EventBus,
     fun handleQuestionAsked(event: QuestionAskedEvent) = handleEvent(event)
 
     @Subscribe
+    fun handleTimeToAnswerDecrease(event: TimeToAnswerDecreasedEvent) = handleEvent(event)
+
+    @Subscribe
     fun handleBuzzer(event: BuzzeredEvent) = handleEvent(event)
 
     @Subscribe

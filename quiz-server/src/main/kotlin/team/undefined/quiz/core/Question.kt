@@ -10,7 +10,9 @@ data class Question(
         val estimates: Map<UUID, String>? = null,
         var visibility: QuestionVisibility = QuestionVisibility.PRIVATE,
         var alreadyPlayed: Boolean = false,
-        val category: QuestionCategory = QuestionCategory("other")
+        val category: QuestionCategory = QuestionCategory("other"),
+        val initialTimeToAnswer: Int? = null,
+        var secondsLeft: Int? = null
 ) {
 
     enum class QuestionVisibility(private val b: Boolean) {

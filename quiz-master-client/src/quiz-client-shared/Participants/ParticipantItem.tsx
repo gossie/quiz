@@ -23,7 +23,7 @@ const ParticipantItem: React.FC<ParticipantProps> = (props: ParticipantProps) =>
 
     const getEstimatedValue = () => {
         const pendingQuestion = props.quiz.openQuestions.find(q => q.pending);
-        return pendingQuestion !== undefined && pendingQuestion.estimates !== null
+        return pendingQuestion !== undefined && pendingQuestion.estimates !== undefined
                 ? pendingQuestion.estimates[props.participant.id]
                 : '';
     }
