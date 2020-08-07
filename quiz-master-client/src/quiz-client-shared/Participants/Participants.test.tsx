@@ -77,6 +77,9 @@ test('shows question counter', () => {
         ],
         openQuestions: [
             {
+                id: '117',
+                category: 'history',
+                publicVisible: false,
                 question: 'What is happening?',
                 pending: true,
                 secondsLeft: 12,
