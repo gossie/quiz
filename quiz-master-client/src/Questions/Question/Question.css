@@ -1,4 +1,7 @@
 .icon {
     margin-left: 10px;
+}
+
+.clickable {
     cursor: pointer;
 }
