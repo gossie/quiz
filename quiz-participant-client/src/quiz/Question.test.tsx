@@ -75,7 +75,8 @@ test('has pending question with counter', () => {
     const { getByTestId } = render(<Question quiz={quiz} />);
 
     const currentQuestion = getByTestId('current-question');
+    const countdown = getByTestId('question-counter') as HTMLSpanElement;
     
     expect(currentQuestion.textContent).toEqual('What is happening?');
-    expect(() => getByTestId('question-counter')).not.toThrowError();
+    expect(countdown.textContent).toEqual('17 seconds left');
 });
