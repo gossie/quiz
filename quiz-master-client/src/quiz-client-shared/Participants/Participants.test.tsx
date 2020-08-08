@@ -93,7 +93,8 @@ test('shows question counter', () => {
     
     const { getByTestId } = render(<Participants quiz={quiz} />);
     const participants = getByTestId('participants').querySelectorAll('.participant');
+    const countdown = getByTestId('question-counter') as HTMLSpanElement;
     
     expect(participants).toHaveLength(2);
-    expect(() => getByTestId('question-counter')).not.toThrowError();
+    expect(countdown.textContent).toEqual('12 seconds left');
 });
