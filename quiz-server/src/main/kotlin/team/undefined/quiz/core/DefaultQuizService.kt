@@ -99,6 +99,17 @@ class DefaultQuizService(private val eventRepository: EventRepository,
         logger.debug("reopening active question in quiz '{}'", command.quizId)
         return eventRepository.storeEvent(CurrentQuestionReopenedEvent(command.quizId))
                 .map { eventBus.post(it) }
+                .flatMapMany { eventRepository.determineEvents(command.quizId) }
+                .reduce(Quiz(name = "")) { quiz: Quiz, event: Event -> event.process(quiz) }
+                .map {
+                    val pendingQuestion = it.pendingQuestion
+                    if (pendingQuestion?.initialTimeToAnswer != null) {
+                        Flux.interval(Duration.ofSeconds(1))
+                                .takeUntil { second -> second + 1 >= pendingQuestion.initialTimeToAnswer.toLong() }
+                                .subscribe { eventBus.post(TimeToAnswerDecreasedEvent(command.quizId, pendingQuestion.id)) }
+                    }
+                    Unit
+                }
     }
 
     @WriteLock

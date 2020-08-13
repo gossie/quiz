@@ -348,6 +348,36 @@ internal class DefaultQuizServiceTest {
     }
 
     @Test
+    fun shouldReopenQuestionWithTimeConstaint() {
+        val quizId = UUID.randomUUID()
+        val questionId = UUID.randomUUID()
+
+        `when`(quizRepository.determineEvents(quizId))
+                .thenReturn(Flux.just(
+                        QuizCreatedEvent(quizId, Quiz(quizId, "Quiz")),
+                        QuestionCreatedEvent(quizId, Question(questionId, "Warum ist die Banane krum?", initialTimeToAnswer = 3, secondsLeft = 3)),
+                        QuestionAskedEvent(quizId, questionId),
+                        CurrentQuestionReopenedEvent(quizId)
+                ))
+
+        val quizService = DefaultQuizService(quizRepository, eventBus)
+
+        StepVerifier.create(quizService.reopenQuestion(ReopenCurrentQuestionCommand(quizId)))
+                .consumeNextWith {
+                    verify(eventBus).post(argThat { (it as CurrentQuestionReopenedEvent).quizId == quizId })
+                }
+                .verifyComplete()
+
+        await ignoreException ClassCastException::class untilAsserted  {
+            verify(eventBus, times(3)).post(argThat {
+                it is TimeToAnswerDecreasedEvent
+                        && it.quizId == quizId
+                        && it.questionId == questionId
+            })
+        }
+    }
+
+    @Test
     fun shouldFinishQuiz() {
         val quizService = DefaultQuizService(quizRepository, eventBus)
 
