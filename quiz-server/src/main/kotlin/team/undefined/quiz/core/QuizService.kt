@@ -19,7 +19,7 @@ interface QuizService {
 
     fun deleteQuestion(command: DeleteQuestionCommand): Mono<Unit>
 
-    fun editQuestion(editQuestionCommand: EditQuestionCommand): Mono<Unit>
+    fun editQuestion(command: EditQuestionCommand): Mono<Unit>
 
     fun answer(command: AnswerCommand): Mono<Unit>
 
