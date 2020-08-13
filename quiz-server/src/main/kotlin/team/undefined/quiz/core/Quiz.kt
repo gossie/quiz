@@ -109,6 +109,9 @@ data class Quiz(
 
     fun reopenQuestion(): Quiz {
         participants.forEach { it.turn = false }
+        questions
+                .filter { it.pending }
+                .forEach { it.secondsLeft = it.initialTimeToAnswer }
         return this
     }
 

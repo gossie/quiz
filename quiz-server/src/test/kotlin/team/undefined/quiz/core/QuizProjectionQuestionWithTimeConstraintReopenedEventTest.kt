@@ -10,7 +10,7 @@ import org.mockito.Mockito.mock
 import reactor.core.publisher.Flux
 import java.util.concurrent.atomic.AtomicReference
 
-internal class QuizProjectionQuestionReopenedEventTest {
+internal class QuizProjectionQuestionWithTimeConstraintReopenedEventTest {
 
     @Test
     fun shouldHandleQuestionReopenedEventWhenQuizIsAlreadyInCache() {
@@ -23,16 +23,19 @@ internal class QuizProjectionQuestionReopenedEventTest {
         quizProjection.observeQuiz(quiz.id)
                 .subscribe { observedQuiz.set(it) }
 
-        val question = Question(question = "Wofür steht die Abkürzung a.D.?")
+        val question = Question(question = "Wofür steht die Abkürzung a.D.?", initialTimeToAnswer = 5)
         val participant = Participant(name = "Lena")
 
         eventBus.post(QuizCreatedEvent(quiz.id, quiz, 1))
         eventBus.post(QuestionCreatedEvent(quiz.id, question, 2))
         eventBus.post(ParticipantCreatedEvent(quiz.id, participant, 3))
         eventBus.post(QuestionAskedEvent(quiz.id, question.id, 4))
-        eventBus.post(BuzzeredEvent(quiz.id, participant.id, 5))
-        eventBus.post(AnsweredEvent(quiz.id, participant.id, AnswerCommand.Answer.INCORRECT, 6))
-        eventBus.post(CurrentQuestionReopenedEvent(quiz.id, 7))
+        eventBus.post(TimeToAnswerDecreasedEvent(quiz.id, question.id, 5))
+        eventBus.post(TimeToAnswerDecreasedEvent(quiz.id, question.id, 6))
+        eventBus.post(TimeToAnswerDecreasedEvent(quiz.id, question.id, 7))
+        eventBus.post(TimeToAnswerDecreasedEvent(quiz.id, question.id, 8))
+        eventBus.post(TimeToAnswerDecreasedEvent(quiz.id, question.id, 9))
+        eventBus.post(CurrentQuestionReopenedEvent(quiz.id, 10))
 
         await untilAsserted {
             val q = observedQuiz.get()
@@ -44,6 +47,8 @@ internal class QuizProjectionQuestionReopenedEventTest {
             assertThat(q.questions).hasSize(1)
             assertThat(q.questions[0].pending).isTrue()
             assertThat(q.questions[0].alreadyPlayed).isFalse()
+            assertThat(q.questions[0].initialTimeToAnswer).isEqualTo(5)
+            assertThat(q.questions[0].secondsLeft).isEqualTo(5)
             assertThat(q.finished).isFalse()
         }
     }
@@ -52,9 +57,8 @@ internal class QuizProjectionQuestionReopenedEventTest {
     fun shouldHandleQuestionReopenedEventWhenQuizIsNotInCacheAndLastEventWasAlreadyPersisted() {
         val quiz = Quiz(name = "Awesome Quiz")
 
-        val question = Question(question = "Wofür steht die Abkürzung a.D.?")
-        val participant = Participant(name = "Lena")
-        val reopenedEvent = CurrentQuestionReopenedEvent(quiz.id, 7)
+        val question = Question(question = "Wofür steht die Abkürzung a.D.?", initialTimeToAnswer = 5)
+        val reopenedEvent = CurrentQuestionReopenedEvent(quiz.id, 10)
 
         val eventRepository = mock(EventRepository::class.java)
         `when`(eventRepository.determineEvents(quiz.id))
@@ -63,8 +67,11 @@ internal class QuizProjectionQuestionReopenedEventTest {
                         QuestionCreatedEvent(quiz.id, question, 2),
                         ParticipantCreatedEvent(quiz.id, Participant(name = "Lena"), 3),
                         QuestionAskedEvent(quiz.id, question.id, 4),
-                        BuzzeredEvent(quiz.id, participant.id, 5),
-                        AnsweredEvent(quiz.id, participant.id, AnswerCommand.Answer.INCORRECT, 6),
+                        TimeToAnswerDecreasedEvent(quiz.id, question.id, 5),
+                        TimeToAnswerDecreasedEvent(quiz.id, question.id, 6),
+                        TimeToAnswerDecreasedEvent(quiz.id, question.id, 7),
+                        TimeToAnswerDecreasedEvent(quiz.id, question.id, 8),
+                        TimeToAnswerDecreasedEvent(quiz.id, question.id, 9),
                         reopenedEvent
                 ))
 
@@ -87,6 +94,8 @@ internal class QuizProjectionQuestionReopenedEventTest {
             assertThat(q.questions).hasSize(1)
             assertThat(q.questions[0].pending).isTrue()
             assertThat(q.questions[0].alreadyPlayed).isFalse()
+            assertThat(q.questions[0].initialTimeToAnswer).isEqualTo(5)
+            assertThat(q.questions[0].secondsLeft).isEqualTo(5)
             assertThat(q.finished).isFalse()
         }
     }
@@ -94,18 +103,20 @@ internal class QuizProjectionQuestionReopenedEventTest {
     @Test
     fun shouldHandleQuestionReopenedEventCreationWhenQuizIsNotInCacheAndLastEventWasNotYetPersisted() {
         val quiz = Quiz(name = "Awesome Quiz")
-        val question = Question(question = "Wofür steht die Abkürzung a.D.?")
-        val participant = Participant(name = "Lena")
+        val question = Question(question = "Wofür steht die Abkürzung a.D.?", initialTimeToAnswer = 5)
 
         val eventRepository = mock(EventRepository::class.java)
         `when`(eventRepository.determineEvents(quiz.id))
                 .thenReturn(Flux.just(
                         QuizCreatedEvent(quiz.id, quiz, 1),
                         QuestionCreatedEvent(quiz.id, question, 2),
-                        ParticipantCreatedEvent(quiz.id, participant, 3),
+                        ParticipantCreatedEvent(quiz.id, Participant(name = "Lena"), 3),
                         QuestionAskedEvent(quiz.id, question.id, 4),
-                        BuzzeredEvent(quiz.id, participant.id, 5),
-                        AnsweredEvent(quiz.id, participant.id, AnswerCommand.Answer.INCORRECT, 6)
+                        TimeToAnswerDecreasedEvent(quiz.id, question.id, 5),
+                        TimeToAnswerDecreasedEvent(quiz.id, question.id, 6),
+                        TimeToAnswerDecreasedEvent(quiz.id, question.id, 7),
+                        TimeToAnswerDecreasedEvent(quiz.id, question.id, 8),
+                        TimeToAnswerDecreasedEvent(quiz.id, question.id, 9)
                 ))
 
         val eventBus = EventBus()
@@ -115,7 +126,7 @@ internal class QuizProjectionQuestionReopenedEventTest {
         quizProjection.observeQuiz(quiz.id)
                 .subscribe { observedQuiz.set(it) }
 
-        eventBus.post(CurrentQuestionReopenedEvent(quiz.id, 7))
+        eventBus.post(CurrentQuestionReopenedEvent(quiz.id, 10))
 
         await untilAsserted {
             val q = observedQuiz.get()
@@ -127,6 +138,8 @@ internal class QuizProjectionQuestionReopenedEventTest {
             assertThat(q.questions).hasSize(1)
             assertThat(q.questions[0].pending).isTrue()
             assertThat(q.questions[0].alreadyPlayed).isFalse()
+            assertThat(q.questions[0].initialTimeToAnswer).isEqualTo(5)
+            assertThat(q.questions[0].secondsLeft).isEqualTo(5)
             assertThat(q.finished).isFalse()
         }
     }
