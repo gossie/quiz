@@ -14,7 +14,7 @@ import java.util.*
 class QuizApplication {
 
 	private val logger = LoggerFactory.getLogger(QuizApplication::class.java)
-	private val TWELVE_WEEKS = 7_257_600_000
+	private val ACTIVE_TIME = 7_257_600_000
 
 	@Bean
 	fun eventBus(): EventBus {
@@ -25,7 +25,7 @@ class QuizApplication {
 	fun databaseCleaner(quizService: QuizService): CommandLineRunner {
 		return (CommandLineRunner {
 			quizService.determineQuizzes()
-					.filter { it.getTimestamp() < (Date().time - TWELVE_WEEKS) }
+					.filter { it.getTimestamp() < (Date().time - ACTIVE_TIME) }
 					.flatMap {
 						logger.info("deleting quiz {} because it is form {}", it, Date(it.getTimestamp()))
 						quizService.deleteQuiz(DeleteQuizCommand(it.id))
