@@ -14,7 +14,7 @@ import java.util.*
 class QuizApplication {
 
 	private val logger = LoggerFactory.getLogger(QuizApplication::class.java)
-	private val ACTIVE_TIME = 7_257_600_000
+	private val ACTIVE_TIME = 6_048_000_000
 
 	@Bean
 	fun eventBus(): EventBus {
