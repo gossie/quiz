@@ -20,7 +20,7 @@ const Participants: React.FC<ParticipantsProps> = (props: ParticipantsProps) => 
     const pendingQuestion = props.quiz.openQuestions.find(question => question.pending);
     const itsAPlayersTurn = props.quiz.participants.some(p => p.turn);
     const [stateAfterLastQuestion, setStateAfterLastQuestion] = useState(new Array<ParticipantState>()); 
-    const [currentQuestionId, setCurrentQuestionId] = useState("none");
+    const [currentQuestionId, setCurrentQuestionId] = useState(null);
     const [wasAPlayersTurnBefore, setWasAPlayersTurnBefore] = useState(false);
 
     const getPointsAfterLastQuestionForParticipant = (participant: Participant) => {
@@ -34,7 +34,7 @@ const Participants: React.FC<ParticipantsProps> = (props: ParticipantsProps) => 
     }
     
     const updateStateAfterLastQuestion = useCallback(() => {
-        setCurrentQuestionId(pendingQuestion ? pendingQuestion.id : "none");
+        setCurrentQuestionId(pendingQuestion ? pendingQuestion.id : null);
         setStateAfterLastQuestion(props.quiz.participants.map(p => { return {id: p.id, points: p.points}}));
     }, [props.quiz.participants, pendingQuestion]);
 
