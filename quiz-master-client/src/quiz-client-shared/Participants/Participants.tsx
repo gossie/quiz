@@ -20,7 +20,7 @@ const Participants: React.FC<ParticipantsProps> = (props: ParticipantsProps) => 
     const pendingQuestion = props.quiz.openQuestions.find(question => question.pending);
     const itsAPlayersTurn = props.quiz.participants.some(p => p.turn);
     const [stateAfterLastQuestion, setStateAfterLastQuestion] = useState(new Array<ParticipantState>()); 
-    const [currentQuestionId, setCurrentQuestionId] = useState(null);
+    const [currentQuestionId, setCurrentQuestionId] = useState('');
     const [wasAPlayersTurnBefore, setWasAPlayersTurnBefore] = useState(false);
 
     const getPointsAfterLastQuestionForParticipant = (participant: Participant) => {
@@ -34,7 +34,7 @@ const Participants: React.FC<ParticipantsProps> = (props: ParticipantsProps) => 
     }
     
     const updateStateAfterLastQuestion = useCallback(() => {
-        setCurrentQuestionId(pendingQuestion ? pendingQuestion.id : null);
+        setCurrentQuestionId(pendingQuestion ? pendingQuestion.id : '');
         setStateAfterLastQuestion(props.quiz.participants.map(p => { return {id: p.id, points: p.points}}));
     }, [props.quiz.participants, pendingQuestion]);
 
@@ -61,7 +61,7 @@ const Participants: React.FC<ParticipantsProps> = (props: ParticipantsProps) => 
     }, [isNewQuestion, updateStateAfterLastQuestion]);
     
     useEffect(() => {
-        // Trigger preloading of audio to prevent delays when buzzer is pressed
+        // Trigger preloading of audio to prevent delays when buzzer is played
         buzzerAudio.current.muted = true;
         buzzerAudio.current.play();
     }, [])
@@ -74,21 +74,25 @@ const Participants: React.FC<ParticipantsProps> = (props: ParticipantsProps) => 
         }  
     }
 
-    const elements = props.quiz.participants?.sort(comparePoints).map(p => 
+    const elements = props.quiz.participants
+    ?.sort(comparePoints)
+    .map((p, index) => 
         <div key={p.name}>
             <ParticipantItem quiz={props.quiz} participant={p} pointsAfterLastQuestion={getPointsAfterLastQuestionForParticipant(p)}>
             </ParticipantItem>
-        </div>)
+        </div>
+    )
 
     return (
         <div>
+            <h4 className="title is-4">Participants</h4>
             <audio src={buzzerfile} ref={buzzerAudio} preload='auto'></audio>
-            <h5 className="title is-5">Participants</h5>
             <div data-testid="participants" className="participants-list">
                 <FlipMove>
                     {elements}
                 </FlipMove>     
             </div>
+            { pendingQuestion && pendingQuestion.secondsLeft && <span data-testid="question-counter">{pendingQuestion.secondsLeft} seconds left</span> }
         </div>
     )
 };
