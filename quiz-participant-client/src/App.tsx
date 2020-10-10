@@ -17,8 +17,18 @@ function App() {
         return id;
     };
 
+    const setQuizIDInURL = (quizId) => {
+        if(window.history && window.history.pushState) {
+            const query = new URLSearchParams(window.location.search);
+            query.set('quiz_id', quizId);
+            var newUrl = window.location.protocol + "//" + window.location.host + window.location.pathname + '?' + query.toString();
+            window.history.pushState(null, document.title, newUrl);
+        }
+    }
+
     const joinQuiz = async (value) => {
         setQuizId(value[quizIdLabel]);
+        setQuizIDInURL(value[quizIdLabel]);
         setParticipantName(value[playerNameLabel]);
     };
 
