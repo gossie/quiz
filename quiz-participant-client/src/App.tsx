@@ -11,6 +11,12 @@ function App() {
     const quizIdLabel: string = 'Quiz ID';
     const playerNameLabel: string = 'Player Name';
 
+    const getQuizIdFromUrl = () => {
+        const query = new URLSearchParams(window.location.search);
+        const id = query.get('quiz_id');
+        return id;
+    };
+
     const joinQuiz = async (value) => {
         setQuizId(value[quizIdLabel]);
         setParticipantName(value[playerNameLabel]);
@@ -23,7 +29,7 @@ function App() {
             {quizId.length > 0 && participantName.length > 0 ? 
                 <QuizDashboard quizId={quizId} participantName={participantName}></QuizDashboard> :
                 <div className="container Login-page">
-                    <LoginPageWidget title="Join a Quiz" inputLabels={[playerNameLabel, quizIdLabel]} buttonLabel="Join!" onSubmit={joinQuiz}></LoginPageWidget> 
+                    <LoginPageWidget title="Join a Quiz" inputValues={{[playerNameLabel]: '', [quizIdLabel]: getQuizIdFromUrl()}} inputLabels={[playerNameLabel, quizIdLabel]} buttonLabel="Join!" onSubmit={joinQuiz}></LoginPageWidget> 
                 </div>     
             }
             </div>

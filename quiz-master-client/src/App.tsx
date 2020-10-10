@@ -11,6 +11,12 @@ function App() {
     const quizNameLabel = 'Quiz Name';
     const quizIdLabel = 'Quiz Id';
 
+    const getQuizIdFromUrl = () => {
+        const query = new URLSearchParams(window.location.search);
+        const id = query.get('quiz_id')
+        return id;
+    };
+
     const startQuiz = async (value: any) => {
         const quizResponse = await fetch(`${process.env.REACT_APP_BASE_URL}/api/quiz/`, {
             method: 'POST',
@@ -35,10 +41,9 @@ function App() {
                     ?
                     <QuizMaster quizId={quizId}></QuizMaster>
                     :
-                
                         <div className="container Login-page">
                             <LoginPageWidget title="Create a Quiz" inputLabels={[quizNameLabel]} buttonLabel="Start!" onSubmit={startQuiz}></LoginPageWidget>
-                            <LoginPageWidget title="Open Quiz" inputLabels={[quizIdLabel]} buttonLabel="Join!" onSubmit={joinQuiz}></LoginPageWidget>
+                            <LoginPageWidget title="Open Quiz" inputValues={{[quizIdLabel]: getQuizIdFromUrl()}} inputLabels={[quizIdLabel]} buttonLabel="Join!" onSubmit={joinQuiz}></LoginPageWidget>
                         </div>
                 }
             </div>
