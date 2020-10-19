@@ -83,6 +83,13 @@ const Participants: React.FC<ParticipantsProps> = (props: ParticipantsProps) => 
             </div>
         )
 
+    const revealAnswers = async () => {
+        const href = props.quiz.links.find(link => link.rel === 'reopenQuestion')?.href;
+        await fetch(`${process.env.REACT_APP_BASE_URL}${href}`, {
+            method: 'PATCH'
+        });
+    };
+
     return (
         <div>
             <h4 className="title is-4">Participants</h4>
@@ -92,7 +99,12 @@ const Participants: React.FC<ParticipantsProps> = (props: ParticipantsProps) => 
                     {elements}
                 </FlipMove>     
             </div>
-            { pendingQuestion && pendingQuestion.secondsLeft && <span data-testid="question-counter">{pendingQuestion.secondsLeft} seconds left</span> }
+            <div>
+                { pendingQuestion && pendingQuestion.secondsLeft != null && <span data-testid="question-counter">{pendingQuestion.secondsLeft} seconds left</span> }
+            </div>
+            <div>
+                { pendingQuestion && pendingQuestion.secondsLeft != null && <button onClick={revealAnswers} className="button is-link">Reveal answers</button> }
+            </div>
         </div>
     )
 };

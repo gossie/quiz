@@ -18,6 +18,7 @@ export interface Question {
     estimates?: object,
     secondsLeft?: number;
     pending: boolean;
+    revealed: boolean;
     links: Array<Link>;
 }
 

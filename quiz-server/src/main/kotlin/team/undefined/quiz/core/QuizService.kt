@@ -25,6 +25,8 @@ interface QuizService {
 
     fun reopenQuestion(command: ReopenCurrentQuestionCommand): Mono<Unit>
 
+    fun revealAnswers(command: RevealAnswersCommand): Mono<Unit>
+
     fun finishQuiz(command: FinishQuizCommand): Mono<Unit>
 
     fun deleteQuiz(command: DeleteQuizCommand): Mono<Unit>

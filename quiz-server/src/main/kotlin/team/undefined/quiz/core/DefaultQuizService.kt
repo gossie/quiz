@@ -3,15 +3,20 @@ package team.undefined.quiz.core
 import com.google.common.eventbus.EventBus
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
+import reactor.core.Disposable
 import reactor.core.publisher.Flux
 import reactor.core.publisher.Mono
 import java.time.Duration
+import java.util.*
+import kotlin.collections.HashMap
 
 @Service
 class DefaultQuizService(private val eventRepository: EventRepository,
                          private val eventBus: EventBus) : QuizService {
 
     private val logger = LoggerFactory.getLogger(QuizService::class.java)
+
+    private val subscriptions = HashMap<UUID, Disposable>()
 
     @WriteLock
     override fun createQuiz(command: CreateQuizCommand): Mono<Unit> {
@@ -79,7 +84,7 @@ class DefaultQuizService(private val eventRepository: EventRepository,
                 .map {
                     val pendingQuestion = it.pendingQuestion
                     if (pendingQuestion?.initialTimeToAnswer != null) {
-                        Flux.interval(Duration.ofSeconds(1))
+                        subscriptions[it.id] = Flux.interval(Duration.ofSeconds(1))
                                 .takeUntil { second -> second + 1 >= pendingQuestion.initialTimeToAnswer.toLong() }
                                 .subscribe { eventBus.post(TimeToAnswerDecreasedEvent(command.quizId, command.questionId)) }
                     }
@@ -104,12 +109,23 @@ class DefaultQuizService(private val eventRepository: EventRepository,
                 .map {
                     val pendingQuestion = it.pendingQuestion
                     if (pendingQuestion?.initialTimeToAnswer != null) {
-                        Flux.interval(Duration.ofSeconds(1))
+                        subscriptions[it.id] = Flux.interval(Duration.ofSeconds(1))
                                 .takeUntil { second -> second + 1 >= pendingQuestion.initialTimeToAnswer.toLong() }
                                 .subscribe { eventBus.post(TimeToAnswerDecreasedEvent(command.quizId, pendingQuestion.id)) }
                     }
                     Unit
                 }
+    }
+
+    @WriteLock
+    override fun revealAnswers(command: RevealAnswersCommand): Mono<Unit> {
+        logger.debug("reveal answers of active question in quiz '{}'", command.quizId)
+        return eventRepository.storeEvent(AnswersRevealedEvent(command.quizId))
+                .map {
+                    subscriptions[it.quizId]?.dispose()
+                    it
+                }
+                .map { eventBus.post(it) }
     }
 
     @WriteLock

@@ -115,6 +115,16 @@ data class Quiz(
         return this
     }
 
+    fun revealAnswersOfCurrentQuestion(): Quiz {
+        questions
+                .filter { it.pending }
+                .forEach {
+                    it.revealed = true
+                    it.secondsLeft = 0
+                }
+        return this
+    }
+
     fun finishQuiz(): Quiz {
         finished = true
         return this

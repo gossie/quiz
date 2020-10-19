@@ -12,5 +12,6 @@ data class QuestionDTO(
         var publicVisible: Boolean = false,
         var category: String = "",
         var timeToAnswer: Int? = null,
-        var secondsLeft: Int? = null
+        var secondsLeft: Int? = null,
+        var revealed: Boolean = false
 ) : RepresentationModel<QuestionDTO>()
