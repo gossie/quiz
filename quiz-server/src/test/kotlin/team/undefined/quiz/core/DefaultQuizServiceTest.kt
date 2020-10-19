@@ -378,6 +378,19 @@ internal class DefaultQuizServiceTest {
     }
 
     @Test
+    fun shouldRevealAnswers() {
+        val quizId = UUID.randomUUID()
+
+        val quizService = DefaultQuizService(quizRepository, eventBus)
+
+        StepVerifier.create(quizService.revealAnswers(RevealAnswersCommand(quizId)))
+                .consumeNextWith {
+                    verify(eventBus).post(argThat { (it as AnswersRevealedEvent).quizId == quizId })
+                }
+                .verifyComplete()
+    }
+
+    @Test
     fun shouldFinishQuiz() {
         val quizService = DefaultQuizService(quizRepository, eventBus)
 

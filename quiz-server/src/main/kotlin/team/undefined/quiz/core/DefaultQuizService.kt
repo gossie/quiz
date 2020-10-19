@@ -113,6 +113,13 @@ class DefaultQuizService(private val eventRepository: EventRepository,
     }
 
     @WriteLock
+    override fun revealAnswers(command: RevealAnswersCommand): Mono<Unit> {
+        logger.debug("reveal answers of active question in quiz '{}'", command.quizId)
+        return eventRepository.storeEvent(AnswersRevealedEvent(command.quizId))
+                .map { eventBus.post(it) }
+    }
+
+    @WriteLock
     override fun finishQuiz(command: FinishQuizCommand): Mono<Unit> {
         logger.debug("finishing quiz '{}'", command.quizId)
         return eventRepository.storeEvent(QuizFinishedEvent(command.quizId))

@@ -74,6 +74,10 @@ abstract class BaseClass {
                     TODO("Not yet implemented")
                 }
 
+                override fun revealAnswers(command: RevealAnswersCommand): Mono<Unit> {
+                    TODO("Not yet implemented")
+                }
+
                 override fun finishQuiz(command: FinishQuizCommand): Mono<Unit> {
                     return Mono.just(command.quizId)
                             .filter { it == UUID.fromString("123e4567-e89b-12d3-a456-426655440000") }
