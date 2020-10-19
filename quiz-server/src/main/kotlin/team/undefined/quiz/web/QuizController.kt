@@ -46,8 +46,14 @@ class QuizController(private val quizService: QuizService,
 
     @PutMapping("/{quizId}")
     @ResponseStatus(HttpStatus.OK)
-    fun reopenQuestion(@PathVariable quizId: UUID): Mono<Unit> {
+    fun reopenCurrentQuestion(@PathVariable quizId: UUID): Mono<Unit> {
         return quizService.reopenQuestion(ReopenCurrentQuestionCommand(quizId));
+    }
+
+    @PatchMapping("/{quizId}")
+    @ResponseStatus(HttpStatus.OK)
+    fun revealAnswers(@PathVariable quizId: UUID): Mono<Unit> {
+        return quizService.revealAnswers(RevealAnswersCommand(quizId));
     }
 
     @GetMapping(path = ["/{quizId}/quiz-master"], produces = [MediaType.TEXT_EVENT_STREAM_VALUE])
@@ -63,10 +69,12 @@ class QuizController(private val quizService: QuizService,
         eventBus.post(ForceEmitCommand(quizId))
         return Flux.merge(observer, getHeartbeat())
                 .map {
-                    it.data()?.openQuestions?.forEach { question ->
-                        question.estimates?.keys?.forEach { id ->
-                            (question.estimates as MutableMap)[id] = "*****";
-                        }
+                    it.data()?.openQuestions
+                        ?.filter { question -> !question.revealed }
+                        ?.forEach { question ->
+                            question.estimates?.keys?.forEach { id ->
+                                (question.estimates as MutableMap)[id] = "*****";
+                            }
                     }
                     it
                 }

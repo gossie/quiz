@@ -70,7 +70,7 @@ private fun ParticipantDTO.addLinks(quizId: UUID): Mono<ParticipantDTO> {
 }
 
 fun Question.map(quizId: UUID): QuestionDTO {
-    val questionDTO = QuestionDTO(this.id, this.question, this.pending, this.imageUrl, if (this.estimates != null) { HashMap(this.estimates) } else { this.estimates }, this.visibility.asBoolean(), this.category.category, this.initialTimeToAnswer, this.secondsLeft)
+    val questionDTO = QuestionDTO(this.id, this.question, this.pending, this.imageUrl, if (this.estimates != null) { HashMap(this.estimates) } else { this.estimates }, this.visibility.asBoolean(), this.category.category, this.initialTimeToAnswer, this.secondsLeft, this.revealed)
     questionDTO.add(Link("/api/quiz/" + quizId + "/questions/" + this.id, "self"))
     return if (this.imageUrl == "") questionDTO else questionDTO.add(Link(this.imageUrl, "image"))
 }
@@ -91,7 +91,8 @@ fun QuestionDTO.map(questionId: UUID): Question {
             visibility = if (this.publicVisible) Question.QuestionVisibility.PUBLIC else Question.QuestionVisibility.PRIVATE,
             category = if (this.category == "") QuestionCategory("other") else QuestionCategory(this.category),
             initialTimeToAnswer = this.timeToAnswer,
-            secondsLeft = this.timeToAnswer
+            secondsLeft = this.timeToAnswer,
+            revealed = this.revealed
     )
 }
 
@@ -124,7 +125,7 @@ private fun QuizDTO.addLinks(): Mono<QuizDTO> {
             .map { it.withRel("answer") }
             .flatMap { it.toMono() }
             .map { this.add(it) }
-            .map { linkTo(methodOn(QuizController::class.java).reopenQuestion(this.id!!)) }
+            .map { linkTo(methodOn(QuizController::class.java).reopenCurrentQuestion(this.id!!)) }
             .map { it.withRel("reopenQuestion") }
             .flatMap { it.toMono() }
             .map { this.add(it) }
