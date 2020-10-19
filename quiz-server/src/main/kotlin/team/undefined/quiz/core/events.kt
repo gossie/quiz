@@ -89,7 +89,8 @@ data class CurrentQuestionReopenedEvent(@JsonProperty("quizId") override val qui
 
 data class AnswersRevealedEvent(@JsonProperty("quizId") override val quizId: UUID, @JsonProperty("timestamp") override val timestamp: Long = Date().time) : Event {
     override fun process(quiz: Quiz): Quiz {
-        return quiz.setTimestamp(timestamp)
+        return quiz.revealAnswersOfCurrentQuestion()
+                .setTimestamp(timestamp)
     }
 }
 

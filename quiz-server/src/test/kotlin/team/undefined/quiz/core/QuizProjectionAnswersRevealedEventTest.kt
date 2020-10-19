@@ -1,8 +1,9 @@
 package team.undefined.quiz.core
 
 import com.google.common.eventbus.EventBus
+import org.assertj.core.api.Assertions.assertThat
 import org.awaitility.kotlin.await
-import org.awaitility.kotlin.until
+import org.awaitility.kotlin.untilAsserted
 import org.junit.jupiter.api.Test
 import org.mockito.Mockito
 import reactor.core.publisher.Flux
@@ -30,15 +31,19 @@ internal class QuizProjectionAnswersRevealedEventTest {
         eventBus.post(QuestionAskedEvent(quiz.id, question.id, 4))
         eventBus.post(BuzzeredEvent(quiz.id, participant.id, 5))
         eventBus.post(AnsweredEvent(quiz.id, participant.id, AnswerCommand.Answer.CORRECT, 6))
+        eventBus.post(AnswersRevealedEvent(quiz.id, 7))
 
-        await until {
-            observedQuiz.get().id == quiz.id
-                    && observedQuiz.get().participants.size == 1
-                    && observedQuiz.get().participants[0].points == 2L
-                    && observedQuiz.get().questions.size == 1
-                    && observedQuiz.get().questions[0].pending
-                    && !observedQuiz.get().questions[0].alreadyPlayed
-                    && !observedQuiz.get().finished
+        await untilAsserted  {
+            val q = observedQuiz.get()
+
+            assertThat(q.id).isEqualTo(quiz.id)
+            assertThat(q.participants).hasSize(1)
+            assertThat(q.participants[0].points).isEqualTo(2L)
+            assertThat(q.questions).hasSize(1)
+            assertThat(q.questions[0].pending).isTrue()
+            assertThat(q.questions[0].revealed).isTrue()
+            assertThat(q.questions[0].alreadyPlayed).isFalse()
+            assertThat(q.finished).isFalse()
         }
     }
 
@@ -48,7 +53,7 @@ internal class QuizProjectionAnswersRevealedEventTest {
 
         val question = Question(question = "Wofür steht die Abkürzung a.D.?")
         val participant = Participant(name = "Lena")
-        val answeredEvent = AnsweredEvent(quiz.id, participant.id, AnswerCommand.Answer.CORRECT, 6)
+        val answersRevealedEvent = AnswersRevealedEvent(quiz.id, 7)
 
         val eventRepository = Mockito.mock(EventRepository::class.java)
         Mockito.`when`(eventRepository.determineEvents(quiz.id))
@@ -58,7 +63,8 @@ internal class QuizProjectionAnswersRevealedEventTest {
                         ParticipantCreatedEvent(quiz.id, participant, 3),
                         QuestionAskedEvent(quiz.id, question.id, 4),
                         BuzzeredEvent(quiz.id, participant.id, 5),
-                        answeredEvent
+                        AnsweredEvent(quiz.id, participant.id, AnswerCommand.Answer.CORRECT, 6),
+                        answersRevealedEvent
                 ))
 
         val eventBus = EventBus()
@@ -68,16 +74,19 @@ internal class QuizProjectionAnswersRevealedEventTest {
         quizProjection.observeQuiz(quiz.id)
                 .subscribe { observedQuiz.set(it) }
 
-        eventBus.post(answeredEvent)
+        eventBus.post(answersRevealedEvent)
 
-        await until {
-            observedQuiz.get().id == quiz.id
-                    && observedQuiz.get().participants.size == 1
-                    && observedQuiz.get().participants[0].points == 2L
-                    && observedQuiz.get().questions.size == 1
-                    && observedQuiz.get().questions[0].pending
-                    && !observedQuiz.get().questions[0].alreadyPlayed
-                    && !observedQuiz.get().finished
+        await untilAsserted  {
+            val q = observedQuiz.get()
+
+            assertThat(q.id).isEqualTo(quiz.id)
+            assertThat(q.participants).hasSize(1)
+            assertThat(q.participants[0].points).isEqualTo(2L)
+            assertThat(q.questions).hasSize(1)
+            assertThat(q.questions[0].pending).isTrue()
+            assertThat(q.questions[0].revealed).isTrue()
+            assertThat(q.questions[0].alreadyPlayed).isFalse()
+            assertThat(q.finished).isFalse()
         }
     }
 
@@ -94,7 +103,8 @@ internal class QuizProjectionAnswersRevealedEventTest {
                         QuestionCreatedEvent(quiz.id, question, 2),
                         ParticipantCreatedEvent(quiz.id, participant, 3),
                         QuestionAskedEvent(quiz.id, question.id, 4),
-                        BuzzeredEvent(quiz.id, participant.id, 5)
+                        BuzzeredEvent(quiz.id, participant.id, 5),
+                        AnsweredEvent(quiz.id, participant.id, AnswerCommand.Answer.CORRECT, 6)
                 ))
 
         val eventBus = EventBus()
@@ -104,16 +114,19 @@ internal class QuizProjectionAnswersRevealedEventTest {
         quizProjection.observeQuiz(quiz.id)
                 .subscribe { observedQuiz.set(it) }
 
-        eventBus.post(AnsweredEvent(quiz.id, participant.id, AnswerCommand.Answer.CORRECT, 6))
+        eventBus.post(AnswersRevealedEvent(quiz.id, 7))
 
-        await until {
-            observedQuiz.get().id == quiz.id
-                    && observedQuiz.get().participants.size == 1
-                    && observedQuiz.get().participants[0].points == 2L
-                    && observedQuiz.get().questions.size == 1
-                    && observedQuiz.get().questions[0].pending
-                    && !observedQuiz.get().questions[0].alreadyPlayed
-                    && !observedQuiz.get().finished
+        await untilAsserted  {
+            val q = observedQuiz.get()
+
+            assertThat(q.id).isEqualTo(quiz.id)
+            assertThat(q.participants).hasSize(1)
+            assertThat(q.participants[0].points).isEqualTo(2L)
+            assertThat(q.questions).hasSize(1)
+            assertThat(q.questions[0].pending).isTrue()
+            assertThat(q.questions[0].revealed).isTrue()
+            assertThat(q.questions[0].alreadyPlayed).isFalse()
+            assertThat(q.finished).isFalse()
         }
     }
 

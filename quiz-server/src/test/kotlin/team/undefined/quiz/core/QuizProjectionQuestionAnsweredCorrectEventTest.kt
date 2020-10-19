@@ -1,8 +1,9 @@
 package team.undefined.quiz.core
 
 import com.google.common.eventbus.EventBus
+import org.assertj.core.api.Assertions.assertThat
 import org.awaitility.kotlin.await
-import org.awaitility.kotlin.until
+import org.awaitility.kotlin.untilAsserted
 import org.junit.jupiter.api.Test
 import org.mockito.Mockito.`when`
 import org.mockito.Mockito.mock
@@ -32,14 +33,17 @@ internal class QuizProjectionQuestionAnsweredCorrectEventTest {
         eventBus.post(BuzzeredEvent(quiz.id, participant.id, 5))
         eventBus.post(AnsweredEvent(quiz.id, participant.id, AnswerCommand.Answer.CORRECT, 6))
 
-        await until {
-            observedQuiz.get().id == quiz.id
-                    && observedQuiz.get().participants.size == 1
-                    && observedQuiz.get().participants[0].points == 2L
-                    && observedQuiz.get().questions.size == 1
-                    && observedQuiz.get().questions[0].pending
-                    && !observedQuiz.get().questions[0].alreadyPlayed
-                    && !observedQuiz.get().finished
+        await untilAsserted  {
+            val q = observedQuiz.get()
+
+            assertThat(q.id).isEqualTo(quiz.id)
+            assertThat(q.participants).hasSize(1)
+            assertThat(q.participants[0].points).isEqualTo(2L)
+            assertThat(q.questions).hasSize(1)
+            assertThat(q.questions[0].pending).isTrue()
+            assertThat(q.questions[0].revealed).isFalse()
+            assertThat(q.questions[0].alreadyPlayed).isFalse()
+            assertThat(q.finished).isFalse()
         }
     }
 
@@ -64,14 +68,17 @@ internal class QuizProjectionQuestionAnsweredCorrectEventTest {
         eventBus.post(BuzzeredEvent(quiz.id, participant.id, 5))
         eventBus.post(AnsweredEvent(quiz.id, null, AnswerCommand.Answer.CORRECT, 6))
 
-        await until {
-            observedQuiz.get().id == quiz.id
-                    && observedQuiz.get().participants.size == 1
-                    && observedQuiz.get().participants[0].points == 2L
-                    && observedQuiz.get().questions.size == 1
-                    && observedQuiz.get().questions[0].pending
-                    && !observedQuiz.get().questions[0].alreadyPlayed
-                    && !observedQuiz.get().finished
+        await untilAsserted  {
+            val q = observedQuiz.get()
+
+            assertThat(q.id).isEqualTo(quiz.id)
+            assertThat(q.participants).hasSize(1)
+            assertThat(q.participants[0].points).isEqualTo(2L)
+            assertThat(q.questions).hasSize(1)
+            assertThat(q.questions[0].pending).isTrue()
+            assertThat(q.questions[0].revealed).isFalse()
+            assertThat(q.questions[0].alreadyPlayed).isFalse()
+            assertThat(q.finished).isFalse()
         }
     }
 
@@ -103,14 +110,17 @@ internal class QuizProjectionQuestionAnsweredCorrectEventTest {
 
         eventBus.post(answeredEvent)
 
-        await until {
-            observedQuiz.get().id == quiz.id
-                    && observedQuiz.get().participants.size == 1
-                    && observedQuiz.get().participants[0].points == 2L
-                    && observedQuiz.get().questions.size == 1
-                    && observedQuiz.get().questions[0].pending
-                    && !observedQuiz.get().questions[0].alreadyPlayed
-                    && !observedQuiz.get().finished
+        await untilAsserted  {
+            val q = observedQuiz.get()
+
+            assertThat(q.id).isEqualTo(quiz.id)
+            assertThat(q.participants).hasSize(1)
+            assertThat(q.participants[0].points).isEqualTo(2L)
+            assertThat(q.questions).hasSize(1)
+            assertThat(q.questions[0].pending).isTrue()
+            assertThat(q.questions[0].revealed).isFalse()
+            assertThat(q.questions[0].alreadyPlayed).isFalse()
+            assertThat(q.finished).isFalse()
         }
     }
 
@@ -139,14 +149,17 @@ internal class QuizProjectionQuestionAnsweredCorrectEventTest {
 
         eventBus.post(AnsweredEvent(quiz.id, participant.id, AnswerCommand.Answer.CORRECT, 6))
 
-        await until {
-            observedQuiz.get().id == quiz.id
-                    && observedQuiz.get().participants.size == 1
-                    && observedQuiz.get().participants[0].points == 2L
-                    && observedQuiz.get().questions.size == 1
-                    && observedQuiz.get().questions[0].pending
-                    && !observedQuiz.get().questions[0].alreadyPlayed
-                    && !observedQuiz.get().finished
+        await untilAsserted  {
+            val q = observedQuiz.get()
+
+            assertThat(q.id).isEqualTo(quiz.id)
+            assertThat(q.participants).hasSize(1)
+            assertThat(q.participants[0].points).isEqualTo(2L)
+            assertThat(q.questions).hasSize(1)
+            assertThat(q.questions[0].pending).isTrue()
+            assertThat(q.questions[0].revealed).isFalse()
+            assertThat(q.questions[0].alreadyPlayed).isFalse()
+            assertThat(q.finished).isFalse()
         }
     }
 

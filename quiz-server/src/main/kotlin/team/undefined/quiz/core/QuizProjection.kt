@@ -54,6 +54,9 @@ class QuizProjection(eventBus: EventBus,
     fun handleAnswer(event: AnsweredEvent) = handleEvent(event)
 
     @Subscribe
+    fun handleRevealOfAnswers(event: AnswersRevealedEvent) = handleEvent(event)
+
+    @Subscribe
     fun handleReopenedQuestion(event: CurrentQuestionReopenedEvent) = handleEvent(event)
 
     @Subscribe
