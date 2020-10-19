@@ -9,6 +9,7 @@ interface EstimationProps {
 const Estimation: React.FC<EstimationProps> = (props: EstimationProps) => {
     const [estimation, setEstimation] = useState('');
     const [sendButtonCssClasses, setSendButtonCssClasses] = useState('button is-primary');
+    const [errorMessage, setErrorMessage] = useState('');
 
     const pendingQuestion = props.quiz.openQuestions.find(q => q.pending);
 
@@ -34,11 +35,12 @@ const Estimation: React.FC<EstimationProps> = (props: EstimationProps) => {
             if (response.status !== 200) {
                 throw Error('error when estimating');
             }
-        })
-        .catch(e => console.error(e))
-        .finally(() => {
             setEstimation('');
-            setSendButtonCssClasses('button is-primary')
+            setSendButtonCssClasses('button is-primary');
+        })
+        .catch(e => {
+            console.error(e);
+            setErrorMessage('Something went wrong. Please send the data again.');
         });
     }
 
@@ -63,6 +65,12 @@ const Estimation: React.FC<EstimationProps> = (props: EstimationProps) => {
                     </button>
                 </div>
             </div>
+            { 
+                errorMessage.length > 0 &&
+                <div data-testid="error-message" className="has-text-danger">
+                    { errorMessage }
+                </div>
+            }
         </span>
     )
 }
