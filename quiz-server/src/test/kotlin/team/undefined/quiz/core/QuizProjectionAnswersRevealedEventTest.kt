@@ -42,6 +42,7 @@ internal class QuizProjectionAnswersRevealedEventTest {
             assertThat(q.questions).hasSize(1)
             assertThat(q.questions[0].pending).isTrue()
             assertThat(q.questions[0].revealed).isTrue()
+            assertThat(q.questions[0].secondsLeft).isEqualTo(0)
             assertThat(q.questions[0].alreadyPlayed).isFalse()
             assertThat(q.finished).isFalse()
         }
@@ -85,6 +86,7 @@ internal class QuizProjectionAnswersRevealedEventTest {
             assertThat(q.questions).hasSize(1)
             assertThat(q.questions[0].pending).isTrue()
             assertThat(q.questions[0].revealed).isTrue()
+            assertThat(q.questions[0].secondsLeft).isEqualTo(0)
             assertThat(q.questions[0].alreadyPlayed).isFalse()
             assertThat(q.finished).isFalse()
         }
@@ -125,6 +127,7 @@ internal class QuizProjectionAnswersRevealedEventTest {
             assertThat(q.questions).hasSize(1)
             assertThat(q.questions[0].pending).isTrue()
             assertThat(q.questions[0].revealed).isTrue()
+            assertThat(q.questions[0].secondsLeft).isEqualTo(0)
             assertThat(q.questions[0].alreadyPlayed).isFalse()
             assertThat(q.finished).isFalse()
         }

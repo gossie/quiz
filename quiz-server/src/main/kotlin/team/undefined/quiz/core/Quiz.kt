@@ -118,7 +118,10 @@ data class Quiz(
     fun revealAnswersOfCurrentQuestion(): Quiz {
         questions
                 .filter { it.pending }
-                .forEach { it.revealed = true }
+                .forEach {
+                    it.revealed = true
+                    it.secondsLeft = 0
+                }
         return this
     }
 
