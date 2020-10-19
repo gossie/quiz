@@ -122,7 +122,7 @@ class DefaultQuizService(private val eventRepository: EventRepository,
         logger.debug("reveal answers of active question in quiz '{}'", command.quizId)
         return eventRepository.storeEvent(AnswersRevealedEvent(command.quizId))
                 .map {
-                    subscriptions[it.quizId]!!.dispose()
+                    subscriptions[it.quizId]?.dispose()
                     it
                 }
                 .map { eventBus.post(it) }
