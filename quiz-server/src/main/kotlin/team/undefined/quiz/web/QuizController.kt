@@ -21,7 +21,7 @@ class QuizController(private val quizService: QuizService,
                      private val quizProjection: QuizProjection,
                      private val eventBus: EventBus) {
 
-    private val logger = LoggerFactory.getLogger(QuizService::class.java)
+    private val logger = LoggerFactory.getLogger(QuizController::class.java)
 
     @PostMapping(consumes = [MediaType.APPLICATION_JSON_VALUE], produces = [MediaType.TEXT_PLAIN_VALUE])
     @ResponseStatus(HttpStatus.CREATED)
