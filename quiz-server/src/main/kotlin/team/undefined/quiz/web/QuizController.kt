@@ -63,7 +63,7 @@ class QuizController(private val quizService: QuizService,
     fun getQuizStreamForQuizMaster(@PathVariable quizId: UUID): Flux<ServerSentEvent<QuizDTO>> {
         val observer = getObserver(quizId)
         eventBus.post(ForceEmitCommand(quizId))
-        return Flux.merge(observer, getHeartbeat())
+        return Flux.merge(observer, getHeartbeat(quizId))
     }
 
     @GetMapping(path = ["/{quizId}/quiz-participant"], produces = [MediaType.TEXT_EVENT_STREAM_VALUE])
@@ -97,7 +97,9 @@ class QuizController(private val quizService: QuizService,
 
     private fun getHeartbeat(quizId: UUID): Flux<ServerSentEvent<QuizDTO>> {
         return Flux.interval(Duration.ofSeconds(10))
-                .flatMap { quizProjection.determineQuiz(quizId)?.map() }
+                .map { quizProjection.determineQuiz(quizId) }
+                .filter { it != null }
+                .flatMap { it!!.map() }
                 .map {
                     ServerSentEvent.builder<QuizDTO>()
                             .event("quiz")
