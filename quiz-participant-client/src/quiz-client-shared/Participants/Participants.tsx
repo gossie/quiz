@@ -17,10 +17,9 @@ const Participants: React.FC<ParticipantsProps> = (props: ParticipantsProps) => 
     const pendingQuestion = props.quiz.openQuestions.find(question => question.pending);
     const [stateAfterLastQuestion, setStateAfterLastQuestion] = useState(new Array<ParticipantState>()); 
     const [currentQuestionId, setCurrentQuestionId] = useState('');
+    const [revealAllowed, setRevealAllowed] = useState(false);
  
-    const comparePoints = (a: Participant, b: Participant) => {
-        return b.points - a.points;
-    }
+    const comparePoints = (a: Participant, b: Participant) => b.points - a.points;
  
     const getPointsAfterLastQuestionForParticipant = (participant: Participant) => {
         const participantStateAfterLastQuestion = stateAfterLastQuestion.find(p => p.id === participant.id);
@@ -51,6 +50,10 @@ const Participants: React.FC<ParticipantsProps> = (props: ParticipantsProps) => 
         } 
     }, [isNewQuestion, updateStateAfterLastQuestion]);
 
+    const toggleRevealAllowed = (allowed: boolean) => {
+        setRevealAllowed(allowed);
+    };
+
     return (
         <div>
             <h4 className="title is-4">Participants</h4>
@@ -58,6 +61,14 @@ const Participants: React.FC<ParticipantsProps> = (props: ParticipantsProps) => 
                 <FlipMove>
                     {elements}
                 </FlipMove>     
+            </div>
+            <div className="field">
+                <div className="control">
+                    <label className="checkbox">
+                        <input type="checkbox" checked={revealAllowed} onChange={ev => toggleRevealAllowed(ev.target.checked)} />
+                        If checked, other participants can see your answer when the quiz master reveals them
+                    </label>
+                </div>
             </div>
         </div>
     )
