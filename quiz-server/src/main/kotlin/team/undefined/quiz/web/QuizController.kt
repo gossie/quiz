@@ -1,6 +1,7 @@
 package team.undefined.quiz.web
 
 import com.google.common.eventbus.EventBus
+import org.slf4j.LoggerFactory
 import org.springframework.http.HttpStatus
 import org.springframework.http.MediaType
 import org.springframework.http.codec.ServerSentEvent
@@ -19,6 +20,8 @@ import java.util.*
 class QuizController(private val quizService: QuizService,
                      private val quizProjection: QuizProjection,
                      private val eventBus: EventBus) {
+
+    private val logger = LoggerFactory.getLogger(QuizService::class.java)
 
     @PostMapping(consumes = [MediaType.APPLICATION_JSON_VALUE], produces = [MediaType.TEXT_PLAIN_VALUE])
     @ResponseStatus(HttpStatus.CREATED)
@@ -67,7 +70,7 @@ class QuizController(private val quizService: QuizService,
     fun getQuizStreamForQuizParticipants(@PathVariable quizId: UUID): Flux<ServerSentEvent<QuizDTO>> {
         val observer = getObserver(quizId)
         eventBus.post(ForceEmitCommand(quizId))
-        return Flux.merge(observer, getHeartbeat())
+        return Flux.merge(observer, getHeartbeat(quizId))
                 .map {
                     it.data()?.openQuestions
                         ?.filter { question -> !question.revealed }
@@ -84,6 +87,7 @@ class QuizController(private val quizService: QuizService,
         return quizProjection.observeQuiz(quizId)
                 .flatMap { it.map() }
                 .map {
+                    logger.info("Sending quiz {} to the client", it)
                     ServerSentEvent.builder<QuizDTO>()
                             .event("quiz")
                             .data(it)
@@ -91,11 +95,13 @@ class QuizController(private val quizService: QuizService,
                 }
     }
 
-    private fun getHeartbeat(): Flux<ServerSentEvent<QuizDTO>> {
+    private fun getHeartbeat(quizId: UUID): Flux<ServerSentEvent<QuizDTO>> {
         return Flux.interval(Duration.ofSeconds(10))
+                .flatMap { quizProjection.determineQuiz(quizId)?.map() }
                 .map {
                     ServerSentEvent.builder<QuizDTO>()
-                            .event("ping")
+                            .event("quiz")
+                            .data(it)
                             .build()
                 }
     }

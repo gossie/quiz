@@ -131,4 +131,8 @@ class QuizProjection(eventBus: EventBus,
         observables.remove(quizId)
     }
 
+    fun determineQuiz(quizId: UUID): Quiz? {
+        return quizCache[quizId]
+    }
+
 }
