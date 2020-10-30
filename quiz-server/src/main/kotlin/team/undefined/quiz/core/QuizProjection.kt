@@ -11,8 +11,8 @@ import java.util.concurrent.ConcurrentHashMap
 
 @Component
 class QuizProjection(eventBus: EventBus,
-                           private val quizStatisticsProvider: QuizStatisticsProvider,
-                           private val eventRepository: EventRepository) {
+                     private val quizStatisticsProvider: QuizStatisticsProvider,
+                     private val eventRepository: EventRepository) {
 
     private val logger = LoggerFactory.getLogger(QuizProjection::class.java)
 
