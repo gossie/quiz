@@ -2,6 +2,7 @@ package team.undefined.quiz.core
 
 import com.google.common.eventbus.EventBus
 import com.google.common.eventbus.Subscribe
+import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Component
 import reactor.core.publisher.EmitterProcessor
 import reactor.core.publisher.Flux
@@ -12,6 +13,8 @@ import java.util.concurrent.ConcurrentHashMap
 class QuizProjection(eventBus: EventBus,
                            private val quizStatisticsProvider: QuizStatisticsProvider,
                            private val eventRepository: EventRepository) {
+
+    private val logger = LoggerFactory.getLogger(QuizProjection::class.java)
 
     private val quizCache = ConcurrentHashMap<UUID, Quiz>()
     private val observables = ConcurrentHashMap<UUID, EmitterProcessor<Quiz>>()
@@ -100,6 +103,7 @@ class QuizProjection(eventBus: EventBus,
     }
 
     private fun handleEvent(event: Event) {
+        logger.info("handling event {}", event)
         val quiz = quizCache[event.quizId]
         if (quiz == null) {
             eventRepository.determineEvents(event.quizId)
@@ -116,6 +120,7 @@ class QuizProjection(eventBus: EventBus,
             quizCache[event.quizId] = event.process(quiz)
             emitQuiz(quizCache[event.quizId]!!)
         }
+        logger.info("handled event {}", event)
     }
 
     fun observeQuiz(quizId: UUID): Flux<Quiz> {
