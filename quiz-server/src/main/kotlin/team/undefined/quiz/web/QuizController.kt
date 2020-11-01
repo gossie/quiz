@@ -97,8 +97,8 @@ class QuizController(private val quizService: QuizService,
 
     private fun getHeartbeat(quizId: UUID): Flux<ServerSentEvent<QuizDTO>> {
         return Flux.interval(Duration.ofSeconds(10))
+                .filter { quizProjection.determineQuiz(quizId) != null }
                 .map { quizProjection.determineQuiz(quizId) }
-                .filter { it != null }
                 .flatMap { it!!.map() }
                 .map {
                     logger.info("Sending quiz {} to the client as heartbeat", it)
