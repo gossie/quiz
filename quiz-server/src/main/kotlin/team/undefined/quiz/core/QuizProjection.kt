@@ -8,6 +8,7 @@ import reactor.core.publisher.EmitterProcessor
 import reactor.core.publisher.Flux
 import java.util.*
 import java.util.concurrent.ConcurrentHashMap
+import java.util.concurrent.Semaphore
 
 @Component
 class QuizProjection(eventBus: EventBus,
@@ -18,6 +19,7 @@ class QuizProjection(eventBus: EventBus,
 
     private val quizCache = ConcurrentHashMap<UUID, Quiz>()
     private val observables = ConcurrentHashMap<UUID, EmitterProcessor<Quiz>>()
+    private val locks = ConcurrentHashMap<UUID, Semaphore>()
 
     init {
         eventBus.register(this)
@@ -27,6 +29,7 @@ class QuizProjection(eventBus: EventBus,
     fun handleQuizCreation(event: QuizCreatedEvent) {
         quizCache[event.quizId] = event.process(event.quiz)
         emitQuiz(quizCache[event.quizId]!!)
+        locks.computeIfAbsent(event.quizId) { Semaphore(1) }
     }
 
     @Subscribe
@@ -93,6 +96,8 @@ class QuizProjection(eventBus: EventBus,
     @Subscribe
     fun handleQuizDeletion(event: QuizDeletedEvent) {
         quizCache.remove(event.quizId)
+        locks.remove(event.quizId)
+        observables.remove(event.quizId)
     }
 
     @Subscribe
@@ -104,21 +109,26 @@ class QuizProjection(eventBus: EventBus,
 
     private fun handleEvent(event: Event) {
         logger.info("handling event {}", event)
-        val quiz = quizCache[event.quizId]
-        if (quiz == null) {
-            eventRepository.determineEvents(event.quizId)
-                    .reduce(Quiz(name = "")) { q: Quiz, e: Event -> e.process(q)}
-                    .subscribe {
-                        if (it.getTimestamp()!! < event.timestamp) {
-                            quizCache[event.quizId] = event.process(it)
-                        } else {
-                            quizCache[event.quizId] = it
+        try {
+            locks.computeIfAbsent(event.quizId) { Semaphore(1) }.acquire()
+            val quiz = quizCache[event.quizId]
+            if (quiz == null) {
+                eventRepository.determineEvents(event.quizId)
+                        .reduce(Quiz(name = "")) { q: Quiz, e: Event -> e.process(q) }
+                        .subscribe {
+                            if (it.getTimestamp()!! < event.timestamp) {
+                                quizCache[event.quizId] = event.process(it)
+                            } else {
+                                quizCache[event.quizId] = it
+                            }
+                            emitQuiz(quizCache[event.quizId]!!)
                         }
-                        emitQuiz(quizCache[event.quizId]!!)
-                    }
-        } else if (quiz.getTimestamp()!! < event.timestamp) {
-            quizCache[event.quizId] = event.process(quiz)
-            emitQuiz(quizCache[event.quizId]!!)
+            } else {
+                quizCache[event.quizId] = event.process(quiz)
+                emitQuiz(quizCache[event.quizId]!!)
+            }
+        } finally {
+            locks[event.quizId]!!.release()
         }
         logger.info("handled event {}", event)
     }
