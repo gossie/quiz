@@ -2,19 +2,24 @@ package team.undefined.quiz.core
 
 import com.google.common.eventbus.EventBus
 import com.google.common.eventbus.Subscribe
+import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Component
 import reactor.core.publisher.EmitterProcessor
 import reactor.core.publisher.Flux
 import java.util.*
 import java.util.concurrent.ConcurrentHashMap
+import java.util.concurrent.Semaphore
 
 @Component
 class QuizProjection(eventBus: EventBus,
-                           private val quizStatisticsProvider: QuizStatisticsProvider,
-                           private val eventRepository: EventRepository) {
+                     private val quizStatisticsProvider: QuizStatisticsProvider,
+                     private val eventRepository: EventRepository) {
+
+    private val logger = LoggerFactory.getLogger(QuizProjection::class.java)
 
     private val quizCache = ConcurrentHashMap<UUID, Quiz>()
     private val observables = ConcurrentHashMap<UUID, EmitterProcessor<Quiz>>()
+    private val locks = ConcurrentHashMap<UUID, Semaphore>()
 
     init {
         eventBus.register(this)
@@ -24,6 +29,7 @@ class QuizProjection(eventBus: EventBus,
     fun handleQuizCreation(event: QuizCreatedEvent) {
         quizCache[event.quizId] = event.process(event.quiz)
         emitQuiz(quizCache[event.quizId]!!)
+        locks.computeIfAbsent(event.quizId) { Semaphore(1) }
     }
 
     @Subscribe
@@ -90,6 +96,8 @@ class QuizProjection(eventBus: EventBus,
     @Subscribe
     fun handleQuizDeletion(event: QuizDeletedEvent) {
         quizCache.remove(event.quizId)
+        locks.remove(event.quizId)
+        observables.remove(event.quizId)
     }
 
     @Subscribe
@@ -100,22 +108,29 @@ class QuizProjection(eventBus: EventBus,
     }
 
     private fun handleEvent(event: Event) {
-        val quiz = quizCache[event.quizId]
-        if (quiz == null) {
-            eventRepository.determineEvents(event.quizId)
-                    .reduce(Quiz(name = "")) { q: Quiz, e: Event -> e.process(q)}
-                    .subscribe {
-                        if (it.getTimestamp()!! < event.timestamp) {
-                            quizCache[event.quizId] = event.process(it)
-                        } else {
-                            quizCache[event.quizId] = it
+        logger.info("handling event {}", event)
+        try {
+            locks.computeIfAbsent(event.quizId) { Semaphore(1) }.acquire()
+            val quiz = quizCache[event.quizId]
+            if (quiz == null) {
+                eventRepository.determineEvents(event.quizId)
+                        .reduce(Quiz(name = "")) { q: Quiz, e: Event -> e.process(q) }
+                        .subscribe {
+                            if (it.getTimestamp()!! < event.timestamp) {
+                                quizCache[event.quizId] = event.process(it)
+                            } else {
+                                quizCache[event.quizId] = it
+                            }
+                            emitQuiz(quizCache[event.quizId]!!)
                         }
-                        emitQuiz(quizCache[event.quizId]!!)
-                    }
-        } else if (quiz.getTimestamp()!! < event.timestamp) {
-            quizCache[event.quizId] = event.process(quiz)
-            emitQuiz(quizCache[event.quizId]!!)
+            } else {
+                quizCache[event.quizId] = event.process(quiz)
+                emitQuiz(quizCache[event.quizId]!!)
+            }
+        } finally {
+            locks[event.quizId]!!.release()
         }
+        logger.info("handled event {}", event)
     }
 
     fun observeQuiz(quizId: UUID): Flux<Quiz> {
@@ -129,6 +144,10 @@ class QuizProjection(eventBus: EventBus,
 
     fun removeObserver(quizId: UUID) {
         observables.remove(quizId)
+    }
+
+    fun determineQuiz(quizId: UUID): Quiz? {
+        return quizCache[quizId]
     }
 
 }
