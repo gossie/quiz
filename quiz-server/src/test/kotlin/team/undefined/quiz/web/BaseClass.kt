@@ -3,7 +3,6 @@ package team.undefined.quiz.web
 import com.google.common.eventbus.EventBus
 import io.restassured.RestAssured
 import org.junit.jupiter.api.BeforeEach
-import org.mockito.Mockito
 import org.mockito.Mockito.`when`
 import org.mockito.Mockito.mock
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration
@@ -59,6 +58,10 @@ abstract class BaseClass {
                 }
 
                 override fun estimate(command: EstimationCommand): Mono<Unit> {
+                    TODO("Not yet implemented")
+                }
+
+                override fun toggleAnswerRevealAllowed(command: ToggleAnswerRevealAllowedCommand): Mono<Unit> {
                     TODO("Not yet implemented")
                 }
 

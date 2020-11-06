@@ -41,6 +41,12 @@ data class Quiz(
         return this
     }
 
+    fun toggleAnswerRevealAllowed(participantId: UUID): Quiz {
+        val participant = participants.find { it.id == participantId }
+        participant?.revealAllowed = participant?.revealAllowed?.not() ?: false
+        return this
+    }
+
     fun hasNoParticipantWithName(name: String): Boolean {
         return participants.none { it.name == name }
     }

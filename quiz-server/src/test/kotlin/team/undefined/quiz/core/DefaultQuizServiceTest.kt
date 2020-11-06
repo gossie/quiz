@@ -283,6 +283,20 @@ internal class DefaultQuizServiceTest {
     }
 
     @Test
+    fun shouldPreventReveal() {
+        val quizId = UUID.randomUUID()
+        val participant = UUID.randomUUID()
+
+        val quizService = DefaultQuizService(quizRepository, eventBus)
+
+        StepVerifier.create(quizService.toggleAnswerRevealAllowed(ToggleAnswerRevealAllowedCommand(quizId, participant)))
+                .consumeNextWith {
+                    verify(eventBus).post(argThat { (it as ToggleAnswerRevealAllowedEvent).quizId == quizId && it.participantId == participant })
+                }
+                .verifyComplete()
+    }
+
+    @Test
     fun shouldCreateNewQuestionWithImage() {
         val quizService = DefaultQuizService(quizRepository, eventBus)
 
