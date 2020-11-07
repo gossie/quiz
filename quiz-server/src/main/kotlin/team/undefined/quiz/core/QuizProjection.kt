@@ -57,6 +57,9 @@ class QuizProjection(eventBus: EventBus,
     fun handleEstimation(event: EstimatedEvent) = handleEvent(event)
 
     @Subscribe
+    fun handleAnswerRevealToggle(event: ToggleAnswerRevealAllowedEvent) = handleEvent(event)
+
+    @Subscribe
     fun handleAnswer(event: AnsweredEvent) = handleEvent(event)
 
     @Subscribe

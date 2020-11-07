@@ -75,6 +75,13 @@ class DefaultQuizService(private val eventRepository: EventRepository,
     }
 
     @WriteLock
+    override fun toggleAnswerRevealAllowed(command: ToggleAnswerRevealAllowedCommand): Mono<Unit> {
+        logger.debug("{} prevents the reveal of answers for quiz {}", command.participantId, command.quizId)
+        return eventRepository.storeEvent(ToggleAnswerRevealAllowedEvent(command.quizId, command.participantId))
+                .map { eventBus.post(it) }
+    }
+
+    @WriteLock
     override fun startNewQuestion(command: AskQuestionCommand): Mono<Unit> {
         logger.debug("starting question '{}' in quiz '{}'", command.questionId, command.quizId)
         return eventRepository.storeEvent(QuestionAskedEvent(command.quizId, command.questionId))

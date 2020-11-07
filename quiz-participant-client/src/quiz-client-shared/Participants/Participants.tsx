@@ -18,9 +18,7 @@ const Participants: React.FC<ParticipantsProps> = (props: ParticipantsProps) => 
     const [stateAfterLastQuestion, setStateAfterLastQuestion] = useState(new Array<ParticipantState>()); 
     const [currentQuestionId, setCurrentQuestionId] = useState('');
  
-    const comparePoints = (a: Participant, b: Participant) => {
-        return b.points - a.points;
-    }
+    const comparePoints = (a: Participant, b: Participant) => b.points - a.points;
  
     const getPointsAfterLastQuestionForParticipant = (participant: Participant) => {
         const participantStateAfterLastQuestion = stateAfterLastQuestion.find(p => p.id === participant.id);

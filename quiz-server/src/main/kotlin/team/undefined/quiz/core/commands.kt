@@ -24,6 +24,8 @@ data class EstimationCommand(override val quizId: UUID, val participantId: UUID,
 
 data class BuzzerCommand(override val quizId: UUID, val participantId: UUID) : Command
 
+data class ToggleAnswerRevealAllowedCommand(override val quizId: UUID, val participantId: UUID) : Command
+
 data class AnswerCommand(override val quizId: UUID, val participantId: UUID, val answer: Answer) : Command {
     enum class Answer(private val handler: (Quiz, UUID?) -> Quiz) {
         CORRECT({quiz, participantId -> quiz.answeredCorrect(participantId)}),
