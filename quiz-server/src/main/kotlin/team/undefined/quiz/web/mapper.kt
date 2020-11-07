@@ -58,7 +58,7 @@ private fun BuzzerStatistics.map(quiz: Quiz): Mono<BuzzerStatisticsDTO> {
 }
 
 private fun Participant.map(quizId: UUID): Mono<ParticipantDTO> {
-    return ParticipantDTO(this.id, this.name, this.turn, this.points)
+    return ParticipantDTO(this.id, this.name, this.turn, this.points, this.revealAllowed)
             .addLinks(quizId)
 }
 
@@ -66,6 +66,10 @@ private fun ParticipantDTO.addLinks(quizId: UUID): Mono<ParticipantDTO> {
     return linkTo(methodOn(ParticipantsController::class.java).buzzer(quizId, this.id, ""))
             .withRel("buzzer")
             .toMono()
+            .map { this.add(it) }
+            .map { linkTo(methodOn(ParticipantsController::class.java).toggleRevealPrevention(quizId, this.id)) }
+            .map { it.withRel("toggleRevealAllowed") }
+            .flatMap { it.toMono() }
             .map { this.add(it) }
 }
 

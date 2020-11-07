@@ -16,6 +16,7 @@ const QuizDashboard: React.FC<QuizDashboardProps> = (props: QuizDashboardProps) 
 
     const [quiz, setQuiz] = useState({} as Quiz);
     const [participantId, setParticipantId] = useState('');
+    const [revealAllowed, setRevealAllowed] = useState(false);
 
     useEffect(() => {
         console.debug('register for server sent events');
@@ -29,9 +30,10 @@ const QuizDashboard: React.FC<QuizDashboardProps> = (props: QuizDashboardProps) 
             console.log('event', ev);
             if (Object.keys(JSON.parse(ev.data)).includes('id')) {
                 const newQuiz: Quiz = JSON.parse(ev.data);
-                const pId = newQuiz.participants.find(p => p.name === props.participantName)?.id
-                if (pId) {
-                    setParticipantId(pId);
+                const participant = newQuiz.participants.find(p => p.name === props.participantName)
+                if (participant) {
+                    setParticipantId(participant.id);
+                    setRevealAllowed(participant.revealAllowed);
                 }
                 setQuiz(newQuiz);
             }
@@ -60,6 +62,20 @@ const QuizDashboard: React.FC<QuizDashboardProps> = (props: QuizDashboardProps) 
         const pendingQuestion = quiz.openQuestions.find(q => q.pending);
         return pendingQuestion !== undefined && pendingQuestion.estimates !== null;
     }
+
+    const toggleRevealAllowed = (allowed: boolean) => {
+        setRevealAllowed(allowed);
+        const href = quiz.participants.find(p => p.id === participantId).links.find(link => link.rel === 'toggleRevealAllowed').href;
+        fetch(`${process.env.REACT_APP_BASE_URL}${href}`, {
+            method: 'PUT'
+        })
+        .then(response => {
+            if (response.status !== 200) {
+                throw Error('error when performing toggle of reveal allowed');
+            }
+        })
+        .catch(e => console.error(e));
+    };
     
     return (
         <div className="Quiz-dashboard">
@@ -69,6 +85,14 @@ const QuizDashboard: React.FC<QuizDashboardProps> = (props: QuizDashboardProps) 
                     <h4 className="title is-4">{quiz.name}</h4>
                     <div className="columns Dashboard-content">
                         <div className="column participants">
+                            <div className="field">
+                                <div className="control">
+                                    <label className="checkbox">
+                                        <input type="checkbox" checked={revealAllowed} onChange={ev => toggleRevealAllowed(ev.target.checked)} />
+                                        If checked, other participants can see your answer when the quiz master reveals them
+                                    </label>
+                                </div>
+                            </div>
                             <Participants quiz={quiz}></Participants>
                             <QuizStatistics quiz={quiz} closeable={false}></QuizStatistics>
                         </div>

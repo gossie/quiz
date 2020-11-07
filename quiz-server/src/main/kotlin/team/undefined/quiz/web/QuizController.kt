@@ -8,7 +8,6 @@ import org.springframework.http.codec.ServerSentEvent
 import org.springframework.web.bind.annotation.*
 import reactor.core.publisher.Flux
 import reactor.core.publisher.Mono
-import reactor.core.scheduler.Schedulers
 import team.undefined.quiz.core.*
 import java.time.Duration
 import java.util.*
@@ -73,14 +72,29 @@ class QuizController(private val quizService: QuizService,
         return Flux.merge(observer, getHeartbeat(quizId))
                 .map {
                     it.data()?.openQuestions
-                        ?.filter { question -> !question.revealed }
                         ?.forEach { question ->
                             question.estimates?.keys?.forEach { id ->
-                                (question.estimates as MutableMap)[id] = "*****";
+                                (question.estimates as MutableMap)[id] = determineAnswerToDisplay(it.data()!!, question, id);
                             }
                     }
                     it
                 }
+    }
+
+    private fun determineAnswerToDisplay(quiz: QuizDTO, question: QuestionDTO, participantId: UUID): String {
+        return if (!question.revealed) {
+            "*****"
+        } else {
+            val allowed = quiz.participants
+                    .find { it.id == participantId }
+                    ?.revealAllowed ?: false
+            if (allowed) {
+                question.estimates?.get(participantId) ?: "*****"
+            } else {
+                "*****"
+            }
+
+        }
     }
 
     private fun getObserver(quizId: UUID): Flux<ServerSentEvent<QuizDTO>> {

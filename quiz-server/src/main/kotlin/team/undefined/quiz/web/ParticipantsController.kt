@@ -30,7 +30,7 @@ class ParticipantsController(private val quizService: QuizService) {
     @PutMapping("/{participantId}/togglereveal")
     @ResponseStatus(HttpStatus.OK)
     fun toggleRevealPrevention(@PathVariable quizId: UUID, @PathVariable participantId: UUID): Mono<Unit> {
-        return Mono.just(Unit)
+        return quizService.toggleAnswerRevealAllowed(ToggleAnswerRevealAllowedCommand(quizId, participantId))
     }
 
 }
