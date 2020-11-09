@@ -1,6 +1,4 @@
 .App {
-  text-align: center;
-  background-color: #282c34;
   min-height: 100vh;
   display: flex;
   flex-direction: column;
@@ -20,19 +18,11 @@
   justify-content: center;
 }
 
-.title {
-  color: white;
-}
-
-.box h1, .box h2, .box h3, .box h4, .box h5, .box h6 {
-  color: #363636;
-}
 
 .Quiz-dashboard {
   display: flex;
   flex-direction: column;
   justify-items: flex-start;
-  color: #61dafb;
   width: 100%;
 }
 
@@ -45,8 +35,6 @@
 }
 
 .Quiz-dashboard .question, .Quiz-dashboard .participants {
-  color: white;
-  background: rgba(255,255,255,0.05);
   padding: 15px;
   margin: 10px;
 }

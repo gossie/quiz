@@ -58,12 +58,14 @@ const QuestionForm: React.FC<QuestionFormProps> = (props: QuestionFormProps) => 
     return (
         <div>
             <div className="field">
+                <label className="label">Question</label>
                 <div className="control">
-                    <input data-testid={props.questionToChange ? 'question-to-edit' : 'new-question'} value={newQuestion} onChange={ev => setNewQuestion(ev.target.value)} className="input" type="text" placeholder="Question" />
+                    <input data-testid={props.questionToChange ? 'question-to-edit' : 'new-question'} value={newQuestion} onChange={ev => setNewQuestion(ev.target.value)} className="input" type="text" />
                 </div>
             </div>
             
             <div className="field">
+                <label className="label">Category</label>
                 <div className="control">
                     <div className="select">
                         <select data-testid={props.questionToChange ? 'category-to-edit' : 'category'} value={category} onChange={ev => setCategory(ev.target.value)}>
@@ -82,21 +84,28 @@ const QuestionForm: React.FC<QuestionFormProps> = (props: QuestionFormProps) => 
             </div>
 
             <div className="field">
+                <label className="label">Seconds to answer</label>
                 <div className="control">
-                    <input data-testid={props.questionToChange ? 'time-to-answer-to-edit' : 'time-to-answer'} value={timeToAnswer} onChange={ev => setTimeToAnswer(ev.target.value)} className="input" type="text" pattern="[0-9]*" placeholder="Time to answer (seconds)" />
+                    <input data-testid={props.questionToChange ? 'time-to-answer-to-edit' : 'time-to-answer'} value={timeToAnswer} onChange={ev => setTimeToAnswer(ev.target.value)} className="input" type="text" pattern="[0-9]*"/>
                 </div>
             </div>
 
             <div className="field">
+                <label className="label">Image Path</label>
                 <div className="control">
                     <input data-testid={props.questionToChange ? 'image-path-to-edit' : 'image-path'} value={imagePath} onChange={ev => setImagePath(ev.target.value)} className="input" type="text" placeholder="Image path" />
                 </div>
             </div>
             <div className="field">
+                <label className="label">Type of Question</label>
                 <div className="control">
-                    <label className="checkbox">
-                        <input data-testid={props.questionToChange ? 'estimation-to-edit' : 'estimation'} type="checkbox" checked={estimation} onChange={ev => setEstimation(ev.target.checked)} />
-                        If checked, participants won't see the buzzer, but a textfield where each participant can submit an answer
+                    <label className="radio">
+                        <input data-testid={props.questionToChange ? 'estimation-to-edit' : 'estimation'} type="radio" name="answer" checked={!estimation} onChange={ev => setEstimation(!ev.target.checked)}/>
+                        Buzzer
+                    </label>
+                    <label className="radio">
+                        <input data-testid={props.questionToChange ? 'estimation-to-edit' : 'estimation'} type="radio" name="answer" checked={estimation} onChange={ev => setEstimation(ev.target.checked)}/>
+                        Freetext
                     </label>
                 </div>
             </div>

@@ -1,0 +1,50 @@
+@import "../../index.scss";
+
+.clickable {
+    cursor: pointer;
+}
+
+.quiz-master-question {
+    display: flex;
+    flex-direction: row;
+    overflow: hidden;
+}
+
+.question-index-column.is-pending-question, .question-type-column.is-pending-question  {
+    background-color: $link;
+}
+
+.question-index-column {
+    width: 30px;
+    flex-shrink: 0;
+    overflow: hidden;
+    letter-spacing: -0.5px;
+    padding: 0.75rem 0 0.75rem 0;
+}
+
+.question-type-column {
+    width: 30px;
+    flex-shrink: 0;
+    overflow: hidden;
+    border-right: 1px solid #888888;
+    padding: 0.75rem 0.25rem 0.75rem 0;
+}
+
+.question-question-column {
+    flex-basis: 0;
+    flex-grow: 1;
+    flex-shrink: 1;
+    padding: 0.75rem 0.75rem 0.75rem 0.75rem;
+}
+
+.question-actions-column {
+    width: 55px;
+    flex-shrink: 0;
+    border-left: 1px solid #888888;
+    padding: 0.75rem 0.25rem 0.75rem 0.25rem;
+}
+
+.question.columns {
+    margin: 0px 0px 0px 0px;
+    padding: 0px;
+}
