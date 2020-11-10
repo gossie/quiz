@@ -32,6 +32,7 @@ const ParticipantItem: React.FC<ParticipantProps> = (props: ParticipantProps) =>
                 <div data-testid="participant-wrapper" className={"participant " + (props.participant.turn ? 'turn' : '')}>
                     <span data-testid="participant-name">{props.participant.name} </span>
                     <div className="points">({props.pointsAfterLastQuestion}{pointDifference()})</div>
+                    { !props.participant.revealAllowed && <span className="icon" title="The participant does not want the answer to be shown"><i className="fas fa-eye-slash"></i></span> }
                     {(props.participant.turn || isEstimationQuestion()) ? <Answers quiz={props.quiz} participant={props.participant}></Answers> : ''}
                 </div>
                 { isEstimationQuestion() &&

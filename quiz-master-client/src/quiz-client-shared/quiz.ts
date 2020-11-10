@@ -8,6 +8,7 @@ export interface Participant {
     name: string;
     turn: boolean;
     points: number;
+    revealAllowed: boolean;
     links: Array<Link>;
 }
 
