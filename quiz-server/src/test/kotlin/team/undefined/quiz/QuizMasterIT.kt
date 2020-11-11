@@ -157,7 +157,7 @@ internal class QuizMasterIT {
                 }
                 .playedQuestionSizeIs(0)
                 .particpantSizeIs(1)
-                .hasParticipant(0) { it.hasName("André").isNotTurn }
+                .hasParticipant(0) { it.hasName("André").allowsReveal().isNotTurn }
 
         // Second participant logs in
         webTestClient
@@ -190,8 +190,8 @@ internal class QuizMasterIT {
                 }
                 .playedQuestionSizeIs(0)
                 .particpantSizeIs(2)
-                .hasParticipant(0) { it.hasName("André").isNotTurn }
-                .hasParticipant(1) { it.hasName("Lena").isNotTurn }
+                .hasParticipant(0) { it.hasName("André").allowsReveal().isNotTurn }
+                .hasParticipant(1) { it.hasName("Lena").allowsReveal().isNotTurn }
 
         // First buzzer question is asked
         webTestClient
@@ -222,8 +222,8 @@ internal class QuizMasterIT {
                 }
                 .playedQuestionSizeIs(0)
                 .particpantSizeIs(2)
-                .hasParticipant(0) { it.hasName("André").isNotTurn }
-                .hasParticipant(1) { it.hasName("Lena").isNotTurn }
+                .hasParticipant(0) { it.hasName("André").allowsReveal().isNotTurn }
+                .hasParticipant(1) { it.hasName("Lena").allowsReveal().isNotTurn }
 
         // First participant buzzers
         webTestClient
@@ -254,8 +254,8 @@ internal class QuizMasterIT {
                 }
                 .playedQuestionSizeIs(0)
                 .particpantSizeIs(2)
-                .hasParticipant(0) { it.hasName("André").isNotTurn }
-                .hasParticipant(1) { it.hasName("Lena").isTurn }
+                .hasParticipant(0) { it.hasName("André").allowsReveal().isNotTurn }
+                .hasParticipant(1) { it.hasName("Lena").allowsReveal().isTurn }
 
         // Answer is correct
         webTestClient
@@ -288,8 +288,8 @@ internal class QuizMasterIT {
                 }
                 .playedQuestionSizeIs(0)
                 .particpantSizeIs(2)
-                .hasParticipant(0) { it.hasName("André").hasPoints(0).isNotTurn }
-                .hasParticipant(1) { it.hasName("Lena").hasPoints(2).isTurn }
+                .hasParticipant(0) { it.hasName("André").hasPoints(0).allowsReveal().isNotTurn }
+                .hasParticipant(1) { it.hasName("Lena").hasPoints(2).allowsReveal().isTurn }
 
         // Second buzzer question is asked
         webTestClient
@@ -320,8 +320,8 @@ internal class QuizMasterIT {
                             .isBuzzerQuestion
                 }
                 .particpantSizeIs(2)
-                .hasParticipant(0) { it.hasName("André").hasPoints(0).isNotTurn }
-                .hasParticipant(1) { it.hasName("Lena").hasPoints(2).isNotTurn }
+                .hasParticipant(0) { it.hasName("André").hasPoints(0).allowsReveal().isNotTurn }
+                .hasParticipant(1) { it.hasName("Lena").hasPoints(2).allowsReveal().isNotTurn }
 
         // Participant buzzers
         webTestClient
@@ -351,8 +351,8 @@ internal class QuizMasterIT {
                             .isNotPending
                 }
                 .particpantSizeIs(2)
-                .hasParticipant(0) { it.hasName("André").hasPoints(0).isTurn }
-                .hasParticipant(1) { it.hasName("Lena").hasPoints(2).isNotTurn }
+                .hasParticipant(0) { it.hasName("André").hasPoints(0).allowsReveal().isTurn }
+                .hasParticipant(1) { it.hasName("Lena").hasPoints(2).allowsReveal().isNotTurn }
 
         // Answer is wrong
         webTestClient
@@ -384,8 +384,8 @@ internal class QuizMasterIT {
                             .isNotPending
                 }
                 .particpantSizeIs(2)
-                .hasParticipant(0) { it.hasName("André").hasPoints(0).isTurn }
-                .hasParticipant(1) { it.hasName("Lena").hasPoints(2).isNotTurn }
+                .hasParticipant(0) { it.hasName("André").hasPoints(0).allowsReveal().isTurn }
+                .hasParticipant(1) { it.hasName("Lena").hasPoints(2).allowsReveal().isNotTurn }
 
         // Login again with the same name
         webTestClient
@@ -417,8 +417,8 @@ internal class QuizMasterIT {
                             .isNotPending
                 }
                 .particpantSizeIs(2)
-                .hasParticipant(0) { it.hasName("André").hasPoints(0).isTurn }
-                .hasParticipant(1) { it.hasName("Lena").hasPoints(2).isNotTurn }
+                .hasParticipant(0) { it.hasName("André").hasPoints(0).allowsReveal().isTurn }
+                .hasParticipant(1) { it.hasName("Lena").hasPoints(2).allowsReveal().isNotTurn }
 
         // Ask estimation question
         webTestClient
@@ -448,8 +448,8 @@ internal class QuizMasterIT {
                             .isBuzzerQuestion
                 }
                 .particpantSizeIs(2)
-                .hasParticipant(0) { it.hasName("André").hasPoints(0).isNotTurn }
-                .hasParticipant(1) { it.hasName("Lena").hasPoints(2).isNotTurn }
+                .hasParticipant(0) { it.hasName("André").hasPoints(0).allowsReveal().isNotTurn }
+                .hasParticipant(1) { it.hasName("Lena").hasPoints(2).allowsReveal().isNotTurn }
 
         // Answer of participant 1
         webTestClient
@@ -482,8 +482,40 @@ internal class QuizMasterIT {
                             .isBuzzerQuestion
                 }
                 .particpantSizeIs(2)
-                .hasParticipant(0) { it.hasName("André").hasPoints(0).isNotTurn }
-                .hasParticipant(1) { it.hasName("Lena").hasPoints(2).isNotTurn }
+                .hasParticipant(0) { it.hasName("André").hasPoints(0).allowsReveal().isNotTurn }
+                .hasParticipant(1) { it.hasName("Lena").hasPoints(2).allowsReveal().isNotTurn }
+
+        // Participant 2 does not want the answer to be revealed
+        webTestClient
+                .put()
+                .uri(quizMasterReference.get().participants[1].getLink("toggleRevealAllowed").map { it.href }.orElseThrow())
+                .exchange()
+                .expectStatus().isOk
+
+        assertThat(quizMasterReference.get())
+                .openQuestionSizeIs(1)
+                .hasOpenQuestion(0) { openQuestion ->
+                    openQuestion
+                            .hasQuestion("Was ist ein Robo-Advisor?")
+                            .isPending
+                            .isEstimationQuestion
+                            .hasEstimates(java.util.Map.of(quizMasterReference.get().participants[0].id, "Antwort von André"))
+                }
+                .playedQuestionSizeIs(2)
+                .hasPlayedQuestion(0) { playedQuestion ->
+                    playedQuestion
+                            .hasQuestion("Wer schrieb das Buch Animal Farm?")
+                            .isNotPending
+                }
+                .hasPlayedQuestion(1) { playedQuestion ->
+                    playedQuestion
+                            .hasQuestion("Wo befindet sich das Kahnbein?")
+                            .isNotPending
+                            .isBuzzerQuestion
+                }
+                .particpantSizeIs(2)
+                .hasParticipant(0) { it.hasName("André").hasPoints(0).allowsReveal().isNotTurn }
+                .hasParticipant(1) { it.hasName("Lena").hasPoints(2).doesNotAllowReveal().isNotTurn }
 
         // Answer of participant 2
         webTestClient
@@ -519,8 +551,43 @@ internal class QuizMasterIT {
                             .isBuzzerQuestion
                 }
                 .particpantSizeIs(2)
-                .hasParticipant(0) { it.hasName("André").hasPoints(0).isNotTurn }
-                .hasParticipant(1) { it.hasName("Lena").hasPoints(2).isNotTurn }
+                .hasParticipant(0) { it.hasName("André").hasPoints(0).allowsReveal().isNotTurn }
+                .hasParticipant(1) { it.hasName("Lena").hasPoints(2).doesNotAllowReveal().isNotTurn }
+
+        // Answers are revealed
+        webTestClient
+                .patch()
+                .uri(quizMasterReference.get().getLink("revealAnswers").map { it.href }.orElseThrow())
+                .exchange()
+                .expectStatus().isOk
+
+        assertThat(quizMasterReference.get())
+                .openQuestionSizeIs(1)
+                .hasOpenQuestion(0) { openQuestion ->
+                    openQuestion
+                            .hasQuestion("Was ist ein Robo-Advisor?")
+                            .isPending
+                            .isEstimationQuestion
+                            .hasEstimates(java.util.Map.of(
+                                    quizMasterReference.get().participants[0].id, "Antwort von André",
+                                    quizMasterReference.get().participants[1].id, "Antwort von Lena"
+                            ))
+                }
+                .playedQuestionSizeIs(2)
+                .hasPlayedQuestion(0) { playedQuestion ->
+                    playedQuestion
+                            .hasQuestion("Wer schrieb das Buch Animal Farm?")
+                            .isNotPending
+                }
+                .hasPlayedQuestion(1) { playedQuestion ->
+                    playedQuestion
+                            .hasQuestion("Wo befindet sich das Kahnbein?")
+                            .isNotPending
+                            .isBuzzerQuestion
+                }
+                .particpantSizeIs(2)
+                .hasParticipant(0) { it.hasName("André").hasPoints(0).allowsReveal().isNotTurn }
+                .hasParticipant(1) { it.hasName("Lena").hasPoints(2).doesNotAllowReveal().isNotTurn }
 
         // Answer of participant 1 was correct
         webTestClient
@@ -556,7 +623,7 @@ internal class QuizMasterIT {
                             .isBuzzerQuestion
                 }
                 .particpantSizeIs(2)
-                .hasParticipant(0) { it.hasName("André").hasPoints(2).isNotTurn }
-                .hasParticipant(1) { it.hasName("Lena").hasPoints(2).isNotTurn }
+                .hasParticipant(0) { it.hasName("André").hasPoints(2).allowsReveal().isNotTurn }
+                .hasParticipant(1) { it.hasName("Lena").hasPoints(2).doesNotAllowReveal().isNotTurn }
     }
 }

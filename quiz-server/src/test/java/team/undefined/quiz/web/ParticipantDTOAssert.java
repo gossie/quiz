@@ -32,4 +32,14 @@ public class ParticipantDTOAssert extends AbstractAssert<ParticipantDTOAssert, P
         Assertions.assertThat(actual.getPoints()).isEqualTo(points);
         return this;
     }
+
+    public ParticipantDTOAssert allowsReveal() {
+        Assertions.assertThat(actual.getRevealAllowed()).isTrue();
+        return this;
+    }
+
+    public ParticipantDTOAssert doesNotAllowReveal() {
+        Assertions.assertThat(actual.getRevealAllowed()).isFalse();
+        return this;
+    }
 }
