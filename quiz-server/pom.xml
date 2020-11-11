@@ -99,7 +99,7 @@
 			<artifactId>awaitility-kotlin</artifactId>
 			<scope>test</scope>
 		</dependency>
-		<dependency>
+		<!--dependency>
 			<groupId>org.springframework.cloud</groupId>
 			<artifactId>spring-cloud-starter-contract-verifier</artifactId>
 			<scope>test</scope>
@@ -108,7 +108,7 @@
 			<groupId>org.springframework.cloud</groupId>
 			<artifactId>spring-cloud-contract-wiremock</artifactId>
 			<scope>test</scope>
-		</dependency>
+		</dependency-->
 
 	</dependencies>
 
@@ -155,6 +155,12 @@
 						<goals>
 							<goal>test-compile</goal>
 						</goals>
+						<configuration>
+							<sourceDirs>
+								<sourceDir>${project.basedir}/src/test/kotlin</sourceDir>
+								<sourceDir>${project.basedir}/src/test/java</sourceDir>
+							</sourceDirs>
+						</configuration>
 					</execution>
 				</executions>
 				<dependencies>
@@ -220,7 +226,7 @@
 					</dependency>
 				</dependencies>
 			</plugin>
-			<plugin>
+			<!-- plugin>
 				<groupId>org.springframework.cloud</groupId>
 				<artifactId>spring-cloud-contract-maven-plugin</artifactId>
 				<version>2.2.4.RELEASE</version>
@@ -230,7 +236,7 @@
 					<testMode>EXPLICIT</testMode>
 					<testFramework>JUNIT5</testFramework>
 				</configuration>
-			</plugin>
+			</plugin -->
 		</plugins>
 	</build>
 
