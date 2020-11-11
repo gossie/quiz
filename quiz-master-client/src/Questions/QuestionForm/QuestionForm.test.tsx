@@ -14,6 +14,7 @@ test('should add new estimation question', async () => {
             body: JSON.stringify({
                 question: 'Frage 3',
                 category: 'science',
+                timeToAnswer: 30,
                 publicVisible: false,
                 estimates: {}
             }),
@@ -56,15 +57,18 @@ test('should add new estimation question', async () => {
     const questionButton = getByTestId('create-question-button');
     const questionField = getByTestId('new-question')  as HTMLInputElement;
     const categoryField = getByTestId('category')  as HTMLSelectElement;
+    const timeToAnswerField = getByTestId('time-to-answer')  as HTMLInputElement;
     const imagePathField = getByTestId('image-path')  as HTMLInputElement;
     const estimationField = getByTestId('estimation')  as HTMLInputElement;
 
     fireEvent.change(questionField, { target: { value: 'Frage 3' } });
     fireEvent.change(categoryField, { target: { value: 'science' } });
+    fireEvent.change(timeToAnswerField, { target: { value: '30' } });
     estimationField.click();
 
     expect(questionField.value).toBe('Frage 3');
     expect(categoryField.value).toBe('science');
+    expect(timeToAnswerField.value).toBe('30');
     expect(imagePathField.value).toBe('');
 
     questionButton.click();
@@ -73,5 +77,6 @@ test('should add new estimation question', async () => {
         expect(questionField.value).toBe('');
         expect(categoryField.value).toBe('other');
         expect(imagePathField.value).toBe('');
+        expect(timeToAnswerField.value).toBe('');
     });
 });

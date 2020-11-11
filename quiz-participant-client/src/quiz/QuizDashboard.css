@@ -1,0 +1,7 @@
+.checkbox:hover {
+    color: #CCCCCC;
+}
+
+.checkbox input {
+    margin-right: 5px;
+}

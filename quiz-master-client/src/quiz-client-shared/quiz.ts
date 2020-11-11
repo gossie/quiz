@@ -8,6 +8,7 @@ export interface Participant {
     name: string;
     turn: boolean;
     points: number;
+    revealAllowed: boolean;
     links: Array<Link>;
 }
 
@@ -15,6 +16,8 @@ export interface Question {
     id: string;
     question: string;
     category: string;
+    timeToAnswer?: number;
+    secondsLeft?: number;
     imagePath?: string;
     publicVisible: boolean;
     estimates?: object;

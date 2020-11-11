@@ -11,3 +11,7 @@
     margin-right: 20px;
     text-decoration: underline;
 }
+
+.clickable {
+    cursor: pointer;
+}

@@ -11,6 +11,21 @@ function App() {
     const quizNameLabel = 'Quiz Name';
     const quizIdLabel = 'Quiz Id';
 
+    const getQuizIdFromUrl = () => {
+        const query = new URLSearchParams(window.location.search);
+        const id = query.get('quiz_id')
+        return id;
+    };
+
+    const setQuizIDInURL = (quizId) => {
+        if(window.history && window.history.pushState) {
+            const query = new URLSearchParams(window.location.search);
+            query.set('quiz_id', quizId);
+            var newUrl = window.location.protocol + "//" + window.location.host + window.location.pathname + '?' + query.toString();
+            window.history.pushState(null, document.title, newUrl);
+        }
+    }
+
     const startQuiz = async (value: any) => {
         const quizResponse = await fetch(`${process.env.REACT_APP_BASE_URL}/api/quiz/`, {
             method: 'POST',
@@ -22,10 +37,18 @@ function App() {
                 Accept: 'text/plain'
             }
         });
-        setQuizId(await quizResponse.text());
+        const responseStatus = await quizResponse.status;
+        if (responseStatus === 201) {
+            const responseBody = await quizResponse.text();
+            setQuizId(responseBody);
+            setQuizIDInURL(responseBody);
+        }  
     };
 
-    const joinQuiz = (value: any) => Promise.resolve(setQuizId(value[quizIdLabel]));
+    const joinQuiz = (value: any) => {  
+        setQuizIDInURL(value[quizIdLabel]);
+        return Promise.resolve(setQuizId(value[quizIdLabel]));
+    }
 
     return (
         <div className="App">
@@ -35,10 +58,9 @@ function App() {
                     ?
                     <QuizMaster quizId={quizId}></QuizMaster>
                     :
-                
                         <div className="container Login-page">
                             <LoginPageWidget title="Create a Quiz" inputLabels={[quizNameLabel]} buttonLabel="Start!" onSubmit={startQuiz}></LoginPageWidget>
-                            <LoginPageWidget title="Open Quiz" inputLabels={[quizIdLabel]} buttonLabel="Join!" onSubmit={joinQuiz}></LoginPageWidget>
+                            <LoginPageWidget title="Open Quiz" inputValues={{[quizIdLabel]: getQuizIdFromUrl()}} inputLabels={[quizIdLabel]} buttonLabel="Join!" onSubmit={joinQuiz}></LoginPageWidget>
                         </div>
                 }
             </div>

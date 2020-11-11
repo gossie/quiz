@@ -3,14 +3,20 @@ package team.undefined.quiz.core
 import com.google.common.eventbus.EventBus
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
+import reactor.core.Disposable
 import reactor.core.publisher.Flux
 import reactor.core.publisher.Mono
+import java.time.Duration
+import java.util.*
+import kotlin.collections.HashMap
 
 @Service
 class DefaultQuizService(private val eventRepository: EventRepository,
                          private val eventBus: EventBus) : QuizService {
 
     private val logger = LoggerFactory.getLogger(QuizService::class.java)
+
+    private val subscriptions = HashMap<UUID, Disposable>()
 
     @WriteLock
     override fun createQuiz(command: CreateQuizCommand): Mono<Unit> {
@@ -69,10 +75,28 @@ class DefaultQuizService(private val eventRepository: EventRepository,
     }
 
     @WriteLock
+    override fun toggleAnswerRevealAllowed(command: ToggleAnswerRevealAllowedCommand): Mono<Unit> {
+        logger.debug("{} prevents the reveal of answers for quiz {}", command.participantId, command.quizId)
+        return eventRepository.storeEvent(ToggleAnswerRevealAllowedEvent(command.quizId, command.participantId))
+                .map { eventBus.post(it) }
+    }
+
+    @WriteLock
     override fun startNewQuestion(command: AskQuestionCommand): Mono<Unit> {
         logger.debug("starting question '{}' in quiz '{}'", command.questionId, command.quizId)
         return eventRepository.storeEvent(QuestionAskedEvent(command.quizId, command.questionId))
                 .map { eventBus.post(it) }
+                .flatMapMany { eventRepository.determineEvents(command.quizId) }
+                .reduce(Quiz(name = "")) { quiz: Quiz, event: Event -> event.process(quiz) }
+                .map {
+                    val pendingQuestion = it.pendingQuestion
+                    if (pendingQuestion?.initialTimeToAnswer != null) {
+                        subscriptions[it.id] = Flux.interval(Duration.ofSeconds(1))
+                                .takeUntil { second -> second + 1 >= pendingQuestion.initialTimeToAnswer.toLong() }
+                                .subscribe { eventBus.post(TimeToAnswerDecreasedEvent(command.quizId, command.questionId)) }
+                    }
+                    Unit
+                }
     }
 
     @WriteLock
@@ -86,6 +110,28 @@ class DefaultQuizService(private val eventRepository: EventRepository,
     override fun reopenQuestion(command: ReopenCurrentQuestionCommand): Mono<Unit> {
         logger.debug("reopening active question in quiz '{}'", command.quizId)
         return eventRepository.storeEvent(CurrentQuestionReopenedEvent(command.quizId))
+                .map { eventBus.post(it) }
+                .flatMapMany { eventRepository.determineEvents(command.quizId) }
+                .reduce(Quiz(name = "")) { quiz: Quiz, event: Event -> event.process(quiz) }
+                .map {
+                    val pendingQuestion = it.pendingQuestion
+                    if (pendingQuestion?.initialTimeToAnswer != null) {
+                        subscriptions[it.id] = Flux.interval(Duration.ofSeconds(1))
+                                .takeUntil { second -> second + 1 >= pendingQuestion.initialTimeToAnswer.toLong() }
+                                .subscribe { eventBus.post(TimeToAnswerDecreasedEvent(command.quizId, pendingQuestion.id)) }
+                    }
+                    Unit
+                }
+    }
+
+    @WriteLock
+    override fun revealAnswers(command: RevealAnswersCommand): Mono<Unit> {
+        logger.debug("reveal answers of active question in quiz '{}'", command.quizId)
+        return eventRepository.storeEvent(AnswersRevealedEvent(command.quizId))
+                .map {
+                    subscriptions[it.quizId]?.dispose()
+                    it
+                }
                 .map { eventBus.post(it) }
     }
 

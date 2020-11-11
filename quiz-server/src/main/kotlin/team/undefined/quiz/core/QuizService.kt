@@ -15,15 +15,19 @@ interface QuizService {
 
     fun estimate(command: EstimationCommand): Mono<Unit>
 
+    fun toggleAnswerRevealAllowed(command: ToggleAnswerRevealAllowedCommand): Mono<Unit>
+
     fun startNewQuestion(command: AskQuestionCommand): Mono<Unit>
 
     fun deleteQuestion(command: DeleteQuestionCommand): Mono<Unit>
 
-    fun editQuestion(editQuestionCommand: EditQuestionCommand): Mono<Unit>
+    fun editQuestion(command: EditQuestionCommand): Mono<Unit>
 
     fun answer(command: AnswerCommand): Mono<Unit>
 
     fun reopenQuestion(command: ReopenCurrentQuestionCommand): Mono<Unit>
+
+    fun revealAnswers(command: RevealAnswersCommand): Mono<Unit>
 
     fun finishQuiz(command: FinishQuizCommand): Mono<Unit>
 

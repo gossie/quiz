@@ -1,6 +1,9 @@
 package team.undefined.quiz.core
 
 import com.google.common.eventbus.EventBus
+import org.awaitility.kotlin.await
+import org.awaitility.kotlin.ignoreException
+import org.awaitility.kotlin.untilAsserted
 import org.junit.jupiter.api.Test
 import org.mockito.Mockito.*
 import reactor.core.publisher.Flux
@@ -227,10 +230,25 @@ internal class DefaultQuizServiceTest {
         val quizId = UUID.randomUUID()
         val questionId = UUID.randomUUID()
 
+        val quizService = DefaultQuizService(quizRepository, eventBus)
+
+        StepVerifier.create(quizService.startNewQuestion(AskQuestionCommand(quizId, questionId)))
+                .consumeNextWith {
+                    verify(eventBus).post(argThat { (it as QuestionAskedEvent).quizId == quizId && it.questionId == questionId })
+                }
+                .verifyComplete()
+    }
+
+    @Test
+    fun shouldStartNewQuestionWithTimeConstaint() {
+        val quizId = UUID.randomUUID()
+        val questionId = UUID.randomUUID()
+
         `when`(quizRepository.determineEvents(quizId))
                 .thenReturn(Flux.just(
                         QuizCreatedEvent(quizId, Quiz(quizId, "Quiz")),
-                        QuestionCreatedEvent(quizId, Question(questionId, "Warum ist die Banane krum?"))
+                        QuestionCreatedEvent(quizId, Question(questionId, "Warum ist die Banane krum?", initialTimeToAnswer = 3, secondsLeft = 3)),
+                        QuestionAskedEvent(quizId, questionId)
                 ))
 
         val quizService = DefaultQuizService(quizRepository, eventBus)
@@ -240,6 +258,14 @@ internal class DefaultQuizServiceTest {
                     verify(eventBus).post(argThat { (it as QuestionAskedEvent).quizId == quizId && it.questionId == questionId })
                 }
                 .verifyComplete()
+
+        await ignoreException ClassCastException::class untilAsserted  {
+            verify(eventBus, times(3)).post(argThat {
+                it is TimeToAnswerDecreasedEvent
+                        && it.quizId == quizId
+                        && it.questionId == questionId
+            })
+        }
     }
 
     @Test
@@ -252,6 +278,20 @@ internal class DefaultQuizServiceTest {
         StepVerifier.create(quizService.estimate(EstimationCommand(quizId, participant, "myEstimatedValue")))
                 .consumeNextWith {
                     verify(eventBus).post(argThat { (it as EstimatedEvent).quizId == quizId && it.participantId == participant && it.estimatedValue == "myEstimatedValue" })
+                }
+                .verifyComplete()
+    }
+
+    @Test
+    fun shouldPreventReveal() {
+        val quizId = UUID.randomUUID()
+        val participant = UUID.randomUUID()
+
+        val quizService = DefaultQuizService(quizRepository, eventBus)
+
+        StepVerifier.create(quizService.toggleAnswerRevealAllowed(ToggleAnswerRevealAllowedCommand(quizId, participant)))
+                .consumeNextWith {
+                    verify(eventBus).post(argThat { (it as ToggleAnswerRevealAllowedEvent).quizId == quizId && it.participantId == participant })
                 }
                 .verifyComplete()
     }
@@ -317,6 +357,49 @@ internal class DefaultQuizServiceTest {
         StepVerifier.create(quizService.reopenQuestion(ReopenCurrentQuestionCommand(quizId)))
                 .consumeNextWith {
                     verify(eventBus).post(argThat { (it as CurrentQuestionReopenedEvent).quizId == quizId })
+                }
+                .verifyComplete()
+    }
+
+    @Test
+    fun shouldReopenQuestionWithTimeConstaint() {
+        val quizId = UUID.randomUUID()
+        val questionId = UUID.randomUUID()
+
+        `when`(quizRepository.determineEvents(quizId))
+                .thenReturn(Flux.just(
+                        QuizCreatedEvent(quizId, Quiz(quizId, "Quiz")),
+                        QuestionCreatedEvent(quizId, Question(questionId, "Warum ist die Banane krum?", initialTimeToAnswer = 3, secondsLeft = 3)),
+                        QuestionAskedEvent(quizId, questionId),
+                        CurrentQuestionReopenedEvent(quizId)
+                ))
+
+        val quizService = DefaultQuizService(quizRepository, eventBus)
+
+        StepVerifier.create(quizService.reopenQuestion(ReopenCurrentQuestionCommand(quizId)))
+                .consumeNextWith {
+                    verify(eventBus).post(argThat { (it as CurrentQuestionReopenedEvent).quizId == quizId })
+                }
+                .verifyComplete()
+
+        await ignoreException ClassCastException::class untilAsserted  {
+            verify(eventBus, times(3)).post(argThat {
+                it is TimeToAnswerDecreasedEvent
+                        && it.quizId == quizId
+                        && it.questionId == questionId
+            })
+        }
+    }
+
+    @Test
+    fun shouldRevealAnswers() {
+        val quizId = UUID.randomUUID()
+
+        val quizService = DefaultQuizService(quizRepository, eventBus)
+
+        StepVerifier.create(quizService.revealAnswers(RevealAnswersCommand(quizId)))
+                .consumeNextWith {
+                    verify(eventBus).post(argThat { (it as AnswersRevealedEvent).quizId == quizId })
                 }
                 .verifyComplete()
     }

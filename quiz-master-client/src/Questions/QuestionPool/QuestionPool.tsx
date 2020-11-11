@@ -40,7 +40,7 @@ const QuestionPool: React.FC<QuestionPoolProps> = (props: QuestionPoolProps) => 
             setQuestions(pooledQuestions.map((q: Question, index: number) =>
                 <li key={q.id} >
                     <QuestionElement question={q} index={index} setImageToDisplay={props.setImageToDisplay}></QuestionElement>
-                    <span data-testid={`add-question-${index}`} title="Add question" className="icon has-text-primary" onClick={() => createQuestion(q)}><i className="fas fa-save"></i></span>
+                    <span data-testid={`add-question-${index}`} title="Add question" className="icon has-text-primary clickable" onClick={() => createQuestion(q)}><i className="fas fa-save"></i></span>
                 </li>
             ));
         });
