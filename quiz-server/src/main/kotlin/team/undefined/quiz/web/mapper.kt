@@ -124,17 +124,21 @@ private fun QuizDTO.addLinks(): Mono<QuizDTO> {
             .map { linkTo(methodOn(QuestionController::class.java).createQuestion(this.id!!, null)) }
             .map { it.withRel("createQuestion") }
             .flatMap { it.toMono() }
+            .map { this.add(it) }
+            .map { linkTo(methodOn(QuizController::class.java).revealAnswers(this.id!!)) }
+            .map { it.withRel("revealAnswers") }
+            .flatMap { it.toMono() }
+            .map { this.add(it) }
 
     this.participants.forEach { participant ->
         linkBuilder = linkBuilder
-                .map { this.add(it) }
                 .map { linkTo(methodOn(QuizController::class.java).answer(this.id!!, participant.id, "")) }
                 .map { it.withRel("answer-${participant.id}") }
                 .flatMap { it.toMono() }
+                .map { this.add(it) }
     }
 
     return linkBuilder
-            .map { this.add(it) }
             .map { linkTo(methodOn(QuizController::class.java).reopenCurrentQuestion(this.id!!)) }
             .map { it.withRel("reopenQuestion") }
             .flatMap { it.toMono() }

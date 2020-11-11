@@ -17,7 +17,7 @@ import java.util.concurrent.atomic.AtomicReference
 
 @SpringBootTest
 @AutoConfigureWebTestClient
-internal class QuizIT {
+internal class QuizMasterIT {
 
     @Autowired
     private lateinit var webTestClient: WebTestClient
@@ -49,10 +49,7 @@ internal class QuizIT {
                 .expectStatus().isOk
                 .returnResult(QuizDTO::class.java)
                 .responseBody
-                .subscribe {
-                    println("received for quiz-master: $it")
-                    quizMasterReference.set(it)
-                }
+                .subscribe { quizMasterReference.set(it) }
 
         // First question is created
         webTestClient
