@@ -53,20 +53,6 @@ internal class QuizIT {
                     quizMasterReference.set(it)
                 }
 
-        /*
-        webTestClient.get()
-                .uri("/api/quiz/${quizId}/quiz-participant")
-                .accept(MediaType.TEXT_EVENT_STREAM)
-                .exchange()
-                .expectStatus().isOk
-                .returnResult(QuizDTO::class.java)
-                .responseBody
-                .subscribe {
-                    println("received for quiz-participant: $it")
-                    quizParticipantReference.set(it)
-                }
-        */
-
         webTestClient
                 .post()
                 .uri(quizMasterReference.get().getLink("createQuestion").map { it.href }.orElseThrow())
