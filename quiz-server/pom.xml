@@ -125,8 +125,6 @@
 	</dependencyManagement>
 
 	<build>
-		<sourceDirectory>${project.basedir}/src/main/kotlin</sourceDirectory>
-		<testSourceDirectory>${project.basedir}/src/test/kotlin</testSourceDirectory>
 		<plugins>
 			<plugin>
 				<groupId>org.springframework.boot</groupId>
@@ -146,19 +144,29 @@
 				<executions>
 					<execution>
 						<id>compile</id>
+						<phase>process-sources</phase>
 						<goals>
 							<goal>compile</goal>
 						</goals>
+						<configuration>
+							<sourceDirs>
+								<source>${project.basedir}/src/main/java</source>
+								<source>${project.basedir}/src/main/kotlin</source>
+								<source>${project.basedir}/src/main/resources</source>
+							</sourceDirs>
+						</configuration>
 					</execution>
 					<execution>
 						<id>test-compile</id>
+						<phase>process-test-sources</phase>
 						<goals>
 							<goal>test-compile</goal>
 						</goals>
 						<configuration>
 							<sourceDirs>
-								<sourceDir>${project.build.directory}/../src/test/kotlin</sourceDir>
-								<sourceDir>${project.build.directory}/../src/test/java</sourceDir>
+								<source>${project.basedir}/src/test/java</source>
+								<source>${project.basedir}/src/test/kotlin</source>
+								<source>${project.basedir}/src/test/resources</source>
 							</sourceDirs>
 						</configuration>
 					</execution>
