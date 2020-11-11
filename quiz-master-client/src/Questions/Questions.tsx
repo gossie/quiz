@@ -27,9 +27,9 @@ const Questions: React.FC<QuestionsProps> = (props: QuestionsProps) => {
     
     return (
         <div className="questions-column">
-            <div className="level title">
-                <h5 className="title is-5 no-margin">Questions</h5>
-                <button className="button level-right is-primary" onClick={() => setQuestionToAdd(true)}>
+            <div className="level not-responsive title">
+                <h4 className="title is-4 no-margin">Questions</h4>
+                <button data-testid="add-question-button" className="button level-right is-primary" onClick={() => setQuestionToAdd(true)}>
                      <i className="fas fa-plus"></i>
                 </button>
             </div>
@@ -40,13 +40,14 @@ const Questions: React.FC<QuestionsProps> = (props: QuestionsProps) => {
                     </ul>
                 </div>
 
-                
-                <div data-testid="played-questions" className="block">
-                    <h5 className="title is-5">Played questions</h5>
-                    <ul className="block-list has-radius">
-                        {playedQuestions}
-                    </ul>
-                </div>
+                { props.quiz.playedQuestions.length > 0 &&
+                    <div data-testid="played-questions" className="block">
+                        <hr/>
+                        <ul className="block-list has-radius">
+                            {playedQuestions}
+                        </ul>
+                    </div>
+                }
             </div>
             
             { imageToDisplay.length > 0 &&

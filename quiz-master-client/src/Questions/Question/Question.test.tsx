@@ -41,8 +41,8 @@ test('should be a freetext question', async () => {
     }
 
     const { getByTestId } = render(<QuestionElement enableOperations={true} question={question} index={0} setImageToDisplay={(path) => {}} />);
-    
-    expect(getByTestId('question').textContent).toEqual('#1 Warum?');
+    expect(getByTestId('index').textContent).toEqual('1');
+    expect(getByTestId('question').textContent).toEqual('Warum?');
     expect(() => getByTestId('freetext-question-0')).not.toThrowError();
     expect(() => getByTestId('buzzer-question-0')).toThrowError();
 });
@@ -60,7 +60,8 @@ test('should be a buzzer question', async () => {
 
     const { getByTestId } = render(<QuestionElement enableOperations={true} question={question} index={0} setImageToDisplay={(path) => {}} />);
 
-    expect(getByTestId('question').textContent).toEqual('#1 Warum?');
+    expect(getByTestId('index').textContent).toEqual('1');
+    expect(getByTestId('question').textContent).toEqual('Warum?');
     expect(() => getByTestId('freetext-question-0')).toThrowError();
     expect(() => getByTestId('buzzer-question-0')).not.toThrowError();
 });

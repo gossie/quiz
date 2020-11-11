@@ -30,8 +30,8 @@ const QuestionElement: React.FC<QuestionElementProps> = (props: QuestionElementP
 
     return (
         <div className="quiz-master-question">
-            <div className={'question-index-column has-text-centered has-text-weight-semibold' + (props.question.pending ? ' is-pending-question' : '')}>
-                <span data-testid="question">{props.index + 1}</span>    
+            <div data-testid="index" className={'question-index-column has-text-centered has-text-weight-semibold' + (props.question.pending ? ' is-pending-question' : '')}>
+                <span>{props.index + 1}</span>    
             </div>
             <div className={'question-type-column has-text-centered has-text-weight-semibold' + (props.question.pending ? ' is-pending-question' : '')}>
                 { props.question.estimates != null && <span data-testid={`freetext-question-${props.index}`} className="icon" title="Freetext question"><i className="far fa-keyboard"></i></span> }
@@ -45,9 +45,9 @@ const QuestionElement: React.FC<QuestionElementProps> = (props: QuestionElementP
                 <span data-testid="question">{props.question.question}</span>
             </div>
             <div className="question-actions-column">
-                { props.enableOperations && !props.question.pending && <span data-testid={`start-question-${props.index}`} className="icon clickable has-text-primary" title="Ask question" onClick={() => toggleQuestion(props.question)}><i className="fas fa-share-square"></i></span>}
-                { props.enableOperations && !props.question.pending && props.onEdit && <span data-testid={`edit-question-${props.index}`} className="icon clickable has-text-link" title="Edit question" onClick={() => props.onEdit!(props.question)}><i className="fas fa-edit"></i></span>}
-                { props.enableOperations && props.question.pending && <span data-testid={`revert-question-${props.index}`} className="icon clickable has-text-primary" title="Revert Question" onClick={() => toggleQuestion(props.question)}><i className="fas fa-undo"></i></span> }
+                { props.enableOperations && !props.question.pending && <span data-testid={`start-question-${props.index}`} className="icon clickable has-text-link" title="Ask question" onClick={() => toggleQuestion(props.question)}><i className="fas fa-share-square"></i></span>}
+                { props.enableOperations && !props.question.pending && props.onEdit && <span data-testid={`edit-question-${props.index}`} className="icon clickable has-text-warning" title="Edit question" onClick={() => props.onEdit!(props.question)}><i className="fas fa-edit"></i></span>}
+                { props.enableOperations && props.question.pending && <span data-testid={`revert-question-${props.index}`} className="icon clickable has-text-danger" title="Revert Question" onClick={() => toggleQuestion(props.question)}><i className="fas fa-undo"></i></span> }
                
                 { props.enableOperations && !props.question.pending && <span data-testid={`delete-question-${props.index}`} className="icon clickable has-text-danger" title="Delete question" onClick={() => deleteQuestion(props.question)}><i className="fas fa-trash"></i></span>}
             </div>

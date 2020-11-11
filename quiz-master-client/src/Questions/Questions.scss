@@ -13,7 +13,7 @@
 
 .title.no-margin
 {
-    margin-bottom: 0px;
+    margin-bottom: 0px !important;
 }
 
 .modal-card-body {
@@ -23,4 +23,12 @@
 
 .modal-card.fixed-height {
    height: calc(100vh - 40px);
+}
+
+.level.not-responsive {
+    display: flex;
+
+    .level-left + .level-right {
+        margin-top: 0px;
+    }
 }
