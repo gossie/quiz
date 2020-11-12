@@ -28,6 +28,10 @@
     overflow: hidden;
     border-right: 1px solid #888888;
     padding: 0.75rem 0.25rem 0.75rem 0;
+
+    .icon {
+        font-size: 1.1em;
+    }
 }
 
 .question-question-column {
@@ -35,13 +39,22 @@
     flex-grow: 1;
     flex-shrink: 1;
     padding: 0.75rem 0.75rem 0.75rem 0.75rem;
+    overflow: hidden;
+    hyphens: auto;
+
 }
 
 .question-actions-column {
-    width: 55px;
+    box-sizing: content-box;
     flex-shrink: 0;
+    width: 60px;
     border-left: 1px solid #888888;
     padding: 0.75rem 0.25rem 0.75rem 0.25rem;
+
+    .icon {
+        font-size: 1.1em;
+        width: 1.3em
+    }
 }
 
 .question.columns {

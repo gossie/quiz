@@ -1,16 +1,10 @@
 
-.level.App-header {
+.navbar-brand {
     font-size: 20px;
     font-weight: 700;
-    display: flex;
-    justify-content: flex-start;
-    flex-direction: row;
-    height: 60px;
-    width: 100%;
-    padding: 10px;
-    margin-bottom: 0px;
   }
   
-  .App-header .App-logo {
+  .App-logo {
     width: 50px;
+    font-size: 20px;
   }

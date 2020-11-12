@@ -52,7 +52,7 @@ function App() {
 
     return (
         <div className="App">
-            <AppHeader title="Quiz Master"></AppHeader>
+            <AppHeader quizId={quizId} title="Quiz Master"></AppHeader>
             <div className="App-content">
                 { quizId.length > 0
                     ?
