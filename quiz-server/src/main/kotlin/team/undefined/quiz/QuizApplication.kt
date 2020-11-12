@@ -13,31 +13,31 @@ import java.util.*
 @SpringBootApplication
 class QuizApplication {
 
-	private val logger = LoggerFactory.getLogger(QuizApplication::class.java)
-	private val ACTIVE_TIME = 6_048_000_000
+    private val logger = LoggerFactory.getLogger(QuizApplication::class.java)
+    private val ACTIVE_TIME = 6_048_000_000
 
-	@Bean
-	fun eventBus(): EventBus {
-		return EventBus()
-	}
-
-	@Bean
-	fun databaseCleaner(quizService: QuizService): CommandLineRunner {
-		return (CommandLineRunner {
-			quizService.determineQuizzes()
-					.filter { it.getTimestamp() < (Date().time - ACTIVE_TIME) }
-					.flatMap {
-						logger.info("deleting quiz {} because it is form {}", it, Date(it.getTimestamp()))
-						quizService.deleteQuiz(DeleteQuizCommand(it.id))
-					}
-					.subscribe {
-						logger.info("deleted old quiz")
-					}
-		})
-	}
-
+    @Bean
+    fun eventBus(): EventBus {
+        return EventBus()
+    }
+/*
+    @Bean
+    fun databaseCleaner(quizService: QuizService): CommandLineRunner {
+        return (CommandLineRunner {
+            quizService.determineQuizzes()
+                    .filter { it.getTimestamp() < (Date().time - ACTIVE_TIME) }
+                    .flatMap {
+                        logger.info("deleting quiz {} because it is form {}", it, Date(it.getTimestamp()))
+                        quizService.deleteQuiz(DeleteQuizCommand(it.id))
+                    }
+                    .subscribe {
+                        logger.info("deleted old quiz")
+                    }
+        })
+    }
+*/
 }
 
 fun main(args: Array<String>) {
-	runApplication<QuizApplication>(*args)
+    runApplication<QuizApplication>(*args)
 }

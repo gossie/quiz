@@ -79,13 +79,6 @@ fun Question.map(quizId: UUID): QuestionDTO {
     return if (this.imageUrl == "") questionDTO else questionDTO.add(Link.of(this.imageUrl, "image"))
 }
 
-private fun QuestionDTO.addLinks(quizId: UUID): Mono<QuestionDTO> {
-    return linkTo(methodOn(QuestionController::class.java).startQuestion(quizId, this.id!!))
-            .withSelfRel()
-            .toMono()
-            .map { this.add(it) }
-}
-
 fun QuestionDTO.map(questionId: UUID): Question {
     return Question(
             questionId,
