@@ -370,6 +370,20 @@ internal class DefaultQuizServiceTest {
     @Test
     fun shouldPreventReveal() {
         val quizId = UUID.randomUUID()
+        val participant = UUID.randomUUID()
+
+        val quizService = DefaultQuizService(quizRepository, eventBus)
+
+        StepVerifier.create(quizService.toggleAnswerRevealAllowed(ToggleAnswerRevealAllowedCommand(quizId, participant)))
+                .consumeNextWith {
+                    verify(eventBus).post(argThat { (it as ToggleAnswerRevealAllowedEvent).quizId == quizId && it.participantId == participant })
+                }
+                .verifyComplete()
+    }
+
+    @Test
+    fun shoulNotPreventRevealBecauseParticipantDoesNotExist() {
+        val quizId = UUID.randomUUID()
         val questionId = UUID.randomUUID()
         val participant = UUID.randomUUID()
 
@@ -386,20 +400,6 @@ internal class DefaultQuizServiceTest {
                 .verifyComplete()
 
         verifyNoInteractions(eventBus)
-    }
-
-    @Test
-    fun shoulNotPreventRevealBecauseParticipantDoesNotExist() {
-        val quizId = UUID.randomUUID()
-        val participant = UUID.randomUUID()
-
-        val quizService = DefaultQuizService(quizRepository, eventBus)
-
-        StepVerifier.create(quizService.toggleAnswerRevealAllowed(ToggleAnswerRevealAllowedCommand(quizId, participant)))
-                .consumeNextWith {
-                    verify(eventBus).post(argThat { (it as ToggleAnswerRevealAllowedEvent).quizId == quizId && it.participantId == participant })
-                }
-                .verifyComplete()
     }
 
     @Test
