@@ -19,11 +19,11 @@ internal class DefaultQuizServiceTest {
         }
 
         override fun determineEvents(quizId: UUID): Flux<Event> {
-            return Flux.empty();
+            return Flux.empty()
         }
 
         override fun determineEvents(): Flux<Event> {
-            return Flux.empty();
+            return Flux.empty()
         }
 
         override fun deleteEvents(quizId: UUID): Mono<Unit> {
@@ -188,6 +188,30 @@ internal class DefaultQuizServiceTest {
     }
 
     @Test
+    fun shouldNotBuzzerBecauseParticipantDoesNotExist() {
+        val quizId = UUID.randomUUID()
+        val andresId = UUID.randomUUID()
+        val lenasId = UUID.randomUUID()
+        val questionId = UUID.randomUUID()
+
+        `when`(quizRepository.determineEvents(quizId))
+                .thenReturn(Flux.just(
+                        QuizCreatedEvent(quizId, Quiz(quizId, "Quiz")),
+                        QuestionCreatedEvent(quizId, question = Question(questionId, "Warum ist die Banane krum?")),
+                        ParticipantCreatedEvent(quizId, Participant(lenasId, "Lena")),
+                        QuestionAskedEvent(quizId, questionId)
+                ))
+
+        val quizService = DefaultQuizService(quizRepository, eventBus)
+
+        val buzzer = quizService.buzzer(BuzzerCommand(quizId, andresId))
+        StepVerifier.create(buzzer)
+                .verifyComplete()
+
+        verifyNoInteractions(eventBus)
+    }
+
+    @Test
     fun shouldCreatePrivateQuestion() {
         val quizId = UUID.randomUUID()
 
@@ -323,7 +347,49 @@ internal class DefaultQuizServiceTest {
     }
 
     @Test
+    fun shouldNotEstimateBecauseParticipantDoesNotExist() {
+        val quizId = UUID.randomUUID()
+        val questionId = UUID.randomUUID()
+        val participant = UUID.randomUUID()
+
+        `when`(quizRepository.determineEvents(quizId))
+                .thenReturn(Flux.just(
+                        QuizCreatedEvent(quizId, Quiz(quizId, "Quiz")),
+                        QuestionCreatedEvent(quizId, question = Question(questionId, "Warum ist die Banane krum?")),
+                        QuestionAskedEvent(quizId, questionId)
+                ))
+
+        val quizService = DefaultQuizService(quizRepository, eventBus)
+
+        StepVerifier.create(quizService.estimate(EstimationCommand(quizId, participant, "myEstimatedValue")))
+                .verifyComplete()
+
+        verifyNoInteractions(eventBus)
+    }
+
+    @Test
     fun shouldPreventReveal() {
+        val quizId = UUID.randomUUID()
+        val questionId = UUID.randomUUID()
+        val participant = UUID.randomUUID()
+
+        `when`(quizRepository.determineEvents(quizId))
+                .thenReturn(Flux.just(
+                        QuizCreatedEvent(quizId, Quiz(quizId, "Quiz")),
+                        QuestionCreatedEvent(quizId, question = Question(questionId, "Warum ist die Banane krum?")),
+                        QuestionAskedEvent(quizId, questionId)
+                ))
+
+        val quizService = DefaultQuizService(quizRepository, eventBus)
+
+        StepVerifier.create(quizService.toggleAnswerRevealAllowed(ToggleAnswerRevealAllowedCommand(quizId, participant)))
+                .verifyComplete()
+
+        verifyNoInteractions(eventBus)
+    }
+
+    @Test
+    fun shoulNotPreventRevealBecauseParticipantDoesNotExist() {
         val quizId = UUID.randomUUID()
         val participant = UUID.randomUUID()
 
