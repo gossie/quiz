@@ -40,7 +40,7 @@ const ParticipantItem: React.FC<ParticipantProps> = (props: ParticipantProps) =>
                     <span data-testid="participant-name">{props.participant.name} </span>
                     <div className="points">({props.pointsAfterLastQuestion}{pointDifference()})</div>
                     { !props.participant.revealAllowed && <span data-testid="reveal-not-allowed" className="icon" title="The participant does not want the answer to be shown"><i className="fas fa-eye-slash"></i></span> }
-                    <span data-testid="delete" className="icon clickable has-text-danger" title="Delete participant"><i className="fa fa-trash" onClick={() => deleteParticipant()}></i></span>
+                    <span data-testid="delete" className="icon clickable has-text-danger" title="Delete participant" onClick={() => deleteParticipant()}><i className="fa fa-trash"></i></span>
                     {(props.participant.turn || isEstimationQuestion()) ? <Answers quiz={props.quiz} participant={props.participant}></Answers> : ''}
                 </div>
                 { isEstimationQuestion() &&
