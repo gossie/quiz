@@ -51,10 +51,22 @@ data class Quiz(
         return participants.none { it.name == name }
     }
 
+    fun hasParticipantWithId(id: UUID): Boolean {
+        return participants.any { it.id == id }
+    }
+
     fun addParticipantIfNecessary(participant: Participant): Quiz {
         if (hasNoParticipantWithName(participant.name)) {
             (participants as MutableList).add(participant)
         }
+        return this
+    }
+
+    fun deleteParticipant(participantId: UUID): Quiz {
+        (participants as MutableList).removeIf { it.id == participantId }
+        questions
+                .filter { it.estimates?.containsKey(participantId) ?: false }
+                .forEach { (it.estimates as MutableMap).remove(participantId) }
         return this
     }
 

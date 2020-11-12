@@ -51,6 +51,16 @@ class DefaultQuizService(private val eventRepository: EventRepository,
     }
 
     @WriteLock
+    override fun deleteParticipant(command: DeleteParticipantCommand): Mono<Unit> {
+        logger.debug("deleting participant with id {} in quiz '{}'", command.participantId, command.quizId)
+        return eventRepository.determineEvents(command.quizId)
+                .reduce(Quiz(name = "")) { quiz: Quiz, event: Event -> event.process(quiz)}
+                .filter { it.hasParticipantWithId(command.participantId) }
+                .flatMap { eventRepository.storeEvent(ParticipantDeletedEvent(command.quizId, command.participantId)) }
+                .map { eventBus.post(it) }
+    }
+
+    @WriteLock
     override fun deleteQuestion(command: DeleteQuestionCommand): Mono<Unit> {
         logger.debug("deleting question '{}' from quiz '{}'", command.questionId, command.quizId)
         return eventRepository.storeEvent(QuestionDeletedEvent(command.quizId, command.questionId))
@@ -62,6 +72,7 @@ class DefaultQuizService(private val eventRepository: EventRepository,
         logger.debug("'{}' buzzered in quiz '{}'", command.participantId, command.quizId)
         return eventRepository.determineEvents(command.quizId)
                 .reduce(Quiz(name = "")) { quiz: Quiz, event: Event -> event.process(quiz) }
+                .filter { it.hasParticipantWithId(command.participantId) }
                 .filter { it.nobodyHasBuzzered() }
                 .flatMap { eventRepository.storeEvent(BuzzeredEvent(command.quizId, command.participantId)) }
                 .map { eventBus.post(it) }
@@ -70,14 +81,20 @@ class DefaultQuizService(private val eventRepository: EventRepository,
     @WriteLock
     override fun estimate(command: EstimationCommand): Mono<Unit> {
         logger.debug("'{}' estimated value '{}' in quiz '{}'", command.participantId, command.estimatedValue, command.quizId)
-        return eventRepository.storeEvent(EstimatedEvent(command.quizId, command.participantId, command.estimatedValue))
+        return eventRepository.determineEvents(command.quizId)
+                .reduce(Quiz(name = "")) { quiz: Quiz, event: Event -> event.process(quiz) }
+                .filter { it.hasParticipantWithId(command.participantId) }
+                .flatMap { eventRepository.storeEvent(EstimatedEvent(command.quizId, command.participantId, command.estimatedValue)) }
                 .map { eventBus.post(it) }
     }
 
     @WriteLock
     override fun toggleAnswerRevealAllowed(command: ToggleAnswerRevealAllowedCommand): Mono<Unit> {
         logger.debug("{} prevents the reveal of answers for quiz {}", command.participantId, command.quizId)
-        return eventRepository.storeEvent(ToggleAnswerRevealAllowedEvent(command.quizId, command.participantId))
+        return eventRepository.determineEvents(command.quizId)
+                .reduce(Quiz(name = "")) { quiz: Quiz, event: Event -> event.process(quiz) }
+                .filter { it.hasParticipantWithId(command.participantId) }
+                .flatMap { eventRepository.storeEvent(ToggleAnswerRevealAllowedEvent(command.quizId, command.participantId)) }
                 .map { eventBus.post(it) }
     }
 
