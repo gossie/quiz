@@ -45,6 +45,9 @@ class QuizProjection(eventBus: EventBus,
     fun handleParticipantCreation(event: ParticipantCreatedEvent) = handleEvent(event)
 
     @Subscribe
+    fun handleParticipantDeletion(event: ParticipantDeletedEvent) = handleEvent(event)
+
+    @Subscribe
     fun handleQuestionAsked(event: QuestionAskedEvent) = handleEvent(event)
 
     @Subscribe

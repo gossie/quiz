@@ -63,6 +63,7 @@ data class Quiz(
     }
 
     fun deleteParticipant(participantId: UUID): Quiz {
+        (participants as MutableList).removeIf { it.id == participantId }
         return this
     }
 
