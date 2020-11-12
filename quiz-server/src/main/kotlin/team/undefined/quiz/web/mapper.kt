@@ -129,6 +129,10 @@ private fun QuizDTO.addLinks(): Mono<QuizDTO> {
                 .map { it.withRel("answer-${participant.id}") }
                 .flatMap { it.toMono() }
                 .map { this.add(it) }
+                .map { linkTo(methodOn(ParticipantsController::class.java).delete(this.id!!, participant.id)) }
+                .map { it.withRel("delete-${participant.id}") }
+                .flatMap { it.toMono() }
+                .map { this.add(it) }
     }
 
     return linkBuilder

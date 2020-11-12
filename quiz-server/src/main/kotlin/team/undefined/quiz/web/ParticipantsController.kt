@@ -33,4 +33,10 @@ class ParticipantsController(private val quizService: QuizService) {
         return quizService.toggleAnswerRevealAllowed(ToggleAnswerRevealAllowedCommand(quizId, participantId))
     }
 
+    @DeleteMapping("/{participantId}")
+    @ResponseStatus(HttpStatus.OK)
+    fun delete(@PathVariable quizId: UUID, @PathVariable participantId: UUID): Mono<Unit> {
+        return quizService.deleteParticipant(DeleteParticipantCommand(quizId, participantId))
+    }
+
 }

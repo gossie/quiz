@@ -64,6 +64,9 @@ data class Quiz(
 
     fun deleteParticipant(participantId: UUID): Quiz {
         (participants as MutableList).removeIf { it.id == participantId }
+        questions
+                .filter { it.estimates?.containsKey(participantId) ?: false }
+                .forEach { (it.estimates as MutableMap).remove(participantId) }
         return this
     }
 
