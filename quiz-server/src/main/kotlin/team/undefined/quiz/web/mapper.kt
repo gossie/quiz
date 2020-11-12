@@ -71,6 +71,10 @@ private fun ParticipantDTO.addLinks(quizId: UUID): Mono<ParticipantDTO> {
             .map { it.withRel("toggleRevealAllowed") }
             .flatMap { it.toMono() }
             .map { this.add(it) }
+            .map { linkTo(methodOn(ParticipantsController::class.java).delete(quizId, this.id)) }
+            .map { it.withRel("delete") }
+            .flatMap { it.toMono() }
+            .map { this.add(it) }
 }
 
 fun Question.map(quizId: UUID): QuestionDTO {
@@ -127,10 +131,6 @@ private fun QuizDTO.addLinks(): Mono<QuizDTO> {
         linkBuilder = linkBuilder
                 .map { linkTo(methodOn(QuizController::class.java).answer(this.id!!, participant.id, "")) }
                 .map { it.withRel("answer-${participant.id}") }
-                .flatMap { it.toMono() }
-                .map { this.add(it) }
-                .map { linkTo(methodOn(ParticipantsController::class.java).delete(this.id!!, participant.id)) }
-                .map { it.withRel("delete-${participant.id}") }
                 .flatMap { it.toMono() }
                 .map { this.add(it) }
     }

@@ -629,7 +629,7 @@ internal class QuizMasterIT {
         // Participant 1 is deleted
         webTestClient
                 .delete()
-                .uri(quizMasterReference.get().getLink("delete-${quizMasterReference.get().participants[0].id}").map { it.href }.orElseThrow())
+                .uri(quizMasterReference.get().participants[0].getLink("delete").map { it.href }.orElseThrow())
                 .exchange()
                 .expectStatus().isOk
 
