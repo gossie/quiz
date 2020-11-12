@@ -38,8 +38,8 @@
 
 @media screen and (min-width: 768px) {
   .App {
-    height: 100vh;
-    overflow: hidden;
+    /*height: 100vh;
+    overflow: hidden;*/
   }
 
   .App-content, .Quiz-dashboard, .columns {
