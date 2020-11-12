@@ -6,7 +6,6 @@ import reactor.core.publisher.Flux
 import reactor.core.publisher.Mono
 import team.undefined.quiz.core.Event
 import team.undefined.quiz.core.EventRepository
-import java.util.Comparator
 import java.util.UUID
 
 @Component

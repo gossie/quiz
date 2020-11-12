@@ -96,6 +96,46 @@ internal class DefaultQuizServiceTest {
     }
 
     @Test
+    fun shouldDeleteParticipant() {
+        val quizId = UUID.randomUUID()
+        val participantId = UUID.randomUUID()
+
+        `when`(quizRepository.determineEvents(quizId))
+                .thenReturn(Flux.just(
+                        QuizCreatedEvent(quizId, Quiz(quizId, "Quiz")),
+                        ParticipantCreatedEvent(quizId, Participant(participantId, "Lena"))
+                ))
+
+        val quizService = DefaultQuizService(quizRepository, eventBus)
+
+        StepVerifier.create(quizService.deleteParticipant(DeleteParticipantCommand(quizId, participantId)))
+                .consumeNextWith {
+                    verify(eventBus).post( argThat {
+                        it is ParticipantDeletedEvent && it.quizId == quizId && it.participantId == participantId }
+                    )
+                }
+                .verifyComplete()
+    }
+
+    @Test
+    fun shouldNotDeleteParticipantBecauseItDoesNotExist() {
+        val quizId = UUID.randomUUID()
+        val participantId = UUID.randomUUID()
+
+        `when`(quizRepository.determineEvents(quizId))
+                .thenReturn(Flux.just(
+                        QuizCreatedEvent(quizId, Quiz(quizId, "Quiz"))
+                ))
+
+        val quizService = DefaultQuizService(quizRepository, eventBus)
+
+        StepVerifier.create(quizService.deleteParticipant(DeleteParticipantCommand(quizId, participantId)))
+                .verifyComplete()
+
+        verifyNoInteractions(eventBus)
+    }
+
+    @Test
     fun shouldBuzzer() {
         val quizId = UUID.randomUUID()
         val andresId = UUID.randomUUID()
