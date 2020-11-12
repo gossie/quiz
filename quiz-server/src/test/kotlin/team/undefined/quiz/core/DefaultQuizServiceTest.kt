@@ -1,6 +1,7 @@
 package team.undefined.quiz.core
 
 import com.google.common.eventbus.EventBus
+import team.undefined.quiz.core.QuizAssert.assertThat
 import org.awaitility.kotlin.await
 import org.awaitility.kotlin.ignoreException
 import org.awaitility.kotlin.untilAsserted
@@ -579,12 +580,8 @@ internal class DefaultQuizServiceTest {
         val quizService = DefaultQuizService(quizRepository, eventBus)
 
         StepVerifier.create(quizService.determineQuizzes())
-                .consumeNextWith {
-                    it.id == quiz1Id
-                }
-                .consumeNextWith {
-                    it.id == quiz2Id
-                }
+                .consumeNextWith { assertThat(it).hasId(quiz1Id) }
+                .consumeNextWith { assertThat(it).hasId(quiz2Id) }
                 .verifyComplete()
     }
 

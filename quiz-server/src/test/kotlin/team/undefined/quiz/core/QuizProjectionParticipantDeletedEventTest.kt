@@ -1,7 +1,7 @@
 package team.undefined.quiz.core
 
 import com.google.common.eventbus.EventBus
-import org.assertj.core.api.Assertions.assertThat
+import team.undefined.quiz.core.QuizAssert.assertThat
 import org.awaitility.kotlin.await
 import org.awaitility.kotlin.untilAsserted
 import org.junit.jupiter.api.Test
@@ -29,12 +29,11 @@ internal class QuizProjectionParticipantDeletedEventTest {
         eventBus.post(ParticipantDeletedEvent(quiz.id, participant.id, 3))
 
         await untilAsserted  {
-            val q = observedQuiz.get()
-
-            assertThat(q.id).isEqualTo(quiz.id)
-            assertThat(q.participants).isEmpty()
-            assertThat(q.questions).isEmpty()
-            assertThat(q.finished).isFalse()
+            assertThat(observedQuiz.get())
+                    .hasId(quiz.id)
+                    .hasNoParticipants()
+                    .hasNoQuestions()
+                    .isNotFinished
         }
     }
 
@@ -63,12 +62,11 @@ internal class QuizProjectionParticipantDeletedEventTest {
         eventBus.post(participantDeletedEvent)
 
         await untilAsserted  {
-            val q = observedQuiz.get()
-
-            assertThat(q.id).isEqualTo(quiz.id)
-            assertThat(q.participants).isEmpty()
-            assertThat(q.questions).isEmpty()
-            assertThat(q.finished).isFalse()
+            assertThat(observedQuiz.get())
+                    .hasId(quiz.id)
+                    .hasNoParticipants()
+                    .hasNoQuestions()
+                    .isNotFinished
         }
     }
 
@@ -94,12 +92,11 @@ internal class QuizProjectionParticipantDeletedEventTest {
         eventBus.post(ParticipantDeletedEvent(quiz.id, participant.id, 3))
 
         await untilAsserted  {
-            val q = observedQuiz.get()
-
-            assertThat(q.id).isEqualTo(quiz.id)
-            assertThat(q.participants).isEmpty()
-            assertThat(q.questions).isEmpty()
-            assertThat(q.finished).isFalse()
+            assertThat(observedQuiz.get())
+                    .hasId(quiz.id)
+                    .hasNoParticipants()
+                    .hasNoQuestions()
+                    .isNotFinished
         }
     }
 
