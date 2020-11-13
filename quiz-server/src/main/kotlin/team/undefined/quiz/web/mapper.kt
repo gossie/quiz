@@ -71,19 +71,16 @@ private fun ParticipantDTO.addLinks(quizId: UUID): Mono<ParticipantDTO> {
             .map { it.withRel("toggleRevealAllowed") }
             .flatMap { it.toMono() }
             .map { this.add(it) }
+            .map { linkTo(methodOn(ParticipantsController::class.java).delete(quizId, this.id)) }
+            .map { it.withRel("delete") }
+            .flatMap { it.toMono() }
+            .map { this.add(it) }
 }
 
 fun Question.map(quizId: UUID): QuestionDTO {
     val questionDTO = QuestionDTO(this.id, this.question, this.pending, this.imageUrl, if (this.estimates != null) { HashMap(this.estimates) } else { this.estimates }, this.visibility.asBoolean(), this.category.category, this.initialTimeToAnswer, this.secondsLeft, this.revealed)
-    questionDTO.add(Link("/api/quiz/" + quizId + "/questions/" + this.id, "self"))
-    return if (this.imageUrl == "") questionDTO else questionDTO.add(Link(this.imageUrl, "image"))
-}
-
-private fun QuestionDTO.addLinks(quizId: UUID): Mono<QuestionDTO> {
-    return linkTo(methodOn(QuestionController::class.java).startQuestion(quizId, this.id!!))
-            .withSelfRel()
-            .toMono()
-            .map { this.add(it) }
+    questionDTO.add(Link.of("/api/quiz/" + quizId + "/questions/" + this.id, "self"))
+    return if (this.imageUrl == "") questionDTO else questionDTO.add(Link.of(this.imageUrl, "image"))
 }
 
 fun QuestionDTO.map(questionId: UUID): Question {
@@ -117,7 +114,7 @@ fun QuizDTO.map(): Quiz {
 }
 
 private fun QuizDTO.addLinks(): Mono<QuizDTO> {
-    return linkTo(methodOn(ParticipantsController::class.java).create(this.id!!, ""))
+    var linkBuilder = linkTo(methodOn(ParticipantsController::class.java).create(this.id!!, ""))
             .withRel("createParticipant")
             .toMono()
             .map { this.add(it) }
@@ -125,10 +122,20 @@ private fun QuizDTO.addLinks(): Mono<QuizDTO> {
             .map { it.withRel("createQuestion") }
             .flatMap { it.toMono() }
             .map { this.add(it) }
-            .map { linkTo(methodOn(QuizController::class.java).answer(this.id!!, UUID.randomUUID(), "")) }
-            .map { it.withRel("answer") }
+            .map { linkTo(methodOn(QuizController::class.java).revealAnswers(this.id!!)) }
+            .map { it.withRel("revealAnswers") }
             .flatMap { it.toMono() }
             .map { this.add(it) }
+
+    this.participants.forEach { participant ->
+        linkBuilder = linkBuilder
+                .map { linkTo(methodOn(QuizController::class.java).answer(this.id!!, participant.id, "")) }
+                .map { it.withRel("answer-${participant.id}") }
+                .flatMap { it.toMono() }
+                .map { this.add(it) }
+    }
+
+    return linkBuilder
             .map { linkTo(methodOn(QuizController::class.java).reopenCurrentQuestion(this.id!!)) }
             .map { it.withRel("reopenQuestion") }
             .flatMap { it.toMono() }

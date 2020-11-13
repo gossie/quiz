@@ -14,7 +14,7 @@ const QuizStatistics: React.FC<QuizStatisticsProps> = (props: QuizStatisticsProp
 
     const determineRows = () => {
         const buzzers = (buzzerStatistics: Array<BuzzerStatistics>) => buzzerStatistics.map((buzzerStatistic, index) => 
-                <li key={index}>{buzzerStatistic.participant.name} has buzzered after {buzzerStatistic.duration / 1000} seconds and the answer was {buzzerStatistic.answer}</li>
+                <li key={index}>{buzzerStatistic.participant.name} has answered after {buzzerStatistic.duration / 1000} seconds and it was {buzzerStatistic.answer}</li>
         );
 
         return props.quiz.quizStatistics?.questionStatistics.map(questionStatistic => 
@@ -45,7 +45,7 @@ const QuizStatistics: React.FC<QuizStatisticsProps> = (props: QuizStatisticsProp
                             <thead>
                                 <tr>
                                     <th>Question</th>
-                                    <th>Buzzers</th>
+                                    <th>Answers</th>
                                 </tr>
                             </thead>
                             <tbody>

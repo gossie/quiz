@@ -11,6 +11,8 @@ interface QuizService {
 
     fun createParticipant(command: CreateParticipantCommand): Mono<Unit>
 
+    fun deleteParticipant(command: DeleteParticipantCommand): Mono<Unit>
+
     fun buzzer(command: BuzzerCommand): Mono<Unit>
 
     fun estimate(command: EstimationCommand): Mono<Unit>
