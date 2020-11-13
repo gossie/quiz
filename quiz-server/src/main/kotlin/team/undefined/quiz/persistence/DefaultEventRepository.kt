@@ -40,4 +40,16 @@ class DefaultEventRepository(private val eventEntityRepository: EventEntityRepos
                 .map { UUID.fromString(it) }
     }
 
+    override fun undoLastAction(quizId: UUID): Mono<Event> {
+        return eventEntityRepository.findLastByAggregateId(quizId.toString())
+                .flatMap { deleteEvent(it) }
+                .map { objectMapper.readValue(it.domainEvent, Class.forName(it.type)) }
+                .map { Event::class.java.cast(it) }
+    }
+
+    private fun deleteEvent(eventEntity: EventEntity): Mono<EventEntity> {
+        return eventEntityRepository.deleteById(eventEntity.id!!)
+                .then(Mono.just(eventEntity))
+    }
+
 }

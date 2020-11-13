@@ -34,6 +34,10 @@ internal class DefaultQuizServiceTest {
         override fun determineQuizIds(): Flux<UUID> {
             return Flux.empty()
         }
+
+        override fun undoLastAction(quizId: UUID): Mono<Event> {
+            return Mono.empty()
+        }
     }
 
     private val quizRepository = spy(TestEventRepository())

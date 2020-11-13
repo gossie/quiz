@@ -112,4 +112,39 @@ internal class DefaultEventRepositoryTest {
                 .verifyComplete()
     }
 
+    @Test
+    fun shouldUndoLastAction() {
+        val firstQuizId = UUID.randomUUID()
+
+        StepVerifier.create(defaultEventRepository.storeEvent(TestEvent(firstQuizId, Date().time, mapOf(Pair("key1", "value1")))))
+                .consumeNextWith {
+                    assertThat(it.quizId).isEqualTo(firstQuizId)
+                    assertThat((it as TestEvent).payload).isEqualTo(mapOf(Pair("key1", "value1")))
+                }
+                .verifyComplete()
+        Thread.sleep(1)
+
+        StepVerifier.create(defaultEventRepository.storeEvent(TestEvent(firstQuizId, Date().time, mapOf(Pair("key2", "value2")))))
+                .consumeNextWith {
+                    assertThat(it.quizId).isEqualTo(firstQuizId)
+                    assertThat((it as TestEvent).payload).isEqualTo(mapOf(Pair("key2", "value2")))
+                }
+                .verifyComplete()
+        Thread.sleep(1)
+
+        StepVerifier.create(defaultEventRepository.undoLastAction(firstQuizId))
+                .consumeNextWith {
+                    assertThat(it.quizId).isEqualTo(firstQuizId)
+                    assertThat((it as TestEvent).payload).isEqualTo(mapOf(Pair("key2", "value2")))
+                }
+                .verifyComplete()
+
+        StepVerifier.create(defaultEventRepository.determineEvents(firstQuizId))
+                .consumeNextWith {
+                    assertThat(it.quizId).isEqualTo(firstQuizId)
+                    assertThat((it as TestEvent).payload).isEqualTo(mapOf(Pair("key1", "value1")))
+                }
+                .verifyComplete()
+    }
+
 }
