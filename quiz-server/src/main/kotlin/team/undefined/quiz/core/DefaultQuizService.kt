@@ -107,6 +107,7 @@ class DefaultQuizService(private val eventRepository: EventRepository,
                 .reduce(Quiz(name = "")) { quiz: Quiz, event: Event -> event.process(quiz) }
                 .map {
                     val pendingQuestion = it.pendingQuestion
+                    stopCounter(it.id)
                     if (pendingQuestion?.initialTimeToAnswer != null) {
                         subscriptions[it.id] = Flux.interval(Duration.ofSeconds(1))
                                 .takeUntil { second -> second + 1 >= pendingQuestion.initialTimeToAnswer.toLong() }
@@ -132,6 +133,7 @@ class DefaultQuizService(private val eventRepository: EventRepository,
                 .reduce(Quiz(name = "")) { quiz: Quiz, event: Event -> event.process(quiz) }
                 .map {
                     val pendingQuestion = it.pendingQuestion
+                    stopCounter(it.id)
                     if (pendingQuestion?.initialTimeToAnswer != null) {
                         subscriptions[it.id] = Flux.interval(Duration.ofSeconds(1))
                                 .takeUntil { second -> second + 1 >= pendingQuestion.initialTimeToAnswer.toLong() }
@@ -146,7 +148,7 @@ class DefaultQuizService(private val eventRepository: EventRepository,
         logger.debug("reveal answers of active question in quiz '{}'", command.quizId)
         return eventRepository.storeEvent(AnswersRevealedEvent(command.quizId))
                 .map {
-                    subscriptions[it.quizId]?.dispose()
+                    stopCounter(it.quizId)
                     it
                 }
                 .map { eventBus.post(it) }
@@ -174,6 +176,11 @@ class DefaultQuizService(private val eventRepository: EventRepository,
                     eventRepository.determineEvents(it)
                             .reduce(Quiz(name = "")) { quiz: Quiz, event: Event -> event.process(quiz) }
                 }
+    }
+
+    private fun stopCounter(quizId: UUID) {
+        subscriptions[quizId]?.dispose()
+        subscriptions.remove(quizId)
     }
 
 }
