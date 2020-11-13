@@ -45,6 +45,13 @@ data class ParticipantCreatedEvent(@JsonProperty("quizId") override val quizId: 
     }
 }
 
+data class ParticipantDeletedEvent(@JsonProperty("quizId") override val quizId: UUID, @JsonProperty("participantId") val participantId: UUID, @JsonProperty("timestamp") override val timestamp: Long = Date().time) : Event {
+    override fun process(quiz: Quiz): Quiz {
+        return quiz.deleteParticipant(participantId)
+                .setTimestamp(timestamp)
+    }
+}
+
 data class QuestionAskedEvent(@JsonProperty("quizId") override val quizId: UUID, @JsonProperty("questionId") val questionId: UUID, @JsonProperty("timestamp") override val timestamp: Long = Date().time) : Event {
     override fun process(quiz: Quiz): Quiz {
         return quiz.startQuestion(questionId)

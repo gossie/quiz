@@ -175,3 +175,42 @@ test('displays no icon because reveal is allowed', () => {
 
     expect(() => getByTestId('reveal-not-allowed')).toThrowError();
 });
+
+test('deletes participant', () => {
+    jest.spyOn(global, 'fetch').mockImplementation((url: string, request: object) => {
+        expect(url).toEqual('http://localhost:5000/api/quiz/1/participants/15');
+        expect(request).toEqual({
+            method: 'DELETE'
+        });
+        Promise.resolve();
+    });
+
+    const quiz: Quiz = {
+        id: '1',
+        name: 'Quiz',
+        participants: [
+            {
+                id: '15',
+                name: 'Erik',
+                turn: false,
+                points: 0,
+                revealAllowed: true,
+                links: [
+                    {
+                        rel: 'delete',
+                        href: '/api/quiz/1/participants/15'
+                    }
+                ]
+            }
+        ],
+        openQuestions: [],
+        playedQuestions: [],
+        timestamp: 1234,
+        links: []
+    }
+
+    const { getByTestId } = render(<ParticipantItem quiz={quiz} participant={quiz.participants[0]} pointsAfterLastQuestion={0} />);
+
+    getByTestId('delete').click();
+
+});
