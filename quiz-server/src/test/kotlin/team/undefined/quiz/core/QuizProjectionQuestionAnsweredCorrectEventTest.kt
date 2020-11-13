@@ -66,7 +66,7 @@ internal class QuizProjectionQuestionAnsweredCorrectEventTest {
         eventBus.post(ParticipantCreatedEvent(quiz.id, participant, 3))
         eventBus.post(QuestionAskedEvent(quiz.id, question.id, 4))
         eventBus.post(BuzzeredEvent(quiz.id, participant.id, 5))
-        eventBus.post(AnsweredEvent(quiz.id, null, AnswerCommand.Answer.CORRECT, 6))
+        eventBus.post(AnsweredEvent(quiz.id, participant.id, AnswerCommand.Answer.CORRECT, 6))
 
         await untilAsserted  {
             val q = observedQuiz.get()
