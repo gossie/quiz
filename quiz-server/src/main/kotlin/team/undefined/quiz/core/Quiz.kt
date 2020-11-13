@@ -99,7 +99,11 @@ data class Quiz(
                     it.pending = false
                     it.alreadyPlayed = true
                 }
-        questions.filter { it.id == questionId }[0].pending = !questions.filter { it.id == questionId }[0].pending
+
+        val question = questions.filter { it.id == questionId }[0]
+        question.pending = !question.pending
+        question.secondsLeft = question.initialTimeToAnswer
+
         return this
     }
 

@@ -2,8 +2,11 @@ package team.undefined.quiz.core;
 
 import org.assertj.core.api.AbstractAssert;
 import org.assertj.core.api.Assertions;
+import team.undefined.quiz.web.QuestionDTOAssert;
+import team.undefined.quiz.web.QuizDTOAssert;
 
 import java.util.UUID;
+import java.util.function.Consumer;
 
 public class QuizAssert extends AbstractAssert<QuizAssert, Quiz> {
 
@@ -25,8 +28,28 @@ public class QuizAssert extends AbstractAssert<QuizAssert, Quiz> {
         return this;
     }
 
+    public QuizAssert particpantSizeIs(int size) {
+        Assertions.assertThat(actual.getParticipants()).hasSize(size);
+        return this;
+    }
+
+    public QuizAssert hasParticipant(int index, Consumer<ParticipantAssert> consumer) {
+        consumer.accept(ParticipantAssert.assertThat(actual.getParticipants().get(index)));
+        return this;
+    }
+
     public QuizAssert hasNoQuestions() {
         Assertions.assertThat(actual.getQuestions()).isEmpty();
+        return this;
+    }
+
+    public QuizAssert questionSizeIs(int size) {
+        Assertions.assertThat(actual.getQuestions()).hasSize(size);
+        return this;
+    }
+
+    public QuizAssert hasQuestion(int index, Consumer<QuestionAssert> consumer) {
+        consumer.accept(QuestionAssert.assertThat(actual.getQuestions().get(index)));
         return this;
     }
 
