@@ -63,4 +63,9 @@ public class QuizAssert extends AbstractAssert<QuizAssert, Quiz> {
         return this;
     }
 
+    public QuizAssert hasQuizStatistics(Consumer<QuizStatisticsAssert> consumer) {
+        consumer.accept(QuizStatisticsAssert.assertThat(actual.getQuizStatistics()));
+        return this;
+    }
+
 }

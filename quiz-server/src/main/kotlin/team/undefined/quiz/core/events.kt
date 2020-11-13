@@ -87,7 +87,7 @@ data class ToggleAnswerRevealAllowedEvent(@JsonProperty("quizId") override val q
     }
 }
 
-data class AnsweredEvent(@JsonProperty("quizId") override val quizId: UUID, @JsonProperty("participantId") val participantId: UUID?, @JsonProperty("answer") val answer: AnswerCommand.Answer, @JsonProperty("timestamp") override val timestamp: Long = Date().time) : Event {
+data class AnsweredEvent(@JsonProperty("quizId") override val quizId: UUID, @JsonProperty("participantId") val participantId: UUID, @JsonProperty("answer") val answer: AnswerCommand.Answer, @JsonProperty("timestamp") override val timestamp: Long = Date().time) : Event {
     override fun process(quiz: Quiz): Quiz {
         return answer.performAnswer(quiz, participantId)
                 .setTimestamp(timestamp)

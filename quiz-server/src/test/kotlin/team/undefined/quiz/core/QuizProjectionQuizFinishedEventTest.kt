@@ -2,77 +2,41 @@ package team.undefined.quiz.core
 
 import com.google.common.eventbus.EventBus
 import org.awaitility.kotlin.await
-import org.awaitility.kotlin.until
+import org.awaitility.kotlin.untilAsserted
 import org.junit.jupiter.api.Test
 import org.mockito.Mockito.`when`
 import org.mockito.Mockito.mock
 import reactor.core.publisher.Flux
+import team.undefined.quiz.core.QuizAssert.assertThat
 import java.util.concurrent.atomic.AtomicReference
 
 internal class QuizProjectionQuizFinishedEventTest {
 
     @Test
-    fun shouldHandleQuizFinishedEventWhenQuizIsAlreadyInCache() {
-        val quiz = Quiz(name = "Awesome Quiz")
-
-        val question = Question(question = "Wofür steht die Abkürzung a.D.?")
-        val participant = Participant(name = "Lena")
-
-        val eventBus = EventBus()
-        val eventRepository = mock(EventRepository::class.java)
-        `when`(eventRepository.determineEvents(quiz.id))
-                .thenReturn(Flux.just(
-                        QuizCreatedEvent(quiz.id, quiz, 1),
-                        QuestionCreatedEvent(quiz.id, question, 2),
-                        ParticipantCreatedEvent(quiz.id, participant, 3),
-                        QuestionAskedEvent(quiz.id, question.id, 4),
-                        BuzzeredEvent(quiz.id, participant.id, 5),
-                        AnsweredEvent(quiz.id, participant.id, AnswerCommand.Answer.CORRECT, 6),
-                        QuizFinishedEvent(quiz.id, 7)
-                ))
-        val quizProjection = QuizProjection(eventBus, QuizStatisticsProvider(eventRepository), eventRepository)
-
-        val observedQuiz = AtomicReference<Quiz>()
-        quizProjection.observeQuiz(quiz.id)
-                .subscribe { observedQuiz.set(it) }
-
-        eventBus.post(QuizCreatedEvent(quiz.id, quiz, 1))
-        eventBus.post(QuestionCreatedEvent(quiz.id, question, 2))
-        eventBus.post(ParticipantCreatedEvent(quiz.id, participant, 3))
-        eventBus.post(QuestionAskedEvent(quiz.id, question.id, 4))
-        eventBus.post(BuzzeredEvent(quiz.id, participant.id, 5))
-        eventBus.post(AnsweredEvent(quiz.id, participant.id, AnswerCommand.Answer.CORRECT, 6))
-        eventBus.post(QuizFinishedEvent(quiz.id, 7))
-
-        await until {
-            observedQuiz.get().id == quiz.id
-                    && observedQuiz.get().finished
-                    && observedQuiz.get().quizStatistics!!.questionStatistics.size == 1
-                    && observedQuiz.get().quizStatistics!!.questionStatistics[0].questionId == question.id
-                    && observedQuiz.get().quizStatistics!!.questionStatistics[0].buzzerStatistics.size == 1
-                    && observedQuiz.get().quizStatistics!!.questionStatistics[0].buzzerStatistics[0].duration == 1L
-                    && observedQuiz.get().quizStatistics!!.questionStatistics[0].buzzerStatistics[0].participantId == participant.id
-                    && observedQuiz.get().quizStatistics!!.questionStatistics[0].buzzerStatistics[0].answer == AnswerCommand.Answer.CORRECT
-        }
-    }
-
-    @Test
     fun shouldHandleHandleQuizFinishedEventWhenQuizIsNotInCacheAndLastEventWasAlreadyPersisted() {
         val quiz = Quiz(name = "Awesome Quiz")
 
-        val question = Question(question = "Wofür steht die Abkürzung a.D.?")
-        val participant = Participant(name = "Lena")
-        val finishedEvent = QuizFinishedEvent(quiz.id, 7)
+        val buzzerQuestion = Question(question = "Wofür steht die Abkürzung a.D.?")
+        val freetextQuestion = Question(question = "Wer schrieb Peter und der Wolf?", estimates = HashMap(), initialTimeToAnswer = 45)
+        val participant1 = Participant(name = "Lena")
+        val participant2 = Participant(name = "Erik")
+        val finishedEvent = QuizFinishedEvent(quiz.id, 13)
 
         val eventRepository = mock(EventRepository::class.java)
         `when`(eventRepository.determineEvents(quiz.id))
                 .thenReturn(Flux.just(
                         QuizCreatedEvent(quiz.id, quiz, 1),
-                        QuestionCreatedEvent(quiz.id, question, 2),
-                        ParticipantCreatedEvent(quiz.id, participant, 3),
-                        QuestionAskedEvent(quiz.id, question.id, 4),
-                        BuzzeredEvent(quiz.id, participant.id, 5),
-                        AnsweredEvent(quiz.id, participant.id, AnswerCommand.Answer.CORRECT, 6),
+                        QuestionCreatedEvent(quiz.id, buzzerQuestion, 2),
+                        QuestionCreatedEvent(quiz.id, freetextQuestion, 3),
+                        ParticipantCreatedEvent(quiz.id, participant1, 4),
+                        ParticipantCreatedEvent(quiz.id, participant2, 5),
+                        QuestionAskedEvent(quiz.id, buzzerQuestion.id, 6),
+                        BuzzeredEvent(quiz.id, participant1.id, 7),
+                        AnsweredEvent(quiz.id, participant1.id, AnswerCommand.Answer.CORRECT, 8),
+                        QuestionAskedEvent(quiz.id, freetextQuestion.id, 9),
+                        EstimatedEvent(quiz.id, participant1.id, "Sergej Prokofjew", 10),
+                        EstimatedEvent(quiz.id, participant2.id, "Max Mustermann", 11),
+                        AnsweredEvent(quiz.id, participant1.id, AnswerCommand.Answer.CORRECT, 12),
                         finishedEvent
                 ))
 
@@ -85,33 +49,69 @@ internal class QuizProjectionQuizFinishedEventTest {
 
         eventBus.post(finishedEvent)
 
-        await until {
-            observedQuiz.get().id == quiz.id
-                    && observedQuiz.get().finished
-                    && observedQuiz.get().quizStatistics!!.questionStatistics.size == 1
-                    && observedQuiz.get().quizStatistics!!.questionStatistics[0].questionId == question.id
-                    && observedQuiz.get().quizStatistics!!.questionStatistics[0].buzzerStatistics.size == 1
-                    && observedQuiz.get().quizStatistics!!.questionStatistics[0].buzzerStatistics[0].duration == 1L
-                    && observedQuiz.get().quizStatistics!!.questionStatistics[0].buzzerStatistics[0].participantId == participant.id
-                    && observedQuiz.get().quizStatistics!!.questionStatistics[0].buzzerStatistics[0].answer == AnswerCommand.Answer.CORRECT
+        await untilAsserted {
+            assertThat(observedQuiz.get())
+                    .hasId(quiz.id)
+                    .isFinished
+                    .hasQuizStatistics { quizStatistics ->
+                        quizStatistics
+                                .questionStatisticsSizeId(2)
+                                .hasQuestionStatistics(0) { questionStatistics ->
+                                    questionStatistics
+                                            .hasQuestionId(buzzerQuestion.id)
+                                            .buzzerStatisticsSizeIs(1)
+                                            .hasBuzzerStatistics(0) { buzzerStatistics ->
+                                                buzzerStatistics
+                                                        .hasDuration(1L)
+                                                        .hasParticipantId(participant1.id)
+                                                        .isCorrect
+                                            }
+                                }
+                                .hasQuestionStatistics(1) { questionStatistics ->
+                                    questionStatistics
+                                            .hasQuestionId(freetextQuestion.id)
+                                            .buzzerStatisticsSizeIs(2)
+                                            .hasBuzzerStatistics(0) { buzzerStatistics ->
+                                                buzzerStatistics
+                                                        .hasDuration(1L)
+                                                        .hasParticipantId(participant1.id)
+                                                        .isCorrect
+                                            }
+                                            .hasBuzzerStatistics(1) { buzzerStatistics ->
+                                                buzzerStatistics
+                                                        .hasDuration(2L)
+                                                        .hasParticipantId(participant2.id)
+                                                        .isIncorrect
+                                            }
+                                }
+                    }
         }
     }
 
     @Test
     fun shouldHandleHandleQuizFinishedEventCreationWhenQuizIsNotInCacheAndLastEventWasNotYetPersisted() {
         val quiz = Quiz(name = "Awesome Quiz")
-        val question = Question(question = "Wofür steht die Abkürzung a.D.?")
-        val participant = Participant(name = "Lena")
+
+        val buzzerQuestion = Question(question = "Wofür steht die Abkürzung a.D.?")
+        val freetextQuestion = Question(question = "Wer schrieb Peter und der Wolf?", estimates = HashMap(), initialTimeToAnswer = 45)
+        val participant1 = Participant(name = "Lena")
+        val participant2 = Participant(name = "Erik")
 
         val eventRepository = mock(EventRepository::class.java)
         `when`(eventRepository.determineEvents(quiz.id))
                 .thenReturn(Flux.just(
                         QuizCreatedEvent(quiz.id, quiz, 1),
-                        QuestionCreatedEvent(quiz.id, question, 2),
-                        ParticipantCreatedEvent(quiz.id, participant, 3),
-                        QuestionAskedEvent(quiz.id, question.id, 4),
-                        BuzzeredEvent(quiz.id, participant.id, 5),
-                        AnsweredEvent(quiz.id, participant.id, AnswerCommand.Answer.CORRECT, 6)
+                        QuestionCreatedEvent(quiz.id, buzzerQuestion, 2),
+                        QuestionCreatedEvent(quiz.id, freetextQuestion, 3),
+                        ParticipantCreatedEvent(quiz.id, participant1, 4),
+                        ParticipantCreatedEvent(quiz.id, participant2, 5),
+                        QuestionAskedEvent(quiz.id, buzzerQuestion.id, 6),
+                        BuzzeredEvent(quiz.id, participant1.id, 7),
+                        AnsweredEvent(quiz.id, participant1.id, AnswerCommand.Answer.CORRECT, 8),
+                        QuestionAskedEvent(quiz.id, freetextQuestion.id, 9),
+                        EstimatedEvent(quiz.id, participant1.id, "Sergej Prokofjew", 10),
+                        EstimatedEvent(quiz.id, participant2.id, "Max Mustermann", 11),
+                        AnsweredEvent(quiz.id, participant1.id, AnswerCommand.Answer.CORRECT, 12)
                 ))
 
         val eventBus = EventBus()
@@ -121,17 +121,44 @@ internal class QuizProjectionQuizFinishedEventTest {
         quizProjection.observeQuiz(quiz.id)
                 .subscribe { observedQuiz.set(it) }
 
-        eventBus.post(QuizFinishedEvent(quiz.id, 7))
+        eventBus.post(QuizFinishedEvent(quiz.id, 13))
 
-        await until {
-            observedQuiz.get().id == quiz.id
-                    && observedQuiz.get().finished
-                    && observedQuiz.get().quizStatistics!!.questionStatistics.size == 1
-                    && observedQuiz.get().quizStatistics!!.questionStatistics[0].questionId == question.id
-                    && observedQuiz.get().quizStatistics!!.questionStatistics[0].buzzerStatistics.size == 1
-                    && observedQuiz.get().quizStatistics!!.questionStatistics[0].buzzerStatistics[0].duration == 1L
-                    && observedQuiz.get().quizStatistics!!.questionStatistics[0].buzzerStatistics[0].participantId == participant.id
-                    && observedQuiz.get().quizStatistics!!.questionStatistics[0].buzzerStatistics[0].answer == AnswerCommand.Answer.CORRECT
+        await untilAsserted {
+            assertThat(observedQuiz.get())
+                    .hasId(quiz.id)
+                    .isFinished
+                    .hasQuizStatistics { quizStatistics ->
+                        quizStatistics
+                                .questionStatisticsSizeId(2)
+                                .hasQuestionStatistics(0) { questionStatistics ->
+                                    questionStatistics
+                                            .hasQuestionId(buzzerQuestion.id)
+                                            .buzzerStatisticsSizeIs(1)
+                                            .hasBuzzerStatistics(0) { buzzerStatistics ->
+                                                buzzerStatistics
+                                                        .hasDuration(1L)
+                                                        .hasParticipantId(participant1.id)
+                                                        .isCorrect
+                                            }
+                                }
+                                .hasQuestionStatistics(1) { questionStatistics ->
+                                    questionStatistics
+                                            .hasQuestionId(freetextQuestion.id)
+                                            .buzzerStatisticsSizeIs(2)
+                                            .hasBuzzerStatistics(0) { buzzerStatistics ->
+                                                buzzerStatistics
+                                                        .hasDuration(1L)
+                                                        .hasParticipantId(participant1.id)
+                                                        .isCorrect
+                                            }
+                                            .hasBuzzerStatistics(1) { buzzerStatistics ->
+                                                buzzerStatistics
+                                                        .hasDuration(2L)
+                                                        .hasParticipantId(participant2.id)
+                                                        .isIncorrect
+                                            }
+                                }
+                    }
         }
     }
 
