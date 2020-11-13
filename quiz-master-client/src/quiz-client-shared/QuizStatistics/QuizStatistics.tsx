@@ -45,7 +45,7 @@ const QuizStatistics: React.FC<QuizStatisticsProps> = (props: QuizStatisticsProp
                             <thead>
                                 <tr>
                                     <th>Question</th>
-                                    <th>Buzzers</th>
+                                    <th>Answers</th>
                                 </tr>
                             </thead>
                             <tbody>
