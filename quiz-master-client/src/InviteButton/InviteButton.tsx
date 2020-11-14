@@ -8,6 +8,7 @@ const InviteButton: React.FC<InviteButtonProps> = (props: InviteButtonProps) => 
     const [invitePopupOpen, setInvitePopupOpen] = useState(false);
 
     const copyUrlToClipboard = () => {
+        console.log("COPYYYY")
         var urlTextField = document.getElementById("participantUrl")  as HTMLInputElement;;
         urlTextField.select();
         urlTextField.setSelectionRange(0, 99999); /*For mobile devices*/
@@ -18,7 +19,7 @@ const InviteButton: React.FC<InviteButtonProps> = (props: InviteButtonProps) => 
 
     return (
         <span>
-            <button className="button is-primary" onClick={() => setInvitePopupOpen(true)}>
+            <button data-testid="invite-button" className="button is-primary" onClick={() => setInvitePopupOpen(true)}>
                 <span>Invite Participants</span>
             </button>
             { invitePopupOpen &&
@@ -33,10 +34,10 @@ const InviteButton: React.FC<InviteButtonProps> = (props: InviteButtonProps) => 
                             <p className="block">Copy the URL and send it to your quiz participants.</p>
                             <div className="field has-addons">
                                 <div className="control" style={{ width: "100%" }}>
-                                    <input className="input" type="text" id="participantUrl" value={process.env.REACT_APP_PARTICIPANT_BASE_URL + '?quiz_id=' + props.quizId} readOnly></input>
+                                    <input data-testid="participant-url-input" className="input" type="text" id="participantUrl" value={process.env.REACT_APP_PARTICIPANT_BASE_URL + '?quiz_id=' + props.quizId} readOnly></input>
                                 </div>
                                 <div className="control">
-                                    <button className="button is-primary" onClick={() => copyUrlToClipboard()}>
+                                    <button data-testid="copy-url-button" className="button is-primary" onClick={() => copyUrlToClipboard()}>
                                         Copy to Clipboard
                                     </button>
                                 </div>
