@@ -50,7 +50,7 @@ const QuizMaster: React.FC<QuizMasterProps> = (props: QuizMasterProps) => {
             ?
                 <div>
                     <div id="timestamp">{lastChanged()}</div>
-                    <h4 className="title is-4">{quiz.name} (ID: {quiz.id})</h4>
+                    <h4 className="title is-4">{quiz.name}</h4>
                     <div className="columns">
                         <div className="column participants box">
                             <Participants quiz={quiz}></Participants>

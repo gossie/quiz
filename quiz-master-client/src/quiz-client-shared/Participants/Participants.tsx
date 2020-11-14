@@ -4,6 +4,7 @@ import FlipMove from "react-flip-move"
 
 import './Participants.css';
 import ParticipantItem from './ParticipantItem';
+import InviteButton from '../../InviteButton/InviteButton';
 const buzzerfile = require('./../../assets/buzzer.mp3');
 
 interface ParticipantsProps {
@@ -94,6 +95,9 @@ const Participants: React.FC<ParticipantsProps> = (props: ParticipantsProps) => 
         <div>
             <h4 className="title is-4">Participants</h4>
             <audio src={buzzerfile} ref={buzzerAudio} preload='auto'></audio>
+            { props.quiz.participants.length === 0 && 
+                <InviteButton quizId={props.quiz.id}></InviteButton>
+            }
             <div data-testid="participants" className="participants-list">
                 <FlipMove>
                     {elements}

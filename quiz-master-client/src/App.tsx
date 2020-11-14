@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import './quiz-client-shared/App.css';
+import './App.scss';
 import QuizMaster from './QuizMaster';
 import LoginPageWidget from './quiz-client-shared/LoginPageWidget/LoginPageWidget' 
 import AppHeader from './quiz-client-shared/AppHeader/AppHeader';
