@@ -8,54 +8,65 @@
     display: flex;
     flex-direction: row;
     overflow: hidden;
-}
 
-.question-index-column.is-pending-question, .question-type-column.is-pending-question  {
-    background-color: $link;
-}
+    .question-index-column {
+        width: 50px;
+        flex-shrink: 0;
+        overflow: hidden;
+        border-right: 2px solid #888888;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        font-weight: 600;
+    
+        span {
+            letter-spacing: -0.5px;
+            font-size: 1.2em;
+        }
+    }
 
-.question-index-column {
-    width: 30px;
-    flex-shrink: 0;
-    overflow: hidden;
-    letter-spacing: -0.5px;
-    padding: 0.75rem 0 0.75rem 0;
-}
+    .question-index-column.is-pending-question  {
+        background-color: $link;
+    }
 
-.question-type-column {
-    width: 30px;
-    flex-shrink: 0;
-    overflow: hidden;
-    border-right: 1px solid #888888;
-    padding: 0.75rem 0.25rem 0.75rem 0;
+    .question-main-column {
+        width: 100%;
 
-    .icon {
-        font-size: 1.1em;
+        .question-top-row {
+            display: flex;
+            flex-direction: row;
+            overflow: hidden;
+            justify-content: space-between;
+            padding: 0.75rem 0.25rem 0.325rem 0.75em;
+
+            .icon {
+                font-size: 1.2em;
+                width: 1.3em;
+                margin-right: 0.5em;
+                text-align: left;
+            }
+        }
+
+        .question-question-column {
+            flex-basis: 0;
+            flex-grow: 1;
+            flex-shrink: 1;
+            padding: 0.325rem 0.75rem 0.75rem 0.75rem;
+            overflow: hidden;
+            hyphens: auto;
+        
+        }
     }
 }
 
-.question-question-column {
-    flex-basis: 0;
-    flex-grow: 1;
-    flex-shrink: 1;
-    padding: 0.75rem 0.75rem 0.75rem 0.75rem;
-    overflow: hidden;
-    hyphens: auto;
 
-}
 
-.question-actions-column {
-    box-sizing: content-box;
-    flex-shrink: 0;
-    width: 60px;
-    border-left: 1px solid #888888;
-    padding: 0.75rem 0.25rem 0.75rem 0.25rem;
 
-    .icon {
-        font-size: 1.1em;
-        width: 1.3em
-    }
-}
+
+
+
+
+
 
 .question.columns {
     margin: 0px 0px 0px 0px;

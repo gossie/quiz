@@ -82,7 +82,7 @@ const Questions: React.FC<QuestionsProps> = (props: QuestionsProps) => {
                             <button data-testid="close-button" className="delete" aria-label="close" onClick={() => setQuestionToAdd(false)}></button>
                         </header>
                         <section className="modal-card-body">
-                            <div className="tabs is-boxed">
+                            <div className="tabs is-centered is-boxed">
                                 <ul>
                                     <li className={tabIndex === 0 ? "is-active" : ""}>
                                         <a onClick={() => setTabIndex(0)}>

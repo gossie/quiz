@@ -8,6 +8,7 @@ interface AppHeaderProps {
 
 const AppHeader: React.FC<AppHeaderProps> = (props: AppHeaderProps) => {
     const [invitePopupOpen, setInvitePopupOpen] = useState(false);
+    const [burgerMenuOpen, setBurgerMenuOpen] = useState(false);
 
     const copyUrlToClipboard = () => {
         var urlTextField = document.getElementById("participantUrl")  as HTMLInputElement;;
@@ -22,20 +23,29 @@ const AppHeader: React.FC<AppHeaderProps> = (props: AppHeaderProps) => {
     <header>
         <nav className="navbar is-dark is-fixed-top">
             <div className="navbar-brand">
-                <div className="icon App-logo">
+                <div className="icon app-logo">
                     <i className="far fa-question-circle"></i>
                 </div> 
-                {props.title}
+                <div className="app-title">{props.title}</div>
+                { props.quizId &&
+                    <a role="button" className="navbar-burger burger" aria-label="menu" aria-expanded="false" data-target="navbarMenu" onClick={() => setBurgerMenuOpen(!burgerMenuOpen)}>
+                        <span aria-hidden="true"></span>
+                        <span aria-hidden="true"></span>
+                        <span aria-hidden="true"></span>
+                    </a>
+                }
             </div>
-            <div className="navbar-end">
-                <div className="navbar-item">
-                    <p className="control">
-                    { props.quizId &&
-                        <a className="button is-primary" onClick={() => setInvitePopupOpen(true)}>
-                            <span>Invite Participants</span>
-                        </a>
-                    }
-                    </p>
+            <div className={'navbar-menu' + (burgerMenuOpen ? ' is-active' : '')} id="navbarMenu">
+                <div className="navbar-end">
+                    <div className="navbar-item">
+                        <p className="control">
+                        { props.quizId &&
+                            <a className="button is-primary" onClick={() => setInvitePopupOpen(true)}>
+                                <span>Invite Participants</span>
+                            </a>
+                        }
+                        </p>
+                    </div>
                 </div>
             </div>
         </nav>
@@ -54,7 +64,7 @@ const AppHeader: React.FC<AppHeaderProps> = (props: AppHeaderProps) => {
                                 <input className="input" type="text" id="participantUrl" value={process.env.REACT_APP_PARTICIPANT_BASE_URL + '?quiz_id=' + props.quizId} readOnly></input>
                             </div>
                             <div className="control">
-                                <button className="button is-info" onClick={() => copyUrlToClipboard()}>
+                                <button className="button is-primary" onClick={() => copyUrlToClipboard()}>
                                 Copy to Clipboard
                                 </button>
                             </div>
