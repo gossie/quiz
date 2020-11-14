@@ -20,10 +20,10 @@ const Questions: React.FC<QuestionsProps> = (props: QuestionsProps) => {
     };
     
     const playedQuestions = props.quiz.playedQuestions
-            .map((q, index) => <li key={q.id} className="no-padding"><QuestionElement question={q} index={index} setImageToDisplay={setImageToDisplay}></QuestionElement></li>);
+            .map((q, index) => <li key={q.id} className="no-padding"><QuestionElement question={q} quiz={props.quiz} index={index} setImageToDisplay={setImageToDisplay}></QuestionElement></li>);
 
     const openQuestions = props.quiz.openQuestions
-            .map((q, index) => <li key={q.id} className="no-padding"><QuestionElement question={q} index={index} setImageToDisplay={setImageToDisplay} enableOperations={true} onEdit={onEdit}></QuestionElement></li>);
+            .map((q, index) => <li key={q.id} className="no-padding"><QuestionElement question={q} quiz={props.quiz} index={index} setImageToDisplay={setImageToDisplay} enableOperations={true} onEdit={onEdit}></QuestionElement></li>);
     
     return (
         <div className="questions-column">
