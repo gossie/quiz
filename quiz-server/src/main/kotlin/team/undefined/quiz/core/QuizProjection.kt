@@ -113,6 +113,21 @@ class QuizProjection(eventBus: EventBus,
                 .subscribe { emitQuiz(it) }
     }
 
+    @Subscribe
+    fun handleReloadQuizCommand(command: ReloadQuizCommand) {
+        locks.computeIfAbsent(command.quizId) { Semaphore(1) }.acquire()
+        try {
+            eventRepository.determineEvents(command.quizId)
+                    .reduce(Quiz(name = "")) { q: Quiz, e: Event -> e.process(q) }
+                    .subscribe {
+                        quizCache[command.quizId] = it
+                        emitQuiz(it)
+                    }
+        } finally {
+            locks[command.quizId]!!.release()
+        }
+    }
+
     private fun handleEvent(event: Event) {
         logger.info("handling event {}", event)
         try {

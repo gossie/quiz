@@ -17,6 +17,7 @@ class DefaultQuizService(private val eventRepository: EventRepository,
     private val logger = LoggerFactory.getLogger(QuizService::class.java)
 
     private val subscriptions = HashMap<UUID, Disposable>()
+    private val undoneEvents = HashMap<UUID, Stack<Event>>()
 
     @WriteLock
     override fun createQuiz(command: CreateQuizCommand): Mono<Unit> {
@@ -166,6 +167,11 @@ class DefaultQuizService(private val eventRepository: EventRepository,
         logger.debug("deleting quiz '{}'", command.quizId)
         return eventRepository.deleteEvents(command.quizId)
                 .map { eventBus.post(QuizDeletedEvent(command.quizId)) }
+                .map {
+                    subscriptions.remove(command.quizId)
+                    undoneEvents.remove(command.quizId)
+                    Unit
+                }
     }
 
     @ReadLock
@@ -176,6 +182,22 @@ class DefaultQuizService(private val eventRepository: EventRepository,
                     eventRepository.determineEvents(it)
                             .reduce(Quiz(name = "")) { quiz: Quiz, event: Event -> event.process(quiz) }
                 }
+    }
+
+    @WriteLock
+    override fun undo(command: UndoCommand): Mono<Unit> {
+        return eventRepository.undoLastAction(command.quizId)
+                .map {
+                    val eventStack = undoneEvents.computeIfAbsent(command.quizId) { Stack() }
+                    eventStack.push(it)
+                }
+                .map { eventBus.post(ReloadQuizCommand(command.quizId)) }
+    }
+
+    @WriteLock
+    override fun redo(command: RedoCommand): Mono<Unit> {
+        return eventRepository.storeEvent(undoneEvents[command.quizId]!!.pop())
+                .map { eventBus.post(it) }
     }
 
     private fun stopCounter(quizId: UUID) {

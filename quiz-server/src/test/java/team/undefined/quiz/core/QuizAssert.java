@@ -68,4 +68,9 @@ public class QuizAssert extends AbstractAssert<QuizAssert, Quiz> {
         return this;
     }
 
+    public QuizAssert hasNoQuizStatistics() {
+        Assertions.assertThat(actual.getQuizStatistics()).isNull();
+        return this;
+    }
+
 }

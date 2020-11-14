@@ -37,4 +37,8 @@ interface QuizService {
 
     fun determineQuizzes(): Flux<Quiz>
 
+    fun undo(command: UndoCommand): Mono<Unit>
+
+    fun redo(command: RedoCommand): Mono<Unit>
+
 }

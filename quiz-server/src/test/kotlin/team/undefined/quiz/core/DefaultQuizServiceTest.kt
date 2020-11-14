@@ -589,4 +589,24 @@ internal class DefaultQuizServiceTest {
                 .verifyComplete()
     }
 
+    @Test
+    fun shouldUndoAndRedoEvent() {
+        val quizId = UUID.randomUUID()
+
+        val lastEvent = QuizFinishedEvent(quizId)
+
+        `when`(quizRepository.undoLastAction(quizId))
+                .thenReturn(Mono.just(lastEvent))
+
+        val quizService = DefaultQuizService(quizRepository, eventBus)
+
+        StepVerifier.create(quizService.undo(UndoCommand(quizId)))
+                .consumeNextWith { verify(eventBus).post(ReloadQuizCommand(quizId)) }
+                .verifyComplete()
+
+        StepVerifier.create(quizService.redo(RedoCommand(quizId)))
+                .consumeNextWith { verify(eventBus).post(lastEvent) }
+                .verifyComplete()
+    }
+
 }
