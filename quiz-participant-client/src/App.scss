@@ -1,5 +1,7 @@
+@import "./index.scss";
+
 .App {
-  min-height: 100vh;
+  min-height: calc(100vh - $navbar-height);
   display: flex;
   flex-direction: column;
   justify-content: flex-start;

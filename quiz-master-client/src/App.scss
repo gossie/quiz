@@ -1,6 +1,5 @@
 @import "./index.scss";
 
-
 .App {
   min-height: calc(100vh - $navbar-height);
   display: flex;
@@ -34,7 +33,6 @@
   .App-content, .Quiz-dashboard, .columns {
     flex: 1;
   }
-
 }
 
 .Quiz-dashboard .question { 

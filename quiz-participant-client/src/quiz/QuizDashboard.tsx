@@ -84,7 +84,7 @@ const QuizDashboard: React.FC<QuizDashboardProps> = (props: QuizDashboardProps) 
                 <div>
                     <h4 className="title is-4">{quiz.name}</h4>
                     <div className="columns Dashboard-content">
-                        <div className="column participants">
+                        <div className="column participants box">
                             <div className="field">
                                 <div className="control">
                                     <label className="checkbox">
@@ -96,7 +96,7 @@ const QuizDashboard: React.FC<QuizDashboardProps> = (props: QuizDashboardProps) 
                             <Participants quiz={quiz}></Participants>
                             <QuizStatistics quiz={quiz} closeable={false}></QuizStatistics>
                         </div>
-                        <div className="column question">
+                        <div className="column question box">
                             <h5 className="title is-5">Current question</h5>
                             { isEstimationQuestion(quiz)
                             ?

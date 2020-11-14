@@ -17,6 +17,11 @@
     "react-scripts": "3.4.1",
     "typescript": "~3.7.2"
   },
+  "devDependencies": {
+    "bulma": "^0.9.1",
+    "bulmaswatch": "^0.8.1",
+    "sass": "^1.29.0"
+  },
   "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build",
