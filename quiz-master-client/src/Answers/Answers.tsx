@@ -22,16 +22,12 @@ const Answers: React.FC<AnswersProps> = (props: AnswersProps) => {
 
     return (
         <div className="answer-icons">
-            <div className="field is-grouped is-grouped-centered">
-                <span data-testid="correct-button" className="answers-icon has-text-success" onClick={() => answer('true')} title='Correct Answer'> 
-                    <i className="fas fa-check-square"></i>
-                </span>
-            
-
-                <span data-testid="incorrect-button" className="answers-icon has-text-danger" onClick={() => answer('false')} title='Incorrect Answer'> 
-                    <i className="fas fa-times-circle"></i>
-                </span>
-            </div>        
+            <span data-testid="correct-button" className="icon clickable has-text-link" onClick={() => answer('true')} title='Correct Answer'> 
+                <i className="fas fa-check-square"></i>
+            </span>
+            <span data-testid="incorrect-button" className="icon clickable has-text-danger" onClick={() => answer('false')} title='Incorrect Answer'> 
+                <i className="fas fa-times-circle"></i>
+            </span>      
         </div>
     )
 };

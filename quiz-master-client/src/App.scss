@@ -7,6 +7,17 @@
   justify-content: flex-start;
 }
 
+.clickable {
+  cursor: pointer;
+}
+
+.icon {
+  font-size: 1.2em;
+  width: 1.3em;
+  margin-right: 0.5em;
+  text-align: left;
+}
+
 .App-content {
   width: 100%;
   padding: 20px;
@@ -19,7 +30,6 @@
   display: flex;
   justify-content: center;
 }
-
 
 .Quiz-dashboard {
   display: flex;

@@ -68,7 +68,7 @@ const QuestionElement: React.FC<QuestionElementProps> = (props: QuestionElementP
                             <span data-testid={`edit-question-${props.index}`} className="icon clickable has-text-warning" title="Edit question" onClick={() => props.onEdit!(props.question)}><i className="fas fa-pencil-alt"></i></span>
                         }
                         { props.enableOperations && props.question.pending && (isParticipantsTurn() || props.question.estimates != null) &&
-                            <span data-testid="reopen-button" className="icon has-text-warning" onClick={() => reopenQuestion()} title='Reopen Question'><i className="fas fa-lock-open"></i></span>
+                            <span data-testid="reopen-button" className="icon clickable has-text-warning" onClick={() => reopenQuestion()} title='Reopen Question'><i className="fas fa-lock-open"></i></span>
                         }
                         { props.enableOperations && props.question.pending && 
                             <span data-testid={`revert-question-${props.index}`} className="icon clickable has-text-danger" title="Revert Question" onClick={() => toggleQuestion(props.question)}><i className="fas fa-undo"></i></span> 

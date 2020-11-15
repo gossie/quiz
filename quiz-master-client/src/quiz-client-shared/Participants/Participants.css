@@ -1,32 +1,7 @@
-.participant-answer {
-    margin-bottom: 15px;
-}
-
-.participant {
-    display: block;
-    display: flex;
-    flex-direction: row;
-    align-items: flex-start;
-}
-
-.participant-name {
-    margin-right: 30px;
-}
-
-.participant.turn {
-    font-weight: bold
-}
-
 .participants-list {
     display: block;
     text-align: left;
 }
 
-.points {
-    display: inline-block;
-    padding-left: 5px;
-}
 
-.clickable {
-    cursor: pointer;
-}
+
