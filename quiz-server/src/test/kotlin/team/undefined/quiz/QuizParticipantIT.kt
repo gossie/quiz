@@ -41,6 +41,7 @@ internal class QuizParticipantIT {
                 .responseBody
 
         assertThat(quizId).isNotNull()
+        Thread.sleep(10)
 
         webTestClient.get()
                 .uri("/api/quiz/${quizId}/quiz-participant")
@@ -70,6 +71,8 @@ internal class QuizParticipantIT {
                 .playedQuestionSizeIs(0)
                 .particpantSizeIs(0)
 
+        Thread.sleep(10)
+
         // Second question is created
         webTestClient
                 .post()
@@ -93,6 +96,8 @@ internal class QuizParticipantIT {
                 }
                 .playedQuestionSizeIs(0)
                 .particpantSizeIs(0)
+
+        Thread.sleep(10)
 
         // Third question is created
         webTestClient
@@ -126,6 +131,8 @@ internal class QuizParticipantIT {
                 .playedQuestionSizeIs(0)
                 .particpantSizeIs(0)
 
+        Thread.sleep(10)
+
         // First participant logs in
         webTestClient
                 .post()
@@ -158,6 +165,8 @@ internal class QuizParticipantIT {
                 .playedQuestionSizeIs(0)
                 .particpantSizeIs(1)
                 .hasParticipant(0) { it.hasName("André").isNotTurn }
+
+        Thread.sleep(10)
 
         // Second participant logs in
         webTestClient
@@ -193,6 +202,8 @@ internal class QuizParticipantIT {
                 .hasParticipant(0) { it.hasName("André").isNotTurn }
                 .hasParticipant(1) { it.hasName("Lena").isNotTurn }
 
+        Thread.sleep(10)
+
         // First buzzer question is asked
         webTestClient
                 .patch()
@@ -225,6 +236,8 @@ internal class QuizParticipantIT {
                 .hasParticipant(0) { it.hasName("André").isNotTurn }
                 .hasParticipant(1) { it.hasName("Lena").isNotTurn }
 
+        Thread.sleep(10)
+
         // First participant buzzers
         webTestClient
                 .put()
@@ -256,6 +269,8 @@ internal class QuizParticipantIT {
                 .particpantSizeIs(2)
                 .hasParticipant(0) { it.hasName("André").isNotTurn }
                 .hasParticipant(1) { it.hasName("Lena").isTurn }
+
+        Thread.sleep(10)
 
         // Answer is correct
         webTestClient
@@ -291,6 +306,8 @@ internal class QuizParticipantIT {
                 .hasParticipant(0) { it.hasName("André").hasPoints(0).isNotTurn }
                 .hasParticipant(1) { it.hasName("Lena").hasPoints(2).isTurn }
 
+        Thread.sleep(10)
+
         // Second buzzer question is asked
         webTestClient
                 .patch()
@@ -323,6 +340,8 @@ internal class QuizParticipantIT {
                 .hasParticipant(0) { it.hasName("André").hasPoints(0).isNotTurn }
                 .hasParticipant(1) { it.hasName("Lena").hasPoints(2).isNotTurn }
 
+        Thread.sleep(10)
+
         // Participant buzzers
         webTestClient
                 .put()
@@ -353,6 +372,8 @@ internal class QuizParticipantIT {
                 .particpantSizeIs(2)
                 .hasParticipant(0) { it.hasName("André").hasPoints(0).isTurn }
                 .hasParticipant(1) { it.hasName("Lena").hasPoints(2).isNotTurn }
+
+        Thread.sleep(10)
 
         // Answer is wrong
         webTestClient
@@ -387,6 +408,8 @@ internal class QuizParticipantIT {
                 .hasParticipant(0) { it.hasName("André").hasPoints(0).isTurn }
                 .hasParticipant(1) { it.hasName("Lena").hasPoints(2).isNotTurn }
 
+        Thread.sleep(10)
+
         // Login again with the same name
         webTestClient
                 .post()
@@ -420,6 +443,8 @@ internal class QuizParticipantIT {
                 .hasParticipant(0) { it.hasName("André").hasPoints(0).isTurn }
                 .hasParticipant(1) { it.hasName("Lena").hasPoints(2).isNotTurn }
 
+        Thread.sleep(10)
+
         // Ask estimation question
         webTestClient
                 .patch()
@@ -450,6 +475,8 @@ internal class QuizParticipantIT {
                 .particpantSizeIs(2)
                 .hasParticipant(0) { it.hasName("André").hasPoints(0).isNotTurn }
                 .hasParticipant(1) { it.hasName("Lena").hasPoints(2).isNotTurn }
+
+        Thread.sleep(10)
 
         // Answer of participant 1
         webTestClient
@@ -485,6 +512,8 @@ internal class QuizParticipantIT {
                 .hasParticipant(0) { it.hasName("André").hasPoints(0).isNotTurn }
                 .hasParticipant(1) { it.hasName("Lena").hasPoints(2).isNotTurn }
 
+        Thread.sleep(10)
+
         // Participant 2 does not want the answer to be revealed
         webTestClient
                 .put()
@@ -516,6 +545,8 @@ internal class QuizParticipantIT {
                 .particpantSizeIs(2)
                 .hasParticipant(0) { it.hasName("André").hasPoints(0).isNotTurn }
                 .hasParticipant(1) { it.hasName("Lena").hasPoints(2).isNotTurn }
+
+        Thread.sleep(10)
 
         // Answer of participant 2
         webTestClient
@@ -554,6 +585,8 @@ internal class QuizParticipantIT {
                 .hasParticipant(0) { it.hasName("André").hasPoints(0).isNotTurn }
                 .hasParticipant(1) { it.hasName("Lena").hasPoints(2).isNotTurn }
 
+        Thread.sleep(10)
+
         // Answers are revealed
         webTestClient
                 .patch()
@@ -588,6 +621,8 @@ internal class QuizParticipantIT {
                 .particpantSizeIs(2)
                 .hasParticipant(0) { it.hasName("André").hasPoints(0).isNotTurn }
                 .hasParticipant(1) { it.hasName("Lena").hasPoints(2).isNotTurn }
+
+        Thread.sleep(10)
 
         // Answer of participant 1 was correct
         webTestClient

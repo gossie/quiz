@@ -45,6 +45,8 @@ internal class DefaultEventRepositoryTest {
                 }
                 .verifyComplete()
 
+        Thread.sleep(1)
+
         StepVerifier.create(defaultEventRepository.storeEvent(TestEvent(firstQuizId, Date().time, mapOf(Pair("key2", "value2")))))
                 .consumeNextWith {
                     assertThat(it.quizId).isEqualTo(firstQuizId)
@@ -52,12 +54,16 @@ internal class DefaultEventRepositoryTest {
                 }
                 .verifyComplete()
 
+        Thread.sleep(1)
+
         StepVerifier.create(defaultEventRepository.storeEvent(TestEvent(secondQuizId, Date().time, mapOf(Pair("key1", "value1")))))
                 .consumeNextWith {
                     assertThat(it.quizId).isEqualTo(secondQuizId)
                     assertThat((it as TestEvent).payload).isEqualTo(mapOf(Pair("key1", "value1")))
                 }
                 .verifyComplete()
+
+        Thread.sleep(1)
 
         StepVerifier.create(defaultEventRepository.determineEvents(firstQuizId))
                 .consumeNextWith {
