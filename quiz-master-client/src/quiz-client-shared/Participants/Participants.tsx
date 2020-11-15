@@ -107,7 +107,7 @@ const Participants: React.FC<ParticipantsProps> = (props: ParticipantsProps) => 
                 { pendingQuestion && pendingQuestion.secondsLeft != null && <span data-testid="question-counter">{pendingQuestion.secondsLeft} seconds left</span> }
             </div>
             <div>
-                { pendingQuestion && pendingQuestion.secondsLeft != null && <button onClick={revealAnswers} className="button is-link">Reveal answers</button> }
+                { (pendingQuestion && pendingQuestion.estimates) && <button onClick={revealAnswers} className="button is-link">Reveal answers</button> }
             </div>
         </div>
     )
