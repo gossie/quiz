@@ -11,7 +11,7 @@ interface JoinWidgetProps {
 
 const LoginPageWidget: React.FC<JoinWidgetProps> = (props: JoinWidgetProps) => {
     const [inputValues, setInputValues] = useState({});
-    const [css, setCss] = useState('button is-info');
+    const [css, setCss] = useState('button is-primary');
 
     const onSubmit = () => {
         setCss('button is-info is-loading');

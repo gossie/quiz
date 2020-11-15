@@ -1,6 +1,6 @@
 import React from 'react';
 import { render, cleanup } from '@testing-library/react';
-import { Question } from '../../quiz-client-shared/quiz';
+import Quiz, { Question } from '../../quiz-client-shared/quiz';
 import QuestionElement from './Question';
 
 beforeEach(() => () => cleanup()); 
@@ -41,8 +41,8 @@ test('should be a freetext question', async () => {
     }
 
     const { getByTestId } = render(<QuestionElement enableOperations={true} question={question} index={0} setImageToDisplay={(path) => {}} />);
-    
-    expect(getByTestId('question').textContent).toEqual('#1 Warum?');
+    expect(getByTestId('index').textContent).toEqual('1');
+    expect(getByTestId('question').textContent).toEqual('Warum?');
     expect(() => getByTestId('freetext-question-0')).not.toThrowError();
     expect(() => getByTestId('buzzer-question-0')).toThrowError();
 });
@@ -60,7 +60,8 @@ test('should be a buzzer question', async () => {
 
     const { getByTestId } = render(<QuestionElement enableOperations={true} question={question} index={0} setImageToDisplay={(path) => {}} />);
 
-    expect(getByTestId('question').textContent).toEqual('#1 Warum?');
+    expect(getByTestId('index').textContent).toEqual('1');
+    expect(getByTestId('question').textContent).toEqual('Warum?');
     expect(() => getByTestId('freetext-question-0')).toThrowError();
     expect(() => getByTestId('buzzer-question-0')).not.toThrowError();
 });
@@ -98,4 +99,58 @@ test('that stop watch is not shown', () => {
     const { getByTestId } = render(<QuestionElement enableOperations={true} question={question} index={0} setImageToDisplay={(path) => {}} />);
 
     expect(() => getByTestId('stop-watch-0')).toThrowError();
+});
+
+
+test('should reopen question', () => {
+    jest.spyOn(global, 'fetch').mockImplementation((url: string, request: object) => {
+        expect(url).toEqual('http://localhost:5000/api/reopen');
+        expect(request).toEqual({
+            method: 'PUT',
+            headers: {
+                Accept: 'application/json'
+            }
+        });
+        Promise.resolve();
+    });
+
+    const quiz: Quiz = {
+        id: '17',
+        name: 'Test',
+        participants: [
+            {
+                id: '12',
+                name: 'Lena',
+                turn: false,
+                points: 13,
+                links: [],
+                revealAllowed: false
+            },
+            {
+                id: '13',
+                name: 'Erik',
+                turn: true,
+                points: 13,
+                links: [],
+                revealAllowed: false
+            }
+        ],
+        playedQuestions: [],
+        openQuestions: [
+            { 
+                id: '123',
+                question: 'Who is who?',
+                pending: true,
+                category: 'Other',
+                publicVisible: true,
+                imagePath: '',
+                links: []
+            }
+        ],
+        links: [{ rel: 'reopenQuestion', href: '/api/reopen' }]
+    }
+
+    const { getByTestId } = render(<QuestionElement enableOperations={true} index={0} quiz={quiz} question={quiz.openQuestions[0]} />);
+
+    getByTestId('reopen-button').click();
 });

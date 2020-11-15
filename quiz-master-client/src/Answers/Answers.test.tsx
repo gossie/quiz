@@ -32,7 +32,6 @@ test('should show buttons', () => {
 
     expect(getByTestId('correct-button')).toBeDefined();
     expect(getByTestId('incorrect-button')).toBeDefined();
-    expect(getByTestId('reopen-button')).toBeDefined();
 });
 
 test('should answer correctly', () => {
@@ -58,14 +57,16 @@ test('should answer correctly', () => {
                 name: 'Lena',
                 turn: false,
                 points: 13,
-                links: []
+                links: [],
+                revealAllowed: true
             },
             {
                 id: '13',
                 name: 'Erik',
                 turn: true,
                 points: 13,
-                links: []
+                links: [],
+                revealAllowed: true
             }
         ],
         openQuestions: [],
@@ -101,14 +102,16 @@ test('should answer correctly', () => {
                 name: 'Lena',
                 turn: false,
                 points: 13,
-                links: []
+                links: [],
+                revealAllowed: true
             },
             {
                 id: '13',
                 name: 'Erik',
                 turn: true,
                 points: 13,
-                links: []
+                links: [],
+                revealAllowed: true
             }
         ],
         playedQuestions: [],
@@ -119,45 +122,4 @@ test('should answer correctly', () => {
     const { getByTestId } = render(<Answers quiz={quiz} participant={quiz.participants[1]} />);
 
     getByTestId('incorrect-button').click();
-});
-
-test('should reopen question', () => {
-    jest.spyOn(global, 'fetch').mockImplementation((url: string, request: object) => {
-        expect(url).toEqual('http://localhost:5000/api/reopen');
-        expect(request).toEqual({
-            method: 'PUT',
-            headers: {
-                Accept: 'application/json'
-            }
-        });
-        Promise.resolve();
-    });
-
-    const quiz: Quiz = {
-        id: '17',
-        name: 'Test',
-        participants: [
-            {
-                id: '12',
-                name: 'Lena',
-                turn: false,
-                points: 13,
-                links: []
-            },
-            {
-                id: '13',
-                name: 'Erik',
-                turn: true,
-                points: 13,
-                links: []
-            }
-        ],
-        playedQuestions: [],
-        openQuestions: [],
-        links: [{ rel: 'reopenQuestion', href: '/api/reopen' }]
-    }
-
-    const { getByTestId } = render(<Answers quiz={quiz} participant={quiz.participants[1]} />);
-
-    getByTestId('reopen-button').click();
 });
