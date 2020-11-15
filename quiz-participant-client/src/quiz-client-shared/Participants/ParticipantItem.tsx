@@ -36,7 +36,7 @@ const ParticipantItem: React.FC<ParticipantProps> = (props: ParticipantProps) =>
                     <span data-testid="participant-name" className="participant-name">{props.participant.name} </span>
                     <div className="points">({props.pointsAfterLastQuestion}{pointDifference()})</div>
                 </div>
-                <div className={'participant-answer' + (props.participant.turn || getEstimatedValue() ? ' visible': '')}>
+                <div data-testid="participant-answer" className={'participant-answer' + (props.participant.turn || getEstimatedValue() ? ' visible': '')}>
                     <div className="bubble">
                         {props.participant.turn ? 'I have buzzered!' : getEstimatedValue()}
                     </div>

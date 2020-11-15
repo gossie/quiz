@@ -87,7 +87,7 @@ test('displays answer hint for freetext questions', () => {
 
     const { getByTestId } = render(<ParticipantItem participant={participant} pointsAfterLastQuestion={2} question={question} />);
 
-    expect(() => getByTestId('answer-hint')).not.toThrowError();
+    expect(getByTestId('participant-answer')).toHaveClass("visible");
 });
 
 test('displays no answer hint because participant has not answered', () => {
@@ -111,7 +111,7 @@ test('displays no answer hint because participant has not answered', () => {
 
     const { getByTestId } = render(<ParticipantItem participant={participant} pointsAfterLastQuestion={2} question={question} />);
 
-    expect(() => getByTestId('answer-hint')).toThrowError();
+    expect(getByTestId('participant-answer')).not.toHaveClass("visible");
 });
 
 test('displays no answer hint because it is no freetext question', () => {
