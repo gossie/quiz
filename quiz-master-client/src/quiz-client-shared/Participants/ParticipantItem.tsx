@@ -1,6 +1,7 @@
 import React from 'react';
 import Quiz, { Participant } from "../quiz";
 import Answers from '../../Answers/Answers';
+import './ParticipantItem.scss';
 
 interface ParticipantProps {
     quiz: Quiz;
@@ -23,7 +24,7 @@ const ParticipantItem: React.FC<ParticipantProps> = (props: ParticipantProps) =>
 
     const getEstimatedValue = () => {
         const pendingQuestion = props.quiz.openQuestions.find(q => q.pending);
-        return pendingQuestion !== undefined && pendingQuestion.estimates !== undefined
+        return pendingQuestion != null && pendingQuestion.estimates != null && pendingQuestion.estimates[props.participant.id] != null
                 ? pendingQuestion.estimates[props.participant.id]
                 : '';
     }
@@ -35,17 +36,26 @@ const ParticipantItem: React.FC<ParticipantProps> = (props: ParticipantProps) =>
         })
     }
 
-    return <div className="participant-answer">
-                <div data-testid="participant-wrapper" className={"participant " + (props.participant.turn ? 'turn' : '')}>
-                    <span data-testid="participant-name">{props.participant.name} </span>
+    return <div data-testid="participant-wrapper" className="participant" >
+                <div className={"participant-header"}>
+                    <span data-testid="participant-name" className="participant-name">{props.participant.name}</span>
                     <div className="points">({props.pointsAfterLastQuestion}{pointDifference()})</div>
-                    { !props.participant.revealAllowed && <span data-testid="reveal-not-allowed" className="icon" title="The participant does not want the answer to be shown"><i className="fas fa-eye-slash"></i></span> }
-                    <span data-testid="delete" className="icon clickable has-text-danger" title="Delete participant" onClick={() => deleteParticipant()}><i className="fa fa-trash"></i></span>
-                    {(props.participant.turn || isEstimationQuestion()) ? <Answers quiz={props.quiz} participant={props.participant}></Answers> : ''}
+                    <div className="participant-actions">
+                        { !props.participant.revealAllowed && 
+                            <span data-testid="reveal-not-allowed" className="icon" title="The participant does not want the answer to be shown"><i className="fas fa-eye-slash"></i></span> 
+                        }
+                        <span data-testid="delete" className="icon clickable has-text-danger" title="Delete participant" onClick={() => deleteParticipant()}><i className="fa fa-trash"></i></span>   
+                    </div>
                 </div>
-                { isEstimationQuestion() &&
-                    <div><b>{props.participant.name}'s answer:</b> {getEstimatedValue()}</div>
-                }
+                <div className={'participant-answer' + (props.participant.turn || getEstimatedValue() ? ' visible': '')}>
+                    <div className="bubble">
+                        {props.participant.turn ? 'I have buzzered!' : getEstimatedValue()}
+                    </div>
+                    <div className={"answer-actions"}>
+                        {(props.participant.turn || isEstimationQuestion()) && <Answers quiz={props.quiz} participant={props.participant}></Answers>}
+                    </div>
+                </div>
+                                
             </div>
 }
 
