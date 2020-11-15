@@ -107,6 +107,11 @@ data class Quiz(
         return this
     }
 
+    fun currentQuestionIsBuzzerQuestion(): Boolean {
+        return questions.find { it.pending }
+                ?.estimates == null
+    }
+
     private fun checkParticipant(participant: Participant, participantId: UUID?): Boolean {
         return if (participantId == null) {
             participant.turn
