@@ -53,13 +53,12 @@ test('should add new estimation question', async () => {
         links: [{href: '/api/createQuestion', rel: 'createQuestion'}]
     }
     const { getByTestId } = render(<QuestionForm quiz={quiz} />);
-
     const questionButton = getByTestId('create-question-button');
     const questionField = getByTestId('new-question')  as HTMLInputElement;
     const categoryField = getByTestId('category')  as HTMLSelectElement;
     const timeToAnswerField = getByTestId('time-to-answer')  as HTMLInputElement;
     const imagePathField = getByTestId('image-path')  as HTMLInputElement;
-    const estimationField = getByTestId('estimation')  as HTMLInputElement;
+    const estimationField = getByTestId('type-estimation')  as HTMLInputElement;
 
     fireEvent.change(questionField, { target: { value: 'Frage 3' } });
     fireEvent.change(categoryField, { target: { value: 'science' } });

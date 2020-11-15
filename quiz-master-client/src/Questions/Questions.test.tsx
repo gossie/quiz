@@ -44,16 +44,16 @@ test('should display questions', () => {
     }
     const { getByTestId } = render(<Questions quiz={quiz} />);
 
-    const openQuestions = getByTestId('open-questions').querySelectorAll('.question-container li')
+    const openQuestions = getByTestId('open-questions').querySelectorAll('li')
 
     expect(openQuestions.length).toBe(2);
-    expect(openQuestions[0].textContent).toEqual('#1 Frage 2');
-    expect(openQuestions[1].textContent).toEqual('#2 Frage 3');
+    expect(openQuestions[0].textContent).toEqual('1Frage 2');
+    expect(openQuestions[1].textContent).toEqual('2Frage 3');
 
-    const playedQuestions = getByTestId('played-questions').querySelectorAll('.question-container li')
+    const playedQuestions = getByTestId('played-questions').querySelectorAll('li')
 
     expect(playedQuestions.length).toBe(1);
-    expect(playedQuestions[0].textContent).toEqual('#1 Frage 1');
+    expect(playedQuestions[0].textContent).toEqual('1Frage 1');
 });
 
 test('should add new private question', async () => {
@@ -103,7 +103,8 @@ test('should add new private question', async () => {
         links: [{href: '/api/createQuestion', rel: 'createQuestion'}]
     }
     const { getByTestId } = render(<Questions quiz={quiz} />);
-
+    const addQuestionButton = getByTestId('add-question-button');
+    addQuestionButton.click();
     const questionButton = getByTestId('create-question-button');
     const questionField = getByTestId('new-question')  as HTMLInputElement;
     const imagePathField = getByTestId('image-path')  as HTMLInputElement;
@@ -169,7 +170,8 @@ test('should add new public question', async () => {
         links: [{href: '/api/createQuestion', rel: 'createQuestion'}]
     }
     const { getByTestId } = render(<Questions quiz={quiz} />);
-
+    const addQuestionButton = getByTestId('add-question-button');
+    addQuestionButton.click();
     const questionButton = getByTestId('create-question-button');
     const questionField = getByTestId('new-question')  as HTMLInputElement;
     const imagePathField = getByTestId('image-path')  as HTMLInputElement;
@@ -450,7 +452,7 @@ test('should edit question', async () => {
     const categoryField = getByTestId('category-to-edit')  as HTMLSelectElement;
     const timeToAnswerField = getByTestId('time-to-answer-to-edit')  as HTMLInputElement;
     const imagePathField = getByTestId('image-path-to-edit')  as HTMLInputElement;
-    const estimationField = getByTestId('estimation-to-edit')  as HTMLInputElement;
+    const estimationField = getByTestId('type-estimation-to-edit')  as HTMLInputElement;
     const visibilityField = getByTestId('visibility-to-edit')  as HTMLInputElement;
 
     expect(questionField.value).toBe('Frage 3');

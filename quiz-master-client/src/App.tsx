@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import './quiz-client-shared/App.css';
+import './App.scss';
 import QuizMaster from './QuizMaster';
 import LoginPageWidget from './quiz-client-shared/LoginPageWidget/LoginPageWidget' 
 import AppHeader from './quiz-client-shared/AppHeader/AppHeader';
@@ -52,7 +52,7 @@ function App() {
 
     return (
         <div className="App">
-            <AppHeader title="Quiz Master"></AppHeader>
+            <AppHeader quizId={quizId} title="Quiz Master"></AppHeader>
             <div className="App-content">
                 { quizId.length > 0
                     ?
