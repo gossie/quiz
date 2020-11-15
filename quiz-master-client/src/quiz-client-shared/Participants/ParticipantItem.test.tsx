@@ -39,7 +39,7 @@ test('displays participant after a correct answer', () => {
     const participantWrapper = getByTestId('participant-wrapper') as HTMLDivElement;
     
     const participantName = getByTestId('participant-name') as HTMLSpanElement;
-    expect(participantName.textContent).toEqual('Sandra ');
+    expect(participantName.textContent).toEqual('Sandra');
 
     const points = participantWrapper.querySelector('.points')!;
 
@@ -79,7 +79,7 @@ test('displays participant after an incorrect answer', () => {
     const participantWrapper = getByTestId('participant-wrapper') as HTMLDivElement;
     
     const participantName = getByTestId('participant-name') as HTMLSpanElement;
-    expect(participantName.textContent).toEqual('Erik ');
+    expect(participantName.textContent).toEqual('Erik');
 
     const points = participantWrapper.querySelector('.points')!;
 
@@ -119,7 +119,7 @@ test('displays participant that did not answer', () => {
     const participantWrapper = getByTestId('participant-wrapper') as HTMLDivElement;
     
     const participantName = getByTestId('participant-name') as HTMLSpanElement;
-    expect(participantName.textContent).toEqual('Erik ');
+    expect(participantName.textContent).toEqual('Erik');
 
     const points = participantWrapper.querySelector('.points')!;
 
