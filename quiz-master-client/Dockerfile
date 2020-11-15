@@ -1,4 +1,4 @@
-FROM mhart/alpine-node:11 AS builder
+FROM mhart/alpine-node:15 AS builder
 WORKDIR /app
 COPY . .
 COPY .env.docker .env.production
