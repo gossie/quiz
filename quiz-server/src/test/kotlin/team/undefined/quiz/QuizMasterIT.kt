@@ -731,7 +731,7 @@ internal class QuizMasterIT {
                 .particpantSizeIs(2)
                 .hasParticipant(0) { it.hasName("André").hasPoints(2).allowsReveal().isNotTurn }
                 .hasParticipant(1) { it.hasName("Lena").hasPoints(2).doesNotAllowReveal().isNotTurn }
-        
+
         Thread.sleep(10)
 
         // Quiz master performs a redo

@@ -44,6 +44,20 @@ const QuizMaster: React.FC<QuizMasterProps> = (props: QuizMasterProps) => {
         .finally(() => setFinishButtonCssClasses('button is-link'));
     }
 
+    const undo = () => {
+        const url = quiz.links.find(link => link.rel === 'undo').href;
+        fetch(`${process.env.REACT_APP_BASE_URL}${url}`, {
+            method: 'DELETE'
+        });
+    }
+
+    const redo = () => {
+        const url = quiz.links.find(link => link.rel === 'redo').href;
+        fetch(`${process.env.REACT_APP_BASE_URL}${url}`, {
+            method: 'POST'
+        });
+    }
+
     return (
         <div className="Quiz-dashboard">
             { Object.keys(quiz).length > 0
@@ -62,6 +76,9 @@ const QuizMaster: React.FC<QuizMasterProps> = (props: QuizMasterProps) => {
                                 <button className={finishButtonCssClasses} onClick={finishQuiz}>Finish Quiz</button>
                             }
                             <QuizStatistics quiz={quiz} closeable={true} forceOpen={forceStatistics} onClose={() => setForceStatistics(false)}></QuizStatistics>
+
+                            <button onClick={() => undo()}>Undo</button>
+                            <button onClick={() => redo()}>Redo</button>
                         </div>
                         <div className="column question">
                             <Questions quiz={quiz}></Questions>
