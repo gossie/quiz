@@ -167,6 +167,31 @@ internal class DefaultQuizServiceTest {
     }
 
     @Test
+    fun shouldNotAllowBuzzerBecauseItIsAnEstimationQuestion() {
+        val quizId = UUID.randomUUID()
+        val andresId = UUID.randomUUID()
+        val lenasId = UUID.randomUUID()
+        val questionId = UUID.randomUUID()
+
+        `when`(quizRepository.determineEvents(quizId))
+                .thenReturn(Flux.just(
+                        QuizCreatedEvent(quizId, Quiz(quizId, "Quiz")),
+                        QuestionCreatedEvent(quizId, question = Question(questionId, "Warum ist die Banane krum?", estimates = HashMap())),
+                        ParticipantCreatedEvent(quizId, Participant(andresId, "André")),
+                        ParticipantCreatedEvent(quizId, Participant(lenasId, "Lena")),
+                        QuestionAskedEvent(quizId, questionId)
+                ))
+
+        val quizService = DefaultQuizService(quizRepository, eventBus)
+
+        val buzzer = quizService.buzzer(BuzzerCommand(quizId, lenasId))
+        StepVerifier.create(buzzer)
+                .verifyComplete()
+
+        verifyNoInteractions(eventBus)
+    }
+
+    @Test
     fun shouldNotAllowSecondBuzzer() {
         val quizId = UUID.randomUUID()
         val andresId = UUID.randomUUID()

@@ -89,6 +89,7 @@ class DefaultQuizService(private val eventRepository: EventRepository,
         return eventRepository.determineEvents(command.quizId)
                 .reduce(Quiz(name = "")) { quiz: Quiz, event: Event -> event.process(quiz) }
                 .filter { it.hasParticipantWithId(command.participantId) }
+                .filter { it.currentQuestionIsBuzzerQuestion() }
                 .filter { it.nobodyHasBuzzered() }
                 .flatMap { eventRepository.storeEvent(BuzzeredEvent(command.quizId, command.participantId)) }
                 .map {
