@@ -230,8 +230,12 @@ class DefaultQuizService(private val eventRepository: EventRepository,
 
     @WriteLock
     override fun redo(command: RedoCommand): Mono<Unit> {
-        return eventRepository.storeEvent(undoneEvents[command.quizId]!!.pop())
-                .map { eventBus.post(it) }
+        return if (undoneEvents.isEmpty()) {
+            Mono.empty()
+        } else {
+            eventRepository.storeEvent(undoneEvents[command.quizId]!!.pop())
+                    .map { eventBus.post(it) }
+        }
     }
 
     private fun stopCounter(quizId: UUID) {

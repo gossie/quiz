@@ -77,8 +77,8 @@ const QuizMaster: React.FC<QuizMasterProps> = (props: QuizMasterProps) => {
                             }
                             <QuizStatistics quiz={quiz} closeable={true} forceOpen={forceStatistics} onClose={() => setForceStatistics(false)}></QuizStatistics>
 
-                            <button onClick={() => undo()}>Undo</button>
-                            <button onClick={() => redo()}>Redo</button>
+                            <span className="icon" onClick={() => undo()}><i className="fas fa-undo"></i></span>
+                            <span className="icon" onClick={() => redo()}><i className="fas fa-redo"></i></span>
                         </div>
                         <div className="column question">
                             <Questions quiz={quiz}></Questions>

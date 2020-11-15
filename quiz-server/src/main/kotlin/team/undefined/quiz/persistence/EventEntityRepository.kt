@@ -22,7 +22,7 @@ interface EventEntityRepository : ReactiveCrudRepository<EventEntity, Long> {
     @Query("SELECT DISTINCT aggregate_id FROM event_entity")
     fun findAllAggregateIds(): Flux<String>
 
-    @Query("SELECT TOP 1 * FROM event_entity WHERE aggregate_id = :quizId ORDER BY created_at DESC")
+    @Query("SELECT * FROM event_entity WHERE aggregate_id = :quizId ORDER BY created_at DESC LIMIT 1")
     fun findLastByAggregateId(quizId: String): Mono<EventEntity>
 
 }
