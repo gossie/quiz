@@ -6,7 +6,7 @@ import QuestionElement from './Question';
 beforeEach(() => () => cleanup()); 
 afterEach(() => cleanup());
 
-test('should start editing', async done => {
+test('should start editing', done => {
     const question: Question = {
         id: '1',
         question: 'Warum?',
