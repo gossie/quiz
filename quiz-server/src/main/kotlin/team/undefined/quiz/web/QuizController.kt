@@ -86,7 +86,7 @@ class QuizController(private val quizService: QuizService,
         return quizService.undo(UndoCommand(quizId))
     }
 
-    @PostMapping(path = ["/{quizId}/ureo"])
+    @PostMapping(path = ["/{quizId}/redo"])
     fun redo(@PathVariable quizId: UUID): Mono<Unit> {
         return quizService.redo(RedoCommand(quizId))
     }

@@ -1,5 +1,5 @@
 import React from 'react';
-import { render, fireEvent, wait, cleanup } from '@testing-library/react';
+import { render, fireEvent, waitFor, cleanup } from '@testing-library/react';
 import LoginPageWidget from './LoginPageWidget';
 
 beforeEach(() => () => cleanup()); 
@@ -7,10 +7,10 @@ afterEach(() => cleanup());
 
 test('should submit on submit button click', (done) => {
     const submitFunction = (value: string) => new Promise<void>(async (resolve) => {
-        await wait(() => expect(getByTestId('submit-button').classList.contains('is-loading')).toBeTruthy());
+        await waitFor(() => expect(getByTestId('submit-button').classList.contains('is-loading')).toBeTruthy());
         resolve();
-        await wait(() => expect(value).toEqual({'Login': 'Name'}));
-        await wait(() => expect(getByTestId('submit-button').classList.contains('is-loading')).toBeFalsy());
+        await waitFor(() => expect(value).toEqual({'Login': 'Name'}));
+        await waitFor(() => expect(getByTestId('submit-button').classList.contains('is-loading')).toBeFalsy());
         done();
     });
     const { getByTestId } = render(<LoginPageWidget onSubmit={submitFunction} title="Login" inputLabels={['Login']} buttonLabel="Login" />);
@@ -27,10 +27,10 @@ test('should submit on submit button click', (done) => {
 
 test('should submit on enter', (done) => {
     const submitFunction = (value: string) => new Promise<void>(async (resolve) => {
-        await wait(() => expect(getByTestId('submit-button').classList.contains('is-loading')).toBeTruthy());
+        await waitFor(() => expect(getByTestId('submit-button').classList.contains('is-loading')).toBeTruthy());
         resolve();
-        await wait(() => expect(value).toEqual({'Login': 'Name'}));
-        await wait(() => expect(getByTestId('submit-button').classList.contains('is-loading')).toBeFalsy());
+        await waitFor(() => expect(value).toEqual({'Login': 'Name'}));
+        await waitFor(() => expect(getByTestId('submit-button').classList.contains('is-loading')).toBeFalsy());
         done();
     });
     const { getByTestId } = render(<LoginPageWidget onSubmit={submitFunction} title="Login" inputLabels={['Login']} buttonLabel="Login" />);

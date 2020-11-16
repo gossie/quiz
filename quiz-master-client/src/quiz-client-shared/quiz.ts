@@ -47,6 +47,8 @@ export default interface Quiz {
     playedQuestions: Array<Question>;
     openQuestions: Array<Question>;
     quizStatistics?: QuizStatistics;
+    undoPossible?: boolean;
+    redoPossible?: boolean;
     timestamp: number;
     links: Array<Link>;
 }

@@ -147,10 +147,11 @@ test('should reopen question', () => {
                 links: []
             }
         ],
+        timestamp: 100,
         links: [{ rel: 'reopenQuestion', href: '/api/reopen' }]
     }
 
-    const { getByTestId } = render(<QuestionElement enableOperations={true} index={0} quiz={quiz} question={quiz.openQuestions[0]} />);
+    const { getByTestId } = render(<QuestionElement enableOperations={true} index={0} quiz={quiz} question={quiz.openQuestions[0]} setImageToDisplay={(path) => {}} />);
 
     getByTestId('reopen-button').click();
 });

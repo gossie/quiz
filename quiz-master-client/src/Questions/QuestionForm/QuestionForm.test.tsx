@@ -1,5 +1,5 @@
 import React from 'react';
-import { render, fireEvent, wait, cleanup } from '@testing-library/react';
+import { render, fireEvent, waitFor, cleanup } from '@testing-library/react';
 import Quiz from '../../quiz-client-shared/quiz';
 import QuestionForm from './QuestionForm';
 
@@ -72,7 +72,7 @@ test('should add new estimation question', async () => {
 
     questionButton.click();
 
-    await wait(() =>{
+    await waitFor(() =>{
         expect(questionField.value).toBe('');
         expect(categoryField.value).toBe('other');
         expect(imagePathField.value).toBe('');

@@ -45,17 +45,21 @@ const QuizMaster: React.FC<QuizMasterProps> = (props: QuizMasterProps) => {
     }
 
     const undo = () => {
-        const url = quiz.links.find(link => link.rel === 'undo').href;
-        fetch(`${process.env.REACT_APP_BASE_URL}${url}`, {
-            method: 'DELETE'
-        });
+        if (quiz.undoPossible) {
+            const url = quiz.links.find(link => link.rel === 'undo').href;
+            fetch(`${process.env.REACT_APP_BASE_URL}${url}`, {
+                method: 'DELETE'
+            });
+        }
     }
 
     const redo = () => {
-        const url = quiz.links.find(link => link.rel === 'redo').href;
-        fetch(`${process.env.REACT_APP_BASE_URL}${url}`, {
-            method: 'POST'
-        });
+        if (quiz.redoPossible) {
+            const url = quiz.links.find(link => link.rel === 'redo').href;
+            fetch(`${process.env.REACT_APP_BASE_URL}${url}`, {
+                method: 'POST'
+            });
+        }
     }
 
     return (
@@ -64,7 +68,11 @@ const QuizMaster: React.FC<QuizMasterProps> = (props: QuizMasterProps) => {
             ?
                 <div>
                     <div id="timestamp">{lastChanged()}</div>
-                    <h4 className="title is-4">{quiz.name}</h4>
+                    <div>
+                        <h4 className="title is-4">{quiz.name}</h4>
+                        <span className={`icon ${quiz.undoPossible ? "clickable has-text-link" : "has-text-grey-light"}`} onClick={() => undo()} title="Undo"><i className="fas fa-undo"></i></span>
+                        <span className={`icon ${quiz.redoPossible ? "clickable has-text-link" : "has-text-grey-light"}`} onClick={() => redo()} title="Redo"><i className="fas fa-redo"></i></span>
+                    </div>
                     <div className="columns">
                         <div className="column participants box">
                             <Participants quiz={quiz}></Participants>
@@ -76,9 +84,6 @@ const QuizMaster: React.FC<QuizMasterProps> = (props: QuizMasterProps) => {
                                 <button className={finishButtonCssClasses} onClick={finishQuiz}>Finish Quiz</button>
                             }
                             <QuizStatistics quiz={quiz} closeable={true} forceOpen={forceStatistics} onClose={() => setForceStatistics(false)}></QuizStatistics>
-
-                            <span className="icon" onClick={() => undo()}><i className="fas fa-undo"></i></span>
-                            <span className="icon" onClick={() => redo()}><i className="fas fa-redo"></i></span>
                         </div>
                         <div className="column question">
                             <Questions quiz={quiz}></Questions>
