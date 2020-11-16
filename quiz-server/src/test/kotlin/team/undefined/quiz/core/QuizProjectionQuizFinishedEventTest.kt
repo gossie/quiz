@@ -41,7 +41,7 @@ internal class QuizProjectionQuizFinishedEventTest {
                 ))
 
         val eventBus = EventBus()
-        val quizProjection = QuizProjection(eventBus, QuizStatisticsProvider(eventRepository), eventRepository)
+        val quizProjection = QuizProjection(eventBus, QuizStatisticsProvider(eventRepository), eventRepository, UndoneEventsCache())
 
         val observedQuiz = AtomicReference<Quiz>()
         quizProjection.observeQuiz(quiz.id)
@@ -52,6 +52,7 @@ internal class QuizProjectionQuizFinishedEventTest {
         await untilAsserted {
             assertThat(observedQuiz.get())
                     .hasId(quiz.id)
+                    .undoIsPossible()
                     .isFinished
                     .hasQuizStatistics { quizStatistics ->
                         quizStatistics
@@ -115,7 +116,7 @@ internal class QuizProjectionQuizFinishedEventTest {
                 ))
 
         val eventBus = EventBus()
-        val quizProjection = QuizProjection(eventBus, QuizStatisticsProvider(eventRepository), eventRepository)
+        val quizProjection = QuizProjection(eventBus, QuizStatisticsProvider(eventRepository), eventRepository, UndoneEventsCache())
 
         val observedQuiz = AtomicReference<Quiz>()
         quizProjection.observeQuiz(quiz.id)
@@ -126,6 +127,7 @@ internal class QuizProjectionQuizFinishedEventTest {
         await untilAsserted {
             assertThat(observedQuiz.get())
                     .hasId(quiz.id)
+                    .undoIsPossible()
                     .isFinished
                     .hasQuizStatistics { quizStatistics ->
                         quizStatistics

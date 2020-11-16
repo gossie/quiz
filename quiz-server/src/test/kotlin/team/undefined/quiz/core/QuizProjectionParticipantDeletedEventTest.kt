@@ -17,7 +17,7 @@ internal class QuizProjectionParticipantDeletedEventTest {
         val quiz = Quiz(name = "Awesome Quiz")
 
         val eventBus = EventBus()
-        val quizProjection = QuizProjection(eventBus, mock(QuizStatisticsProvider::class.java), mock(EventRepository::class.java))
+        val quizProjection = QuizProjection(eventBus, mock(QuizStatisticsProvider::class.java), mock(EventRepository::class.java), UndoneEventsCache())
 
         val observedQuiz = AtomicReference<Quiz>()
         quizProjection.observeQuiz(quiz.id)
@@ -33,6 +33,7 @@ internal class QuizProjectionParticipantDeletedEventTest {
                     .hasId(quiz.id)
                     .hasNoParticipants()
                     .hasNoQuestions()
+                    .undoIsPossible()
                     .isNotFinished
         }
     }
@@ -53,7 +54,7 @@ internal class QuizProjectionParticipantDeletedEventTest {
                 ))
 
         val eventBus = EventBus()
-        val quizProjection = QuizProjection(eventBus, mock(QuizStatisticsProvider::class.java), eventRepository)
+        val quizProjection = QuizProjection(eventBus, mock(QuizStatisticsProvider::class.java), eventRepository, UndoneEventsCache())
 
         val observedQuiz = AtomicReference<Quiz>()
         quizProjection.observeQuiz(quiz.id)
@@ -66,6 +67,7 @@ internal class QuizProjectionParticipantDeletedEventTest {
                     .hasId(quiz.id)
                     .hasNoParticipants()
                     .hasNoQuestions()
+                    .undoIsPossible()
                     .isNotFinished
         }
     }
@@ -83,7 +85,7 @@ internal class QuizProjectionParticipantDeletedEventTest {
                 ))
 
         val eventBus = EventBus()
-        val quizProjection = QuizProjection(eventBus, mock(QuizStatisticsProvider::class.java), eventRepository)
+        val quizProjection = QuizProjection(eventBus, mock(QuizStatisticsProvider::class.java), eventRepository, UndoneEventsCache())
 
         val observedQuiz = AtomicReference<Quiz>()
         quizProjection.observeQuiz(quiz.id)
@@ -96,6 +98,7 @@ internal class QuizProjectionParticipantDeletedEventTest {
                     .hasId(quiz.id)
                     .hasNoParticipants()
                     .hasNoQuestions()
+                    .undoIsPossible()
                     .isNotFinished
         }
     }

@@ -44,4 +44,36 @@ public class QuizDTOAssert extends AbstractAssert<QuizDTOAssert, QuizDTO> {
         consumer.accept(ParticipantDTOAssert.assertThat(actual.getParticipants().get(index)));
         return this;
     }
+
+    public QuizDTOAssert undoIsNotPossible() {
+        Assertions.assertThat(actual.getUndoPossible()).isFalse();
+        return this;
+    }
+
+    public QuizDTOAssert undoIsPossible() {
+        Assertions.assertThat(actual.getUndoPossible()).isTrue();
+        return this;
+    }
+
+    public QuizDTOAssert redoIsNotPossible() {
+        Assertions.assertThat(actual.getRedoPossible()).isFalse();
+        return this;
+    }
+
+    public QuizDTOAssert redoIsPossible() {
+        Assertions.assertThat(actual.getRedoPossible()).isTrue();
+        return this;
+    }
+
+    public QuizDTOAssert isNotFinished() {
+        Assertions.assertThat(actual.getFinished()).isFalse();
+        return this;
+    }
+
+    public QuizDTOAssert isFinished() {
+        Assertions.assertThat(actual.getFinished()).isTrue();
+        return this;
+    }
+
+
 }

@@ -20,6 +20,7 @@ data class QuizCreatedEvent(@JsonProperty("quizId") override val quizId: UUID, @
 data class QuestionCreatedEvent(@JsonProperty("quizId") override val quizId: UUID, @JsonProperty("question") val question: Question, @JsonProperty("timestamp") override val timestamp: Long = Date().time) : Event {
     override fun process(quiz: Quiz): Quiz {
         return quiz.addQuestion(question)
+                .setUndoPossible()
                 .setTimestamp(timestamp)
     }
 }
@@ -27,6 +28,7 @@ data class QuestionCreatedEvent(@JsonProperty("quizId") override val quizId: UUI
 data class QuestionEditedEvent(@JsonProperty("quizId") override val quizId: UUID, @JsonProperty("question") val question: Question, @JsonProperty("timestamp") override val timestamp: Long = Date().time) : Event {
     override fun process(quiz: Quiz): Quiz {
         return quiz.editQuestion(question)
+                .setUndoPossible()
                 .setTimestamp(timestamp)
     }
 }
@@ -34,6 +36,7 @@ data class QuestionEditedEvent(@JsonProperty("quizId") override val quizId: UUID
 data class QuestionDeletedEvent(@JsonProperty("quizId") override val quizId: UUID, @JsonProperty("questionId") val questionId: UUID, @JsonProperty("timestamp") override val timestamp: Long = Date().time) : Event {
     override fun process(quiz: Quiz): Quiz {
         return quiz.deleteQuestion(questionId)
+                .setUndoPossible()
                 .setTimestamp(timestamp)
     }
 }
@@ -41,6 +44,7 @@ data class QuestionDeletedEvent(@JsonProperty("quizId") override val quizId: UUI
 data class ParticipantCreatedEvent(@JsonProperty("quizId") override val quizId: UUID, @JsonProperty("participant") val participant: Participant, @JsonProperty("timestamp") override val timestamp: Long = Date().time) : Event {
     override fun process(quiz: Quiz): Quiz {
         return quiz.addParticipantIfNecessary(participant)
+                .setUndoPossible()
                 .setTimestamp(timestamp)
     }
 }
@@ -48,6 +52,7 @@ data class ParticipantCreatedEvent(@JsonProperty("quizId") override val quizId: 
 data class ParticipantDeletedEvent(@JsonProperty("quizId") override val quizId: UUID, @JsonProperty("participantId") val participantId: UUID, @JsonProperty("timestamp") override val timestamp: Long = Date().time) : Event {
     override fun process(quiz: Quiz): Quiz {
         return quiz.deleteParticipant(participantId)
+                .setUndoPossible()
                 .setTimestamp(timestamp)
     }
 }
@@ -55,6 +60,7 @@ data class ParticipantDeletedEvent(@JsonProperty("quizId") override val quizId: 
 data class QuestionAskedEvent(@JsonProperty("quizId") override val quizId: UUID, @JsonProperty("questionId") val questionId: UUID, @JsonProperty("timestamp") override val timestamp: Long = Date().time) : Event {
     override fun process(quiz: Quiz): Quiz {
         return quiz.startQuestion(questionId)
+                .setUndoPossible()
                 .setTimestamp(timestamp)
     }
 }
@@ -69,6 +75,7 @@ data class TimeToAnswerDecreasedEvent(@JsonProperty("quizId") override val quizI
 data class BuzzeredEvent(@JsonProperty("quizId") override val quizId: UUID, @JsonProperty("participantId") val participantId: UUID, @JsonProperty("timestamp") override val timestamp: Long = Date().time) : Event {
     override fun process(quiz: Quiz): Quiz {
         return quiz.select(participantId)
+                .setUndoPossible()
                 .setTimestamp(timestamp)
     }
 }
@@ -76,6 +83,7 @@ data class BuzzeredEvent(@JsonProperty("quizId") override val quizId: UUID, @Jso
 data class EstimatedEvent(@JsonProperty("quizId") override val quizId: UUID, @JsonProperty("participantId") val participantId: UUID, @JsonProperty("estimatedValue") val estimatedValue: String, @JsonProperty("timestamp") override val timestamp: Long = Date().time) : Event {
     override fun process(quiz: Quiz): Quiz {
         return quiz.estimate(participantId, estimatedValue)
+                .setUndoPossible()
                 .setTimestamp(timestamp)
     }
 }
@@ -83,6 +91,7 @@ data class EstimatedEvent(@JsonProperty("quizId") override val quizId: UUID, @Js
 data class ToggleAnswerRevealAllowedEvent(@JsonProperty("quizId") override val quizId: UUID, @JsonProperty("participantId") val participantId: UUID, @JsonProperty("timestamp") override val timestamp: Long = Date().time) : Event {
     override fun process(quiz: Quiz): Quiz {
         return quiz.toggleAnswerRevealAllowed(participantId)
+                .setUndoPossible()
                 .setTimestamp(timestamp)
     }
 }
@@ -90,6 +99,7 @@ data class ToggleAnswerRevealAllowedEvent(@JsonProperty("quizId") override val q
 data class AnsweredEvent(@JsonProperty("quizId") override val quizId: UUID, @JsonProperty("participantId") val participantId: UUID, @JsonProperty("answer") val answer: AnswerCommand.Answer, @JsonProperty("timestamp") override val timestamp: Long = Date().time) : Event {
     override fun process(quiz: Quiz): Quiz {
         return answer.performAnswer(quiz, participantId)
+                .setUndoPossible()
                 .setTimestamp(timestamp)
     }
 }
@@ -97,6 +107,7 @@ data class AnsweredEvent(@JsonProperty("quizId") override val quizId: UUID, @Jso
 data class CurrentQuestionReopenedEvent(@JsonProperty("quizId") override val quizId: UUID, @JsonProperty("timestamp") override val timestamp: Long = Date().time) : Event {
     override fun process(quiz: Quiz): Quiz {
         return quiz.reopenQuestion()
+                .setUndoPossible()
                 .setTimestamp(timestamp)
     }
 }
@@ -104,6 +115,7 @@ data class CurrentQuestionReopenedEvent(@JsonProperty("quizId") override val qui
 data class AnswersRevealedEvent(@JsonProperty("quizId") override val quizId: UUID, @JsonProperty("timestamp") override val timestamp: Long = Date().time) : Event {
     override fun process(quiz: Quiz): Quiz {
         return quiz.revealAnswersOfCurrentQuestion()
+                .setUndoPossible()
                 .setTimestamp(timestamp)
     }
 }
@@ -111,6 +123,7 @@ data class AnswersRevealedEvent(@JsonProperty("quizId") override val quizId: UUI
 data class QuizFinishedEvent(@JsonProperty("quizId") override val quizId: UUID, @JsonProperty("timestamp") override val timestamp: Long = Date().time): Event {
     override fun process(quiz: Quiz): Quiz {
         return quiz.finishQuiz()
+                .setUndoPossible()
                 .setTimestamp(timestamp)
     }
 }

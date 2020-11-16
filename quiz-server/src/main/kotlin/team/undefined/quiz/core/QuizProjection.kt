@@ -13,7 +13,8 @@ import java.util.concurrent.Semaphore
 @Component
 class QuizProjection(eventBus: EventBus,
                      private val quizStatisticsProvider: QuizStatisticsProvider,
-                     private val eventRepository: EventRepository) {
+                     private val eventRepository: EventRepository,
+                     private val undoneEventsCache: UndoneEventsCache) {
 
     private val logger = LoggerFactory.getLogger(QuizProjection::class.java)
 
@@ -159,6 +160,7 @@ class QuizProjection(eventBus: EventBus,
     }
 
     private fun emitQuiz(quiz: Quiz) {
+        quiz.setRedoPossible(undoneEventsCache.isNotEmpty(quiz.id))
         observables.computeIfAbsent(quiz.id) { EmitterProcessor.create(false) }
                 .onNext(quiz)
     }

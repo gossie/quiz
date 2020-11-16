@@ -17,7 +17,7 @@ internal class QuizProjectionQuestionAnsweredIncorrectEventTest {
         val quiz = Quiz(name = "Awesome Quiz")
 
         val eventBus = EventBus()
-        val quizProjection = QuizProjection(eventBus, mock(QuizStatisticsProvider::class.java), mock(EventRepository::class.java))
+        val quizProjection = QuizProjection(eventBus, mock(QuizStatisticsProvider::class.java), mock(EventRepository::class.java), UndoneEventsCache())
 
         val observedQuiz = AtomicReference<Quiz>()
         quizProjection.observeQuiz(quiz.id)
@@ -43,6 +43,7 @@ internal class QuizProjectionQuestionAnsweredIncorrectEventTest {
             assertThat(q.questions[0].pending).isTrue()
             assertThat(q.questions[0].revealed).isFalse()
             assertThat(q.questions[0].alreadyPlayed).isFalse()
+            assertThat(q.isUndoPossible()).isTrue()
             assertThat(q.finished).isFalse()
         }
     }
@@ -67,7 +68,7 @@ internal class QuizProjectionQuestionAnsweredIncorrectEventTest {
                 ))
 
         val eventBus = EventBus()
-        val quizProjection = QuizProjection(eventBus, mock(QuizStatisticsProvider::class.java), eventRepository)
+        val quizProjection = QuizProjection(eventBus, mock(QuizStatisticsProvider::class.java), eventRepository, UndoneEventsCache())
 
         val observedQuiz = AtomicReference<Quiz>()
         quizProjection.observeQuiz(quiz.id)
@@ -85,6 +86,7 @@ internal class QuizProjectionQuestionAnsweredIncorrectEventTest {
             assertThat(q.questions[0].pending).isTrue()
             assertThat(q.questions[0].revealed).isFalse()
             assertThat(q.questions[0].alreadyPlayed).isFalse()
+            assertThat(q.isUndoPossible()).isTrue()
             assertThat(q.finished).isFalse()
         }
     }
@@ -106,7 +108,7 @@ internal class QuizProjectionQuestionAnsweredIncorrectEventTest {
                 ))
 
         val eventBus = EventBus()
-        val quizProjection = QuizProjection(eventBus, mock(QuizStatisticsProvider::class.java), eventRepository)
+        val quizProjection = QuizProjection(eventBus, mock(QuizStatisticsProvider::class.java), eventRepository, UndoneEventsCache())
 
         val observedQuiz = AtomicReference<Quiz>()
         quizProjection.observeQuiz(quiz.id)
@@ -124,6 +126,7 @@ internal class QuizProjectionQuestionAnsweredIncorrectEventTest {
             assertThat(q.questions[0].pending).isTrue()
             assertThat(q.questions[0].revealed).isFalse()
             assertThat(q.questions[0].alreadyPlayed).isFalse()
+            assertThat(q.isUndoPossible()).isTrue()
             assertThat(q.finished).isFalse()
         }
     }

@@ -12,12 +12,12 @@ import kotlin.collections.HashMap
 
 @Service
 class DefaultQuizService(private val eventRepository: EventRepository,
+                         private val undoneEventsCache: UndoneEventsCache,
                          private val eventBus: EventBus) : QuizService {
 
     private val logger = LoggerFactory.getLogger(QuizService::class.java)
 
     private val subscriptions = HashMap<UUID, Disposable>()
-    private val undoneEvents = HashMap<UUID, Stack<Event>>()
 
     @WriteLock
     override fun createQuiz(command: CreateQuizCommand): Mono<Unit> {
@@ -31,7 +31,7 @@ class DefaultQuizService(private val eventRepository: EventRepository,
         logger.debug("creating a new question for quiz '{}'", command.quizId)
         return eventRepository.storeEvent(QuestionCreatedEvent(command.quizId, command.question))
                 .map {
-                    undoneEvents.remove(it.quizId)
+                    undoneEventsCache.remove(it.quizId)
                     eventBus.post(it)
                 }
     }
@@ -41,7 +41,7 @@ class DefaultQuizService(private val eventRepository: EventRepository,
         logger.debug("editing question '{}' of quiz '{}'", command.questionId, command.quizId)
         return eventRepository.storeEvent(QuestionEditedEvent(command.quizId, command.question))
                 .map {
-                    undoneEvents.remove(it.quizId)
+                    undoneEventsCache.remove(it.quizId)
                     eventBus.post(it)
                 }
     }
@@ -55,7 +55,7 @@ class DefaultQuizService(private val eventRepository: EventRepository,
                 .filter { it.hasNoParticipantWithName(command.participant.name) }
                 .flatMap { eventRepository.storeEvent(ParticipantCreatedEvent(command.quizId, command.participant)) }
                 .map {
-                    undoneEvents.remove(it.quizId)
+                    undoneEventsCache.remove(it.quizId)
                     eventBus.post(it)
                 }
     }
@@ -68,7 +68,7 @@ class DefaultQuizService(private val eventRepository: EventRepository,
                 .filter { it.hasParticipantWithId(command.participantId) }
                 .flatMap { eventRepository.storeEvent(ParticipantDeletedEvent(command.quizId, command.participantId)) }
                 .map {
-                    undoneEvents.remove(it.quizId)
+                    undoneEventsCache.remove(it.quizId)
                     eventBus.post(it)
                 }
     }
@@ -78,7 +78,7 @@ class DefaultQuizService(private val eventRepository: EventRepository,
         logger.debug("deleting question '{}' from quiz '{}'", command.questionId, command.quizId)
         return eventRepository.storeEvent(QuestionDeletedEvent(command.quizId, command.questionId))
                 .map {
-                    undoneEvents.remove(it.quizId)
+                    undoneEventsCache.remove(it.quizId)
                     eventBus.post(it)
                 }
     }
@@ -93,7 +93,7 @@ class DefaultQuizService(private val eventRepository: EventRepository,
                 .filter { it.nobodyHasBuzzered() }
                 .flatMap { eventRepository.storeEvent(BuzzeredEvent(command.quizId, command.participantId)) }
                 .map {
-                    undoneEvents.remove(it.quizId)
+                    undoneEventsCache.remove(it.quizId)
                     eventBus.post(it)
                 }
     }
@@ -106,7 +106,7 @@ class DefaultQuizService(private val eventRepository: EventRepository,
                 .filter { it.hasParticipantWithId(command.participantId) }
                 .flatMap { eventRepository.storeEvent(EstimatedEvent(command.quizId, command.participantId, command.estimatedValue)) }
                 .map {
-                    undoneEvents.remove(it.quizId)
+                    undoneEventsCache.remove(it.quizId)
                     eventBus.post(it)
                 }
     }
@@ -119,7 +119,7 @@ class DefaultQuizService(private val eventRepository: EventRepository,
                 .filter { it.hasParticipantWithId(command.participantId) }
                 .flatMap { eventRepository.storeEvent(ToggleAnswerRevealAllowedEvent(command.quizId, command.participantId)) }
                 .map {
-                    undoneEvents.remove(it.quizId)
+                    undoneEventsCache.remove(it.quizId)
                     eventBus.post(it)
                 }
     }
@@ -139,7 +139,7 @@ class DefaultQuizService(private val eventRepository: EventRepository,
                                 .takeUntil { second -> second + 1 >= pendingQuestion.initialTimeToAnswer.toLong() }
                                 .subscribe { eventBus.post(TimeToAnswerDecreasedEvent(command.quizId, command.questionId)) }
                     }
-                    undoneEvents.remove(it.id)
+                    undoneEventsCache.remove(it.id)
                     Unit
                 }
     }
@@ -149,7 +149,7 @@ class DefaultQuizService(private val eventRepository: EventRepository,
         logger.debug("'{}' answered '{}' in quiz", command.participantId, command.answer, command.quizId)
         return eventRepository.storeEvent(AnsweredEvent(command.quizId, command.participantId, command.answer))
                 .map {
-                    undoneEvents.remove(it.quizId)
+                    undoneEventsCache.remove(it.quizId)
                     eventBus.post(it)
                 }
     }
@@ -169,7 +169,7 @@ class DefaultQuizService(private val eventRepository: EventRepository,
                                 .takeUntil { second -> second + 1 >= pendingQuestion.initialTimeToAnswer.toLong() }
                                 .subscribe { eventBus.post(TimeToAnswerDecreasedEvent(command.quizId, pendingQuestion.id)) }
                     }
-                    undoneEvents.remove(it.id)
+                    undoneEventsCache.remove(it.id)
                     Unit
                 }
     }
@@ -183,7 +183,7 @@ class DefaultQuizService(private val eventRepository: EventRepository,
                     it
                 }
                 .map {
-                    undoneEvents.remove(it.quizId)
+                    undoneEventsCache.remove(it.quizId)
                     eventBus.post(it)
                 }
     }
@@ -193,7 +193,7 @@ class DefaultQuizService(private val eventRepository: EventRepository,
         logger.debug("finishing quiz '{}'", command.quizId)
         return eventRepository.storeEvent(QuizFinishedEvent(command.quizId))
                 .map {
-                    undoneEvents.remove(it.quizId)
+                    undoneEventsCache.remove(it.quizId)
                     eventBus.post(it)
                 }
     }
@@ -204,7 +204,7 @@ class DefaultQuizService(private val eventRepository: EventRepository,
         return eventRepository.deleteEvents(command.quizId)
                 .map {
                     subscriptions.remove(command.quizId)
-                    undoneEvents.remove(command.quizId)
+                    undoneEventsCache.remove(command.quizId)
                     eventBus.post(QuizDeletedEvent(command.quizId))
                 }
     }
@@ -222,19 +222,16 @@ class DefaultQuizService(private val eventRepository: EventRepository,
     @WriteLock
     override fun undo(command: UndoCommand): Mono<Unit> {
         return eventRepository.undoLastAction(command.quizId)
-                .map {
-                    val eventStack = undoneEvents.computeIfAbsent(command.quizId) { Stack() }
-                    eventStack.push(it)
-                }
+                .map { undoneEventsCache.push(it) }
                 .map { eventBus.post(ReloadQuizCommand(command.quizId)) }
     }
 
     @WriteLock
     override fun redo(command: RedoCommand): Mono<Unit> {
-        return if (undoneEvents.isEmpty()) {
+        return if (undoneEventsCache.isEmpty(command.quizId)) {
             Mono.empty()
         } else {
-            eventRepository.storeEvent(undoneEvents[command.quizId]!!.pop())
+            eventRepository.storeEvent(undoneEventsCache.pop(command.quizId!!))
                     .map { eventBus.post(it) }
         }
     }
