@@ -100,8 +100,6 @@ internal class QuizProjectionQuestionMovedTest {
         }
     }
 
-
-
     @Test
     fun shouldHandleQuestionMoveToBottom() {
         val quiz = Quiz(name = "Awesome Quiz")
