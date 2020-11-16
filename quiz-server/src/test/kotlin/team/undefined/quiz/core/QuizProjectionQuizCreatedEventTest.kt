@@ -1,14 +1,11 @@
 package team.undefined.quiz.core
 
 import com.google.common.eventbus.EventBus
-import org.assertj.core.api.Assertions.assertThat
 import org.awaitility.kotlin.await
-import org.awaitility.kotlin.until
+import org.awaitility.kotlin.untilAsserted
 import org.junit.jupiter.api.Test
-import org.mockito.Mockito.`when`
 import org.mockito.Mockito.mock
-import reactor.core.publisher.Flux
-import reactor.test.StepVerifier
+import team.undefined.quiz.core.QuizAssert.assertThat
 import java.util.concurrent.atomic.AtomicReference
 
 internal class QuizProjectionQuizCreatedEventTest {
@@ -18,7 +15,7 @@ internal class QuizProjectionQuizCreatedEventTest {
         val quiz = Quiz(name = "Awesome Quiz")
 
         val eventBus = EventBus()
-        val quizProjection = QuizProjection(eventBus, mock(QuizStatisticsProvider::class.java), mock(EventRepository::class.java))
+        val quizProjection = QuizProjection(eventBus, mock(QuizStatisticsProvider::class.java), mock(EventRepository::class.java), UndoneEventsCache())
 
         val observedQuiz = AtomicReference<Quiz>()
         quizProjection.observeQuiz(quiz.id)
@@ -26,8 +23,10 @@ internal class QuizProjectionQuizCreatedEventTest {
 
         eventBus.post(QuizCreatedEvent(quiz.id, quiz, 1))
 
-        await until {
-            observedQuiz.get() == quiz
+        await untilAsserted {
+            assertThat(observedQuiz.get())
+                    .hasId(quiz.id)
+                    .undoIsNotPossible()
         }
     }
 

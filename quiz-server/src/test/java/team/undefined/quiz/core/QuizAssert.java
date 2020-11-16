@@ -68,4 +68,19 @@ public class QuizAssert extends AbstractAssert<QuizAssert, Quiz> {
         return this;
     }
 
+    public QuizAssert hasNoQuizStatistics() {
+        Assertions.assertThat(actual.getQuizStatistics()).isNull();
+        return this;
+    }
+
+    public QuizAssert undoIsPossible() {
+        Assertions.assertThat(actual.isUndoPossible()).isTrue();
+        return this;
+    }
+
+    public QuizAssert undoIsNotPossible() {
+        Assertions.assertThat(actual.isUndoPossible()).isFalse();
+        return this;
+    }
+
 }

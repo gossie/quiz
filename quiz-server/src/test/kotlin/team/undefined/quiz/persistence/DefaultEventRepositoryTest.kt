@@ -19,7 +19,7 @@ data class TestEvent(@JsonProperty("quizId") override val quizId: UUID, @JsonPro
 }
 
 @DataR2dbcTest
-@Import(DefaultEventRepository::class, PersistenceConfiguration::class, DefaultQuizService::class, QuizProjection::class, ObjectMapper::class, QuizStatisticsProvider::class)
+@Import(DefaultEventRepository::class, PersistenceConfiguration::class, UndoneEventsCache::class, DefaultQuizService::class, QuizProjection::class, ObjectMapper::class, QuizStatisticsProvider::class)
 internal class DefaultEventRepositoryTest {
 
     @Autowired
@@ -107,6 +107,41 @@ internal class DefaultEventRepositoryTest {
         StepVerifier.create(defaultEventRepository.determineEvents())
                 .consumeNextWith {
                     assertThat(it.quizId).isEqualTo(secondQuizId)
+                    assertThat((it as TestEvent).payload).isEqualTo(mapOf(Pair("key1", "value1")))
+                }
+                .verifyComplete()
+    }
+
+    @Test
+    fun shouldUndoLastAction() {
+        val firstQuizId = UUID.randomUUID()
+
+        StepVerifier.create(defaultEventRepository.storeEvent(TestEvent(firstQuizId, Date().time, mapOf(Pair("key1", "value1")))))
+                .consumeNextWith {
+                    assertThat(it.quizId).isEqualTo(firstQuizId)
+                    assertThat((it as TestEvent).payload).isEqualTo(mapOf(Pair("key1", "value1")))
+                }
+                .verifyComplete()
+        Thread.sleep(1)
+
+        StepVerifier.create(defaultEventRepository.storeEvent(TestEvent(firstQuizId, Date().time, mapOf(Pair("key2", "value2")))))
+                .consumeNextWith {
+                    assertThat(it.quizId).isEqualTo(firstQuizId)
+                    assertThat((it as TestEvent).payload).isEqualTo(mapOf(Pair("key2", "value2")))
+                }
+                .verifyComplete()
+        Thread.sleep(1)
+
+        StepVerifier.create(defaultEventRepository.undoLastAction(firstQuizId))
+                .consumeNextWith {
+                    assertThat(it.quizId).isEqualTo(firstQuizId)
+                    assertThat((it as TestEvent).payload).isEqualTo(mapOf(Pair("key2", "value2")))
+                }
+                .verifyComplete()
+
+        StepVerifier.create(defaultEventRepository.determineEvents(firstQuizId))
+                .consumeNextWith {
+                    assertThat(it.quizId).isEqualTo(firstQuizId)
                     assertThat((it as TestEvent).payload).isEqualTo(mapOf(Pair("key1", "value1")))
                 }
                 .verifyComplete()

@@ -1,5 +1,5 @@
 import React from 'react';
-import { render, fireEvent, wait, cleanup } from '@testing-library/react';
+import { render, fireEvent, waitFor, cleanup } from '@testing-library/react';
 import Questions from './Questions';
 import Quiz from '../quiz-client-shared/quiz';
 
@@ -117,7 +117,7 @@ test('should add new private question', async () => {
 
     questionButton.click();
 
-    await wait(() =>{
+    await waitFor(() =>{
         expect(questionField.value).toBe('');
         expect(imagePathField.value).toBe('');
     });
@@ -186,7 +186,7 @@ test('should add new public question', async () => {
 
     questionButton.click();
 
-    await wait(() =>{
+    await waitFor(() =>{
         expect(questionField.value).toBe('');
         expect(imagePathField.value).toBe('');
     });
@@ -242,58 +242,6 @@ test('should start question', () => {
     const { getByTestId } = render(<Questions quiz={quiz} />);
 
     getByTestId('start-question-0').click();
-});
-
-test('should revert question', () => {
-    jest.spyOn(global, 'fetch').mockImplementation((url: string, request: object) => {
-        expect(url).toEqual('http://localhost:5000/api/quiz/5/questions/11');
-        expect(request).toEqual({
-            method: 'PATCH',
-            headers: {
-                Accept: 'application/json'
-            }
-        });
-        Promise.resolve();
-    });
-
-    const quiz: Quiz = {
-        id: '5',
-        name: "Awesome Quiz",
-        participants: [],
-        playedQuestions: [
-            {
-                id: '1',
-                question: 'Frage 1',
-                category: 'other',
-                publicVisible: false,
-                pending: false,
-                links: []
-            },
-        ],
-        openQuestions: [
-            {
-                id: '2',
-                question: 'Frage 2',
-                category: 'other',
-                publicVisible: false,
-                pending: true,
-                links: [{ href: '/api/quiz/5/questions/11', rel: 'self' }]
-            },
-            {
-                id: '3',
-                question: 'Frage 3',
-                category: 'other',
-                publicVisible: false,
-                pending: false,
-                links: []
-            }
-        ],
-        timestamp: 1234,
-        links: []
-    }
-    const { getByTestId } = render(<Questions quiz={quiz} />);
-
-    getByTestId('revert-question-0').click();
 });
 
 test('should delete question', () => {
@@ -478,7 +426,7 @@ test('should edit question', async () => {
 
     questionButton.click();
 
-    await wait(() =>{
+    await waitFor(() =>{
         expect(questionField.value).toBe('');
         expect(categoryField.value).toBe('other');
         expect(imagePathField.value).toBe('');

@@ -46,3 +46,9 @@ data class RevealAnswersCommand(override val quizId: UUID) : Command
 data class FinishQuizCommand(override val quizId: UUID) : Command
 
 data class DeleteQuizCommand(override val quizId: UUID) : Command
+
+data class UndoCommand(override val quizId: UUID) : Command
+
+data class RedoCommand(override val quizId: UUID) : Command
+
+data class ReloadQuizCommand(override val quizId: UUID) : Command

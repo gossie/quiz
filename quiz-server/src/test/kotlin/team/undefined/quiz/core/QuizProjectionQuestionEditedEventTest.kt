@@ -20,7 +20,7 @@ internal class QuizProjectionQuestionEditedEventTest {
         val questionId = UUID.randomUUID()
 
         val eventBus = EventBus()
-        val quizProjection = QuizProjection(eventBus, mock(QuizStatisticsProvider::class.java), mock(EventRepository::class.java))
+        val quizProjection = QuizProjection(eventBus, mock(QuizStatisticsProvider::class.java), mock(EventRepository::class.java), UndoneEventsCache())
 
         val observedQuiz = AtomicReference<Quiz>()
         quizProjection.observeQuiz(quiz.id)
@@ -36,6 +36,7 @@ internal class QuizProjectionQuestionEditedEventTest {
             assertThat(q.id).isEqualTo(quiz.id)
             assertThat(q.participants).isEmpty()
             assertThat(q.questions).containsExactly(changedQuestion)
+            assertThat(q.isUndoPossible()).isTrue()
             assertThat(q.finished).isFalse()
         }
     }
@@ -53,7 +54,7 @@ internal class QuizProjectionQuestionEditedEventTest {
                 .thenReturn(Flux.just(QuizCreatedEvent(quiz.id, quiz, 1), QuestionCreatedEvent(quiz.id, Question(questionId, question = "Wofür steht die Abkürzung a.D.?"), 2), questionEditedEvent))
 
         val eventBus = EventBus()
-        val quizProjection = QuizProjection(eventBus, mock(QuizStatisticsProvider::class.java), eventRepository)
+        val quizProjection = QuizProjection(eventBus, mock(QuizStatisticsProvider::class.java), eventRepository, UndoneEventsCache())
 
         val observedQuiz = AtomicReference<Quiz>()
         quizProjection.observeQuiz(quiz.id)
@@ -66,6 +67,7 @@ internal class QuizProjectionQuestionEditedEventTest {
             assertThat(q.id).isEqualTo(quiz.id)
             assertThat(q.participants).isEmpty()
             assertThat(q.questions).containsExactly(changedQuestion)
+            assertThat(q.isUndoPossible()).isTrue()
             assertThat(q.finished).isFalse()
         }
     }
@@ -83,7 +85,7 @@ internal class QuizProjectionQuestionEditedEventTest {
                 .thenReturn(Flux.just(QuizCreatedEvent(quiz.id, quiz, 1), QuestionCreatedEvent(quiz.id, Question(questionId, question = "Wofür steht die Abkürzung a.D.?"), 2)))
 
         val eventBus = EventBus()
-        val quizProjection = QuizProjection(eventBus, mock(QuizStatisticsProvider::class.java), eventRepository)
+        val quizProjection = QuizProjection(eventBus, mock(QuizStatisticsProvider::class.java), eventRepository, UndoneEventsCache())
 
         val observedQuiz = AtomicReference<Quiz>()
         quizProjection.observeQuiz(quiz.id)
@@ -96,6 +98,7 @@ internal class QuizProjectionQuestionEditedEventTest {
             assertThat(q.id).isEqualTo(quiz.id)
             assertThat(q.participants).isEmpty()
             assertThat(q.questions).containsExactly(changedQuestion)
+            assertThat(q.isUndoPossible()).isTrue()
             assertThat(q.finished).isFalse()
         }
     }

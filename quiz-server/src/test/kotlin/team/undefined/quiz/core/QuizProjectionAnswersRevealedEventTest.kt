@@ -16,7 +16,7 @@ internal class QuizProjectionAnswersRevealedEventTest {
         val quiz = Quiz(name = "Awesome Quiz")
 
         val eventBus = EventBus()
-        val quizProjection = QuizProjection(eventBus, Mockito.mock(QuizStatisticsProvider::class.java), Mockito.mock(EventRepository::class.java))
+        val quizProjection = QuizProjection(eventBus, Mockito.mock(QuizStatisticsProvider::class.java), Mockito.mock(EventRepository::class.java), UndoneEventsCache())
 
         val observedQuiz = AtomicReference<Quiz>()
         quizProjection.observeQuiz(quiz.id)
@@ -44,6 +44,7 @@ internal class QuizProjectionAnswersRevealedEventTest {
             assertThat(q.questions[0].revealed).isTrue()
             assertThat(q.questions[0].secondsLeft).isEqualTo(0)
             assertThat(q.questions[0].alreadyPlayed).isFalse()
+            assertThat(q.isUndoPossible()).isTrue()
             assertThat(q.finished).isFalse()
         }
     }
@@ -69,7 +70,7 @@ internal class QuizProjectionAnswersRevealedEventTest {
                 ))
 
         val eventBus = EventBus()
-        val quizProjection = QuizProjection(eventBus, Mockito.mock(QuizStatisticsProvider::class.java), eventRepository)
+        val quizProjection = QuizProjection(eventBus, Mockito.mock(QuizStatisticsProvider::class.java), eventRepository, UndoneEventsCache())
 
         val observedQuiz = AtomicReference<Quiz>()
         quizProjection.observeQuiz(quiz.id)
@@ -88,6 +89,7 @@ internal class QuizProjectionAnswersRevealedEventTest {
             assertThat(q.questions[0].revealed).isTrue()
             assertThat(q.questions[0].secondsLeft).isEqualTo(0)
             assertThat(q.questions[0].alreadyPlayed).isFalse()
+            assertThat(q.isUndoPossible()).isTrue()
             assertThat(q.finished).isFalse()
         }
     }
@@ -110,7 +112,7 @@ internal class QuizProjectionAnswersRevealedEventTest {
                 ))
 
         val eventBus = EventBus()
-        val quizProjection = QuizProjection(eventBus, Mockito.mock(QuizStatisticsProvider::class.java), eventRepository)
+        val quizProjection = QuizProjection(eventBus, Mockito.mock(QuizStatisticsProvider::class.java), eventRepository, UndoneEventsCache())
 
         val observedQuiz = AtomicReference<Quiz>()
         quizProjection.observeQuiz(quiz.id)
@@ -129,6 +131,7 @@ internal class QuizProjectionAnswersRevealedEventTest {
             assertThat(q.questions[0].revealed).isTrue()
             assertThat(q.questions[0].secondsLeft).isEqualTo(0)
             assertThat(q.questions[0].alreadyPlayed).isFalse()
+            assertThat(q.isUndoPossible()).isTrue()
             assertThat(q.finished).isFalse()
         }
     }

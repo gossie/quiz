@@ -16,4 +16,6 @@ interface EventRepository {
 
     fun determineQuizIds(): Flux<UUID>
 
+    fun undoLastAction(quizId: UUID): Mono<Event>
+
 }

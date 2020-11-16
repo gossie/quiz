@@ -14,7 +14,7 @@ fun Quiz.map(): Mono<QuizDTO> {
             .flatMap { it.map(this.id) }
             .collect(Collectors.toList())
             .flatMap {
-                val quizDTO = QuizDTO(this.id, this.name, it, this.questions.filter { it.alreadyPlayed }.map { it.map(this.id) }, this.questions.filter { !it.alreadyPlayed }.map { it.map(this.id) }, this.finished, timestamp = this.getTimestamp())
+                val quizDTO = QuizDTO(this.id, this.name, it, this.questions.filter { it.alreadyPlayed }.map { it.map(this.id) }, this.questions.filter { !it.alreadyPlayed }.map { it.map(this.id) }, this.isUndoPossible(), this.isRedoPossible(), this.finished, timestamp = this.getTimestamp())
                 if (this.quizStatistics == null) {
                      Mono.just(quizDTO)
                 } else {
@@ -124,6 +124,14 @@ private fun QuizDTO.addLinks(): Mono<QuizDTO> {
             .map { this.add(it) }
             .map { linkTo(methodOn(QuizController::class.java).revealAnswers(this.id!!)) }
             .map { it.withRel("revealAnswers") }
+            .flatMap { it.toMono() }
+            .map { this.add(it) }
+            .map { linkTo(methodOn(QuizController::class.java).undo(this.id!!)) }
+            .map { it.withRel("undo") }
+            .flatMap { it.toMono() }
+            .map { this.add(it) }
+            .map { linkTo(methodOn(QuizController::class.java).redo(this.id!!)) }
+            .map { it.withRel("redo") }
             .flatMap { it.toMono() }
             .map { this.add(it) }
 

@@ -12,6 +12,8 @@ data class Quiz(
         var quizStatistics: QuizStatistics? = null) {
 
     private var timestamp: Long = Date().time
+    private var undoPossible: Boolean = false
+    private var redoPossible: Boolean = false
 
     val pendingQuestion: Question?
         get() = questions.filter { it.pending }.firstOrNull()
@@ -164,6 +166,24 @@ data class Quiz(
 
     fun getTimestamp(): Long {
         return timestamp
+    }
+
+    fun isUndoPossible(): Boolean {
+        return undoPossible
+    }
+
+    fun setUndoPossible(): Quiz {
+        this.undoPossible = true
+        return this
+    }
+
+    fun isRedoPossible(): Boolean {
+        return redoPossible
+    }
+
+    fun setRedoPossible(redoPossible: Boolean): Quiz {
+        this.redoPossible = redoPossible
+        return this
     }
 
 }

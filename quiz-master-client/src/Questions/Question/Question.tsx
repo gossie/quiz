@@ -70,9 +70,6 @@ const QuestionElement: React.FC<QuestionElementProps> = (props: QuestionElementP
                         { props.enableOperations && props.question.pending && (isParticipantsTurn() || props.question.estimates != null) &&
                             <span data-testid="reopen-button" className="icon clickable has-text-warning" onClick={() => reopenQuestion()} title='Reopen Question'><i className="fas fa-lock-open"></i></span>
                         }
-                        { props.enableOperations && props.question.pending && 
-                            <span data-testid={`revert-question-${props.index}`} className="icon clickable has-text-danger" title="Revert Question" onClick={() => toggleQuestion(props.question)}><i className="fas fa-undo"></i></span> 
-                        }
                         { props.enableOperations && !props.question.pending && 
                             <span data-testid={`delete-question-${props.index}`} className="icon clickable has-text-danger" title="Delete question" onClick={() => deleteQuestion(props.question)}><i className="fas fa-trash"></i></span>
                         }

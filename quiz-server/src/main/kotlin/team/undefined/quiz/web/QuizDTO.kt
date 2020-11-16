@@ -9,6 +9,8 @@ data class QuizDTO(
         var participants: List<ParticipantDTO> = emptyList(),
         var playedQuestions: List<QuestionDTO> = emptyList(),
         var openQuestions: List<QuestionDTO> = emptyList(),
+        var undoPossible: Boolean = false,
+        var redoPossible: Boolean = false,
         var finished: Boolean = false,
         var quizStatistics: QuizStatisticsDTO? = null,
         var timestamp: Long

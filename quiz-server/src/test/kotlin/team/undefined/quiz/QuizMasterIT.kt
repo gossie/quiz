@@ -53,6 +53,16 @@ internal class QuizMasterIT {
                 .responseBody
                 .subscribe { quizMasterReference.set(it) }
 
+        assertThat(quizMasterReference.get())
+                .openQuestionSizeIs(0)
+                .playedQuestionSizeIs(0)
+                .particpantSizeIs(0)
+                .undoIsNotPossible()
+                .redoIsNotPossible()
+                .isNotFinished
+
+        Thread.sleep(10)
+
         // First question is created
         webTestClient
                 .post()
@@ -71,6 +81,9 @@ internal class QuizMasterIT {
                 }
                 .playedQuestionSizeIs(0)
                 .particpantSizeIs(0)
+                .undoIsPossible()
+                .redoIsNotPossible()
+                .isNotFinished
 
         Thread.sleep(10)
 
@@ -97,6 +110,9 @@ internal class QuizMasterIT {
                 }
                 .playedQuestionSizeIs(0)
                 .particpantSizeIs(0)
+                .undoIsPossible()
+                .redoIsNotPossible()
+                .isNotFinished
 
         Thread.sleep(10)
 
@@ -131,6 +147,9 @@ internal class QuizMasterIT {
                 }
                 .playedQuestionSizeIs(0)
                 .particpantSizeIs(0)
+                .undoIsPossible()
+                .redoIsNotPossible()
+                .isNotFinished
 
         Thread.sleep(10)
 
@@ -166,6 +185,9 @@ internal class QuizMasterIT {
                 .playedQuestionSizeIs(0)
                 .particpantSizeIs(1)
                 .hasParticipant(0) { it.hasName("André").allowsReveal().isNotTurn }
+                .undoIsPossible()
+                .redoIsNotPossible()
+                .isNotFinished
 
         Thread.sleep(10)
 
@@ -202,6 +224,9 @@ internal class QuizMasterIT {
                 .particpantSizeIs(2)
                 .hasParticipant(0) { it.hasName("André").allowsReveal().isNotTurn }
                 .hasParticipant(1) { it.hasName("Lena").allowsReveal().isNotTurn }
+                .undoIsPossible()
+                .redoIsNotPossible()
+                .isNotFinished
 
         Thread.sleep(10)
 
@@ -236,6 +261,9 @@ internal class QuizMasterIT {
                 .particpantSizeIs(2)
                 .hasParticipant(0) { it.hasName("André").allowsReveal().isNotTurn }
                 .hasParticipant(1) { it.hasName("Lena").allowsReveal().isNotTurn }
+                .undoIsPossible()
+                .redoIsNotPossible()
+                .isNotFinished
 
         Thread.sleep(10)
 
@@ -270,6 +298,9 @@ internal class QuizMasterIT {
                 .particpantSizeIs(2)
                 .hasParticipant(0) { it.hasName("André").allowsReveal().isNotTurn }
                 .hasParticipant(1) { it.hasName("Lena").allowsReveal().isTurn }
+                .undoIsPossible()
+                .redoIsNotPossible()
+                .isNotFinished
 
         Thread.sleep(10)
 
@@ -306,6 +337,9 @@ internal class QuizMasterIT {
                 .particpantSizeIs(2)
                 .hasParticipant(0) { it.hasName("André").hasPoints(0).allowsReveal().isNotTurn }
                 .hasParticipant(1) { it.hasName("Lena").hasPoints(2).allowsReveal().isTurn }
+                .undoIsPossible()
+                .redoIsNotPossible()
+                .isNotFinished
 
         Thread.sleep(10)
 
@@ -340,6 +374,9 @@ internal class QuizMasterIT {
                 .particpantSizeIs(2)
                 .hasParticipant(0) { it.hasName("André").hasPoints(0).allowsReveal().isNotTurn }
                 .hasParticipant(1) { it.hasName("Lena").hasPoints(2).allowsReveal().isNotTurn }
+                .undoIsPossible()
+                .redoIsNotPossible()
+                .isNotFinished
 
         Thread.sleep(10)
 
@@ -373,6 +410,9 @@ internal class QuizMasterIT {
                 .particpantSizeIs(2)
                 .hasParticipant(0) { it.hasName("André").hasPoints(0).allowsReveal().isTurn }
                 .hasParticipant(1) { it.hasName("Lena").hasPoints(2).allowsReveal().isNotTurn }
+                .undoIsPossible()
+                .redoIsNotPossible()
+                .isNotFinished
 
         Thread.sleep(10)
 
@@ -408,6 +448,9 @@ internal class QuizMasterIT {
                 .particpantSizeIs(2)
                 .hasParticipant(0) { it.hasName("André").hasPoints(0).allowsReveal().isTurn }
                 .hasParticipant(1) { it.hasName("Lena").hasPoints(2).allowsReveal().isNotTurn }
+                .undoIsPossible()
+                .redoIsNotPossible()
+                .isNotFinished
 
         Thread.sleep(10)
 
@@ -443,6 +486,9 @@ internal class QuizMasterIT {
                 .particpantSizeIs(2)
                 .hasParticipant(0) { it.hasName("André").hasPoints(0).allowsReveal().isTurn }
                 .hasParticipant(1) { it.hasName("Lena").hasPoints(2).allowsReveal().isNotTurn }
+                .undoIsPossible()
+                .redoIsNotPossible()
+                .isNotFinished
 
         Thread.sleep(10)
 
@@ -476,6 +522,9 @@ internal class QuizMasterIT {
                 .particpantSizeIs(2)
                 .hasParticipant(0) { it.hasName("André").hasPoints(0).allowsReveal().isNotTurn }
                 .hasParticipant(1) { it.hasName("Lena").hasPoints(2).allowsReveal().isNotTurn }
+                .undoIsPossible()
+                .redoIsNotPossible()
+                .isNotFinished
 
         Thread.sleep(10)
 
@@ -512,6 +561,9 @@ internal class QuizMasterIT {
                 .particpantSizeIs(2)
                 .hasParticipant(0) { it.hasName("André").hasPoints(0).allowsReveal().isNotTurn }
                 .hasParticipant(1) { it.hasName("Lena").hasPoints(2).allowsReveal().isNotTurn }
+                .undoIsPossible()
+                .redoIsNotPossible()
+                .isNotFinished
 
         Thread.sleep(10)
 
@@ -546,6 +598,9 @@ internal class QuizMasterIT {
                 .particpantSizeIs(2)
                 .hasParticipant(0) { it.hasName("André").hasPoints(0).allowsReveal().isNotTurn }
                 .hasParticipant(1) { it.hasName("Lena").hasPoints(2).doesNotAllowReveal().isNotTurn }
+                .undoIsPossible()
+                .redoIsNotPossible()
+                .isNotFinished
 
         Thread.sleep(10)
 
@@ -585,6 +640,9 @@ internal class QuizMasterIT {
                 .particpantSizeIs(2)
                 .hasParticipant(0) { it.hasName("André").hasPoints(0).allowsReveal().isNotTurn }
                 .hasParticipant(1) { it.hasName("Lena").hasPoints(2).doesNotAllowReveal().isNotTurn }
+                .undoIsPossible()
+                .redoIsNotPossible()
+                .isNotFinished
 
         Thread.sleep(10)
 
@@ -622,6 +680,9 @@ internal class QuizMasterIT {
                 .particpantSizeIs(2)
                 .hasParticipant(0) { it.hasName("André").hasPoints(0).allowsReveal().isNotTurn }
                 .hasParticipant(1) { it.hasName("Lena").hasPoints(2).doesNotAllowReveal().isNotTurn }
+                .undoIsPossible()
+                .redoIsNotPossible()
+                .isNotFinished
 
         Thread.sleep(10)
 
@@ -661,6 +722,9 @@ internal class QuizMasterIT {
                 .particpantSizeIs(2)
                 .hasParticipant(0) { it.hasName("André").hasPoints(2).allowsReveal().isNotTurn }
                 .hasParticipant(1) { it.hasName("Lena").hasPoints(2).doesNotAllowReveal().isNotTurn }
+                .undoIsPossible()
+                .redoIsNotPossible()
+                .isNotFinished
 
         Thread.sleep(10)
 
@@ -694,5 +758,84 @@ internal class QuizMasterIT {
                 }
                 .particpantSizeIs(1)
                 .hasParticipant(0) { it.hasName("Lena").hasPoints(2).doesNotAllowReveal().isNotTurn }
+                .undoIsPossible()
+                .redoIsNotPossible()
+                .isNotFinished
+
+        Thread.sleep(10)
+
+        // Quiz master performs an undo
+        webTestClient
+                .delete()
+                .uri(quizMasterReference.get().getLink("undo").map { it.href }.orElseThrow())
+                .exchange()
+                .expectStatus().isOk
+
+        assertThat(quizMasterReference.get())
+                .openQuestionSizeIs(1)
+                .hasOpenQuestion(0) { openQuestion ->
+                    openQuestion
+                            .hasQuestion("Was ist ein Robo-Advisor?")
+                            .isPending
+                            .isEstimationQuestion
+                            .hasEstimates(java.util.Map.of(
+                                    quizMasterReference.get().participants[0].id, "Antwort von André",
+                                    quizMasterReference.get().participants[1].id, "Antwort von Lena"
+                            ))
+                }
+                .playedQuestionSizeIs(2)
+                .hasPlayedQuestion(0) { playedQuestion ->
+                    playedQuestion
+                            .hasQuestion("Wer schrieb das Buch Animal Farm?")
+                            .isNotPending
+                }
+                .hasPlayedQuestion(1) { playedQuestion ->
+                    playedQuestion
+                            .hasQuestion("Wo befindet sich das Kahnbein?")
+                            .isNotPending
+                            .isBuzzerQuestion
+                }
+                .particpantSizeIs(2)
+                .hasParticipant(0) { it.hasName("André").hasPoints(2).allowsReveal().isNotTurn }
+                .hasParticipant(1) { it.hasName("Lena").hasPoints(2).doesNotAllowReveal().isNotTurn }
+                .undoIsPossible()
+                .redoIsPossible()
+                .isNotFinished
+
+        Thread.sleep(10)
+
+        // Quiz master performs a redo
+        webTestClient
+                .post()
+                .uri(quizMasterReference.get().getLink("redo").map { it.href }.orElseThrow())
+                .exchange()
+                .expectStatus().isOk
+
+        assertThat(quizMasterReference.get())
+                .openQuestionSizeIs(1)
+                .hasOpenQuestion(0) { openQuestion ->
+                    openQuestion
+                            .hasQuestion("Was ist ein Robo-Advisor?")
+                            .isPending
+                            .isEstimationQuestion
+                            .hasEstimates(java.util.Map.of(quizMasterReference.get().participants[0].id, "Antwort von Lena"))
+                }
+                .playedQuestionSizeIs(2)
+                .hasPlayedQuestion(0) { playedQuestion ->
+                    playedQuestion
+                            .hasQuestion("Wer schrieb das Buch Animal Farm?")
+                            .isNotPending
+                }
+                .hasPlayedQuestion(1) { playedQuestion ->
+                    playedQuestion
+                            .hasQuestion("Wo befindet sich das Kahnbein?")
+                            .isNotPending
+                            .isBuzzerQuestion
+                }
+                .particpantSizeIs(1)
+                .hasParticipant(0) { it.hasName("Lena").hasPoints(2).doesNotAllowReveal().isNotTurn }
+                .undoIsPossible()
+                .redoIsNotPossible()
+                .isNotFinished
     }
 }

@@ -8,6 +8,7 @@ import org.junit.jupiter.api.Test
 import org.mockito.Mockito.`when`
 import org.mockito.Mockito.mock
 import reactor.core.publisher.Flux
+import team.undefined.quiz.core.QuizAssert.assertThat
 import java.util.concurrent.atomic.AtomicReference
 
 internal class QuizProjectionQuestionCreatedEventTest {
@@ -17,7 +18,7 @@ internal class QuizProjectionQuestionCreatedEventTest {
         val quiz = Quiz(name = "Awesome Quiz")
 
         val eventBus = EventBus()
-        val quizProjection = QuizProjection(eventBus, mock(QuizStatisticsProvider::class.java), mock(EventRepository::class.java))
+        val quizProjection = QuizProjection(eventBus, mock(QuizStatisticsProvider::class.java), mock(EventRepository::class.java), UndoneEventsCache())
 
         val observedQuiz = AtomicReference<Quiz>()
         quizProjection.observeQuiz(quiz.id)
@@ -28,13 +29,13 @@ internal class QuizProjectionQuestionCreatedEventTest {
         eventBus.post(QuestionCreatedEvent(quiz.id, question, 2))
 
         await untilAsserted {
-            val q = observedQuiz.get()
-
-            assertThat(q.id).isEqualTo(quiz.id)
-            assertThat(q.participants).isEmpty()
-            assertThat(q.questions).hasSize(1)
-            assertThat(q.questions).contains(question)
-            assertThat(q.finished).isFalse()
+            assertThat(observedQuiz.get())
+                    .hasId(quiz.id)
+                    .hasNoParticipants()
+                    .questionSizeIs(1)
+                    .hasQuestion(0) { it.isEqualTo(question) }
+                    .undoIsPossible()
+                    .isNotFinished
         }
     }
 
@@ -50,7 +51,7 @@ internal class QuizProjectionQuestionCreatedEventTest {
                 .thenReturn(Flux.just(QuizCreatedEvent(quiz.id, quiz, 1), questionCreatedEvent))
 
         val eventBus = EventBus()
-        val quizProjection = QuizProjection(eventBus, mock(QuizStatisticsProvider::class.java), eventRepository)
+        val quizProjection = QuizProjection(eventBus, mock(QuizStatisticsProvider::class.java), eventRepository, UndoneEventsCache())
 
         val observedQuiz = AtomicReference<Quiz>()
         quizProjection.observeQuiz(quiz.id)
@@ -59,13 +60,13 @@ internal class QuizProjectionQuestionCreatedEventTest {
         eventBus.post(questionCreatedEvent)
 
         await untilAsserted {
-            val q = observedQuiz.get()
-
-            assertThat(q.id).isEqualTo(quiz.id)
-            assertThat(q.participants).isEmpty()
-            assertThat(q.questions).hasSize(1)
-            assertThat(q.questions).contains(question)
-            assertThat(q.finished).isFalse()
+            assertThat(observedQuiz.get())
+                    .hasId(quiz.id)
+                    .hasNoParticipants()
+                    .questionSizeIs(1)
+                    .hasQuestion(0) { it.isEqualTo(question) }
+                    .undoIsPossible()
+                    .isNotFinished
         }
     }
 
@@ -78,7 +79,7 @@ internal class QuizProjectionQuestionCreatedEventTest {
                 .thenReturn(Flux.just(QuizCreatedEvent(quiz.id, quiz, 1)))
 
         val eventBus = EventBus()
-        val quizProjection = QuizProjection(eventBus, mock(QuizStatisticsProvider::class.java), eventRepository)
+        val quizProjection = QuizProjection(eventBus, mock(QuizStatisticsProvider::class.java), eventRepository, UndoneEventsCache())
 
         val observedQuiz = AtomicReference<Quiz>()
         quizProjection.observeQuiz(quiz.id)
@@ -88,13 +89,13 @@ internal class QuizProjectionQuestionCreatedEventTest {
         eventBus.post(QuestionCreatedEvent(quiz.id, question, 2))
 
         await untilAsserted {
-            val q = observedQuiz.get()
-
-            assertThat(q.id).isEqualTo(quiz.id)
-            assertThat(q.participants).isEmpty()
-            assertThat(q.questions).hasSize(1)
-            assertThat(q.questions).contains(question)
-            assertThat(q.finished).isFalse()
+            assertThat(observedQuiz.get())
+                    .hasId(quiz.id)
+                    .hasNoParticipants()
+                    .questionSizeIs(1)
+                    .hasQuestion(0) { it.isEqualTo(question) }
+                    .undoIsPossible()
+                    .isNotFinished
         }
     }
 

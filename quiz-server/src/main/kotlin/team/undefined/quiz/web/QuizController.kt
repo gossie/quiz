@@ -81,6 +81,16 @@ class QuizController(private val quizService: QuizService,
                 }
     }
 
+    @DeleteMapping(path = ["/{quizId}/undo"])
+    fun undo(@PathVariable quizId: UUID): Mono<Unit> {
+        return quizService.undo(UndoCommand(quizId))
+    }
+
+    @PostMapping(path = ["/{quizId}/redo"])
+    fun redo(@PathVariable quizId: UUID): Mono<Unit> {
+        return quizService.redo(RedoCommand(quizId))
+    }
+
     private fun determineAnswerToDisplay(quiz: QuizDTO, question: QuestionDTO, participantId: UUID): String {
         return if (!question.revealed) {
             "*****"
