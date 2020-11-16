@@ -153,6 +153,80 @@ internal class QuizMasterIT {
 
         Thread.sleep(10)
 
+        // change order of questions
+        webTestClient
+                .put()
+                .uri(quizMasterReference.get().openQuestions[2].getLink("self").map { it.href }.orElseThrow())
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(BodyInserters.fromValue(QuestionDTO(question = "Was ist ein Robo-Advisor?", estimates = HashMap(), timeToAnswer = 45, previousQuestionId = quizMasterReference.get().openQuestions[0].id)))
+                .exchange()
+                .expectStatus().isOk
+
+        assertThat(quizMasterReference.get())
+                .openQuestionSizeIs(3)
+                .hasOpenQuestion(0) { openQuestion ->
+                    openQuestion
+                            .hasQuestion("Wer schrieb das Buch Animal Farm?")
+                            .isNotPending
+                            .isBuzzerQuestion
+                }
+                .hasOpenQuestion(1) { openQuestion ->
+                    openQuestion
+                            .hasQuestion("Was ist ein Robo-Advisor?")
+                            .isNotPending
+                            .isEstimationQuestion
+                }
+                .hasOpenQuestion(2) { openQuestion ->
+                    openQuestion
+                            .hasQuestion("Wo befindet sich das Kahnbein?")
+                            .isNotPending
+                            .isBuzzerQuestion
+                }
+                .playedQuestionSizeIs(0)
+                .particpantSizeIs(0)
+                .undoIsPossible()
+                .redoIsNotPossible()
+                .isNotFinished
+
+        Thread.sleep(10)
+
+        // change it back
+        webTestClient
+                .put()
+                .uri(quizMasterReference.get().openQuestions[1].getLink("self").map { it.href }.orElseThrow())
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(BodyInserters.fromValue(QuestionDTO(question = "Was ist ein Robo-Advisor?", estimates = HashMap(), timeToAnswer = 45, previousQuestionId = quizMasterReference.get().openQuestions[2].id)))
+                .exchange()
+                .expectStatus().isOk
+
+        assertThat(quizMasterReference.get())
+                .openQuestionSizeIs(3)
+                .hasOpenQuestion(0) { openQuestion ->
+                    openQuestion
+                            .hasQuestion("Wer schrieb das Buch Animal Farm?")
+                            .isNotPending
+                            .isBuzzerQuestion
+                }
+                .hasOpenQuestion(1) { openQuestion ->
+                    openQuestion
+                            .hasQuestion("Wo befindet sich das Kahnbein?")
+                            .isNotPending
+                            .isBuzzerQuestion
+                }
+                .hasOpenQuestion(2) { openQuestion ->
+                    openQuestion
+                            .hasQuestion("Was ist ein Robo-Advisor?")
+                            .isNotPending
+                            .isEstimationQuestion
+                }
+                .playedQuestionSizeIs(0)
+                .particpantSizeIs(0)
+                .undoIsPossible()
+                .redoIsNotPossible()
+                .isNotFinished
+
+        Thread.sleep(10)
+
         // First participant logs in
         webTestClient
                 .post()

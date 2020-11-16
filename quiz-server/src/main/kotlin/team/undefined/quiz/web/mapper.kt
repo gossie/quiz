@@ -78,7 +78,7 @@ private fun ParticipantDTO.addLinks(quizId: UUID): Mono<ParticipantDTO> {
 }
 
 fun Question.map(quizId: UUID): QuestionDTO {
-    val questionDTO = QuestionDTO(this.id, this.question, this.pending, this.imageUrl, if (this.estimates != null) { HashMap(this.estimates) } else { this.estimates }, this.visibility.asBoolean(), this.category.category, this.initialTimeToAnswer, this.secondsLeft, this.revealed)
+    val questionDTO = QuestionDTO(this.id, this.question, this.pending, this.imageUrl, if (this.estimates != null) { HashMap(this.estimates) } else { this.estimates }, this.visibility.asBoolean(), this.category.category, this.initialTimeToAnswer, this.secondsLeft, this.revealed, this.previousQuestionId)
     questionDTO.add(Link.of("/api/quiz/" + quizId + "/questions/" + this.id, "self"))
     return if (this.imageUrl == "") questionDTO else questionDTO.add(Link.of(this.imageUrl, "image"))
 }
@@ -93,7 +93,8 @@ fun QuestionDTO.map(questionId: UUID): Question {
             category = if (this.category == "") QuestionCategory("other") else QuestionCategory(this.category),
             initialTimeToAnswer = this.timeToAnswer,
             secondsLeft = this.timeToAnswer,
-            revealed = this.revealed
+            revealed = this.revealed,
+            previousQuestionId = this.previousQuestionId
     )
 }
 
@@ -105,7 +106,8 @@ fun QuestionDTO.map(): Question {
             visibility = if (this.publicVisible) Question.QuestionVisibility.PUBLIC else Question.QuestionVisibility.PRIVATE,
             category = if (this.category == "") QuestionCategory("other") else QuestionCategory(this.category),
             initialTimeToAnswer = this.timeToAnswer,
-            secondsLeft = this.timeToAnswer
+            secondsLeft = this.timeToAnswer,
+            previousQuestionId = this.previousQuestionId
     )
 }
 
