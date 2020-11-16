@@ -8,6 +8,7 @@ interface EstimationProps {
 
 const Estimation: React.FC<EstimationProps> = (props: EstimationProps) => {
     const [estimation, setEstimation] = useState('');
+    const [currentAnswer, setCurrentAnswer] = useState('Answer');
     const [sendButtonCssClasses, setSendButtonCssClasses] = useState('button is-primary');
     const [errorMessage, setErrorMessage] = useState('');
 
@@ -35,6 +36,7 @@ const Estimation: React.FC<EstimationProps> = (props: EstimationProps) => {
             if (response.status !== 200) {
                 throw Error('error when estimating');
             }
+            setCurrentAnswer(estimation);
             setEstimation('');
             setSendButtonCssClasses('button is-primary');
         })
@@ -54,7 +56,7 @@ const Estimation: React.FC<EstimationProps> = (props: EstimationProps) => {
                            onKeyUp={ev => {if (ev.keyCode === 13) sendEstimation()}}
                            className="input"
                            type="text"
-                           placeholder="Answer"
+                           placeholder={currentAnswer}
                            disabled={disabled} />
                 </div>
             </div>
