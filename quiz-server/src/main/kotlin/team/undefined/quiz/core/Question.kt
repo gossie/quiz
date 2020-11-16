@@ -13,7 +13,8 @@ data class Question(
         val category: QuestionCategory = QuestionCategory("other"),
         val initialTimeToAnswer: Int? = null,
         var secondsLeft: Int? = initialTimeToAnswer,
-        var revealed: Boolean = false
+        var revealed: Boolean = false,
+        var previousQuestionId: UUID? = null
 ) {
 
     enum class QuestionVisibility(private val b: Boolean) {
