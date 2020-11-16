@@ -27,7 +27,7 @@ class QuizStatisticsProvider(private val eventRepository: EventRepository) {
                 is QuestionAskedEvent -> {
                     if (map.isNotEmpty()) {
                         map.forEach { (t, u) ->
-                            currentQuestion!!.addBuzzerStatistics(BuzzerStatistics(t, u.first, u.second))
+                            currentQuestion?.addBuzzerStatistics(BuzzerStatistics(t, u.first, u.second))
                         }
                         map.clear()
                     }
