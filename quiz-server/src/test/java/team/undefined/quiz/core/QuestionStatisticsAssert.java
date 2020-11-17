@@ -22,12 +22,12 @@ public class QuestionStatisticsAssert extends AbstractAssert<QuestionStatisticsA
     }
 
     public QuestionStatisticsAssert buzzerStatisticsSizeIs(int size) {
-        Assertions.assertThat(actual.getBuzzerStatistics()).hasSize(size);
+        Assertions.assertThat(actual.getAnswerStatistics()).hasSize(size);
         return this;
     }
 
     public QuestionStatisticsAssert hasBuzzerStatistics(int index, Consumer<BuzzerStatisticsAssert> consumer) {
-        consumer.accept(BuzzerStatisticsAssert.assertThat(actual.getBuzzerStatistics().get(index)));
+        consumer.accept(BuzzerStatisticsAssert.assertThat(actual.getAnswerStatistics().get(index)));
         return this;
     }
 }

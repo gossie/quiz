@@ -2,7 +2,6 @@ package team.undefined.quiz.core
 
 import com.google.common.collect.ArrayListMultimap
 import com.google.common.collect.Multimap
-import com.google.common.collect.Multimaps
 import org.springframework.stereotype.Component
 import reactor.core.publisher.Mono
 import java.util.*
@@ -30,7 +29,7 @@ class QuizStatisticsProvider(private val eventRepository: EventRepository) {
                 is QuestionAskedEvent -> {
                     if (!map.isEmpty) {
                         map.forEach { participantId, pair ->
-                            currentQuestion?.addBuzzerStatistics(BuzzerStatistics(participantId, pair.first, pair.second))
+                            currentQuestion?.addAnswerStatistics(AnswerStatistics(participantId, pair.first, pair.second))
                         }
                         map.clear()
                     }
@@ -51,7 +50,7 @@ class QuizStatisticsProvider(private val eventRepository: EventRepository) {
 
         if (!map.isEmpty) {
             map.forEach { participantId, pair ->
-                currentQuestion?.addBuzzerStatistics(BuzzerStatistics(participantId, pair.first, pair.second))
+                currentQuestion?.addAnswerStatistics(AnswerStatistics(participantId, pair.first, pair.second))
             }
             map.clear()
         }

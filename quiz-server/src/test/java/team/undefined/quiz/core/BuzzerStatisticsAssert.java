@@ -5,13 +5,13 @@ import org.assertj.core.api.Assertions;
 
 import java.util.UUID;
 
-public class BuzzerStatisticsAssert extends AbstractAssert<BuzzerStatisticsAssert, BuzzerStatistics> {
+public class BuzzerStatisticsAssert extends AbstractAssert<BuzzerStatisticsAssert, AnswerStatistics> {
 
-    private BuzzerStatisticsAssert(BuzzerStatistics buzzerStatistics) {
-        super(buzzerStatistics, BuzzerStatisticsAssert.class);
+    private BuzzerStatisticsAssert(AnswerStatistics answerStatistics) {
+        super(answerStatistics, BuzzerStatisticsAssert.class);
     }
 
-    public static BuzzerStatisticsAssert assertThat(BuzzerStatistics actual) {
+    public static BuzzerStatisticsAssert assertThat(AnswerStatistics actual) {
         return new BuzzerStatisticsAssert(actual);
     }
 

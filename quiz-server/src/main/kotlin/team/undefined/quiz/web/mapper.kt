@@ -36,7 +36,7 @@ private fun QuizStatistics.map(quiz: Quiz): Mono<QuizStatisticsDTO> {
 }
 
 private fun QuestionStatistics.map(quiz: Quiz): Mono<QuestionStatisticsDTO> {
-    return Flux.concat(this.buzzerStatistics.map { it.map(quiz) })
+    return Flux.concat(this.answerStatistics.map { it.map(quiz) })
             .collect(Collectors.toList())
             .map {
                 QuestionStatisticsDTO(
@@ -46,7 +46,7 @@ private fun QuestionStatistics.map(quiz: Quiz): Mono<QuestionStatisticsDTO> {
             }
 }
 
-private fun BuzzerStatistics.map(quiz: Quiz): Mono<BuzzerStatisticsDTO> {
+private fun AnswerStatistics.map(quiz: Quiz): Mono<BuzzerStatisticsDTO> {
     return quiz.participants.find { it.id == this.participantId }!!.map(quiz.id)
             .map {
                 BuzzerStatisticsDTO(

@@ -48,15 +48,15 @@ internal class QuizStatisticsProviderTest {
                                 questionStatistics
                                         .hasQuestionId(buzzerQuestion.id)
                                         .buzzerStatisticsSizeIs(2)
-                                        .hasBuzzerStatistics(0) { it.isEqualTo(BuzzerStatistics(participant1.id, 1L, AnswerCommand.Answer.INCORRECT)) }
-                                        .hasBuzzerStatistics(1) { it.isEqualTo(BuzzerStatistics(participant1.id, 3L, AnswerCommand.Answer.CORRECT)) }
+                                        .hasBuzzerStatistics(0) { it.isEqualTo(AnswerStatistics(participant1.id, 1L, AnswerCommand.Answer.INCORRECT)) }
+                                        .hasBuzzerStatistics(1) { it.isEqualTo(AnswerStatistics(participant1.id, 3L, AnswerCommand.Answer.CORRECT)) }
                             }
                             .hasQuestionStatistics(1) { questionStatistics ->
                                 questionStatistics
                                         .hasQuestionId(freetextQuestion.id)
                                         .buzzerStatisticsSizeIs(2)
-                                        .hasBuzzerStatistics(0) { it.isEqualTo(BuzzerStatistics(participant1.id, 1L, AnswerCommand.Answer.CORRECT)) }
-                                        .hasBuzzerStatistics(1) { it.isEqualTo(BuzzerStatistics(participant2.id, 2L, AnswerCommand.Answer.INCORRECT)) }
+                                        .hasBuzzerStatistics(0) { it.isEqualTo(AnswerStatistics(participant1.id, 1L, AnswerCommand.Answer.CORRECT)) }
+                                        .hasBuzzerStatistics(1) { it.isEqualTo(AnswerStatistics(participant2.id, 2L, AnswerCommand.Answer.INCORRECT)) }
                             }
                 }
                 .verifyComplete()
