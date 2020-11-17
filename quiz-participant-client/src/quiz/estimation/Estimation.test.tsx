@@ -1,5 +1,5 @@
 import React from 'react';
-import { render, fireEvent, wait } from '@testing-library/react';
+import { render, fireEvent, waitFor } from '@testing-library/react';
 import Estimation from './Estimation';
 import Quiz from '../../quiz-client-shared/quiz';
 
@@ -25,6 +25,7 @@ test('should estimate', async () => {
             id: '4711',
             name: 'Erik',
             turn: false,
+            revealAllowed: true,
             points: 12,
             links: [
                 {
@@ -38,6 +39,7 @@ test('should estimate', async () => {
                 id: '1',
                 question: 'Frage 1',
                 pending: false,
+                revealed: false,
                 links: []
             },
             {
@@ -45,6 +47,7 @@ test('should estimate', async () => {
                 question: 'Frage 2',
                 estimates: {},
                 pending: true,
+                revealed: false,
                 links: []
             }
         ],
@@ -60,8 +63,9 @@ test('should estimate', async () => {
 
     sendButton.click();
 
-    await wait(() => expect(estimationField.value).toEqual(''));
-    await wait(() => expect(() => getByTestId('error-message')).toThrowError());
+    await waitFor(() => expect(estimationField.value).toEqual(''));
+    await waitFor(() => expect(estimationField.placeholder).toEqual('1000'));
+    await waitFor(() => expect(() => getByTestId('error-message')).toThrowError());
 });
 
 test('should send value with enter', async () => {
@@ -87,6 +91,7 @@ test('should send value with enter', async () => {
             name: 'Erik',
             turn: false,
             points: 12,
+            revealAllowed: true,
             links: [
                 {
                     rel: 'buzzer',
@@ -99,6 +104,7 @@ test('should send value with enter', async () => {
                 id: '1',
                 question: 'Frage 1',
                 pending: false,
+                revealed: false,
                 links: []
             },
             {
@@ -106,6 +112,7 @@ test('should send value with enter', async () => {
                 question: 'Frage 2',
                 estimates: {},
                 pending: true,
+                revealed: false,
                 links: []
             }
         ],
@@ -120,8 +127,8 @@ test('should send value with enter', async () => {
 
     fireEvent.keyUp(estimationField, { key: 'Enter', keyCode: 13 });
 
-    await wait(() => expect(estimationField.value).toEqual(''));
-    await wait(() => expect(() => getByTestId('error-message')).toThrowError());
+    await waitFor(() => expect(estimationField.value).toEqual(''));
+    await waitFor(() => expect(() => getByTestId('error-message')).toThrowError());
 });
 
 test('should receive error when sending value', async () => {
@@ -147,6 +154,7 @@ test('should receive error when sending value', async () => {
             name: 'Erik',
             turn: false,
             points: 12,
+            revealAllowed: true,
             links: [
                 {
                     rel: 'buzzer',
@@ -159,6 +167,7 @@ test('should receive error when sending value', async () => {
                 id: '1',
                 question: 'Frage 1',
                 pending: false,
+                revealed: false,
                 links: []
             },
             {
@@ -166,6 +175,7 @@ test('should receive error when sending value', async () => {
                 question: 'Frage 2',
                 estimates: {},
                 pending: true,
+                revealed: false,
                 links: []
             }
         ],
@@ -181,7 +191,7 @@ test('should receive error when sending value', async () => {
 
     sendButton.click();
 
-    await wait(() => expect(estimationField.value).toEqual('1000'));
-    await wait(() => expect(() => getByTestId('error-message')).not.toThrowError());
-    await wait(() => expect(getByTestId('error-message').textContent).toEqual('Something went wrong. Please send the data again.'));
+    await waitFor(() => expect(estimationField.value).toEqual('1000'));
+    await waitFor(() => expect(() => getByTestId('error-message')).not.toThrowError());
+    await waitFor(() => expect(getByTestId('error-message').textContent).toEqual('Something went wrong. Please send the data again.'));
 });
