@@ -26,8 +26,8 @@ public class QuestionStatisticsAssert extends AbstractAssert<QuestionStatisticsA
         return this;
     }
 
-    public QuestionStatisticsAssert hasAnswerStatistics(int index, Consumer<BuzzerStatisticsAssert> consumer) {
-        consumer.accept(BuzzerStatisticsAssert.assertThat(actual.getAnswerStatistics().get(index)));
+    public QuestionStatisticsAssert hasAnswerStatistics(int index, Consumer<AnswerStatisticsAssert> consumer) {
+        consumer.accept(AnswerStatisticsAssert.assertThat(actual.getAnswerStatistics().get(index)));
         return this;
     }
 }
