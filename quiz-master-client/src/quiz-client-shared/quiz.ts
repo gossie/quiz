@@ -25,15 +25,15 @@ export interface Question {
     links: Array<Link>;
 }
 
-export interface BuzzerStatistics {
+export interface AnswerStatistics {
     participant: Participant;
     duration: number;
-    answer: string;
+    rating: string;
 }
 
 export interface QuestionStatistics {
     question: Question;
-    buzzerStatistics: Array<BuzzerStatistics>;
+    answerStatistics: Array<AnswerStatistics>;
 }
 
 export interface QuizStatistics {

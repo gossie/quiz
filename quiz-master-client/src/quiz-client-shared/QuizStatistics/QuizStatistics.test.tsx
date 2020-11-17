@@ -70,7 +70,7 @@ test('displays statistics', () => {
                         pending: false,
                         links: []
                     },
-                    buzzerStatistics: []
+                    answerStatistics: []
                 }
             ]
         },
@@ -116,7 +116,7 @@ test('should close statistics', () => {
                         pending: false,
                         links: []
                     },
-                    buzzerStatistics: []
+                    answerStatistics: []
                 }
             ]
         },
@@ -166,7 +166,7 @@ test('should not be closeable', () => {
                         pending: false,
                         links: []
                     },
-                    buzzerStatistics: []
+                    answerStatistics: []
                 }
             ]
         },
