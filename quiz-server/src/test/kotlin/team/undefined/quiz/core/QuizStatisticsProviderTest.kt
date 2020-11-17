@@ -41,42 +41,22 @@ internal class QuizStatisticsProviderTest {
         val quizStatisticsProvider = QuizStatisticsProvider(eventRepository)
 
         StepVerifier.create(quizStatisticsProvider.generateStatistics(quiz.id))
-                .consumeNextWith {
-                    assertThat(it)
+                .consumeNextWith { quiz ->
+                    assertThat(quiz)
                             .questionStatisticsSizeId(2)
                             .hasQuestionStatistics(0) { questionStatistics ->
                                 questionStatistics
                                         .hasQuestionId(buzzerQuestion.id)
                                         .buzzerStatisticsSizeIs(2)
-                                        .hasBuzzerStatistics(0) { buzzerStatistics ->
-                                            buzzerStatistics
-                                                    .hasDuration(1L)
-                                                    .hasParticipantId(participant1.id)
-                                                    .isIncorrect
-                                        }
-                                        .hasBuzzerStatistics(1) { buzzerStatistics ->
-                                            buzzerStatistics
-                                                    .hasDuration(3L)
-                                                    .hasParticipantId(participant1.id)
-                                                    .isCorrect
-                                        }
+                                        .hasBuzzerStatistics(0) { it.isEqualTo(BuzzerStatistics(participant1.id, 1L, AnswerCommand.Answer.INCORRECT)) }
+                                        .hasBuzzerStatistics(1) { it.isEqualTo(BuzzerStatistics(participant1.id, 3L, AnswerCommand.Answer.CORRECT)) }
                             }
                             .hasQuestionStatistics(1) { questionStatistics ->
                                 questionStatistics
                                         .hasQuestionId(freetextQuestion.id)
                                         .buzzerStatisticsSizeIs(2)
-                                        .hasBuzzerStatistics(0) { buzzerStatistics ->
-                                            buzzerStatistics
-                                                    .hasDuration(1L)
-                                                    .hasParticipantId(participant1.id)
-                                                    .isCorrect
-                                        }
-                                        .hasBuzzerStatistics(1) { buzzerStatistics ->
-                                            buzzerStatistics
-                                                    .hasDuration(2L)
-                                                    .hasParticipantId(participant2.id)
-                                                    .isIncorrect
-                                        }
+                                        .hasBuzzerStatistics(0) { it.isEqualTo(BuzzerStatistics(participant1.id, 1L, AnswerCommand.Answer.CORRECT)) }
+                                        .hasBuzzerStatistics(1) { it.isEqualTo(BuzzerStatistics(participant2.id, 2L, AnswerCommand.Answer.INCORRECT)) }
                             }
                 }
                 .verifyComplete()
