@@ -9,6 +9,7 @@ data class QuestionStatistics(val questionId: UUID, val buzzerStatistics: List<B
 
     fun addBuzzerStatistics(buzzerStatistic: BuzzerStatistics) {
         (buzzerStatistics as MutableList).add(buzzerStatistic)
+        buzzerStatistics.sortBy { it.duration }
     }
 
 }

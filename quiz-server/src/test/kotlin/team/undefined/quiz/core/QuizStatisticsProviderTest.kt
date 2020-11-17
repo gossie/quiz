@@ -28,12 +28,14 @@ internal class QuizStatisticsProviderTest {
                         BuzzeredEvent(quiz.id, participant1.id, 7),
                         QuestionAskedEvent(quiz.id, buzzerQuestion.id, 8),
                         BuzzeredEvent(quiz.id, participant1.id, 9),
-                        AnsweredEvent(quiz.id, participant1.id, AnswerCommand.Answer.CORRECT, 10),
-                        QuestionAskedEvent(quiz.id, freetextQuestion.id, 11),
-                        EstimatedEvent(quiz.id, participant1.id, "Sergej Prokofjew", 12),
-                        EstimatedEvent(quiz.id, participant2.id, "Max Mustermann", 13),
-                        AnsweredEvent(quiz.id, participant1.id, AnswerCommand.Answer.CORRECT, 14),
-                        QuizFinishedEvent(quiz.id, 15)
+                        AnsweredEvent(quiz.id, participant1.id, AnswerCommand.Answer.INCORRECT, 10),
+                        BuzzeredEvent(quiz.id, participant1.id, 11),
+                        AnsweredEvent(quiz.id, participant1.id, AnswerCommand.Answer.CORRECT, 12),
+                        QuestionAskedEvent(quiz.id, freetextQuestion.id, 13),
+                        EstimatedEvent(quiz.id, participant1.id, "Sergej Prokofjew", 14),
+                        EstimatedEvent(quiz.id, participant2.id, "Max Mustermann", 15),
+                        AnsweredEvent(quiz.id, participant1.id, AnswerCommand.Answer.CORRECT, 16),
+                        QuizFinishedEvent(quiz.id, 17)
                 ))
 
         val quizStatisticsProvider = QuizStatisticsProvider(eventRepository)
@@ -45,10 +47,16 @@ internal class QuizStatisticsProviderTest {
                             .hasQuestionStatistics(0) { questionStatistics ->
                                 questionStatistics
                                         .hasQuestionId(buzzerQuestion.id)
-                                        .buzzerStatisticsSizeIs(1)
+                                        .buzzerStatisticsSizeIs(2)
                                         .hasBuzzerStatistics(0) { buzzerStatistics ->
                                             buzzerStatistics
                                                     .hasDuration(1L)
+                                                    .hasParticipantId(participant1.id)
+                                                    .isIncorrect
+                                        }
+                                        .hasBuzzerStatistics(1) { buzzerStatistics ->
+                                            buzzerStatistics
+                                                    .hasDuration(3L)
                                                     .hasParticipantId(participant1.id)
                                                     .isCorrect
                                         }
