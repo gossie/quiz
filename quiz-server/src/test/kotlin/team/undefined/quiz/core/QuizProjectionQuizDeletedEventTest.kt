@@ -53,7 +53,7 @@ internal class QuizProjectionQuizDeletedEventTest {
             assertThat(q.quizStatistics!!.questionStatistics).hasSize(1)
             assertThat(q.quizStatistics!!.questionStatistics[0].answerStatistics[0].duration).isEqualTo(1L)
             assertThat(q.quizStatistics!!.questionStatistics[0].answerStatistics[0].participantId).isEqualTo(participant.id)
-            assertThat(q.quizStatistics!!.questionStatistics[0].answerStatistics[0].answer).isEqualTo(AnswerCommand.Answer.CORRECT)
+            assertThat(q.quizStatistics!!.questionStatistics[0].answerStatistics[0].rating).isEqualTo(AnswerCommand.Answer.CORRECT)
         }
 
         eventBus.post(QuizDeletedEvent(quiz.id, 8))

@@ -29,7 +29,7 @@ class QuizStatisticsProvider(private val eventRepository: EventRepository) {
                 is QuestionAskedEvent -> {
                     if (!map.isEmpty) {
                         map.forEach { participantId, pair ->
-                            currentQuestion?.addAnswerStatistics(AnswerStatistics(participantId, pair.first, pair.second))
+                            currentQuestion?.addAnswerStatistics(AnswerStatistics(participantId, pair.first, rating = pair.second))
                         }
                         map.clear()
                     }
@@ -50,7 +50,7 @@ class QuizStatisticsProvider(private val eventRepository: EventRepository) {
 
         if (!map.isEmpty) {
             map.forEach { participantId, pair ->
-                currentQuestion?.addAnswerStatistics(AnswerStatistics(participantId, pair.first, pair.second))
+                currentQuestion?.addAnswerStatistics(AnswerStatistics(participantId, pair.first, rating = pair.second))
             }
             map.clear()
         }

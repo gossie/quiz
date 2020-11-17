@@ -26,12 +26,12 @@ public class BuzzerStatisticsAssert extends AbstractAssert<BuzzerStatisticsAsser
     }
 
     public BuzzerStatisticsAssert isCorrect() {
-        Assertions.assertThat(actual.getAnswer()).isEqualTo(AnswerCommand.Answer.CORRECT);
+        Assertions.assertThat(actual.getRating()).isEqualTo(AnswerCommand.Answer.CORRECT);
         return this;
     }
 
     public BuzzerStatisticsAssert isIncorrect() {
-        Assertions.assertThat(actual.getAnswer()).isEqualTo(AnswerCommand.Answer.INCORRECT);
+        Assertions.assertThat(actual.getRating()).isEqualTo(AnswerCommand.Answer.INCORRECT);
         return this;
     }
 

@@ -52,7 +52,7 @@ private fun AnswerStatistics.map(quiz: Quiz): Mono<BuzzerStatisticsDTO> {
                 BuzzerStatisticsDTO(
                         it,
                         this.duration,
-                        this.answer
+                        this.rating
                 )
             }
 }
