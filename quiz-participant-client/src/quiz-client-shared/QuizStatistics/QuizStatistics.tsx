@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import Quiz, { BuzzerStatistics } from "../quiz";
+import Quiz, { AnswerStatistics } from "../quiz";
 
 interface QuizStatisticsProps {
     quiz: Quiz;
@@ -13,15 +13,15 @@ const QuizStatistics: React.FC<QuizStatisticsProps> = (props: QuizStatisticsProp
     const [closed, setClosed] = useState(false);
 
     const determineRows = () => {
-        const buzzers = (buzzerStatistics: Array<BuzzerStatistics>) => buzzerStatistics.map((buzzerStatistic, index) => 
-                <li key={index}>{buzzerStatistic.participant.name} has answered after {buzzerStatistic.duration / 1000} seconds and it was {buzzerStatistic.answer}</li>
+        const buzzers = (buzzerStatistics: Array<AnswerStatistics>) => buzzerStatistics.map((buzzerStatistic, index) => 
+                <li key={index}>{buzzerStatistic.participant.name} has answered after {buzzerStatistic.duration / 1000} seconds and it was {buzzerStatistic.rating}</li>
         );
 
         return props.quiz.quizStatistics?.questionStatistics.map(questionStatistic => 
                 <tr key={questionStatistic.question.id}>
                     <td>{questionStatistic.question.question}</td>
                     <td>
-                        <ul>{buzzers(questionStatistic.buzzerStatistics)}</ul>
+                        <ul>{buzzers(questionStatistic.answersStatistics)}</ul>
                     </td>
                     
                 </tr>
