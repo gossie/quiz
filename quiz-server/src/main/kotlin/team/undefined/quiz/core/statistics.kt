@@ -14,4 +14,4 @@ data class QuestionStatistics(val questionId: UUID, val answerStatistics: List<A
 
 }
 
-data class AnswerStatistics(val participantId: UUID, val duration: Long, val answer: String = "", val rating: AnswerCommand.Answer = AnswerCommand.Answer.INCORRECT)
+data class AnswerStatistics(val participantId: UUID, val duration: Long, val answer: String? = null, val rating: AnswerCommand.Answer = AnswerCommand.Answer.INCORRECT)

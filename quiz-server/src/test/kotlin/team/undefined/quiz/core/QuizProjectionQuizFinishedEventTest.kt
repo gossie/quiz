@@ -61,8 +61,8 @@ internal class QuizProjectionQuizFinishedEventTest {
                                     questionStatistics
                                             .hasQuestionId(buzzerQuestion.id)
                                             .answerStatisticsSizeIs(1)
-                                            .hasAnswerStatistics(0) { buzzerStatistics ->
-                                                buzzerStatistics
+                                            .hasAnswerStatistics(0) { answerStatistics ->
+                                                answerStatistics
                                                         .hasDuration(1L)
                                                         .hasParticipantId(participant1.id)
                                                         .isCorrect
@@ -72,14 +72,14 @@ internal class QuizProjectionQuizFinishedEventTest {
                                     questionStatistics
                                             .hasQuestionId(freetextQuestion.id)
                                             .answerStatisticsSizeIs(2)
-                                            .hasAnswerStatistics(0) { buzzerStatistics ->
-                                                buzzerStatistics
+                                            .hasAnswerStatistics(0) { answerStatistics ->
+                                                answerStatistics
                                                         .hasDuration(1L)
                                                         .hasParticipantId(participant1.id)
                                                         .isCorrect
                                             }
-                                            .hasAnswerStatistics(1) { buzzerStatistics ->
-                                                buzzerStatistics
+                                            .hasAnswerStatistics(1) { answerStatistics ->
+                                                answerStatistics
                                                         .hasDuration(2L)
                                                         .hasParticipantId(participant2.id)
                                                         .isIncorrect
@@ -136,8 +136,8 @@ internal class QuizProjectionQuizFinishedEventTest {
                                     questionStatistics
                                             .hasQuestionId(buzzerQuestion.id)
                                             .answerStatisticsSizeIs(1)
-                                            .hasAnswerStatistics(0) { buzzerStatistics ->
-                                                buzzerStatistics
+                                            .hasAnswerStatistics(0) { answerStatistics ->
+                                                answerStatistics
                                                         .hasDuration(1L)
                                                         .hasParticipantId(participant1.id)
                                                         .isCorrect
@@ -147,14 +147,14 @@ internal class QuizProjectionQuizFinishedEventTest {
                                     questionStatistics
                                             .hasQuestionId(freetextQuestion.id)
                                             .answerStatisticsSizeIs(2)
-                                            .hasAnswerStatistics(0) { buzzerStatistics ->
-                                                buzzerStatistics
+                                            .hasAnswerStatistics(0) { answerStatistics ->
+                                                answerStatistics
                                                         .hasDuration(1L)
                                                         .hasParticipantId(participant1.id)
                                                         .isCorrect
                                             }
-                                            .hasAnswerStatistics(1) { buzzerStatistics ->
-                                                buzzerStatistics
+                                            .hasAnswerStatistics(1) { answerStatistics ->
+                                                answerStatistics
                                                         .hasDuration(2L)
                                                         .hasParticipantId(participant2.id)
                                                         .isIncorrect

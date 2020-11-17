@@ -55,8 +55,8 @@ internal class QuizStatisticsProviderTest {
                                 questionStatistics
                                         .hasQuestionId(freetextQuestion.id)
                                         .answerStatisticsSizeIs(2)
-                                        .hasAnswerStatistics(0) { it.isEqualTo(AnswerStatistics(participant1.id, 1L, rating = AnswerCommand.Answer.CORRECT)) }
-                                        .hasAnswerStatistics(1) { it.isEqualTo(AnswerStatistics(participant2.id, 2L)) }
+                                        .hasAnswerStatistics(0) { it.isEqualTo(AnswerStatistics(participant1.id, 1L, "Sergej Prokofjew", AnswerCommand.Answer.CORRECT)) }
+                                        .hasAnswerStatistics(1) { it.isEqualTo(AnswerStatistics(participant2.id, 2L, "Max Mustermann")) }
                             }
                 }
                 .verifyComplete()
