@@ -50,7 +50,7 @@ function App() {
                     <div>
                         <LoginPageWidget title="Join a Quiz" inputValues={{[playerNameLabel]: '', [quizIdLabel]: getQuizIdFromUrl()}} inputLabels={[playerNameLabel, quizIdLabel]} buttonLabel="Join!" onSubmit={joinQuiz}></LoginPageWidget> 
                     </div>
-                    <div id="error-container" className="has-text-danger">
+                    <div className="error-container has-text-danger">
                         { errorMessage.length > 0 && <div>{errorMessage}</div> }
                     </div>
                 </div>

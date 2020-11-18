@@ -12,16 +12,16 @@
   padding: 20px;
   flex-direction: column;
   display: flex;
-
-  #error-container {
-    margin-top: 15px;
-  }
 }
 
 .Login-page {
   flex-direction: column;
   display: flex;
   justify-content: center;
+
+  .error-container {
+    margin-top: 15px;
+  }
 }
 
 .Quiz-dashboard {
