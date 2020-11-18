@@ -663,7 +663,7 @@ internal class QuizParticipantIT {
     }
 
     @Test
-    fun shouldThrowErrorWhenQuizDoesNotExist() {
+    fun shouldThrowErrorWhenCreatingANewParticipantForAQuizThatDoesNotExist() {
         webTestClient
                 .post()
                 .uri("/api/quiz/${UUID.randomUUID()}/participants")
@@ -672,4 +672,5 @@ internal class QuizParticipantIT {
                 .exchange()
                 .expectStatus().isNotFound
     }
+
 }
