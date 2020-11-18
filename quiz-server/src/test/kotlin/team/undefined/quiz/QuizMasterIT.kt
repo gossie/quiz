@@ -92,9 +92,38 @@ internal class QuizMasterIT {
                 .post()
                 .uri(quizMasterReference.get().getLink("createQuestion").map { it.href }.orElseThrow())
                 .contentType(MediaType.APPLICATION_JSON)
-                .body(BodyInserters.fromValue(QuestionDTO(question = "Wo befindet sich das Kahnbein?")))
+                .body(BodyInserters.fromValue(QuestionDTO(question = "Wo befindet sich das Kahnbein")))
                 .exchange()
                 .expectStatus().isCreated
+
+        assertThat(quizMasterReference.get())
+                .openQuestionSizeIs(2)
+                .hasOpenQuestion(0) { openQuestion ->
+                    openQuestion
+                            .hasQuestion("Wer schrieb das Buch Animal Farm?")
+                            .isNotPending
+                }
+                .hasOpenQuestion(1) { openQuestion ->
+                    openQuestion
+                            .hasQuestion("Wo befindet sich das Kahnbein")
+                            .isNotPending
+                }
+                .playedQuestionSizeIs(0)
+                .particpantSizeIs(0)
+                .undoIsPossible()
+                .redoIsNotPossible()
+                .isNotFinished
+
+        Thread.sleep(10)
+
+        // Second question is edited
+        webTestClient
+                .put()
+                .uri(quizMasterReference.get().openQuestions[1].getLink("self").map { it.href }.orElseThrow())
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(BodyInserters.fromValue(QuestionDTO(question = "Wo befindet sich das Kahnbein?")))
+                .exchange()
+                .expectStatus().isOk
 
         assertThat(quizMasterReference.get())
                 .openQuestionSizeIs(2)
@@ -124,6 +153,84 @@ internal class QuizMasterIT {
                 .body(BodyInserters.fromValue(QuestionDTO(question = "Was ist ein Robo-Advisor?", estimates = HashMap(), timeToAnswer = 45)))
                 .exchange()
                 .expectStatus().isCreated
+
+        assertThat(quizMasterReference.get())
+                .openQuestionSizeIs(3)
+                .hasOpenQuestion(0) { openQuestion ->
+                    openQuestion
+                            .hasQuestion("Wer schrieb das Buch Animal Farm?")
+                            .isNotPending
+                            .isBuzzerQuestion
+                }
+                .hasOpenQuestion(1) { openQuestion ->
+                    openQuestion
+                            .hasQuestion("Wo befindet sich das Kahnbein?")
+                            .isNotPending
+                            .isBuzzerQuestion
+                }
+                .hasOpenQuestion(2) { openQuestion ->
+                    openQuestion
+                            .hasQuestion("Was ist ein Robo-Advisor?")
+                            .isNotPending
+                            .isEstimationQuestion
+                }
+                .playedQuestionSizeIs(0)
+                .particpantSizeIs(0)
+                .undoIsPossible()
+                .redoIsNotPossible()
+                .isNotFinished
+
+        Thread.sleep(10)
+
+        // Fourth question is created
+        webTestClient
+                .post()
+                .uri(quizMasterReference.get().getLink("createQuestion").map { it.href }.orElseThrow())
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(BodyInserters.fromValue(QuestionDTO(question = "Wird diese Frage wieder gelöscht?", estimates = HashMap(), timeToAnswer = 45)))
+                .exchange()
+                .expectStatus().isCreated
+
+        assertThat(quizMasterReference.get())
+                .openQuestionSizeIs(4)
+                .hasOpenQuestion(0) { openQuestion ->
+                    openQuestion
+                            .hasQuestion("Wer schrieb das Buch Animal Farm?")
+                            .isNotPending
+                            .isBuzzerQuestion
+                }
+                .hasOpenQuestion(1) { openQuestion ->
+                    openQuestion
+                            .hasQuestion("Wo befindet sich das Kahnbein?")
+                            .isNotPending
+                            .isBuzzerQuestion
+                }
+                .hasOpenQuestion(2) { openQuestion ->
+                    openQuestion
+                            .hasQuestion("Was ist ein Robo-Advisor?")
+                            .isNotPending
+                            .isEstimationQuestion
+                }
+                .hasOpenQuestion(3) { openQuestion ->
+                    openQuestion
+                            .hasQuestion("Wird diese Frage wieder gelöscht?")
+                            .isNotPending
+                            .isEstimationQuestion
+                }
+                .playedQuestionSizeIs(0)
+                .particpantSizeIs(0)
+                .undoIsPossible()
+                .redoIsNotPossible()
+                .isNotFinished
+
+        Thread.sleep(10)
+
+        // Fourth question is deleted
+        webTestClient
+                .delete()
+                .uri(quizMasterReference.get().openQuestions[3].getLink("self").map { it.href }.orElseThrow())
+                .exchange()
+                .expectStatus().isOk
 
         assertThat(quizMasterReference.get())
                 .openQuestionSizeIs(3)

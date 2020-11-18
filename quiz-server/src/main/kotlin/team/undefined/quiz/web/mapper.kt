@@ -46,10 +46,6 @@ private fun QuestionStatistics.map(quiz: Quiz): Mono<QuestionStatisticsDTO> {
                         buzzerStatistics
                 )
             }
-            .onErrorMap {
-                it.printStackTrace()
-                it
-            }
 }
 
 private fun AnswerStatistics.map(quiz: Quiz): Mono<AnswerStatisticsDTO> {
