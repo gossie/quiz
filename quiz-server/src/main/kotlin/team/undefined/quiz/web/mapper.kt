@@ -13,8 +13,8 @@ fun Quiz.map(): Mono<QuizDTO> {
     return Flux.fromIterable(this.participants)
             .flatMap { it.map(this.id) }
             .collect(Collectors.toList())
-            .flatMap {
-                val quizDTO = QuizDTO(this.id, this.name, it, this.questions.filter { it.alreadyPlayed }.map { it.map(this.id) }, this.questions.filter { !it.alreadyPlayed }.map { it.map(this.id) }, this.isUndoPossible(), this.isRedoPossible(), this.finished, timestamp = this.getTimestamp())
+            .flatMap { participants ->
+                val quizDTO = QuizDTO(this.id, this.name, participants, this.questions.filter { it.alreadyPlayed }.map { it.map(this.id) }, this.questions.filter { !it.alreadyPlayed }.map { it.map(this.id) }, this.isUndoPossible(), this.isRedoPossible(), this.finished, timestamp = this.getTimestamp())
                 if (this.quizStatistics == null) {
                      Mono.just(quizDTO)
                 } else {
@@ -36,23 +36,30 @@ private fun QuizStatistics.map(quiz: Quiz): Mono<QuizStatisticsDTO> {
 }
 
 private fun QuestionStatistics.map(quiz: Quiz): Mono<QuestionStatisticsDTO> {
-    return Flux.concat(this.buzzerStatistics.map { it.map(quiz) })
+    return Flux.concat(this.answerStatistics.map { it.map(quiz) })
             .collect(Collectors.toList())
-            .map {
+            .map { buzzerStatistics ->
+                val q = quiz.questions.find { it.id == this.questionId }
+                val mapped = q?.map(quiz.id)
                 QuestionStatisticsDTO(
-                        quiz.questions.find { it.id == this.questionId }!!.map(quiz.id),
-                        it
+                        mapped!!,
+                        buzzerStatistics
                 )
+            }
+            .onErrorMap {
+                it.printStackTrace()
+                it
             }
 }
 
-private fun BuzzerStatistics.map(quiz: Quiz): Mono<BuzzerStatisticsDTO> {
+private fun AnswerStatistics.map(quiz: Quiz): Mono<AnswerStatisticsDTO> {
     return quiz.participants.find { it.id == this.participantId }!!.map(quiz.id)
             .map {
-                BuzzerStatisticsDTO(
+                AnswerStatisticsDTO(
                         it,
                         this.duration,
-                        this.answer
+                        this.answer,
+                        this.rating
                 )
             }
 }
@@ -148,6 +155,10 @@ private fun QuizDTO.addLinks(): Mono<QuizDTO> {
     return linkBuilder
             .map { linkTo(methodOn(QuizController::class.java).reopenCurrentQuestion(this.id!!)) }
             .map { it.withRel("reopenQuestion") }
+            .flatMap { it.toMono() }
+            .map { this.add(it) }
+            .map { linkTo(methodOn(QuizController::class.java).finish(this.id!!)) }
+            .map { it.withRel("finish") }
             .flatMap { it.toMono() }
             .map { this.add(it) }
 }

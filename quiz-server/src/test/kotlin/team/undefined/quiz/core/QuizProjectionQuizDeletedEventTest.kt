@@ -1,7 +1,6 @@
 package team.undefined.quiz.core
 
 import com.google.common.eventbus.EventBus
-import org.assertj.core.api.Assertions
 import org.assertj.core.api.Assertions.assertThat
 import org.awaitility.kotlin.await
 import org.awaitility.kotlin.untilAsserted
@@ -52,9 +51,9 @@ internal class QuizProjectionQuizDeletedEventTest {
             assertThat(q.id).isEqualTo(quiz.id)
             assertThat(q.finished).isTrue()
             assertThat(q.quizStatistics!!.questionStatistics).hasSize(1)
-            assertThat(q.quizStatistics!!.questionStatistics[0].buzzerStatistics[0].duration).isEqualTo(1L)
-            assertThat(q.quizStatistics!!.questionStatistics[0].buzzerStatistics[0].participantId).isEqualTo(participant.id)
-            assertThat(q.quizStatistics!!.questionStatistics[0].buzzerStatistics[0].answer).isEqualTo(AnswerCommand.Answer.CORRECT)
+            assertThat(q.quizStatistics!!.questionStatistics[0].answerStatistics[0].duration).isEqualTo(1L)
+            assertThat(q.quizStatistics!!.questionStatistics[0].answerStatistics[0].participantId).isEqualTo(participant.id)
+            assertThat(q.quizStatistics!!.questionStatistics[0].answerStatistics[0].rating).isEqualTo(AnswerCommand.Answer.CORRECT)
         }
 
         eventBus.post(QuizDeletedEvent(quiz.id, 8))

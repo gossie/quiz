@@ -16,6 +16,7 @@ test('does not display statistics', () => {
                 name: 'Erik',
                 turn: false,
                 points: 0,
+                revealAllowed: true,
                 links: []
             },
             {
@@ -23,6 +24,7 @@ test('does not display statistics', () => {
                 name: 'Sandra',
                 turn: false,
                 points: 2,
+                revealAllowed: true,
                 links: []
             }
         ],
@@ -47,6 +49,7 @@ test('displays statistics', () => {
                 name: 'Erik',
                 turn: false,
                 points: 0,
+                revealAllowed: true,
                 links: []
             },
             {
@@ -54,6 +57,7 @@ test('displays statistics', () => {
                 name: 'Sandra',
                 turn: false,
                 points: 2,
+                revealAllowed: true,
                 links: []
             }
         ],
@@ -70,7 +74,7 @@ test('displays statistics', () => {
                         pending: false,
                         links: []
                     },
-                    buzzerStatistics: []
+                    answerStatistics: []
                 }
             ]
         },
@@ -93,6 +97,7 @@ test('should close statistics', () => {
                 name: 'Erik',
                 turn: false,
                 points: 0,
+                revealAllowed: true,
                 links: []
             },
             {
@@ -100,6 +105,7 @@ test('should close statistics', () => {
                 name: 'Sandra',
                 turn: false,
                 points: 2,
+                revealAllowed: true,
                 links: []
             }
         ],
@@ -116,7 +122,7 @@ test('should close statistics', () => {
                         pending: false,
                         links: []
                     },
-                    buzzerStatistics: []
+                    answerStatistics: []
                 }
             ]
         },
@@ -143,6 +149,7 @@ test('should not be closeable', () => {
                 name: 'Erik',
                 turn: false,
                 points: 0,
+                revealAllowed: true,
                 links: []
             },
             {
@@ -150,6 +157,7 @@ test('should not be closeable', () => {
                 name: 'Sandra',
                 turn: false,
                 points: 2,
+                revealAllowed: true,
                 links: []
             }
         ],
@@ -166,7 +174,7 @@ test('should not be closeable', () => {
                         pending: false,
                         links: []
                     },
-                    buzzerStatistics: []
+                    answerStatistics: []
                 }
             ]
         },
@@ -177,4 +185,189 @@ test('should not be closeable', () => {
     const { getByTestId } = render(<QuizStatistics quiz={quiz} closeable={false} forceOpen={false} />);
 
     expect(() => getByTestId('close-button')).toThrowError();
+});
+
+test('displays buzzer answer', () => {
+    const quiz: Quiz = {
+        id: '1',
+        name: 'Quiz',
+        participants: [
+            {
+                id: '15',
+                name: 'Erik',
+                turn: false,
+                points: 0,
+                revealAllowed: true,
+                links: []
+            },
+            {
+                id: '16',
+                name: 'Sandra',
+                turn: false,
+                points: 2,
+                revealAllowed: true,
+                links: []
+            }
+        ],
+        openQuestions: [],
+        playedQuestions: [],
+        quizStatistics: {
+            questionStatistics: [
+                {
+                    question: {
+                        id: '7',
+                        question: "Warum?",
+                        category: 'other',
+                        publicVisible: true,
+                        pending: false,
+                        links: []
+                    },
+                    answerStatistics: [
+                        {
+                            duration: 12576,
+                            rating: 'CORRECT',
+                            participant: {
+                                id: '16',
+                                name: 'Sandra',
+                                turn: false,
+                                points: 2,
+                                revealAllowed: true,
+                                links: []
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        timestamp: 1234,
+        links: []
+    }
+
+    const { getByTestId } = render(<QuizStatistics quiz={quiz} closeable={false} forceOpen={false} />);
+
+    expect(getByTestId('answer-statistic-0').textContent).toBe('Sandra has buzzered after 12.576 seconds and it was CORRECT');
+});
+
+test('displays freetext answer', () => {
+    const quiz: Quiz = {
+        id: '1',
+        name: 'Quiz',
+        participants: [
+            {
+                id: '15',
+                name: 'Erik',
+                turn: false,
+                points: 0,
+                revealAllowed: true,
+                links: []
+            },
+            {
+                id: '16',
+                name: 'Sandra',
+                turn: false,
+                points: 2,
+                revealAllowed: true,
+                links: []
+            }
+        ],
+        openQuestions: [],
+        playedQuestions: [],
+        quizStatistics: {
+            questionStatistics: [
+                {
+                    question: {
+                        id: '7',
+                        question: "Warum?",
+                        category: 'other',
+                        publicVisible: true,
+                        pending: false,
+                        links: []
+                    },
+                    answerStatistics: [
+                        {
+                            duration: 12576,
+                            rating: 'CORRECT',
+                            answer: 'Darum!',
+                            participant: {
+                                id: '16',
+                                name: 'Sandra',
+                                turn: false,
+                                points: 2,
+                                revealAllowed: true,
+                                links: []
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        timestamp: 1234,
+        links: []
+    }
+
+    const { getByTestId } = render(<QuizStatistics quiz={quiz} closeable={false} forceOpen={false} />);
+
+    expect(getByTestId('answer-statistic-0').textContent).toBe('Sandra has answered "Darum!" after 12.576 seconds and it was CORRECT');
+});
+
+test('that answer of a freetext question is not shown if the user does not want it', () => {
+    const quiz: Quiz = {
+        id: '1',
+        name: 'Quiz',
+        participants: [
+            {
+                id: '15',
+                name: 'Erik',
+                turn: false,
+                points: 0,
+                revealAllowed: true,
+                links: []
+            },
+            {
+                id: '16',
+                name: 'Sandra',
+                turn: false,
+                points: 2,
+                revealAllowed: false,
+                links: []
+            }
+        ],
+        openQuestions: [],
+        playedQuestions: [],
+        quizStatistics: {
+            questionStatistics: [
+                {
+                    question: {
+                        id: '7',
+                        question: "Warum?",
+                        category: 'other',
+                        publicVisible: true,
+                        pending: false,
+                        links: []
+                    },
+                    answerStatistics: [
+                        {
+                            duration: 12576,
+                            rating: 'CORRECT',
+                            answer: 'Darum!',
+                            participant: {
+                                id: '16',
+                                name: 'Sandra',
+                                turn: false,
+                                points: 2,
+                                revealAllowed: false,
+                                links: []
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        timestamp: 1234,
+        links: []
+    }
+
+    const { getByTestId } = render(<QuizStatistics quiz={quiz} closeable={false} forceOpen={false} />);
+
+    expect(getByTestId('answer-statistic-0').textContent).toBe('Sandra has answered after 12.576 seconds and it was CORRECT');
 });
