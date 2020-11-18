@@ -1,11 +1,16 @@
 import React, { useState, useEffect } from 'react';
 import './LoginPageWidget.css';
 
+export interface InputInformation {
+    label: string;
+    value?: string;
+    cssClass?: string;
+}
+
 interface JoinWidgetProps {
     onSubmit: (inputValue: any) => Promise<void>;
     title: string;
-    inputLabels: string[];
-    inputValues?: any;
+    inputInformation: Array<InputInformation>;
     buttonLabel: string;
 }
 
@@ -19,22 +24,23 @@ const LoginPageWidget: React.FC<JoinWidgetProps> = (props: JoinWidgetProps) => {
             .then(() => setCss('button is-info'));
     }
 
-    const getValueForInput = (label) => {
-        return inputValues[label];
-    }
-
     useEffect(() => {
-        setInputValues(props.inputValues || {});
-    }, [props.inputValues])
+        setInputValues(
+            props.inputInformation.reduce((values, ii) => {
+                values[ii.label] = ii.value;
+                return values;
+            }, {})
+        );
+    }, [props.inputInformation])
 
-    const fields = props.inputLabels.map((label, index) => 
-        <div key={label}  className="control">
+    const fields = props.inputInformation.map((ii, index) => 
+        <div key={ii.label}  className="control">
             <input data-testid={'field-' + index}
-                   className="input"
+                   className={`input ${ii.cssClass}`}
                    type="text"
-                   placeholder={label}
-                   value={getValueForInput(label) || ''}
-                   onChange={(ev) => setInputValues({...inputValues, ...{[label]: ev.target.value}})}
+                   placeholder={ii.label}
+                   value={inputValues[ii.label]}
+                   onChange={(ev) => setInputValues({...inputValues, ...{[ii.label]: ev.target.value}})}
                    onKeyUp={ev => {if (ev.keyCode === 13) onSubmit()}} />
         </div>
     );
