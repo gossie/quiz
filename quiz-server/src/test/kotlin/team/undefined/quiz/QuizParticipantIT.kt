@@ -23,7 +23,7 @@ internal class QuizParticipantIT {
     private lateinit var webTestClient: WebTestClient
 
     @Test
-    fun shouldCreateAndGetQuiz() {
+    fun shouldParticipate() {
 
         val quizParticipantReference = AtomicReference<QuizDTO>()
 
@@ -660,5 +660,16 @@ internal class QuizParticipantIT {
                 .particpantSizeIs(2)
                 .hasParticipant(0) { it.hasName("André").hasPoints(2).isNotTurn }
                 .hasParticipant(1) { it.hasName("Lena").hasPoints(2).isNotTurn }
+    }
+
+    @Test
+    fun shouldThrowErrorWhenQuizDoesNotExist() {
+        webTestClient
+                .post()
+                .uri("/api/quiz/${UUID.randomUUID()}/participants")
+                .contentType(MediaType.TEXT_PLAIN)
+                .body(BodyInserters.fromValue("André"))
+                .exchange()
+                .expectStatus().isNotFound
     }
 }
