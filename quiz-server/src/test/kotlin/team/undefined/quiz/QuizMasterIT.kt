@@ -380,7 +380,7 @@ internal class QuizMasterIT {
 
         Thread.sleep(10)
 
-        // Participant buzzers
+        // Participant 1 buzzers
         webTestClient
                 .put()
                 .uri(quizMasterReference.get().participants[0].getLink("buzzer").map { it.href }.orElseThrow())
@@ -837,5 +837,127 @@ internal class QuizMasterIT {
                 .undoIsPossible()
                 .redoIsNotPossible()
                 .isNotFinished
+
+        // Quiz master performs an undo
+        webTestClient
+                .delete()
+                .uri(quizMasterReference.get().getLink("undo").map { it.href }.orElseThrow())
+                .exchange()
+                .expectStatus().isOk
+
+        assertThat(quizMasterReference.get())
+                .openQuestionSizeIs(1)
+                .hasOpenQuestion(0) { openQuestion ->
+                    openQuestion
+                            .hasQuestion("Was ist ein Robo-Advisor?")
+                            .isPending
+                            .isEstimationQuestion
+                            .hasEstimates(java.util.Map.of(
+                                    quizMasterReference.get().participants[0].id, "Antwort von André",
+                                    quizMasterReference.get().participants[1].id, "Antwort von Lena"
+                            ))
+                }
+                .playedQuestionSizeIs(2)
+                .hasPlayedQuestion(0) { playedQuestion ->
+                    playedQuestion
+                            .hasQuestion("Wer schrieb das Buch Animal Farm?")
+                            .isNotPending
+                }
+                .hasPlayedQuestion(1) { playedQuestion ->
+                    playedQuestion
+                            .hasQuestion("Wo befindet sich das Kahnbein?")
+                            .isNotPending
+                            .isBuzzerQuestion
+                }
+                .particpantSizeIs(2)
+                .hasParticipant(0) { it.hasName("André").hasPoints(2).allowsReveal().isNotTurn }
+                .hasParticipant(1) { it.hasName("Lena").hasPoints(2).doesNotAllowReveal().isNotTurn }
+                .undoIsPossible()
+                .redoIsPossible()
+                .isNotFinished
+
+        Thread.sleep(10)
+
+        // Finish the quiz
+
+        webTestClient
+                .post()
+                .uri(quizMasterReference.get().getLink("finish").map { it.href }.orElseThrow())
+                .exchange()
+                .expectStatus().isOk
+
+        assertThat(quizMasterReference.get())
+                .openQuestionSizeIs(1)
+                .hasOpenQuestion(0) { openQuestion ->
+                    openQuestion
+                            .hasQuestion("Was ist ein Robo-Advisor?")
+                            .isPending
+                            .isEstimationQuestion
+                            .hasEstimates(java.util.Map.of(
+                                    quizMasterReference.get().participants[0].id, "Antwort von André",
+                                    quizMasterReference.get().participants[1].id, "Antwort von Lena"
+                            ))
+                }
+                .playedQuestionSizeIs(2)
+                .hasPlayedQuestion(0) { playedQuestion ->
+                    playedQuestion
+                            .hasQuestion("Wer schrieb das Buch Animal Farm?")
+                            .isNotPending
+                }
+                .hasPlayedQuestion(1) { playedQuestion ->
+                    playedQuestion
+                            .hasQuestion("Wo befindet sich das Kahnbein?")
+                            .isNotPending
+                            .isBuzzerQuestion
+                }
+                .particpantSizeIs(2)
+                .hasParticipant(0) { it.hasName("André").hasPoints(2).allowsReveal().isNotTurn }
+                .hasParticipant(1) { it.hasName("Lena").hasPoints(2).doesNotAllowReveal().isNotTurn }
+                .undoIsPossible()
+                .redoIsNotPossible()
+                .hasQuizStatistics() { quizStatistics ->
+                    quizStatistics
+                            .questionStatisticsSizeIs(3)
+                            .hasQuestionStatistics(0) { questionStatistics ->
+                                questionStatistics
+                                        .hasQuestion { it.isEqualTo(quizMasterReference.get().playedQuestions[0]) }
+                                        .answerStatisticsSizeIs(1)
+                                        .hasAnswerStatistics(0) { answerStatistics ->
+                                            answerStatistics
+                                                    .hasParticipantId { it.isEqualTo(quizMasterReference.get().participants[1])}
+                                                    .hasNoAnswer()
+                                                    .isCorrect
+                                        }
+                            }
+                            .hasQuestionStatistics(1) { questionStatistics ->
+                                questionStatistics
+                                        .hasQuestion { it.isEqualTo(quizMasterReference.get().playedQuestions[1]) }
+                                        .answerStatisticsSizeIs(1)
+                                        .hasAnswerStatistics(0) { answerStatistics ->
+                                            answerStatistics
+                                                    .hasParticipantId { it.isEqualTo(quizMasterReference.get().participants[0])}
+                                                    .hasNoAnswer()
+                                                    .isIncorrect
+                                        }
+                            }
+                            .hasQuestionStatistics(2) { questionStatistics ->
+                                questionStatistics
+                                        .hasQuestion { it.isEqualTo(quizMasterReference.get().openQuestions[0]) }
+                                        .answerStatisticsSizeIs(2)
+                                        .hasAnswerStatistics(0) { answerStatistics ->
+                                            answerStatistics
+                                                    .hasParticipantId { it.isEqualTo(quizMasterReference.get().participants[0])}
+                                                    .hasAnswer("Antwort von André")
+                                                    .isCorrect
+                                        }
+                                        .hasAnswerStatistics(1) { answerStatistics ->
+                                            answerStatistics
+                                                    .hasParticipantId { it.isEqualTo(quizMasterReference.get().participants[1])}
+                                                    .hasAnswer("Antwort von Lena")
+                                                    .isIncorrect
+                                        }
+                            }
+                }
+                .isFinished
     }
 }
