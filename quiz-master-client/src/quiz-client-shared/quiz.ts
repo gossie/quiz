@@ -29,6 +29,7 @@ export interface AnswerStatistics {
     participant: Participant;
     duration: number;
     rating: string;
+    answer?: string;
 }
 
 export interface QuestionStatistics {
