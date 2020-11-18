@@ -10,6 +10,7 @@ import Estimation from './estimation/Estimation';
 interface QuizDashboardProps {
     quizId: string;
     participantName: string;
+    quizNotFoundHandler: () => void;
 }
 
 const QuizDashboard: React.FC<QuizDashboardProps> = (props: QuizDashboardProps) => {
@@ -18,9 +19,11 @@ const QuizDashboard: React.FC<QuizDashboardProps> = (props: QuizDashboardProps) 
     const [participantId, setParticipantId] = useState('');
     const [revealAllowed, setRevealAllowed] = useState(false);
 
+    let evtSource: EventSource = undefined;
+
     useEffect(() => {
         console.debug('register for server sent events');
-        const evtSource = new EventSource(`${process.env.REACT_APP_BASE_URL}/api/quiz/${props.quizId}/quiz-participant`);
+        evtSource = new EventSource(`${process.env.REACT_APP_BASE_URL}/api/quiz/${props.quizId}/quiz-participant`);
 
         evtSource.onerror = (e) => console.error('sse error', e);
 
@@ -54,6 +57,15 @@ const QuizDashboard: React.FC<QuizDashboardProps> = (props: QuizDashboardProps) 
                 headers: {
                     'Content-Type': 'text/plain',
                 }
+            })
+            .then(response => {
+                if (response.status > 400) {
+                    console.debug(`There is no quiz with id ${props.quizId}. The EventSource is closes.`);
+                    if (evtSource) {
+                        evtSource.close();
+                    }
+                    props.quizNotFoundHandler();
+                }
             });
         }
     });
@@ -79,8 +91,7 @@ const QuizDashboard: React.FC<QuizDashboardProps> = (props: QuizDashboardProps) 
     
     return (
         <div className="Quiz-dashboard">
-            { Object.keys(quiz).length > 0
-            ?
+            { Object.keys(quiz).length > 0 &&
                 <div>
                     <h4 className="title is-4">{quiz.name}</h4>
                     <div className="columns Dashboard-content">
@@ -107,10 +118,6 @@ const QuizDashboard: React.FC<QuizDashboardProps> = (props: QuizDashboardProps) 
                             {<Question quiz={quiz}></Question>}
                         </div>
                     </div>
-                </div>
-            :
-                <div>
-                   The quiz is being loaded. This might take a moment if the application has to be woken up.
                 </div>
             }
         </div>
