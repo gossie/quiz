@@ -32,7 +32,7 @@ export interface AnswerStatistics {
 
 export interface QuestionStatistics {
     question: Question;
-    answersStatistics: Array<AnswerStatistics>;
+    answerStatistics: Array<AnswerStatistics>;
 }
 
 export interface QuizStatistics {

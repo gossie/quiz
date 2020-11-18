@@ -245,7 +245,7 @@ test('displays buzzer answer', () => {
 
     const { getByTestId } = render(<QuizStatistics quiz={quiz} closeable={false} forceOpen={false} />);
 
-    expect(getByTestId('answer-statistic-0').textContent).toBe('Sandra has answered after 12.576 seconds and it was CORRECT');
+    expect(getByTestId('answer-statistic-0').textContent).toBe('Sandra has buzzered after 12.576 seconds and it was CORRECT');
 });
 
 test('displays freetext answer', () => {
