@@ -16,7 +16,11 @@ const QuizStatistics: React.FC<QuizStatisticsProps> = (props: QuizStatisticsProp
     const determineRows = () => {
         const buzzers = (answerStatistics: Array<AnswerStatistics>) => answerStatistics.map((answerStatistic, index) => {
             if (answerStatistic.answer) {
-                return <li data-testid={`answer-statistic-${index}`} key={index} className="answer-statistic">{answerStatistic.participant.name} has answered "{answerStatistic.answer}" after {answerStatistic.duration / 1000} seconds and it was {answerStatistic.rating}</li>
+                if (answerStatistic.participant.revealAllowed) {
+                    return <li data-testid={`answer-statistic-${index}`} key={index} className="answer-statistic">{answerStatistic.participant.name} has answered "{answerStatistic.answer}" after {answerStatistic.duration / 1000} seconds and it was {answerStatistic.rating}</li>
+                } else {
+                    return <li data-testid={`answer-statistic-${index}`} key={index} className="answer-statistic">{answerStatistic.participant.name} has answered after {answerStatistic.duration / 1000} seconds and it was {answerStatistic.rating}</li>
+                }
             } else {
                 return <li data-testid={`answer-statistic-${index}`} key={index} className="answer-statistic">{answerStatistic.participant.name} has buzzered after {answerStatistic.duration / 1000} seconds and it was {answerStatistic.rating}</li>
             }
