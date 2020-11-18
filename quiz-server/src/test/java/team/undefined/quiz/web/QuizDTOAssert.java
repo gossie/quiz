@@ -75,5 +75,9 @@ public class QuizDTOAssert extends AbstractAssert<QuizDTOAssert, QuizDTO> {
         return this;
     }
 
+    public QuizDTOAssert hasQuizStatistics(Consumer<QuizStatisticsDTOAssert> consumer) {
+        consumer.accept(QuizStatisticsDTOAssert.assertThat(actual.getQuizStatistics()));
+        return this;
+    }
 
 }
