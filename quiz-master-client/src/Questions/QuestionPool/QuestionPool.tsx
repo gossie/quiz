@@ -40,7 +40,7 @@ const QuestionPool: React.FC<QuestionPoolProps> = (props: QuestionPoolProps) => 
             setQuestions(pooledQuestions.map((q: Question, index: number) =>
                 <li key={q.id} >
                     <QuestionElement question={q} index={index} setImageToDisplay={props.setImageToDisplay}></QuestionElement>
-                    <span data-testid={`add-question-${index}`} title="Add question" className="icon has-text-primary" onClick={() => createQuestion(q)}><i className="fas fa-save"></i></span>
+                    <span data-testid={`add-question-${index}`} title="Add question" className="icon has-text-primary clickable" onClick={() => createQuestion(q)}><i className="fas fa-save"></i></span>
                 </li>
             ));
         });
@@ -55,6 +55,9 @@ const QuestionPool: React.FC<QuestionPoolProps> = (props: QuestionPoolProps) => 
                 <span onClick={() => setCategory('politics')} className="category">Politics</span>
                 <span onClick={() => setCategory('geography')} className="category">Geography</span>
                 <span onClick={() => setCategory('literature')} className="category">Literature</span>
+                <span onClick={() => setCategory('music')} className="category">Music</span>
+                <span onClick={() => setCategory('movies')} className="category">Movies / TV</span>
+                <span onClick={() => setCategory('sport')} className="category">Sport</span>
             </div>
             <ul>
                 { questions !== undefined && questions }

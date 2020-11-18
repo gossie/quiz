@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import Quiz, { BuzzerStatistics } from "../quiz";
+import Quiz, { AnswerStatistics } from "../quiz";
+import './QuizStatistics.scss';
 
 interface QuizStatisticsProps {
     quiz: Quiz;
@@ -13,15 +14,23 @@ const QuizStatistics: React.FC<QuizStatisticsProps> = (props: QuizStatisticsProp
     const [closed, setClosed] = useState(false);
 
     const determineRows = () => {
-        const buzzers = (buzzerStatistics: Array<BuzzerStatistics>) => buzzerStatistics.map((buzzerStatistic, index) => 
-                <li key={index}>{buzzerStatistic.participant.name} has buzzered after {buzzerStatistic.duration / 1000} seconds and the answer was {buzzerStatistic.answer}</li>
-        );
+        const buzzers = (answerStatistics: Array<AnswerStatistics>) => answerStatistics.map((answerStatistic, index) => {
+            if (answerStatistic.answer) {
+                if (answerStatistic.participant.revealAllowed) {
+                    return <li data-testid={`answer-statistic-${index}`} key={index} className="answer-statistic">{answerStatistic.participant.name} has answered "{answerStatistic.answer}" after {answerStatistic.duration / 1000} seconds and it was {answerStatistic.rating}</li>
+                } else {
+                    return <li data-testid={`answer-statistic-${index}`} key={index} className="answer-statistic">{answerStatistic.participant.name} has answered after {answerStatistic.duration / 1000} seconds and it was {answerStatistic.rating}</li>
+                }
+            } else {
+                return <li data-testid={`answer-statistic-${index}`} key={index} className="answer-statistic">{answerStatistic.participant.name} has buzzered after {answerStatistic.duration / 1000} seconds and it was {answerStatistic.rating}</li>
+            }
+        });
 
         return props.quiz.quizStatistics?.questionStatistics.map(questionStatistic => 
                 <tr key={questionStatistic.question.id}>
                     <td>{questionStatistic.question.question}</td>
                     <td>
-                        <ul>{buzzers(questionStatistic.buzzerStatistics)}</ul>
+                        <ul>{buzzers(questionStatistic.answerStatistics)}</ul>
                     </td>
                     
                 </tr>

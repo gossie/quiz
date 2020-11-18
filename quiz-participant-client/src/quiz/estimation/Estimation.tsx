@@ -8,7 +8,13 @@ interface EstimationProps {
 
 const Estimation: React.FC<EstimationProps> = (props: EstimationProps) => {
     const [estimation, setEstimation] = useState('');
+    const [currentAnswer, setCurrentAnswer] = useState('Answer');
     const [sendButtonCssClasses, setSendButtonCssClasses] = useState('button is-primary');
+    const [errorMessage, setErrorMessage] = useState('');
+
+    const pendingQuestion = props.quiz.openQuestions.find(q => q.pending);
+
+    const disabled = pendingQuestion && pendingQuestion.secondsLeft != null && pendingQuestion.secondsLeft <= 0;
 
     const sendEstimation = () => {
         setSendButtonCssClasses('button is-primary is-loading');
@@ -30,11 +36,13 @@ const Estimation: React.FC<EstimationProps> = (props: EstimationProps) => {
             if (response.status !== 200) {
                 throw Error('error when estimating');
             }
-        })
-        .catch(e => console.error(e))
-        .finally(() => {
+            setCurrentAnswer(estimation);
             setEstimation('');
-            setSendButtonCssClasses('button is-primary')
+            setSendButtonCssClasses('button is-primary');
+        })
+        .catch(e => {
+            console.error(e);
+            setErrorMessage('Something went wrong. Please send the data again.');
         });
     }
 
@@ -42,16 +50,29 @@ const Estimation: React.FC<EstimationProps> = (props: EstimationProps) => {
         <span>
             <div className="field">
                 <div className="control">
-                    <input data-testid="estimation" value={estimation} onChange={ev => setEstimation(ev.target.value)} className="input" type="text" placeholder="Estimation" />
+                    <input data-testid="estimation"
+                           value={estimation}
+                           onChange={ev => setEstimation(ev.target.value)}
+                           onKeyUp={ev => {if (ev.keyCode === 13) sendEstimation()}}
+                           className="input"
+                           type="text"
+                           placeholder={currentAnswer}
+                           disabled={disabled} />
                 </div>
             </div>
             <div className="field is-grouped">
                 <div className="control">
-                    <button data-testid="send" onClick={sendEstimation} className={sendButtonCssClasses}>
-                        Estimate
+                    <button data-testid="send" onClick={sendEstimation} className={sendButtonCssClasses} disabled={disabled}>
+                        Answer
                     </button>
                 </div>
             </div>
+            { 
+                errorMessage.length > 0 &&
+                <div data-testid="error-message" className="has-text-danger">
+                    { errorMessage }
+                </div>
+            }
         </span>
     )
 }

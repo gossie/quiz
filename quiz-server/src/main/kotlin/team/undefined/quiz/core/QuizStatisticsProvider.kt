@@ -1,5 +1,7 @@
 package team.undefined.quiz.core
 
+import com.google.common.collect.ArrayListMultimap
+import com.google.common.collect.Multimap
 import org.springframework.stereotype.Component
 import reactor.core.publisher.Mono
 import java.util.*
@@ -10,7 +12,7 @@ class QuizStatisticsProvider(private val eventRepository: EventRepository) {
 
     fun generateStatistics(quizId: UUID): Mono<QuizStatistics> {
         return eventRepository.determineEvents(quizId)
-                .filter { it is QuestionAskedEvent || it is BuzzeredEvent || it is AnsweredEvent }
+                .filter { it is QuestionAskedEvent || it is BuzzeredEvent || it is EstimatedEvent || it is AnsweredEvent }
                 .collectList()
                 .map { createQuizStatistics(it) }
     }
@@ -19,21 +21,41 @@ class QuizStatisticsProvider(private val eventRepository: EventRepository) {
         val questionStatistics = ArrayList<QuestionStatistics>();
         var currentQuestion: QuestionStatistics? = null
         var currentQuestionTimestamp: Long = 0
-        var currentParticipantId: UUID? = null
-        var buzzerDuration: Long = 0
+
+        val map: Multimap<UUID, AnswerStatisticsInformation> = ArrayListMultimap.create()
 
         for (event in events) {
-            if (event is QuestionAskedEvent) {
-                currentQuestion = QuestionStatistics(event.questionId)
-                currentQuestionTimestamp = event.timestamp
-                questionStatistics.add(currentQuestion)
-            } else if (event is BuzzeredEvent) {
-                currentParticipantId = event.participantId
-                buzzerDuration = event.timestamp - currentQuestionTimestamp
-            } else if (event is AnsweredEvent) {
-                currentQuestion!!.addBuzzerStatistics(BuzzerStatistics(currentParticipantId!!, buzzerDuration, event.answer))
+            when (event) {
+                is QuestionAskedEvent -> {
+                    if (!map.isEmpty) {
+                        map.forEach { participantId, answerStatisticsInformation ->
+                            currentQuestion?.addAnswerStatistics(AnswerStatistics(participantId, answerStatisticsInformation.duration, answerStatisticsInformation.answer, answerStatisticsInformation.rating))
+                        }
+                        map.clear()
+                    }
+                    currentQuestion = QuestionStatistics(event.questionId)
+                    currentQuestionTimestamp = event.timestamp
+                    questionStatistics.add(currentQuestion)
+                }
+
+                is BuzzeredEvent -> map.put(event.participantId, AnswerStatisticsInformation(event.timestamp - currentQuestionTimestamp))
+                is EstimatedEvent -> map.put(event.participantId, AnswerStatisticsInformation(event.timestamp - currentQuestionTimestamp, event.estimatedValue))
+                is AnsweredEvent -> {
+                    val lastPair = map.get(event.participantId).last()
+                    lastPair.rating = event.answer
+                }
             }
         }
+
+        if (!map.isEmpty) {
+            map.forEach { participantId, answerStatisticsInformation ->
+                currentQuestion?.addAnswerStatistics(AnswerStatistics(participantId, answerStatisticsInformation.duration, answerStatisticsInformation.answer, answerStatisticsInformation.rating))
+            }
+            map.clear()
+        }
+
         return QuizStatistics(questionStatistics)
     }
 }
+
+private data class AnswerStatisticsInformation(val duration: Long, val answer: String? = null, var rating: AnswerCommand.Answer = AnswerCommand.Answer.INCORRECT)

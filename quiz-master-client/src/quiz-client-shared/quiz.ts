@@ -8,6 +8,7 @@ export interface Participant {
     name: string;
     turn: boolean;
     points: number;
+    revealAllowed: boolean;
     links: Array<Link>;
 }
 
@@ -15,6 +16,8 @@ export interface Question {
     id: string;
     question: string;
     category: string;
+    timeToAnswer?: number;
+    secondsLeft?: number;
     imagePath?: string;
     publicVisible: boolean;
     estimates?: object;
@@ -22,15 +25,16 @@ export interface Question {
     links: Array<Link>;
 }
 
-export interface BuzzerStatistics {
+export interface AnswerStatistics {
     participant: Participant;
     duration: number;
-    answer: string;
+    rating: string;
+    answer?: string;
 }
 
 export interface QuestionStatistics {
     question: Question;
-    buzzerStatistics: Array<BuzzerStatistics>;
+    answerStatistics: Array<AnswerStatistics>;
 }
 
 export interface QuizStatistics {
@@ -44,6 +48,8 @@ export default interface Quiz {
     playedQuestions: Array<Question>;
     openQuestions: Array<Question>;
     quizStatistics?: QuizStatistics;
+    undoPossible?: boolean;
+    redoPossible?: boolean;
     timestamp: number;
     links: Array<Link>;
 }

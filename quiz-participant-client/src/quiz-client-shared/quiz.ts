@@ -8,6 +8,7 @@ export interface Participant {
     name: string;
     turn: boolean;
     points: number;
+    revealAllowed: boolean;
     links: Array<Link>;
 }
 
@@ -15,20 +16,23 @@ export interface Question {
     id: string;
     question: string;
     imagePath?: string;
-    estimates?: {},
+    estimates?: object,
+    secondsLeft?: number;
     pending: boolean;
+    revealed: boolean;
     links: Array<Link>;
 }
 
-export interface BuzzerStatistics {
+export interface AnswerStatistics {
     participant: Participant;
     duration: number;
-    answer: string;
+    rating: string;
+    answer?: string;
 }
 
 export interface QuestionStatistics {
     question: Question;
-    buzzerStatistics: Array<BuzzerStatistics>;
+    answerStatistics: Array<AnswerStatistics>;
 }
 
 export interface QuizStatistics {

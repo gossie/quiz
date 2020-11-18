@@ -16,6 +16,8 @@ data class DeleteQuestionCommand(override val quizId: UUID, val questionId: UUID
 
 data class CreateParticipantCommand(override val quizId: UUID, val participant: Participant) : Command
 
+data class DeleteParticipantCommand(override val quizId: UUID, val participantId: UUID) : Command
+
 data class ForceEmitCommand(override val quizId: UUID) : Command
 
 data class AskQuestionCommand(override val quizId: UUID, val questionId: UUID) : Command
@@ -23,6 +25,8 @@ data class AskQuestionCommand(override val quizId: UUID, val questionId: UUID) :
 data class EstimationCommand(override val quizId: UUID, val participantId: UUID, val estimatedValue: String) : Command
 
 data class BuzzerCommand(override val quizId: UUID, val participantId: UUID) : Command
+
+data class ToggleAnswerRevealAllowedCommand(override val quizId: UUID, val participantId: UUID) : Command
 
 data class AnswerCommand(override val quizId: UUID, val participantId: UUID, val answer: Answer) : Command {
     enum class Answer(private val handler: (Quiz, UUID?) -> Quiz) {
@@ -37,6 +41,14 @@ data class AnswerCommand(override val quizId: UUID, val participantId: UUID, val
 
 data class ReopenCurrentQuestionCommand(override val quizId: UUID) : Command
 
+data class RevealAnswersCommand(override val quizId: UUID) : Command
+
 data class FinishQuizCommand(override val quizId: UUID) : Command
 
 data class DeleteQuizCommand(override val quizId: UUID) : Command
+
+data class UndoCommand(override val quizId: UUID) : Command
+
+data class RedoCommand(override val quizId: UUID) : Command
+
+data class ReloadQuizCommand(override val quizId: UUID) : Command

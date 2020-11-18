@@ -17,7 +17,7 @@ const QuizMaster: React.FC<QuizMasterProps> = (props: QuizMasterProps) => {
 
     useEffect(() => {
         console.debug('register for server sent events');
-        const evtSource = new EventSource(`${process.env.REACT_APP_BASE_URL}/api/quiz/${props.quizId}/stream`);
+        const evtSource = new EventSource(`${process.env.REACT_APP_BASE_URL}/api/quiz/${props.quizId}/quiz-master`);
         
         evtSource.onerror = (e) => console.error('sse error', e);
 
@@ -44,15 +44,37 @@ const QuizMaster: React.FC<QuizMasterProps> = (props: QuizMasterProps) => {
         .finally(() => setFinishButtonCssClasses('button is-link'));
     }
 
+    const undo = () => {
+        if (quiz.undoPossible) {
+            const url = quiz.links.find(link => link.rel === 'undo').href;
+            fetch(`${process.env.REACT_APP_BASE_URL}${url}`, {
+                method: 'DELETE'
+            });
+        }
+    }
+
+    const redo = () => {
+        if (quiz.redoPossible) {
+            const url = quiz.links.find(link => link.rel === 'redo').href;
+            fetch(`${process.env.REACT_APP_BASE_URL}${url}`, {
+                method: 'POST'
+            });
+        }
+    }
+
     return (
         <div className="Quiz-dashboard">
             { Object.keys(quiz).length > 0
             ?
                 <div>
                     <div id="timestamp">{lastChanged()}</div>
-                    <h4 className="title is-4">{quiz.name} (ID: {quiz.id})</h4>
+                    <div>
+                        <h4 className="title is-4">{quiz.name}</h4>
+                        <span className={`icon ${quiz.undoPossible ? "clickable has-text-link" : "has-text-grey-light"}`} onClick={() => undo()} title="Undo"><i className="fas fa-undo"></i></span>
+                        <span className={`icon ${quiz.redoPossible ? "clickable has-text-link" : "has-text-grey-light"}`} onClick={() => redo()} title="Redo"><i className="fas fa-redo"></i></span>
+                    </div>
                     <div className="columns">
-                        <div className="column participants">
+                        <div className="column participants box">
                             <Participants quiz={quiz}></Participants>
                             <div id="finish-hint">When you push this button, the quiz will be closed and cannot be opened again. The final statisticts will be displayed.</div>
                             { quiz.quizStatistics

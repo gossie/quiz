@@ -54,4 +54,29 @@ test('has pending question', () => {
     const currentQuestion = getByTestId('current-question');
     
     expect(currentQuestion.textContent).toEqual('What is happening?');
+    expect(() => getByTestId('question-counter')).toThrowError();
+});
+
+test('has pending question with counter', () => {
+    const quiz: Quiz = {
+        id: 5,
+        name: "Awesome Quiz",
+        participants: [],
+        openQuestions: [
+            {
+                question: 'What is happening?',
+                secondsLeft: 17,
+                pending: true,
+                links: []
+            }
+        ],
+        links: []
+    }
+    const { getByTestId } = render(<Question quiz={quiz} />);
+
+    const currentQuestion = getByTestId('current-question');
+    const countdown = getByTestId('question-counter') as HTMLSpanElement;
+    
+    expect(currentQuestion.textContent).toEqual('What is happening?');
+    expect(countdown.textContent).toEqual('17 seconds left');
 });

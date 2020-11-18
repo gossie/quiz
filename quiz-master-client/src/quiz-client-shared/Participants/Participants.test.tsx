@@ -36,6 +36,7 @@ test('has two participants', () => {
     const participants = getByTestId('participants').querySelectorAll('.participant');
     
     expect(participants).toHaveLength(2);
+    expect(() => getByTestId('question-counter')).toThrowError();
 });
 
 test('has no participants', () => {
@@ -52,4 +53,48 @@ test('has no participants', () => {
     const participants = getByTestId('participants').querySelectorAll('ParticipantItem');
     
     expect(participants).toHaveLength(0);
+});
+
+test('shows question counter', () => {
+    const quiz: Quiz = {
+        id: '1',
+        name: 'Quiz',
+        participants: [
+            {
+                id: '15',
+                name: 'Erik',
+                turn: false,
+                points: 0,
+                links: []
+            },
+            {
+                id: '16',
+                name: 'Sandra',
+                turn: false,
+                points: 0,
+                links: []
+            }
+        ],
+        openQuestions: [
+            {
+                id: '117',
+                category: 'history',
+                publicVisible: false,
+                question: 'What is happening?',
+                pending: true,
+                secondsLeft: 12,
+                links: []
+            }
+        ],
+        playedQuestions: [],
+        timestamp: 1234,
+        links: []
+    }
+    
+    const { getByTestId } = render(<Participants quiz={quiz} />);
+    const participants = getByTestId('participants').querySelectorAll('.participant');
+    const countdown = getByTestId('question-counter') as HTMLSpanElement;
+    
+    expect(participants).toHaveLength(2);
+    expect(countdown.textContent).toEqual('12 seconds left');
 });

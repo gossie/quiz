@@ -20,7 +20,7 @@ internal class QuizProjectionForceEmitCommandTest {
                 .thenReturn(Flux.just(QuizCreatedEvent(quiz.id, quiz, 1)))
 
         val eventBus = EventBus()
-        val quizProjection = QuizProjection(eventBus, mock(QuizStatisticsProvider::class.java), eventRepository)
+        val quizProjection = QuizProjection(eventBus, mock(QuizStatisticsProvider::class.java), eventRepository, UndoneEventsCache())
 
         val observedQuiz = AtomicReference<Quiz>()
         quizProjection.observeQuiz(quiz.id)

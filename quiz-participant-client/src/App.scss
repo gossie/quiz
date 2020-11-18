@@ -1,7 +1,7 @@
+@import "./index.scss";
+
 .App {
-  text-align: center;
-  background-color: #282c34;
-  min-height: 100vh;
+  min-height: calc(100vh - #{$navbar-height});
   display: flex;
   flex-direction: column;
   justify-content: flex-start;
@@ -20,26 +20,17 @@
   justify-content: center;
 }
 
-.title {
-  color: white;
-}
-
-.box h1, .box h2, .box h3, .box h4, .box h5, .box h6 {
-  color: #363636;
-}
-
 .Quiz-dashboard {
   display: flex;
   flex-direction: column;
   justify-items: flex-start;
-  color: #61dafb;
   width: 100%;
 }
 
 @media screen and (min-width: 768px) {
   .App {
-    height: 100vh;
-    overflow: hidden;
+    /*height: 100vh;
+    overflow: hidden;*/
   }
 
   .App-content, .Quiz-dashboard, .columns {
@@ -57,8 +48,6 @@
 }
 
 .Quiz-dashboard .question, .Quiz-dashboard .participants {
-  color: white;
-  background: rgba(255,255,255,0.05);
   padding: 15px;
   margin: 10px;
 }

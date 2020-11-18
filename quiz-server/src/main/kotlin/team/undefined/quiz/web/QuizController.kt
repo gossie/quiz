@@ -1,6 +1,7 @@
 package team.undefined.quiz.web
 
 import com.google.common.eventbus.EventBus
+import org.slf4j.LoggerFactory
 import org.springframework.http.HttpStatus
 import org.springframework.http.MediaType
 import org.springframework.http.codec.ServerSentEvent
@@ -18,6 +19,8 @@ import java.util.*
 class QuizController(private val quizService: QuizService,
                      private val quizProjection: QuizProjection,
                      private val eventBus: EventBus) {
+
+    private val logger = LoggerFactory.getLogger(QuizController::class.java)
 
     @PostMapping(consumes = [MediaType.APPLICATION_JSON_VALUE], produces = [MediaType.TEXT_PLAIN_VALUE])
     @ResponseStatus(HttpStatus.CREATED)
@@ -45,21 +48,70 @@ class QuizController(private val quizService: QuizService,
 
     @PutMapping("/{quizId}")
     @ResponseStatus(HttpStatus.OK)
-    fun reopenQuestion(@PathVariable quizId: UUID): Mono<Unit> {
+    fun reopenCurrentQuestion(@PathVariable quizId: UUID): Mono<Unit> {
         return quizService.reopenQuestion(ReopenCurrentQuestionCommand(quizId));
     }
 
-    @GetMapping(path = ["/{quizId}/stream"], produces = [MediaType.TEXT_EVENT_STREAM_VALUE])
-    fun getQuizStream(@PathVariable quizId: UUID): Flux<ServerSentEvent<QuizDTO>> {
+    @PatchMapping("/{quizId}")
+    @ResponseStatus(HttpStatus.OK)
+    fun revealAnswers(@PathVariable quizId: UUID): Mono<Unit> {
+        return quizService.revealAnswers(RevealAnswersCommand(quizId));
+    }
+
+    @GetMapping(path = ["/{quizId}/quiz-master"], produces = [MediaType.TEXT_EVENT_STREAM_VALUE])
+    fun getQuizStreamForQuizMaster(@PathVariable quizId: UUID): Flux<ServerSentEvent<QuizDTO>> {
         val observer = getObserver(quizId)
         eventBus.post(ForceEmitCommand(quizId))
-        return Flux.merge(observer, getHeartbeat())
+        return Flux.merge(observer, getHeartbeat(quizId))
+    }
+
+    @GetMapping(path = ["/{quizId}/quiz-participant"], produces = [MediaType.TEXT_EVENT_STREAM_VALUE])
+    fun getQuizStreamForQuizParticipants(@PathVariable quizId: UUID): Flux<ServerSentEvent<QuizDTO>> {
+        val observer = getObserver(quizId)
+        eventBus.post(ForceEmitCommand(quizId))
+        return Flux.merge(observer, getHeartbeat(quizId))
+                .map {
+                    it.data()?.openQuestions
+                        ?.forEach { question ->
+                            question.estimates?.keys?.forEach { id ->
+                                (question.estimates as MutableMap)[id] = determineAnswerToDisplay(it.data()!!, question, id);
+                            }
+                    }
+                    it
+                }
+    }
+
+    @DeleteMapping(path = ["/{quizId}/undo"])
+    fun undo(@PathVariable quizId: UUID): Mono<Unit> {
+        return quizService.undo(UndoCommand(quizId))
+    }
+
+    @PostMapping(path = ["/{quizId}/redo"])
+    fun redo(@PathVariable quizId: UUID): Mono<Unit> {
+        return quizService.redo(RedoCommand(quizId))
+    }
+
+    private fun determineAnswerToDisplay(quiz: QuizDTO, question: QuestionDTO, participantId: UUID): String {
+        return if (!question.revealed) {
+            "*****"
+        } else {
+            val allowed = quiz.participants
+                    .find { it.id == participantId }
+                    ?.revealAllowed ?: false
+            if (allowed) {
+                question.estimates?.get(participantId) ?: "*****"
+            } else {
+                "*****"
+            }
+
+        }
     }
 
     private fun getObserver(quizId: UUID): Flux<ServerSentEvent<QuizDTO>> {
         return quizProjection.observeQuiz(quizId)
                 .flatMap { it.map() }
                 .map {
+                    logger.info("Sending quiz {} to the client", it)
                     ServerSentEvent.builder<QuizDTO>()
                             .event("quiz")
                             .data(it)
@@ -67,11 +119,16 @@ class QuizController(private val quizService: QuizService,
                 }
     }
 
-    private fun getHeartbeat(): Flux<ServerSentEvent<QuizDTO>> {
+    private fun getHeartbeat(quizId: UUID): Flux<ServerSentEvent<QuizDTO>> {
         return Flux.interval(Duration.ofSeconds(10))
+                .filter { quizProjection.determineQuiz(quizId) != null }
+                .map { quizProjection.determineQuiz(quizId) }
+                .flatMap { it!!.map() }
                 .map {
+                    logger.info("Sending quiz {} to the client as heartbeat", it)
                     ServerSentEvent.builder<QuizDTO>()
-                            .event("ping")
+                            .event("quiz")
+                            .data(it)
                             .build()
                 }
     }

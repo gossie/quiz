@@ -16,7 +16,8 @@ const Question: React.FC<QuestionProps> = (props: QuestionProps) => {
             <div>
             { pendingQuestion &&
                 <div>
-                    <span data-testid="current-question">{pendingQuestion.question}</span>
+                    <div data-testid="current-question">{pendingQuestion.question}</div>
+                    { pendingQuestion.secondsLeft != null && <div data-testid="question-counter">{pendingQuestion.secondsLeft} seconds left</div> }
                     { hasImage && <Image question={pendingQuestion} /> }
                 </div>
             }

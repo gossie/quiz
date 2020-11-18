@@ -16,7 +16,7 @@ internal class QuizProjectionEstimationQuestionAnsweredCorrectEventTest {
         val quiz = Quiz(name = "Awesome Quiz")
 
         val eventBus = EventBus()
-        val quizProjection = QuizProjection(eventBus, mock(QuizStatisticsProvider::class.java), mock(EventRepository::class.java))
+        val quizProjection = QuizProjection(eventBus, mock(QuizStatisticsProvider::class.java), mock(EventRepository::class.java), UndoneEventsCache())
 
         val observedQuiz = AtomicReference<Quiz>()
         quizProjection.observeQuiz(quiz.id)
@@ -43,6 +43,7 @@ internal class QuizProjectionEstimationQuestionAnsweredCorrectEventTest {
                     && observedQuiz.get().questions.size == 1
                     && observedQuiz.get().questions[0].pending
                     && !observedQuiz.get().questions[0].alreadyPlayed
+                    && observedQuiz.get().isUndoPossible()
                     && !observedQuiz.get().finished
         }
     }
@@ -70,7 +71,7 @@ internal class QuizProjectionEstimationQuestionAnsweredCorrectEventTest {
                 ))
 
         val eventBus = EventBus()
-        val quizProjection = QuizProjection(eventBus, mock(QuizStatisticsProvider::class.java), eventRepository)
+        val quizProjection = QuizProjection(eventBus, mock(QuizStatisticsProvider::class.java), eventRepository, UndoneEventsCache())
 
         val observedQuiz = AtomicReference<Quiz>()
         quizProjection.observeQuiz(quiz.id)
@@ -86,6 +87,7 @@ internal class QuizProjectionEstimationQuestionAnsweredCorrectEventTest {
                     && observedQuiz.get().questions.size == 1
                     && observedQuiz.get().questions[0].pending
                     && !observedQuiz.get().questions[0].alreadyPlayed
+                    && observedQuiz.get().isUndoPossible()
                     && !observedQuiz.get().finished
         }
     }
@@ -110,7 +112,7 @@ internal class QuizProjectionEstimationQuestionAnsweredCorrectEventTest {
                 ))
 
         val eventBus = EventBus()
-        val quizProjection = QuizProjection(eventBus, mock(QuizStatisticsProvider::class.java), eventRepository)
+        val quizProjection = QuizProjection(eventBus, mock(QuizStatisticsProvider::class.java), eventRepository, UndoneEventsCache())
 
         val observedQuiz = AtomicReference<Quiz>()
         quizProjection.observeQuiz(quiz.id)
@@ -126,6 +128,7 @@ internal class QuizProjectionEstimationQuestionAnsweredCorrectEventTest {
                     && observedQuiz.get().questions.size == 1
                     && observedQuiz.get().questions[0].pending
                     && !observedQuiz.get().questions[0].alreadyPlayed
+                    && observedQuiz.get().isUndoPossible()
                     && !observedQuiz.get().finished
         }
     }

@@ -1,26 +1,7 @@
-.participant {
-    display: block;
-    margin-bottom: 7px;
-    display: flex;
-    flex-direction: row;
-    align-items: flex-start;
-}
-
-.participant-name {
-    margin-right: 30px;
-}
-
-.participant.turn {
-    font-weight: bold
-}
-
 .participants-list {
     display: block;
     text-align: left;
 }
 
-.points {
-    display: inline-block;
-    width: 85px;
-    padding-left: 5px;
-}
+
+
