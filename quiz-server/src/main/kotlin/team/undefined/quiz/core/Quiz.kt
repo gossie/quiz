@@ -114,6 +114,10 @@ data class Quiz(
                 ?.estimates == null
     }
 
+    fun currentQuestionIsFreetextQuestion(): Boolean {
+        return !currentQuestionIsBuzzerQuestion()
+    }
+
     private fun checkParticipant(participant: Participant, participantId: UUID?): Boolean {
         return if (participantId == null) {
             participant.turn

@@ -11,6 +11,7 @@ import reactor.core.publisher.Flux
 import reactor.core.publisher.Mono
 import reactor.test.StepVerifier
 import java.util.*
+import kotlin.collections.HashMap
 
 internal class DefaultQuizServiceTest {
 
@@ -185,6 +186,30 @@ internal class DefaultQuizServiceTest {
         val quizService = DefaultQuizService(quizRepository, UndoneEventsCache(), eventBus)
 
         val buzzer = quizService.buzzer(BuzzerCommand(quizId, lenasId))
+        StepVerifier.create(buzzer)
+                .verifyComplete()
+
+        verifyNoInteractions(eventBus)
+    }
+
+    @Test
+    fun shouldNotAllowEstimationCommandForBuzzerQuestion() {
+        // The Beuke Bug
+        val quizId = UUID.randomUUID()
+        val beukesId = UUID.randomUUID()
+        val questionId = UUID.randomUUID()
+
+        `when`(quizRepository.determineEvents(quizId))
+                .thenReturn(Flux.just(
+                        QuizCreatedEvent(quizId, Quiz(quizId, "Quiz")),
+                        QuestionCreatedEvent(quizId, question = Question(questionId, "Warum ist die Banane krum?")),
+                        ParticipantCreatedEvent(quizId, Participant(beukesId, "Beuke")),
+                        QuestionAskedEvent(quizId, questionId)
+                ))
+
+        val quizService = DefaultQuizService(quizRepository, UndoneEventsCache(), eventBus)
+
+        val buzzer = quizService.estimate(EstimationCommand(quizId, beukesId, "32"))
         StepVerifier.create(buzzer)
                 .verifyComplete()
 
@@ -371,7 +396,7 @@ internal class DefaultQuizServiceTest {
         `when`(quizRepository.determineEvents(quizId))
                 .thenReturn(Flux.just(
                         QuizCreatedEvent(quizId, Quiz(quizId, "Quiz")),
-                        QuestionCreatedEvent(quizId, question = Question(questionId, "Warum ist die Banane krum?")),
+                        QuestionCreatedEvent(quizId, question = Question(questionId, "Warum ist die Banane krum?", estimates = HashMap())),
                         ParticipantCreatedEvent(quizId, Participant(participantId, "Lena")),
                         QuestionAskedEvent(quizId, questionId)
                 ))
