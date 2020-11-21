@@ -120,7 +120,8 @@ data class Quiz(
 
     fun currentAnswerIsDifferent(participantId: UUID, value: String): Boolean {
         return questions.find { it.pending }
-                ?.estimates[participant] != value
+                ?.estimates
+                ?.get(participantId) != value
     }
 
     private fun checkParticipant(participant: Participant, participantId: UUID?): Boolean {
