@@ -26,10 +26,7 @@ data class Question(
     }
 
     fun estimate(participantId: UUID, estimatedValue: String) {
-        // TODO: I don't know how that happened
-        if (estimates != null) {
-            (estimates as MutableMap)[participantId] = estimatedValue
-        }
+        (estimates as MutableMap)[participantId] = estimatedValue
     }
 
 }

@@ -104,6 +104,7 @@ class DefaultQuizService(private val eventRepository: EventRepository,
         return eventRepository.determineEvents(command.quizId)
                 .reduce(Quiz(name = "")) { quiz: Quiz, event: Event -> event.process(quiz) }
                 .filter { it.hasParticipantWithId(command.participantId) }
+                .filter { it.currentQuestionIsFreetextQuestion() }
                 .flatMap { eventRepository.storeEvent(EstimatedEvent(command.quizId, command.participantId, command.estimatedValue)) }
                 .map {
                     undoneEventsCache.remove(it.quizId)
