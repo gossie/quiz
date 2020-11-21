@@ -27,7 +27,7 @@ class LockingAspect {
                 .doFinally { lock.release() }
     }
 
-
+/*
     @Around("execution(@ReadLock * *(*))")
     fun performReadLock(point: ProceedingJoinPoint): Mono<*> {
         val command = point.args[0] as Command
@@ -39,5 +39,5 @@ class LockingAspect {
         return mono
                 .doFinally { lock.release() }
     }
-
+*/
 }

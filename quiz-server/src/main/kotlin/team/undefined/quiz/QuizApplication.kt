@@ -20,7 +20,7 @@ class QuizApplication {
     fun eventBus(): EventBus {
         return EventBus()
     }
-/*
+
     @Bean
     fun databaseCleaner(quizService: QuizService): CommandLineRunner {
         return (CommandLineRunner {
@@ -35,7 +35,7 @@ class QuizApplication {
                     }
         })
     }
-*/
+
 }
 
 fun main(args: Array<String>) {
