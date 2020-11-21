@@ -10,7 +10,7 @@ import Estimation from './estimation/Estimation';
 interface QuizDashboardProps {
     quizId: string;
     participantName: string;
-    quizNotFoundHandler: () => void;
+    errorHandler: (errorMessage: string) => void;
 }
 
 const QuizDashboard: React.FC<QuizDashboardProps> = (props: QuizDashboardProps) => {
@@ -59,12 +59,16 @@ const QuizDashboard: React.FC<QuizDashboardProps> = (props: QuizDashboardProps) 
                 }
             })
             .then(response => {
-                if (response.status > 400) {
-                    console.debug(`There is no quiz with id ${props.quizId}. The EventSource is closes.`);
+                if (response.status == 404) {
                     if (evtSource) {
                         evtSource.close();
                     }
-                    props.quizNotFoundHandler();
+                    props.errorHandler(`Sorry ${props.participantName}, no quiz for id '${props.quizId}' found`);
+                } else if (response.status == 400) {
+                    if (evtSource) {
+                        evtSource.close();
+                    }
+                    props.errorHandler(`Sorry ${props.participantName}, '${props.quizId}' is not a valid quiz id`);
                 }
             });
         }

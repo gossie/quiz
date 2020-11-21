@@ -38,8 +38,8 @@ function App() {
         ]);
     };
 
-    const onQuizNotFound = () => {
-        setErrorMessage(`Sorry ${participantName}, no quiz for id '${quizId}' found`);
+    const onError = (errorMessage: string) => {
+        setErrorMessage(errorMessage);
         inputInformation[1].cssClass = 'is-danger';
         setInputInformation([
             inputInformation[0],
@@ -53,7 +53,7 @@ function App() {
             <AppHeader title="Quiz"></AppHeader>
             <div className="App-content">
             {quizId.length > 0 && participantName.length > 0 ? 
-                <QuizDashboard quizId={quizId} participantName={participantName} quizNotFoundHandler={onQuizNotFound}></QuizDashboard> :
+                <QuizDashboard quizId={quizId} participantName={participantName} errorHandler={onError}></QuizDashboard> :
                 <div className="container Login-page">
                     <div>
                         <LoginPageWidget title="Join a Quiz" inputInformation={inputInformation} buttonLabel="Join!" onSubmit={joinQuiz}></LoginPageWidget> 
