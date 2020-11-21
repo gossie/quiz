@@ -41,21 +41,25 @@ class QuizController(private val quizService: QuizService,
     fun answer(@PathVariable quizId: UUID, @PathVariable participantId: UUID, @RequestBody correct: String): Mono<Unit> {
         return if (correct == "true") {
             quizService.rate(AnswerCommand(quizId, participantId, AnswerCommand.Answer.CORRECT))
+                    .onErrorResume { Mono.error(WebException(HttpStatus.CONFLICT, it.message)) }
         } else {
             quizService.rate(AnswerCommand(quizId, participantId, AnswerCommand.Answer.INCORRECT))
+                    .onErrorResume { Mono.error(WebException(HttpStatus.CONFLICT, it.message)) }
         }
     }
 
     @PutMapping("/{quizId}")
     @ResponseStatus(HttpStatus.OK)
     fun reopenCurrentQuestion(@PathVariable quizId: UUID): Mono<Unit> {
-        return quizService.reopenQuestion(ReopenCurrentQuestionCommand(quizId));
+        return quizService.reopenQuestion(ReopenCurrentQuestionCommand(quizId))
+                .onErrorResume { Mono.error(WebException(HttpStatus.CONFLICT, it.message)) }
     }
 
     @PatchMapping("/{quizId}")
     @ResponseStatus(HttpStatus.OK)
     fun revealAnswers(@PathVariable quizId: UUID): Mono<Unit> {
-        return quizService.revealAnswers(RevealAnswersCommand(quizId));
+        return quizService.revealAnswers(RevealAnswersCommand(quizId))
+                .onErrorResume { Mono.error(WebException(HttpStatus.CONFLICT, it.message)) }
     }
 
     @GetMapping(path = ["/{quizId}/quiz-master"], produces = [MediaType.TEXT_EVENT_STREAM_VALUE])
@@ -74,7 +78,7 @@ class QuizController(private val quizService: QuizService,
                     it.data()?.openQuestions
                         ?.forEach { question ->
                             question.estimates?.keys?.forEach { id ->
-                                (question.estimates as MutableMap)[id] = determineAnswerToDisplay(it.data()!!, question, id);
+                                (question.estimates as MutableMap)[id] = determineAnswerToDisplay(it.data()!!, question, id)
                             }
                     }
                     it

@@ -50,7 +50,7 @@ internal class DefaultQuizServiceForbidChangesOnFinishedQuizTest {
         val quizService = DefaultQuizService(eventRepository, UndoneEventsCache(), eventBus)
 
         StepVerifier.create(quizService.editQuestion(EditQuestionCommand(quizId, questionId, Question(questionId, "Eine Frage"))))
-                .verifyError()
+                .verifyError(QuizFinishedException::class.java)
 
         verifyNoInteractions(eventBus)
     }
@@ -74,7 +74,7 @@ internal class DefaultQuizServiceForbidChangesOnFinishedQuizTest {
         val quizService = DefaultQuizService(eventRepository, UndoneEventsCache(), eventBus)
 
         StepVerifier.create(quizService.deleteQuestion(DeleteQuestionCommand(quizId, questionId)))
-                .verifyError()
+                .verifyError(QuizFinishedException::class.java)
 
         verifyNoInteractions(eventBus)
     }
@@ -97,7 +97,7 @@ internal class DefaultQuizServiceForbidChangesOnFinishedQuizTest {
         val quizService = DefaultQuizService(eventRepository, UndoneEventsCache(), eventBus)
 
         StepVerifier.create(quizService.createParticipant(CreateParticipantCommand(quizId, Participant(participantId, "Alex"))))
-                .verifyError()
+                .verifyError(QuizFinishedException::class.java)
 
         verify(eventBus).post(ForceEmitCommand(quizId))
         verifyNoMoreInteractions(eventBus)
