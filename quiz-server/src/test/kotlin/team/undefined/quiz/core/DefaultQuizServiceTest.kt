@@ -411,6 +411,53 @@ internal class DefaultQuizServiceTest {
     }
 
     @Test
+    fun shouldPreventDuplicateEstimates() {
+        val quizId = UUID.randomUUID()
+        val questionId = UUID.randomUUID()
+        val participantId = UUID.randomUUID()
+
+        `when`(quizRepository.determineEvents(quizId))
+                .thenReturn(Flux.just(
+                        QuizCreatedEvent(quizId, Quiz(quizId, "Quiz")),
+                        QuestionCreatedEvent(quizId, question = Question(questionId, "Warum ist die Banane krum?", estimates = HashMap())),
+                        ParticipantCreatedEvent(quizId, Participant(participantId, "Lena")),
+                        QuestionAskedEvent(quizId, questionId),
+                        EstimatedEvent(quizId, participantId, "Darum")
+                ))
+
+        val quizService = DefaultQuizService(quizRepository, UndoneEventsCache(), eventBus)
+
+        StepVerifier.create(quizService.estimate(EstimationCommand(quizId, participantId, "Darum")))
+                .verifyComplete()
+
+        verifyNoInteractions(eventBus)
+    }
+
+    @Test
+    fun shouldPreventAllowMultipleAnswersThatDiffer() {
+        val quizId = UUID.randomUUID()
+        val questionId = UUID.randomUUID()
+        val participantId = UUID.randomUUID()
+
+        `when`(quizRepository.determineEvents(quizId))
+                .thenReturn(Flux.just(
+                        QuizCreatedEvent(quizId, Quiz(quizId, "Quiz")),
+                        QuestionCreatedEvent(quizId, question = Question(questionId, "Warum ist die Banane krum?", estimates = HashMap())),
+                        ParticipantCreatedEvent(quizId, Participant(participantId, "Lena")),
+                        QuestionAskedEvent(quizId, questionId),
+                        EstimatedEvent(quizId, participantId, "Darum")
+                ))
+
+        val quizService = DefaultQuizService(quizRepository, UndoneEventsCache(), eventBus)
+
+        StepVerifier.create(quizService.estimate(EstimationCommand(quizId, participantId, "Oder?")))
+                .consumeNextWith {
+                    verify(eventBus).post(argThat { (it as EstimatedEvent).quizId == quizId && it.participantId == participantId && it.estimatedValue == "Oder?" })
+                }
+                .verifyComplete()
+    }
+
+    @Test
     fun shouldNotEstimateBecauseParticipantDoesNotExist() {
         val quizId = UUID.randomUUID()
         val questionId = UUID.randomUUID()
