@@ -40,9 +40,9 @@ class QuizController(private val quizService: QuizService,
     @ResponseStatus(HttpStatus.OK)
     fun answer(@PathVariable quizId: UUID, @PathVariable participantId: UUID, @RequestBody correct: String): Mono<Unit> {
         return if (correct == "true") {
-            quizService.answer(AnswerCommand(quizId, participantId, AnswerCommand.Answer.CORRECT))
+            quizService.rate(AnswerCommand(quizId, participantId, AnswerCommand.Answer.CORRECT))
         } else {
-            quizService.answer(AnswerCommand(quizId, participantId, AnswerCommand.Answer.INCORRECT))
+            quizService.rate(AnswerCommand(quizId, participantId, AnswerCommand.Answer.INCORRECT))
         }
     }
 

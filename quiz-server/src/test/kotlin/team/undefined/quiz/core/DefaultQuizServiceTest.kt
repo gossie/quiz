@@ -367,6 +367,10 @@ internal class DefaultQuizServiceTest {
                 .thenReturn(Flux.just(
                         QuizCreatedEvent(quizId, Quiz(quizId, "Quiz")),
                         QuestionCreatedEvent(quizId, Question(questionId, "Warum ist die Banane krum?", initialTimeToAnswer = 3, secondsLeft = 3)),
+                ))
+                .thenReturn(Flux.just(
+                        QuizCreatedEvent(quizId, Quiz(quizId, "Quiz")),
+                        QuestionCreatedEvent(quizId, Question(questionId, "Warum ist die Banane krum?", initialTimeToAnswer = 3, secondsLeft = 3)),
                         QuestionAskedEvent(quizId, questionId)
                 ))
 
@@ -554,7 +558,7 @@ internal class DefaultQuizServiceTest {
 
         val quizId = UUID.randomUUID()
         val participantId = UUID.randomUUID()
-        StepVerifier.create(quizService.answer(AnswerCommand(quizId, participantId, AnswerCommand.Answer.CORRECT)))
+        StepVerifier.create(quizService.rate(AnswerCommand(quizId, participantId, AnswerCommand.Answer.CORRECT)))
                 .consumeNextWith {
                     verify(eventBus).post(argThat { (it as AnsweredEvent).quizId == quizId && it.participantId == participantId && it.answer == AnswerCommand.Answer.CORRECT })
                 }
@@ -568,7 +572,7 @@ internal class DefaultQuizServiceTest {
 
         val quizId = UUID.randomUUID()
         val participantId = UUID.randomUUID()
-        StepVerifier.create(quizService.answer(AnswerCommand(quizId, participantId, AnswerCommand.Answer.INCORRECT)))
+        StepVerifier.create(quizService.rate(AnswerCommand(quizId, participantId, AnswerCommand.Answer.INCORRECT)))
                 .consumeNextWith {
                     verify(eventBus).post(argThat { (it as AnsweredEvent).quizId == quizId && it.participantId == participantId && it.answer == AnswerCommand.Answer.INCORRECT })
                 }
@@ -593,6 +597,11 @@ internal class DefaultQuizServiceTest {
         val questionId = UUID.randomUUID()
 
         `when`(quizRepository.determineEvents(quizId))
+                .thenReturn(Flux.just(
+                        QuizCreatedEvent(quizId, Quiz(quizId, "Quiz")),
+                        QuestionCreatedEvent(quizId, Question(questionId, "Warum ist die Banane krum?", initialTimeToAnswer = 3, secondsLeft = 3)),
+                        QuestionAskedEvent(quizId, questionId),
+                ))
                 .thenReturn(Flux.just(
                         QuizCreatedEvent(quizId, Quiz(quizId, "Quiz")),
                         QuestionCreatedEvent(quizId, Question(questionId, "Warum ist die Banane krum?", initialTimeToAnswer = 3, secondsLeft = 3)),
