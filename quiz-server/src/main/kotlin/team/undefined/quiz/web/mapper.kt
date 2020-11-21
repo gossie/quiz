@@ -117,7 +117,7 @@ fun QuizDTO.map(): Quiz {
 }
 
 private fun QuizDTO.addLinks(): Mono<QuizDTO> {
-    var linkBuilder = linkTo(methodOn(ParticipantsController::class.java).create(this.id!!, ""))
+    var linkBuilder = linkTo(methodOn(ParticipantsController::class.java).create(this.id!!, "", null))
             .withRel("createParticipant")
             .toMono()
             .map { this.add(it) }
