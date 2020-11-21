@@ -6,6 +6,7 @@ import org.springframework.stereotype.Service
 import reactor.core.Disposable
 import reactor.core.publisher.Flux
 import reactor.core.publisher.Mono
+import java.lang.IllegalStateException
 import java.time.Duration
 import java.util.*
 import kotlin.collections.HashMap
@@ -59,6 +60,7 @@ class DefaultQuizService(private val eventRepository: EventRepository,
         logger.debug("creating a new participant in quiz '{}'", command.quizId)
         eventBus.post(ForceEmitCommand(command.quizId))
         return eventRepository.determineEvents(command.quizId)
+                .switchIfEmpty(Mono.error(QuizNotFoundException()))
                 .reduce(Quiz(name = "")) { quiz: Quiz, event: Event -> event.process(quiz)}
                 .filter { !it.finished }
                 .switchIfEmpty(Mono.error(QuizFinishedException()))

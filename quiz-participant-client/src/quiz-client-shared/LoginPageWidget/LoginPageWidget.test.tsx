@@ -1,16 +1,16 @@
 import React from 'react';
-import { render, fireEvent, wait } from '@testing-library/react';
+import { render, fireEvent, waitFor } from '@testing-library/react';
 import LoginPageWidget from './LoginPageWidget';
 
 test('should submit on submit button click', (done) => {
     const submitFunction = (value: string) => new Promise<void>(async (resolve) => {
-        await wait(() => expect(getByTestId('submit-button').classList.contains('is-loading')).toBeTruthy());
+        await waitFor(() => expect(getByTestId('submit-button').classList.contains('is-loading')).toBeTruthy());
         resolve();
-        await wait(() => expect(value).toEqual({'Login': 'Name'}));
-        await wait(() => expect(getByTestId('submit-button').classList.contains('is-loading')).toBeFalsy());
+        await waitFor(() => expect(value).toEqual({'Login': 'Name'}));
+        await waitFor(() => expect(getByTestId('submit-button').classList.contains('is-loading')).toBeFalsy());
         done();
     });
-    const { getByTestId } = render(<LoginPageWidget onSubmit={submitFunction} title="Login" inputLabels={['Login']} buttonLabel="Login" />);
+    const { getByTestId } = render(<LoginPageWidget onSubmit={submitFunction} title="Login" inputInformation={[{label: 'Login'}]} buttonLabel="Login" />);
 
     const inputField = getByTestId('field-0') as HTMLInputElement;
     const submitButton = getByTestId('submit-button') as HTMLButtonElement;
@@ -24,13 +24,13 @@ test('should submit on submit button click', (done) => {
 
 test('should submit on enter', (done) => {
     const submitFunction = (value: string) => new Promise<void>(async (resolve) => {
-        await wait(() => expect(getByTestId('submit-button').classList.contains('is-loading')).toBeTruthy());
+        await waitFor(() => expect(getByTestId('submit-button').classList.contains('is-loading')).toBeTruthy());
         resolve();
-        await wait(() => expect(value).toEqual({'Login': 'Name'}));
-        await wait(() => expect(getByTestId('submit-button').classList.contains('is-loading')).toBeFalsy());
+        await waitFor(() => expect(value).toEqual({'Login': 'Name'}));
+        await waitFor(() => expect(getByTestId('submit-button').classList.contains('is-loading')).toBeFalsy());
         done();
     });
-    const { getByTestId } = render(<LoginPageWidget onSubmit={submitFunction} title="Login" inputLabels={['Login']} buttonLabel="Login" />);
+    const { getByTestId } = render(<LoginPageWidget onSubmit={submitFunction} title="Login" inputInformation={[{label: 'Login'}]} buttonLabel="Login" />);
 
     const inputField = getByTestId('field-0') as HTMLInputElement;
 

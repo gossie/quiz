@@ -54,6 +54,21 @@ internal class ParticipantsControllerTest {
     }
 
     @Test
+    fun shouldReturnStatusNotFoundWhenCreatingAParticipantBecauseTheQuizIsNotFound() {
+        val quizId = UUID.randomUUID()
+
+        `when`(quizService.createParticipant(any())).thenReturn(Mono.error(QuizNotFoundException()))
+
+        webClient
+                .post()
+                .uri("/api/quiz/$quizId/participants")
+                .contentType(MediaType.TEXT_PLAIN)
+                .body(BodyInserters.fromValue("Allli"))
+                .exchange()
+                .expectStatus().isNotFound
+    }
+
+    @Test
     fun shouldBuzzer() {
         val quizId = UUID.randomUUID()
         val participantId = UUID.randomUUID()

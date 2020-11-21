@@ -1,6 +1,7 @@
 package team.undefined.quiz.web
 
 import org.springframework.http.HttpStatus
+import org.springframework.http.server.reactive.ServerHttpResponse
 import org.springframework.web.bind.annotation.*
 import reactor.core.publisher.Mono
 import team.undefined.quiz.core.*
@@ -13,9 +14,15 @@ class ParticipantsController(private val quizService: QuizService) {
 
     @PostMapping(consumes = ["text/plain"])
     @ResponseStatus(HttpStatus.CREATED)
-    fun create(@PathVariable quizId: UUID, @RequestBody participantName: String): Mono<Unit> {
+    fun create(@PathVariable quizId: UUID, @RequestBody participantName: String, response: ServerHttpResponse?): Mono<Unit> {
         return quizService.createParticipant(CreateParticipantCommand(quizId, Participant(name = participantName)))
-                .onErrorResume { Mono.error(WebException(HttpStatus.CONFLICT, it.message)) }
+                .onErrorResume {
+                    when (it) {
+                        is QuizNotFoundException -> Mono.error(WebException(HttpStatus.NOT_FOUND, it.message))
+                        is QuizFinishedException -> Mono.error(WebException(HttpStatus.CONFLICT, it.message))
+                        else -> Mono.error(WebException(HttpStatus.BAD_REQUEST, it.message))
+                    }
+                }
     }
 
     @PutMapping("/{participantId}/buzzer", consumes = ["text/plain"])

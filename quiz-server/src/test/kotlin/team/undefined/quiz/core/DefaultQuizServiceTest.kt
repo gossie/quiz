@@ -102,6 +102,22 @@ internal class DefaultQuizServiceTest {
     }
 
     @Test
+    fun shouldNotCreateParticipantBecauseTheQuizDoesNotExist() {
+        val quizId = UUID.randomUUID()
+
+        `when`(quizRepository.determineEvents(quizId)).thenReturn(Flux.empty())
+
+        val quizService = DefaultQuizService(quizRepository, UndoneEventsCache(), eventBus)
+
+        val participant = Participant(name = "Sandra")
+        StepVerifier.create(quizService.createParticipant(CreateParticipantCommand(quizId, participant)))
+                .verifyError(QuizNotFoundException::class.java)
+
+        verify(eventBus).post(ForceEmitCommand(quizId))
+        verifyNoMoreInteractions(eventBus)
+    }
+
+    @Test
     fun shouldDeleteParticipant() {
         val quizId = UUID.randomUUID()
         val participantId = UUID.randomUUID()
