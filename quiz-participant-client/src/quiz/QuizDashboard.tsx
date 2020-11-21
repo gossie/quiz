@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import Participants from '../quiz-client-shared/Participants/Participants';
 import Quiz from '../quiz-client-shared/quiz';
 import Buzzer from './buzzer/Buzzer';
@@ -18,18 +18,17 @@ const QuizDashboard: React.FC<QuizDashboardProps> = (props: QuizDashboardProps) 
     const [quiz, setQuiz] = useState({} as Quiz);
     const [participantId, setParticipantId] = useState('');
     const [revealAllowed, setRevealAllowed] = useState(false);
-
-    let evtSource: EventSource = undefined;
+    const evtSource = useRef(undefined as EventSource);
 
     useEffect(() => {
         console.debug('register for server sent events');
-        evtSource = new EventSource(`${process.env.REACT_APP_BASE_URL}/api/quiz/${props.quizId}/quiz-participant`);
+        evtSource.current = new EventSource(`${process.env.REACT_APP_BASE_URL}/api/quiz/${props.quizId}/quiz-participant`);
 
-        evtSource.onerror = (e) => console.error('sse error', e);
+        evtSource.current.onerror = (e) => console.error('sse error', e);
 
-        evtSource.addEventListener("ping", (ev: any) => console.debug('received heartbeat', ev));
+        evtSource.current.addEventListener("ping", (ev: any) => console.debug('received heartbeat', ev));
 
-        evtSource.addEventListener("quiz", (ev: any) => {
+        evtSource.current.addEventListener("quiz", (ev: any) => {
             console.log('event', ev);
             if (Object.keys(JSON.parse(ev.data)).includes('id')) {
                 const newQuiz: Quiz = JSON.parse(ev.data);
@@ -44,7 +43,7 @@ const QuizDashboard: React.FC<QuizDashboardProps> = (props: QuizDashboardProps) 
 
         return () => {
             console.debug('closing event stream');
-            evtSource.close();
+            evtSource.current.close();
         };
     }, [props.quizId, props.participantName]);
 
@@ -59,14 +58,14 @@ const QuizDashboard: React.FC<QuizDashboardProps> = (props: QuizDashboardProps) 
                 }
             })
             .then(response => {
-                if (response.status == 404) {
-                    if (evtSource) {
-                        evtSource.close();
+                if (response.status === 404) {
+                    if (evtSource.current) {
+                        evtSource.current.close();
                     }
                     props.errorHandler(`Sorry ${props.participantName}, no quiz for id '${props.quizId}' found`);
-                } else if (response.status == 400) {
-                    if (evtSource) {
-                        evtSource.close();
+                } else if (response.status === 400) {
+                    if (evtSource.current) {
+                        evtSource.current.close();
                     }
                     props.errorHandler(`Sorry ${props.participantName}, '${props.quizId}' is not a valid quiz id`);
                 }
