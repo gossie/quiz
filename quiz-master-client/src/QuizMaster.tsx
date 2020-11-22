@@ -35,6 +35,10 @@ const QuizMaster: React.FC<QuizMasterProps> = (props: QuizMasterProps) => {
     }, [props.quizId]);
 
     const lastChanged = () => new Date(quiz.timestamp).toDateString();
+    const expires = () => {
+        const expirationDate = new Date(quiz.expirationDate);
+        return `${expirationDate.getDate()}.${expirationDate.getMonth() + 1}.${expirationDate.getFullYear()}`
+    };
 
     const finishQuiz = () => {
         setFinishButtonCssClasses('button is-link is-loading');
@@ -84,6 +88,9 @@ const QuizMaster: React.FC<QuizMasterProps> = (props: QuizMasterProps) => {
                                 <button className={finishButtonCssClasses} onClick={finishQuiz}>Finish Quiz</button>
                             }
                             <QuizStatistics quiz={quiz} closeable={true} forceOpen={forceStatistics} onClose={() => setForceStatistics(false)}></QuizStatistics>
+                            <div id="expiration-date">
+                                A quiz will automatically be deleted after four weeks of inactivity. Currently this quiz is valid until {expires()}.
+                            </div> 
                         </div>
                         <div className="column question">
                             <Questions quiz={quiz}></Questions>

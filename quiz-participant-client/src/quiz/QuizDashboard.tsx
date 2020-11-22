@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import Participants from '../quiz-client-shared/Participants/Participants';
 import Quiz from '../quiz-client-shared/quiz';
 import Buzzer from './buzzer/Buzzer';
@@ -10,6 +10,7 @@ import Estimation from './estimation/Estimation';
 interface QuizDashboardProps {
     quizId: string;
     participantName: string;
+    errorHandler: (errorMessage: string) => void;
 }
 
 const QuizDashboard: React.FC<QuizDashboardProps> = (props: QuizDashboardProps) => {
@@ -17,16 +18,17 @@ const QuizDashboard: React.FC<QuizDashboardProps> = (props: QuizDashboardProps) 
     const [quiz, setQuiz] = useState({} as Quiz);
     const [participantId, setParticipantId] = useState('');
     const [revealAllowed, setRevealAllowed] = useState(false);
+    const evtSource = useRef(undefined as EventSource);
 
     useEffect(() => {
         console.debug('register for server sent events');
-        const evtSource = new EventSource(`${process.env.REACT_APP_BASE_URL}/api/quiz/${props.quizId}/quiz-participant`);
+        evtSource.current = new EventSource(`${process.env.REACT_APP_BASE_URL}/api/quiz/${props.quizId}/quiz-participant`);
 
-        evtSource.onerror = (e) => console.error('sse error', e);
+        evtSource.current.onerror = (e) => console.error('sse error', e);
 
-        evtSource.addEventListener("ping", (ev: any) => console.debug('received heartbeat', ev));
+        evtSource.current.addEventListener("ping", (ev: any) => console.debug('received heartbeat', ev));
 
-        evtSource.addEventListener("quiz", (ev: any) => {
+        evtSource.current.addEventListener("quiz", (ev: any) => {
             console.log('event', ev);
             if (Object.keys(JSON.parse(ev.data)).includes('id')) {
                 const newQuiz: Quiz = JSON.parse(ev.data);
@@ -41,7 +43,7 @@ const QuizDashboard: React.FC<QuizDashboardProps> = (props: QuizDashboardProps) 
 
         return () => {
             console.debug('closing event stream');
-            evtSource.close();
+            evtSource.current.close();
         };
     }, [props.quizId, props.participantName]);
 
@@ -53,6 +55,19 @@ const QuizDashboard: React.FC<QuizDashboardProps> = (props: QuizDashboardProps) 
                 body: props.participantName,
                 headers: {
                     'Content-Type': 'text/plain',
+                }
+            })
+            .then(response => {
+                if (response.status === 404) {
+                    if (evtSource.current) {
+                        evtSource.current.close();
+                    }
+                    props.errorHandler(`Sorry ${props.participantName}, no quiz for id '${props.quizId}' found`);
+                } else if (response.status === 400) {
+                    if (evtSource.current) {
+                        evtSource.current.close();
+                    }
+                    props.errorHandler(`Sorry ${props.participantName}, '${props.quizId}' is not a valid quiz id`);
                 }
             });
         }
@@ -79,8 +94,7 @@ const QuizDashboard: React.FC<QuizDashboardProps> = (props: QuizDashboardProps) 
     
     return (
         <div className="Quiz-dashboard">
-            { Object.keys(quiz).length > 0
-            ?
+            { Object.keys(quiz).length > 0 &&
                 <div>
                     <h4 className="title is-4">{quiz.name}</h4>
                     <div className="columns Dashboard-content">
@@ -107,10 +121,6 @@ const QuizDashboard: React.FC<QuizDashboardProps> = (props: QuizDashboardProps) 
                             {<Question quiz={quiz}></Question>}
                         </div>
                     </div>
-                </div>
-            :
-                <div>
-                   The quiz is being loaded. This might take a moment if the application has to be woken up.
                 </div>
             }
         </div>

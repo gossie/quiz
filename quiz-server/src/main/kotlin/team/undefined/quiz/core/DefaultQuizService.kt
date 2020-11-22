@@ -6,6 +6,7 @@ import org.springframework.stereotype.Service
 import reactor.core.Disposable
 import reactor.core.publisher.Flux
 import reactor.core.publisher.Mono
+import java.lang.IllegalStateException
 import java.time.Duration
 import java.util.*
 import kotlin.collections.HashMap
@@ -51,6 +52,7 @@ class DefaultQuizService(private val eventRepository: EventRepository,
         logger.debug("creating a new participant in quiz '{}'", command.quizId)
         eventBus.post(ForceEmitCommand(command.quizId))
         return eventRepository.determineEvents(command.quizId)
+                .switchIfEmpty(Mono.error(IllegalStateException("quiz with id ${command.quizId} does not exit")))
                 .reduce(Quiz(name = "")) { quiz: Quiz, event: Event -> event.process(quiz)}
                 .filter { it.hasNoParticipantWithName(command.participant.name) }
                 .flatMap { eventRepository.storeEvent(ParticipantCreatedEvent(command.quizId, command.participant)) }
@@ -104,6 +106,8 @@ class DefaultQuizService(private val eventRepository: EventRepository,
         return eventRepository.determineEvents(command.quizId)
                 .reduce(Quiz(name = "")) { quiz: Quiz, event: Event -> event.process(quiz) }
                 .filter { it.hasParticipantWithId(command.participantId) }
+                .filter { it.currentQuestionIsFreetextQuestion() }
+                .filter { it.currentAnswerIsDifferent(command.participantId, command.estimatedValue) }
                 .flatMap { eventRepository.storeEvent(EstimatedEvent(command.quizId, command.participantId, command.estimatedValue)) }
                 .map {
                     undoneEventsCache.remove(it.quizId)

@@ -1,13 +1,10 @@
 import React, { useState } from 'react';
 import './App.scss';
 import QuizDashboard from './quiz/QuizDashboard';
-import LoginPageWidget from './quiz-client-shared/LoginPageWidget/LoginPageWidget';
+import LoginPageWidget, { InputInformation } from './quiz-client-shared/LoginPageWidget/LoginPageWidget';
 import AppHeader from './quiz-client-shared/AppHeader/AppHeader';
 
 function App() {
-    const [quizId, setQuizId] = useState('');
-    const [participantName, setParticipantName] = useState('');
-
     const quizIdLabel: string = 'Quiz ID';
     const playerNameLabel: string = 'Player Name';
 
@@ -16,6 +13,11 @@ function App() {
         const id = query.get('quiz_id');
         return id;
     };
+
+    const [quizId, setQuizId] = useState('');
+    const [participantName, setParticipantName] = useState('');
+    const [inputInformation, setInputInformation] = useState([{label: playerNameLabel, value: ''}, {label: quizIdLabel, value: getQuizIdFromUrl()}] as Array<InputInformation>);
+    const [errorMessage, setErrorMessage] = useState('');
 
     const setQuizIDInURL = (quizId) => {
         if(window.history && window.history.pushState) {
@@ -30,17 +32,36 @@ function App() {
         setQuizId(value[quizIdLabel]);
         setQuizIDInURL(value[quizIdLabel]);
         setParticipantName(value[playerNameLabel]);
+        setInputInformation([
+            { ...inputInformation[0], value: value[playerNameLabel] },
+            { ...inputInformation[1], value: value[quizIdLabel] }
+        ]);
     };
+
+    const onError = (errorMessage: string) => {
+        setErrorMessage(errorMessage);
+        inputInformation[1].cssClass = 'is-danger';
+        setInputInformation([
+            inputInformation[0],
+            { ...inputInformation[1], cssClass: inputInformation[1].cssClass }
+        ]);
+        setQuizId('');
+    }
 
     return (
         <div className="App">
             <AppHeader title="Quiz"></AppHeader>
             <div className="App-content">
             {quizId.length > 0 && participantName.length > 0 ? 
-                <QuizDashboard quizId={quizId} participantName={participantName}></QuizDashboard> :
+                <QuizDashboard quizId={quizId} participantName={participantName} errorHandler={onError}></QuizDashboard> :
                 <div className="container Login-page">
-                    <LoginPageWidget title="Join a Quiz" inputValues={{[playerNameLabel]: '', [quizIdLabel]: getQuizIdFromUrl()}} inputLabels={[playerNameLabel, quizIdLabel]} buttonLabel="Join!" onSubmit={joinQuiz}></LoginPageWidget> 
-                </div>     
+                    <div>
+                        <LoginPageWidget title="Join a Quiz" inputInformation={inputInformation} buttonLabel="Join!" onSubmit={joinQuiz}></LoginPageWidget> 
+                    </div>
+                    <div className="error-container has-text-danger">
+                        { errorMessage.length > 0 && <div>{errorMessage}</div> }
+                    </div>
+                </div>
             }
             </div>
         </div>

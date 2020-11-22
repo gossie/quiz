@@ -51,5 +51,6 @@ export default interface Quiz {
     undoPossible?: boolean;
     redoPossible?: boolean;
     timestamp: number;
+    expirationDate: number;
     links: Array<Link>;
 }
