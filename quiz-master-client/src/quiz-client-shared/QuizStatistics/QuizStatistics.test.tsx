@@ -6,6 +6,28 @@ import QuizStatistics from './QuizStatistics';
 beforeEach(() => () => cleanup()); 
 afterEach(() => cleanup());
 
+jest.mock('react-i18next', () => ({
+    useTranslation: () => {
+        return {
+            t: (str: string, keys: object) => {
+                if (str === 'answerStatisticAllowedAnswer') {
+                    return `${keys["participantName"]} has answered "${keys["answer"]}" after ${keys["time"]} seconds and it was ${keys["rating"]}`;
+                } else if (str === 'answerStatisticWithoutAnswer') {
+                    return `${keys["participantName"]} has answered after ${keys["time"]} seconds and it was ${keys["rating"]}`;
+                } if (str === 'buzzerStatistic') {
+                    return `${keys["participantName"]} has buzzered after ${keys["time"]} seconds and it was ${keys["rating"]}`;
+                } else {
+                    return null;
+                }
+            },
+            i18n: {
+                changeLanguage: () => new Promise(() => {}),
+            },
+        };
+        
+    },
+}));
+
 test('does not display statistics', () => {
     const quiz: Quiz = {
         id: '1',
@@ -31,6 +53,7 @@ test('does not display statistics', () => {
         openQuestions: [],
         playedQuestions: [],
         timestamp: 1234,
+        expirationDate: 1234,
         links: []
     }
 
@@ -79,6 +102,7 @@ test('displays statistics', () => {
             ]
         },
         timestamp: 1234,
+        expirationDate: 1234,
         links: []
     }
 
@@ -127,6 +151,7 @@ test('should close statistics', () => {
             ]
         },
         timestamp: 1234,
+        expirationDate: 1234,
         links: []
     }
 
@@ -179,6 +204,7 @@ test('should not be closeable', () => {
             ]
         },
         timestamp: 1234,
+        expirationDate: 1234,
         links: []
     }
 
@@ -240,6 +266,7 @@ test('displays buzzer answer', () => {
             ]
         },
         timestamp: 1234,
+        expirationDate: 1234,
         links: []
     }
 
@@ -302,6 +329,7 @@ test('displays freetext answer', () => {
             ]
         },
         timestamp: 1234,
+        expirationDate: 1234,
         links: []
     }
 
@@ -364,6 +392,7 @@ test('that answer of a freetext question is not shown if the user does not want 
             ]
         },
         timestamp: 1234,
+        expirationDate: 1234,
         links: []
     }
 

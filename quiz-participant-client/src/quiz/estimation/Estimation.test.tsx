@@ -3,6 +3,24 @@ import { render, fireEvent, waitFor } from '@testing-library/react';
 import Estimation from './Estimation';
 import Quiz from '../../quiz-client-shared/quiz';
 
+jest.mock('react-i18next', () => ({
+    useTranslation: () => {
+        return {
+            t: (str: string, keys: object) => {
+                if (str === 'errorEstimation') {
+                    return 'Something went wrong. Please send the data again.';
+                } else {
+                    return null;
+                }
+            },
+            i18n: {
+                changeLanguage: () => new Promise(() => {}),
+            },
+        };
+        
+    },
+}));
+
 test('should estimate', async () => {
     jest.spyOn(global, 'fetch').mockImplementation((url: string, request: object) => {
         expect(url).toEqual('http://localhost:5000/api/participants/4711/buzzer');
