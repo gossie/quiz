@@ -59,6 +59,7 @@ internal class QuizMasterIT {
                 .particpantSizeIs(0)
                 .undoIsNotPossible()
                 .redoIsNotPossible()
+                .hasExpirationDate()
                 .isNotFinished
 
         Thread.sleep(10)

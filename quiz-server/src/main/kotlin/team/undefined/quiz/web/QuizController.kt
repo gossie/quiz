@@ -115,7 +115,7 @@ class QuizController(private val quizService: QuizService,
         return quizProjection.observeQuiz(quizId)
                 .flatMap { it.map() }
                 .map {
-                    logger.info("Sending quiz {} to the client", it)
+                    logger.info("Sending quiz {} to the client", it.id)
                     ServerSentEvent.builder<QuizDTO>()
                             .event("quiz")
                             .data(it)
