@@ -23,5 +23,11 @@
     "buzzerHit": "Your turn!",
 
     "secondsLeft": "{{seconds}} seconds left",
-    "imageAlt": "There should be something here"
+    "imageAlt": "There should be something here",
+
+    "columnHeadlineQuestions": "Question",
+    "columnHeadlineAnswers": "Answers",
+    "answerStatisticAllowedAnswer": "{{participantName}} has answered '{{answer}}' after {{time}} seconds and it was {{rating}}",
+    "answerStatisticWithoutAnswer": "{{participantName}} has answered after {{time}} seconds and it was {{rating}}",
+    "buzzerStatistic": "{{participantName}} has buzzered after {{time}} seconds and it was {{rating}}"
 }

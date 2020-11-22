@@ -59,5 +59,11 @@
     "radioFreetext": "Freetext",
     "questionPoolHint": "Question can be used by others after it is played",
     "buttonAddQuestion": "Add question",
-    "buttonEditQuestion": "Edit question"
+    "buttonEditQuestion": "Edit question",
+
+    "columnHeadlineQuestions": "Question",
+    "columnHeadlineAnswers": "Answers",
+    "answerStatisticAllowedAnswer": "{{participantName}} has answered '{{answer}}' after {{time}} seconds and it was {{rating}}",
+    "answerStatisticWithoutAnswer": "{{participantName}} has answered after {{time}} seconds and it was {{rating}}",
+    "buzzerStatistic": "{{participantName}} has buzzered after {{time}} seconds and it was {{rating}}"
 }

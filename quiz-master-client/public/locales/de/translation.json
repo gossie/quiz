@@ -59,5 +59,11 @@
     "radioFreetext": "Freitext",
     "questionPoolHint": "Frage kann von anderen Nutzern übernommen werden, nachdem sie gespielt wurde",
     "buttonAddQuestion": "Frage hinzufügen",
-    "buttonEditQuestion": "Frage bearbeiten"
+    "buttonEditQuestion": "Frage bearbeiten",
+
+    "columnHeadlineQuestions": "Frage",
+    "columnHeadlineAnswers": "Antworten",
+    "answerStatisticAllowedAnswer": "{{participantName}} hat nach {{time}} Sekunden mit '{{answer}}' geantwortet und es war {{rating}}",
+    "answerStatisticWithoutAnswer": "{{participantName}} hat nach {{time}} Sekunden geantwortet und es war {{rating}}",
+    "buzzerStatistic": "{{participantName}} hat nach {{time}} Sekunden gebuzzert und es war {{rating}}"
 }
