@@ -3,6 +3,7 @@ import Quiz, { Participant } from "../quiz";
 import FlipMove from "react-flip-move"
 import './Participants.css';
 import ParticipantItem from './ParticipantItem';
+import { useTranslation } from 'react-i18next';
 
 interface ParticipantsProps {
     quiz: Quiz;
@@ -17,6 +18,8 @@ const Participants: React.FC<ParticipantsProps> = (props: ParticipantsProps) => 
     const pendingQuestion = props.quiz.openQuestions.find(question => question.pending);
     const [stateAfterLastQuestion, setStateAfterLastQuestion] = useState(new Array<ParticipantState>()); 
     const [currentQuestionId, setCurrentQuestionId] = useState('');
+    
+    const { t } = useTranslation();
  
     const comparePoints = (a: Participant, b: Participant) => b.points - a.points;
  
@@ -51,7 +54,7 @@ const Participants: React.FC<ParticipantsProps> = (props: ParticipantsProps) => 
 
     return (
         <div>
-            <h4 className="title is-4">Participants</h4>
+            <h4 className="title is-4">{t('headlineParticipants')}</h4>
             <div data-testid="participants" className="participants-list">
                 <FlipMove>
                     {elements}
