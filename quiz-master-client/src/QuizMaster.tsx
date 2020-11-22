@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import Questions from './Questions/Questions';
 import Participants from './quiz-client-shared/Participants/Participants';
 import Quiz from './quiz-client-shared/quiz';
@@ -14,6 +15,8 @@ const QuizMaster: React.FC<QuizMasterProps> = (props: QuizMasterProps) => {
     const [quiz, setQuiz] = useState({} as Quiz);
     const [finishButtonCssClasses, setFinishButtonCssClasses] = useState('button is-link')
     const [forceStatistics, setForceStatistics] = useState(false);
+    
+    const { t } = useTranslation();
 
     useEffect(() => {
         console.debug('register for server sent events');
@@ -74,22 +77,22 @@ const QuizMaster: React.FC<QuizMasterProps> = (props: QuizMasterProps) => {
                     <div id="timestamp">{lastChanged()}</div>
                     <div>
                         <h4 className="title is-4">{quiz.name}</h4>
-                        <span className={`icon ${quiz.undoPossible ? "clickable has-text-link" : "has-text-grey-light"}`} onClick={() => undo()} title="Undo"><i className="fas fa-undo"></i></span>
-                        <span className={`icon ${quiz.redoPossible ? "clickable has-text-link" : "has-text-grey-light"}`} onClick={() => redo()} title="Redo"><i className="fas fa-redo"></i></span>
+                        <span className={`icon ${quiz.undoPossible ? "clickable has-text-link" : "has-text-grey-light"}`} onClick={() => undo()} title={t('titleUndo')}><i className="fas fa-undo"></i></span>
+                        <span className={`icon ${quiz.redoPossible ? "clickable has-text-link" : "has-text-grey-light"}`} onClick={() => redo()} title={t('titleRedo')}><i className="fas fa-redo"></i></span>
                     </div>
                     <div className="columns">
                         <div className="column participants box">
                             <Participants quiz={quiz}></Participants>
-                            <div id="finish-hint">When you push this button, the quiz will be closed and cannot be opened again. The final statisticts will be displayed.</div>
+                            <div id="finish-hint">{t('finishQuizNote')}</div>
                             { quiz.quizStatistics
                             ?
-                                <button className={finishButtonCssClasses} onClick={() => setForceStatistics(true)}>Show statistics</button>
+                                <button className={finishButtonCssClasses} onClick={() => setForceStatistics(true)}>{t('butonShowStatistics')}</button>
                             :
-                                <button className={finishButtonCssClasses} onClick={finishQuiz}>Finish Quiz</button>
+                                <button className={finishButtonCssClasses} onClick={finishQuiz}>{t('buttonFinishQuiz')}</button>
                             }
                             <QuizStatistics quiz={quiz} closeable={true} forceOpen={forceStatistics} onClose={() => setForceStatistics(false)}></QuizStatistics>
                             <div id="expiration-date">
-                                A quiz will automatically be deleted after four weeks of inactivity. Currently this quiz is valid until {expires()}.
+                                {t('expirationNote', { expirationDate: expires() })}
                             </div> 
                         </div>
                         <div className="column question">

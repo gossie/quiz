@@ -1,0 +1,33 @@
+{
+    "title": "Quiz",
+    "headlineJoinQuiz": "Join a Quiz",
+    "quizIdLabel": "Quiz ID",
+    "playerNameLabel": "Player Name",
+    "buttonJoin": "Join!",
+
+    "errorQuizNotFound": "Sorry {{participantName}}, no quiz for id {{quizId}} found",
+    "errorQuizIdNotValid": "Sorry {{participantName}}, '{{quizId}}' is not a valid quiz id",
+
+    "hintRevealNotAllowed": "If checked, other participants can see your answer when the quiz master reveals them",
+    "headlineCurrentQuestion": "Current question",
+
+    "headlineParticipants": "Participants",
+    "buzzerHint": "I have buzzered!",
+
+    "placeholderAnswer": "Answer",
+    "buttonAnswer": "Answer",
+    "errorEstimation": "Something went wrong. Please send the data again.",
+
+    "buzzerOpen": "I know it!",
+    "buzzerClosed": "Too late!",
+    "buzzerHit": "Your turn!",
+
+    "secondsLeft": "{{seconds}} seconds left",
+    "imageAlt": "There should be something here",
+
+    "columnHeadlineQuestions": "Question",
+    "columnHeadlineAnswers": "Answers",
+    "answerStatisticAllowedAnswer": "{{participantName}} has answered '{{answer}}' after {{time}} seconds and it was {{rating}}",
+    "answerStatisticWithoutAnswer": "{{participantName}} has answered after {{time}} seconds and it was {{rating}}",
+    "buzzerStatistic": "{{participantName}} has buzzered after {{time}} seconds and it was {{rating}}"
+}

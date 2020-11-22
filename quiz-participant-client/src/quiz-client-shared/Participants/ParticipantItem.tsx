@@ -1,4 +1,5 @@
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import { Participant, Question } from "../quiz";
 import './ParticipantItem.scss';
 
@@ -9,6 +10,8 @@ interface ParticipantProps {
 }
 
 const ParticipantItem: React.FC<ParticipantProps> = (props: ParticipantProps) => {
+
+    const { t } = useTranslation();
 
     const pointDifference = () => {
         if (props.pointsAfterLastQuestion !== props.participant.points) {
@@ -38,7 +41,7 @@ const ParticipantItem: React.FC<ParticipantProps> = (props: ParticipantProps) =>
                 </div>
                 <div data-testid="participant-answer" className={'participant-answer' + (props.participant.turn || getEstimatedValue() ? ' visible': '')}>
                     <div className="bubble">
-                        {props.participant.turn ? 'I have buzzered!' : getEstimatedValue()}
+                        {props.participant.turn ? t('buzzerHint') : getEstimatedValue()}
                     </div>
                 </div>
             </div>;
