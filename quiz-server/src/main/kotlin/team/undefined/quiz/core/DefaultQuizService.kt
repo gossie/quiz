@@ -22,14 +22,14 @@ class DefaultQuizService(private val eventRepository: EventRepository,
 
     @WriteLock
     override fun createQuiz(command: CreateQuizCommand): Mono<Unit> {
-        logger.debug("creating a new quiz")
+        logger.info("creating a new quiz")
         return eventRepository.storeEvent(QuizCreatedEvent(command.quizId, command.quiz))
                 .map { eventBus.post(it) }
     }
 
     @WriteLock
     override fun createQuestion(command: CreateQuestionCommand): Mono<Unit> {
-        logger.debug("creating a new question for quiz '{}'", command.quizId)
+        logger.info("creating a new question for quiz '{}'", command.quizId)
         return eventRepository.storeEvent(QuestionCreatedEvent(command.quizId, command.question))
                 .map {
                     undoneEventsCache.remove(it.quizId)
@@ -39,7 +39,7 @@ class DefaultQuizService(private val eventRepository: EventRepository,
 
     @WriteLock
     override fun editQuestion(command: EditQuestionCommand): Mono<Unit> {
-        logger.debug("editing question '{}' of quiz '{}'", command.questionId, command.quizId)
+        logger.info("editing question '{}' of quiz '{}'", command.questionId, command.quizId)
         return eventRepository.storeEvent(QuestionEditedEvent(command.quizId, command.question))
                 .map {
                     undoneEventsCache.remove(it.quizId)
@@ -49,7 +49,7 @@ class DefaultQuizService(private val eventRepository: EventRepository,
 
     @WriteLock
     override fun createParticipant(command: CreateParticipantCommand): Mono<Unit> {
-        logger.debug("creating a new participant in quiz '{}'", command.quizId)
+        logger.info("creating a new participant in quiz '{}'", command.quizId)
         eventBus.post(ForceEmitCommand(command.quizId))
         return eventRepository.determineEvents(command.quizId)
                 .switchIfEmpty(Mono.error(IllegalStateException("quiz with id ${command.quizId} does not exit")))
@@ -64,7 +64,7 @@ class DefaultQuizService(private val eventRepository: EventRepository,
 
     @WriteLock
     override fun deleteParticipant(command: DeleteParticipantCommand): Mono<Unit> {
-        logger.debug("deleting participant with id {} in quiz '{}'", command.participantId, command.quizId)
+        logger.info("deleting participant with id {} in quiz '{}'", command.participantId, command.quizId)
         return eventRepository.determineEvents(command.quizId)
                 .reduce(Quiz(name = "")) { quiz: Quiz, event: Event -> event.process(quiz)}
                 .filter { it.hasParticipantWithId(command.participantId) }
@@ -77,7 +77,7 @@ class DefaultQuizService(private val eventRepository: EventRepository,
 
     @WriteLock
     override fun deleteQuestion(command: DeleteQuestionCommand): Mono<Unit> {
-        logger.debug("deleting question '{}' from quiz '{}'", command.questionId, command.quizId)
+        logger.info("deleting question '{}' from quiz '{}'", command.questionId, command.quizId)
         return eventRepository.storeEvent(QuestionDeletedEvent(command.quizId, command.questionId))
                 .map {
                     undoneEventsCache.remove(it.quizId)
@@ -87,7 +87,7 @@ class DefaultQuizService(private val eventRepository: EventRepository,
 
     @WriteLock
     override fun buzzer(command: BuzzerCommand): Mono<Unit> {
-        logger.debug("'{}' buzzered in quiz '{}'", command.participantId, command.quizId)
+        logger.info("'{}' buzzered in quiz '{}'", command.participantId, command.quizId)
         return eventRepository.determineEvents(command.quizId)
                 .reduce(Quiz(name = "")) { quiz: Quiz, event: Event -> event.process(quiz) }
                 .filter { it.hasParticipantWithId(command.participantId) }
@@ -102,7 +102,7 @@ class DefaultQuizService(private val eventRepository: EventRepository,
 
     @WriteLock
     override fun estimate(command: EstimationCommand): Mono<Unit> {
-        logger.debug("'{}' estimated value '{}' in quiz '{}'", command.participantId, command.estimatedValue, command.quizId)
+        logger.info("'{}' estimated value '{}' in quiz '{}'", command.participantId, command.estimatedValue, command.quizId)
         return eventRepository.determineEvents(command.quizId)
                 .reduce(Quiz(name = "")) { quiz: Quiz, event: Event -> event.process(quiz) }
                 .filter { it.hasParticipantWithId(command.participantId) }
@@ -117,7 +117,7 @@ class DefaultQuizService(private val eventRepository: EventRepository,
 
     @WriteLock
     override fun toggleAnswerRevealAllowed(command: ToggleAnswerRevealAllowedCommand): Mono<Unit> {
-        logger.debug("{} prevents the reveal of answers for quiz {}", command.participantId, command.quizId)
+        logger.info("{} prevents the reveal of answers for quiz {}", command.participantId, command.quizId)
         return eventRepository.determineEvents(command.quizId)
                 .reduce(Quiz(name = "")) { quiz: Quiz, event: Event -> event.process(quiz) }
                 .filter { it.hasParticipantWithId(command.participantId) }
@@ -130,7 +130,7 @@ class DefaultQuizService(private val eventRepository: EventRepository,
 
     @WriteLock
     override fun startNewQuestion(command: AskQuestionCommand): Mono<Unit> {
-        logger.debug("starting question '{}' in quiz '{}'", command.questionId, command.quizId)
+        logger.info("starting question '{}' in quiz '{}'", command.questionId, command.quizId)
         return eventRepository.storeEvent(QuestionAskedEvent(command.quizId, command.questionId))
                 .map { eventBus.post(it) }
                 .flatMapMany { eventRepository.determineEvents(command.quizId) }
@@ -150,7 +150,7 @@ class DefaultQuizService(private val eventRepository: EventRepository,
 
     @WriteLock
     override fun answer(command: AnswerCommand): Mono<Unit> {
-        logger.debug("'{}' answered '{}' in quiz", command.participantId, command.answer, command.quizId)
+        logger.info("'{}' answered '{}' in quiz", command.participantId, command.answer, command.quizId)
         return eventRepository.storeEvent(AnsweredEvent(command.quizId, command.participantId, command.answer))
                 .map {
                     undoneEventsCache.remove(it.quizId)
@@ -160,7 +160,7 @@ class DefaultQuizService(private val eventRepository: EventRepository,
 
     @WriteLock
     override fun reopenQuestion(command: ReopenCurrentQuestionCommand): Mono<Unit> {
-        logger.debug("reopening active question in quiz '{}'", command.quizId)
+        logger.info("reopening active question in quiz '{}'", command.quizId)
         return eventRepository.storeEvent(CurrentQuestionReopenedEvent(command.quizId))
                 .map { eventBus.post(it) }
                 .flatMapMany { eventRepository.determineEvents(command.quizId) }
@@ -180,7 +180,7 @@ class DefaultQuizService(private val eventRepository: EventRepository,
 
     @WriteLock
     override fun revealAnswers(command: RevealAnswersCommand): Mono<Unit> {
-        logger.debug("reveal answers of active question in quiz '{}'", command.quizId)
+        logger.info("reveal answers of active question in quiz '{}'", command.quizId)
         return eventRepository.storeEvent(AnswersRevealedEvent(command.quizId))
                 .map {
                     stopCounter(it.quizId)
@@ -194,7 +194,7 @@ class DefaultQuizService(private val eventRepository: EventRepository,
 
     @WriteLock
     override fun finishQuiz(command: FinishQuizCommand): Mono<Unit> {
-        logger.debug("finishing quiz '{}'", command.quizId)
+        logger.info("finishing quiz '{}'", command.quizId)
         return eventRepository.storeEvent(QuizFinishedEvent(command.quizId))
                 .map {
                     undoneEventsCache.remove(it.quizId)
@@ -204,7 +204,7 @@ class DefaultQuizService(private val eventRepository: EventRepository,
 
     @WriteLock
     override fun deleteQuiz(command: DeleteQuizCommand): Mono<Unit> {
-        logger.debug("deleting quiz '{}'", command.quizId)
+        logger.info("deleting quiz '{}'", command.quizId)
         return eventRepository.deleteEvents(command.quizId)
                 .map {
                     subscriptions.remove(command.quizId)
@@ -215,7 +215,7 @@ class DefaultQuizService(private val eventRepository: EventRepository,
 
     @ReadLock
     override fun determineQuizzes(): Flux<Quiz> {
-        logger.debug("determine all quizzes")
+        logger.info("determine all quizzes")
         return eventRepository.determineQuizIds()
                 .flatMap {
                     eventRepository.determineEvents(it)
