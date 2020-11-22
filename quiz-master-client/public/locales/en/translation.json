@@ -1,0 +1,9 @@
+{
+    "title": "Quiz Master",
+    "headlineCreate": "Create a quiz",
+    "headlineOpen": "Open a quiz",
+    "quizNameLabel": "Quiz Name",
+    "quizIdLabel": "Quiz ID",
+    "buttonStart": "Start!",
+    "buttonJoin": "Join!"
+}

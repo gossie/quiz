@@ -3,48 +3,15 @@ import './App.scss';
 import QuizMaster from './QuizMaster';
 import LoginPageWidget from './quiz-client-shared/LoginPageWidget/LoginPageWidget' 
 import AppHeader from './quiz-client-shared/AppHeader/AppHeader';
-import i18n from "i18next";
-import { useTranslation, initReactI18next } from "react-i18next";
-import LanguageDetector from 'i18next-browser-languagedetector';
-
-
-i18n
-    .use(initReactI18next) // passes i18n down to react-i18next
-    .use(LanguageDetector)
-    .init({
-        resources: {
-            en: {
-                translation: {
-                    title: "Quiz Master",
-                    headlineCreate: "Create a quiz",
-                    headlineOpen: "Open a quiz",
-                    buttonStart: "Start!",
-                    buttonJoin: "Join!"
-                }
-            },
-            de: {
-                translation: {
-                    title: "Quiz Master",
-                    headlineCreate: "Neues Quiz erstellen",
-                    headlineOpen: "Quiz öffnen",
-                    buttonStart: "Start!",
-                    buttonJoin: "Beitreten!"
-                }
-            }
-        },
-        fallbackLng: "en",
-        interpolation: {
-            escapeValue: false
-        }
-    });
+import { useTranslation } from "react-i18next";
 
 
 function App() {
     const [quizId, setQuizId] = useState('');
     const { t } = useTranslation();
 
-    const quizNameLabel = 'Quiz Name';
-    const quizIdLabel = 'Quiz Id';
+    const quizNameLabel = t('quizNameLabel');
+    const quizIdLabel = t('quizIdLabel');
 
     const getQuizIdFromUrl = () => {
         const query = new URLSearchParams(window.location.search);
