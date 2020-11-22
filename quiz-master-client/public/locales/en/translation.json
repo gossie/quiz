@@ -5,5 +5,20 @@
     "quizNameLabel": "Quiz Name",
     "quizIdLabel": "Quiz ID",
     "buttonStart": "Start!",
-    "buttonJoin": "Join!"
+    "buttonJoin": "Join!",
+
+    "headlineParticipants": "Participants",
+    "buttonInviteParticipants": "Invite Participants",
+    "headlineInviteParticipants": "Invite Participants",
+    "invitationExplanation": "Copy the URL and send it to your quiz participants.",
+    "buttonCopy": "Copy to Clipboard",
+    "secondsLeft": "{{seconds}} seconds left",
+    "buttonReveal": "Reveal answers",
+    "titleRevealNotAllowed": "{{name}} does not want the answer to be shown",
+    "titleDeleteParticipant": "Delete participant",
+    "buzzerHint": "I have buzzered!",
+    "titleAnswerCorrect": "Correct Answer",
+    "titleAnswerIncorrect": "Incorrect Answer",
+    "finishQuizNote": "When you push this button, the quiz will be closed and cannot be opened again. The final statisticts will be displayed.",
+    "expirationNote": "A quiz will automatically be deleted after four weeks of inactivity. Currently this quiz is valid until {{expirationDate}}."
 }

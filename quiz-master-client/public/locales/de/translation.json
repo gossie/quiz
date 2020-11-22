@@ -5,5 +5,20 @@
     "quizNameLabel": "Quiz Name",
     "quizIdLabel": "Quiz ID",
     "buttonStart": "Start!",
-    "buttonJoin": "Beitreten!"
+    "buttonJoin": "Beitreten!",
+
+    "headlineParticipants": "Teilnehmer",
+    "buttonInviteParticipants": "Teilnehmer einladen",
+    "headlineInviteParticipants": "Teilnehmer einladen",
+    "invitationExplanation": "Kopiere die URL und schicke sie deinen Teilnehmern.",
+    "buttonCopy": "In die Zwischenablage kopieren",
+    "secondsLeft": "{{seconds}} Sekunden noch",
+    "buttonReveal": "Antworten aufdecken",
+    "titleRevealNotAllowed": "{{name}} möchte nicht, dass seine Antwort gezeigt wird",
+    "titleDeleteParticipant": "Teilnehmer löschen",
+    "buzzerHint": "Ich habe gebuzzert!",
+    "titleAnswerCorrect": "Antwort korrekt",
+    "titleAnswerIncorrect": "Antwort nicht korrekt",
+    "finishQuizNote": "Wenn du hier klickst, schließt du das Quiz, es kann nicht mehr weiter gemacht werden und die finale Statistik wird angezeigt.",
+    "expirationNote": "Ein Quiz wird nach vier Wochen Inaktivität automatisch gelöscht. Aktuell ist dieses Quiz noch bit zum {{expirationDate}} gültig."
 }

@@ -8,11 +8,14 @@ i18n
     .use(Backend)
     .use(LanguageDetector)
     .init({
+        detection: {
+            order: ['querystring', 'navigator', 'cookie', 'localStorage', 'sessionStorage', 'htmlTag', 'path', 'subdomain']
+        },
         fallbackLng: 'en',
         debug: true,
     
         interpolation: {
-          escapeValue: false, // not needed for react as it escapes by default
+            escapeValue: false, // not needed for react as it escapes by default
         }
     });
 
