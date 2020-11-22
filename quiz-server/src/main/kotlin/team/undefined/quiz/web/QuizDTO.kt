@@ -13,5 +13,6 @@ data class QuizDTO(
         var redoPossible: Boolean = false,
         var finished: Boolean = false,
         var quizStatistics: QuizStatisticsDTO? = null,
-        var timestamp: Long
+        var timestamp: Long,
+        var expirationDate: Long = 0
 ) : RepresentationModel<QuizDTO>()
