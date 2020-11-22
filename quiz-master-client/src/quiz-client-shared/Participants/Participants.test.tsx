@@ -6,6 +6,18 @@ import Quiz from '../quiz';
 beforeEach(() => () => cleanup()); 
 afterEach(() => cleanup());
 
+jest.mock('react-i18next', () => ({
+    useTranslation: () => {
+        return {
+            t: (str: string, keys: object) => str === 'secondsLeft' ? `${keys['seconds']} seconds left` : null,
+            i18n: {
+                changeLanguage: () => new Promise(() => {}),
+            },
+        };
+        
+    },
+}));
+
 test('has two participants', () => {
     const quiz: Quiz = {
         id: '1',
@@ -16,6 +28,7 @@ test('has two participants', () => {
                 name: 'Erik',
                 turn: false,
                 points: 0,
+                revealAllowed: true,
                 links: []
             },
             {
@@ -23,12 +36,14 @@ test('has two participants', () => {
                 name: 'Sandra',
                 turn: false,
                 points: 0,
+                revealAllowed: true,
                 links: []
             }
         ],
         openQuestions: [],
         playedQuestions: [],
         timestamp: 1234,
+        expirationDate: 1234,
         links: []
     }
     
@@ -47,6 +62,7 @@ test('has no participants', () => {
         openQuestions: [],
         playedQuestions: [],
         timestamp: 1234,
+        expirationDate: 1234,
         links: []
     }
     const { getByTestId } = render(<Participants quiz={quiz} />);
@@ -65,6 +81,7 @@ test('shows question counter', () => {
                 name: 'Erik',
                 turn: false,
                 points: 0,
+                revealAllowed: true,
                 links: []
             },
             {
@@ -72,6 +89,7 @@ test('shows question counter', () => {
                 name: 'Sandra',
                 turn: false,
                 points: 0,
+                revealAllowed: true,
                 links: []
             }
         ],
@@ -88,6 +106,7 @@ test('shows question counter', () => {
         ],
         playedQuestions: [],
         timestamp: 1234,
+        expirationDate: 1234,
         links: []
     }
     

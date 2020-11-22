@@ -1,6 +1,7 @@
 import React from 'react';
 import './Question.scss'
 import Quiz, { Question } from '../../quiz-client-shared/quiz';
+import { useTranslation } from 'react-i18next';
 
 interface QuestionElementProps {
     enableOperations?: boolean;
@@ -12,6 +13,8 @@ interface QuestionElementProps {
 }
 
 const QuestionElement: React.FC<QuestionElementProps> = (props: QuestionElementProps) => {
+    const { t } = useTranslation();
+
     const toggleQuestion = async (question: Question) => {
         const questionLink = question.links.find(link => link.rel === 'self')?.href;
         await fetch(`${process.env.REACT_APP_BASE_URL}${questionLink}`, {
@@ -55,23 +58,23 @@ const QuestionElement: React.FC<QuestionElementProps> = (props: QuestionElementP
             <div className="question-main-column">
                 <div className="question-top-row">   
                     <div className={'question-type-column has-text-weight-semibold' + (props.question.pending ? ' is-pending-question' : '')}>
-                        { props.question.estimates != null && <span data-testid={`freetext-question-${props.index}`} className="icon" title="Freetext question"><i className="far fa-keyboard"></i></span> }
-                        { props.question.estimates == null && <span data-testid={`buzzer-question-${props.index}`} className="icon" title="Buzzer question"><i className="fas fa-hockey-puck"></i></span> }
-                        { props.question.timeToAnswer != null && <span data-testid={`stop-watch-${props.index}`} className="icon" title={`${props.question.timeToAnswer} seconds to answer`}><i className="fas fa-hourglass-half"></i></span> }
-                        { props.question.imagePath && props.question.imagePath.length > 0 && <span data-testid={`image-icon-${props.index}`} title="Show image" className="icon clickable" onClick={() => props.setImageToDisplay(props.question.imagePath!)}><i className="fas fa-images"></i></span>}
+                        { props.question.estimates != null && <span data-testid={`freetext-question-${props.index}`} className="icon" title={t('titleFreetextQuestion')}><i className="far fa-keyboard"></i></span> }
+                        { props.question.estimates == null && <span data-testid={`buzzer-question-${props.index}`} className="icon" title={t('titleBuzzerQuestion')}><i className="fas fa-hockey-puck"></i></span> }
+                        { props.question.timeToAnswer != null && <span data-testid={`stop-watch-${props.index}`} className="icon" title={t('titleSecondsToAnswer', { seconds: props.question.timeToAnswer })}><i className="fas fa-hourglass-half"></i></span> }
+                        { props.question.imagePath && props.question.imagePath.length > 0 && <span data-testid={`image-icon-${props.index}`} title={t('titleShowImage')} className="icon clickable" onClick={() => props.setImageToDisplay(props.question.imagePath!)}><i className="fas fa-images"></i></span>}
                     </div>
                     <div className="question-actions-column">
                         { props.enableOperations && !props.question.pending && 
-                            <span data-testid={`start-question-${props.index}`} className="icon clickable has-text-link" title="Ask question" onClick={() => toggleQuestion(props.question)}><i className="fas fa-play"></i></span>
+                            <span data-testid={`start-question-${props.index}`} className="icon clickable has-text-link" title={t('titleAskQuestion')} onClick={() => toggleQuestion(props.question)}><i className="fas fa-play"></i></span>
                         }
                         { props.enableOperations && !props.question.pending && props.onEdit && 
-                            <span data-testid={`edit-question-${props.index}`} className="icon clickable has-text-warning" title="Edit question" onClick={() => props.onEdit!(props.question)}><i className="fas fa-pencil-alt"></i></span>
+                            <span data-testid={`edit-question-${props.index}`} className="icon clickable has-text-warning" title={t('titleEditQuestion')} onClick={() => props.onEdit!(props.question)}><i className="fas fa-pencil-alt"></i></span>
                         }
                         { props.enableOperations && props.question.pending && (isParticipantsTurn() || props.question.estimates != null) &&
-                            <span data-testid="reopen-button" className="icon clickable has-text-warning" onClick={() => reopenQuestion()} title='Reopen Question'><i className="fas fa-lock-open"></i></span>
+                            <span data-testid="reopen-button" className="icon clickable has-text-warning" onClick={() => reopenQuestion()} title={t('titleReopenQuestion')}><i className="fas fa-lock-open"></i></span>
                         }
                         { props.enableOperations && !props.question.pending && 
-                            <span data-testid={`delete-question-${props.index}`} className="icon clickable has-text-danger" title="Delete question" onClick={() => deleteQuestion(props.question)}><i className="fas fa-trash"></i></span>
+                            <span data-testid={`delete-question-${props.index}`} className="icon clickable has-text-danger" title={t('titleDeleteQuestion')} onClick={() => deleteQuestion(props.question)}><i className="fas fa-trash"></i></span>
                         }
                     </div>
                 </div>
