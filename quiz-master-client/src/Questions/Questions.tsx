@@ -12,6 +12,7 @@ interface QuestionsProps {
 
 const Questions: React.FC<QuestionsProps> = (props: QuestionsProps) => {
     const [imageToDisplay, setImageToDisplay] = useState('');
+    const [sortedOpenQuestions, setSortedOpenQuestions] = useState(props.quiz.openQuestions);
     const [questionToAdd, setQuestionToAdd] = useState(false);
     const [tabIndex, setTabIndex] = useState(0);
     const [questionToEdit, setQuestionToEdit] = useState<Question | undefined>(undefined);
@@ -20,14 +21,25 @@ const Questions: React.FC<QuestionsProps> = (props: QuestionsProps) => {
         setQuestionToEdit(question);
     };
 
-    const onDragEnd = () => {
 
+    const onDragEnd = (result) => {
+        console.log("DRAG END", result);
+        if (!result.destination) {
+            return;
+        }
+        console.log([...sortedOpenQuestions]);
+        let newSortedOpenQuestions: Question[] = [...sortedOpenQuestions];
+        const removed: Question[] = newSortedOpenQuestions.splice(result.source.index, 1);
+        newSortedOpenQuestions.splice(result.destination.index, 0, ...removed);
+
+        setSortedOpenQuestions(newSortedOpenQuestions);
+        console.log([...sortedOpenQuestions]);
     };
 
     const playedQuestions = props.quiz.playedQuestions.map((q, index) => 
         <li key={q.id} className="no-padding"><QuestionElement question={q} quiz={props.quiz} index={index} setImageToDisplay={setImageToDisplay}></QuestionElement></li>);
   
-    const openQuestions = props.quiz.openQuestions.map((item, index) => (
+    const openQuestions = sortedOpenQuestions.map((item, index) => (
         <Draggable key={item.id} draggableId={item.id} index={index}>
           {(provided, snapshot) => (
             <li key={item.id}
@@ -35,7 +47,7 @@ const Questions: React.FC<QuestionsProps> = (props: QuestionsProps) => {
                 ref={provided.innerRef}
                 {...provided.draggableProps}
                 {...provided.dragHandleProps}>
-             <QuestionElement question={item} quiz={props.quiz} index={index} setImageToDisplay={setImageToDisplay} enableOperations={true} onEdit={onEdit}></QuestionElement>
+             <QuestionElement question={item} quiz={props.quiz} index={props.quiz.playedQuestions.length + index} setImageToDisplay={setImageToDisplay} enableOperations={true} onEdit={onEdit}></QuestionElement>
             </li>
           )}
         </Draggable>
