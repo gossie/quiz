@@ -3,10 +3,45 @@ import './App.scss';
 import QuizMaster from './QuizMaster';
 import LoginPageWidget from './quiz-client-shared/LoginPageWidget/LoginPageWidget' 
 import AppHeader from './quiz-client-shared/AppHeader/AppHeader';
+import i18n from "i18next";
+import { useTranslation, initReactI18next } from "react-i18next";
+import LanguageDetector from 'i18next-browser-languagedetector';
+
+
+i18n
+    .use(initReactI18next) // passes i18n down to react-i18next
+    .use(LanguageDetector)
+    .init({
+        resources: {
+            en: {
+                translation: {
+                    title: "Quiz Master",
+                    headlineCreate: "Create a quiz",
+                    headlineOpen: "Open a quiz",
+                    buttonStart: "Start!",
+                    buttonJoin: "Join!"
+                }
+            },
+            de: {
+                translation: {
+                    title: "Quiz Master",
+                    headlineCreate: "Neues Quiz erstellen",
+                    headlineOpen: "Quiz öffnen",
+                    buttonStart: "Start!",
+                    buttonJoin: "Beitreten!"
+                }
+            }
+        },
+        fallbackLng: "en",
+        interpolation: {
+            escapeValue: false
+        }
+    });
 
 
 function App() {
     const [quizId, setQuizId] = useState('');
+    const { t } = useTranslation();
 
     const quizNameLabel = 'Quiz Name';
     const quizIdLabel = 'Quiz Id';
@@ -52,15 +87,15 @@ function App() {
 
     return (
         <div className="App">
-            <AppHeader quizId={quizId} title="Quiz Master"></AppHeader>
+            <AppHeader quizId={quizId} title={t('title')}></AppHeader>
             <div className="App-content">
                 { quizId.length > 0
                     ?
                     <QuizMaster quizId={quizId}></QuizMaster>
                     :
                         <div className="container Login-page">
-                            <LoginPageWidget title="Create a Quiz" inputLabels={[quizNameLabel]} buttonLabel="Start!" onSubmit={startQuiz}></LoginPageWidget>
-                            <LoginPageWidget title="Open Quiz" inputValues={{[quizIdLabel]: getQuizIdFromUrl()}} inputLabels={[quizIdLabel]} buttonLabel="Join!" onSubmit={joinQuiz}></LoginPageWidget>
+                            <LoginPageWidget title={t('headlineCreate')} inputLabels={[quizNameLabel]} buttonLabel={t('buttonStart')} onSubmit={startQuiz}></LoginPageWidget>
+                            <LoginPageWidget title={t('headlineOpen')} inputValues={{[quizIdLabel]: getQuizIdFromUrl()}} inputLabels={[quizIdLabel]} buttonLabel={t('buttonJoin')} onSubmit={joinQuiz}></LoginPageWidget>
                         </div>
                 }
             </div>
