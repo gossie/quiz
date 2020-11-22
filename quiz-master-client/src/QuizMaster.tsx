@@ -89,7 +89,7 @@ const QuizMaster: React.FC<QuizMasterProps> = (props: QuizMasterProps) => {
                             }
                             <QuizStatistics quiz={quiz} closeable={true} forceOpen={forceStatistics} onClose={() => setForceStatistics(false)}></QuizStatistics>
                             <div id="expiration-date">
-                                The quiz is valid until {expires()} and will automatically be deleted after that.
+                                A quiz will automatically be deleted after four weeks of inactivity. Currently this quiz is valid until {expires()}.
                             </div> 
                         </div>
                         <div className="column question">
