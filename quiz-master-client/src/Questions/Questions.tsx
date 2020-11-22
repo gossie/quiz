@@ -4,6 +4,7 @@ import './Questions.scss'
 import QuestionElement from './Question/Question';
 import QuestionForm from './QuestionForm/QuestionForm';
 import QuestionPool from './QuestionPool/QuestionPool';
+import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
 
 interface QuestionsProps {
     quiz: Quiz;
@@ -18,13 +19,28 @@ const Questions: React.FC<QuestionsProps> = (props: QuestionsProps) => {
     const onEdit = (question: Question) => {
         setQuestionToEdit(question);
     };
-    
-    const playedQuestions = props.quiz.playedQuestions
-            .map((q, index) => <li key={q.id} className="no-padding"><QuestionElement question={q} quiz={props.quiz} index={index} setImageToDisplay={setImageToDisplay}></QuestionElement></li>);
 
-    const openQuestions = props.quiz.openQuestions
-            .map((q, index) => <li key={q.id} className="no-padding"><QuestionElement question={q} quiz={props.quiz} index={index} setImageToDisplay={setImageToDisplay} enableOperations={true} onEdit={onEdit}></QuestionElement></li>);
-    
+    const onDragEnd = () => {
+
+    };
+
+    const playedQuestions = props.quiz.playedQuestions.map((q, index) => 
+        <li key={q.id} className="no-padding"><QuestionElement question={q} quiz={props.quiz} index={index} setImageToDisplay={setImageToDisplay}></QuestionElement></li>);
+  
+    const openQuestions = props.quiz.openQuestions.map((item, index) => (
+        <Draggable key={item.id} draggableId={item.id} index={index}>
+          {(provided, snapshot) => (
+            <li key={item.id}
+                className="no-padding"
+                ref={provided.innerRef}
+                {...provided.draggableProps}
+                {...provided.dragHandleProps}>
+             <QuestionElement question={item} quiz={props.quiz} index={index} setImageToDisplay={setImageToDisplay} enableOperations={true} onEdit={onEdit}></QuestionElement>
+            </li>
+          )}
+        </Draggable>
+    ));
+
     return (
         <div className="questions-column">
             <div className="level not-responsive title">
@@ -35,15 +51,26 @@ const Questions: React.FC<QuestionsProps> = (props: QuestionsProps) => {
             </div>
             <div>
                 <div data-testid="open-questions" className="block">
-                    <ul className="block-list has-radius">
-                        {openQuestions}
-                    </ul>
+                  
+                    <DragDropContext onDragEnd={onDragEnd}>
+                        <Droppable droppableId="droppable">
+                        {(provided, snapshot) => (
+                            <ul className="block-list has-radius is-question-list"
+                                {...provided.droppableProps}
+                                ref={provided.innerRef}>
+                                {openQuestions}
+                                {provided.placeholder}
+                            </ul>
+                        )}
+                        </Droppable>
+                    </DragDropContext>
+
                 </div>
 
                 { props.quiz.playedQuestions.length > 0 &&
                     <div data-testid="played-questions" className="block">
                         <hr/>
-                        <ul className="block-list has-radius">
+                        <ul className="block-list has-radius is-question-list">
                             {playedQuestions}
                         </ul>
                     </div>
