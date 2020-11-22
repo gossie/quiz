@@ -126,6 +126,16 @@ data class Quiz(
                 ?.estimates == null
     }
 
+    fun currentQuestionIsFreetextQuestion(): Boolean {
+        return !currentQuestionIsBuzzerQuestion()
+    }
+
+    fun currentAnswerIsDifferent(participantId: UUID, value: String): Boolean {
+        return questions.find { it.pending }
+                ?.estimates
+                ?.get(participantId) != value
+    }
+
     private fun checkParticipant(participant: Participant, participantId: UUID?): Boolean {
         return if (participantId == null) {
             participant.turn

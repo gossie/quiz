@@ -70,6 +70,11 @@ public class QuizDTOAssert extends AbstractAssert<QuizDTOAssert, QuizDTO> {
         return this;
     }
 
+    public QuizDTOAssert hasExpirationDate() {
+        Assertions.assertThat(actual.getExpirationDate()).isEqualTo(actual.getTimestamp() + 2_419_200_000L);
+        return this;
+    }
+
     public QuizDTOAssert isFinished() {
         Assertions.assertThat(actual.getFinished()).isTrue();
         return this;

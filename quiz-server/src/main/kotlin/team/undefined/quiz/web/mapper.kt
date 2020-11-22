@@ -14,7 +14,7 @@ fun Quiz.map(): Mono<QuizDTO> {
             .flatMap { it.map(this.id) }
             .collect(Collectors.toList())
             .flatMap { participants ->
-                val quizDTO = QuizDTO(this.id, this.name, participants, this.questions.filter { it.alreadyPlayed }.map { it.map(this.id) }, this.questions.filter { !it.alreadyPlayed }.map { it.map(this.id) }, this.isUndoPossible(), this.isRedoPossible(), this.finished, timestamp = this.getTimestamp())
+                val quizDTO = QuizDTO(this.id, this.name, participants, this.questions.filter { it.alreadyPlayed }.map { it.map(this.id) }, this.questions.filter { !it.alreadyPlayed }.map { it.map(this.id) }, this.isUndoPossible(), this.isRedoPossible(), this.finished, timestamp = this.getTimestamp(), expirationDate = this.getTimestamp() + 2_419_200_000)
                 if (this.quizStatistics == null) {
                      Mono.just(quizDTO)
                 } else {
@@ -45,10 +45,6 @@ private fun QuestionStatistics.map(quiz: Quiz): Mono<QuestionStatisticsDTO> {
                         mapped!!,
                         buzzerStatistics
                 )
-            }
-            .onErrorMap {
-                it.printStackTrace()
-                it
             }
 }
 
@@ -123,7 +119,7 @@ fun QuizDTO.map(): Quiz {
 }
 
 private fun QuizDTO.addLinks(): Mono<QuizDTO> {
-    var linkBuilder = linkTo(methodOn(ParticipantsController::class.java).create(this.id!!, ""))
+    var linkBuilder = linkTo(methodOn(ParticipantsController::class.java).create(this.id!!, "", null))
             .withRel("createParticipant")
             .toMono()
             .map { this.add(it) }

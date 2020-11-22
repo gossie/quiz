@@ -11,6 +11,7 @@ import reactor.core.publisher.Flux
 import reactor.core.publisher.Mono
 import reactor.test.StepVerifier
 import java.util.*
+import kotlin.collections.HashMap
 
 internal class DefaultQuizServiceTest {
 
@@ -101,6 +102,22 @@ internal class DefaultQuizServiceTest {
     }
 
     @Test
+    fun shouldNotCreateParticipantBecauseTheQuizDoesNotExist() {
+        val quizId = UUID.randomUUID()
+
+        `when`(quizRepository.determineEvents(quizId)).thenReturn(Flux.empty())
+
+        val quizService = DefaultQuizService(quizRepository, UndoneEventsCache(), eventBus)
+
+        val participant = Participant(name = "Sandra")
+        StepVerifier.create(quizService.createParticipant(CreateParticipantCommand(quizId, participant)))
+                .verifyError()
+
+        verify(eventBus).post(ForceEmitCommand(quizId))
+        verifyNoMoreInteractions(eventBus)
+    }
+
+    @Test
     fun shouldDeleteParticipant() {
         val quizId = UUID.randomUUID()
         val participantId = UUID.randomUUID()
@@ -185,6 +202,30 @@ internal class DefaultQuizServiceTest {
         val quizService = DefaultQuizService(quizRepository, UndoneEventsCache(), eventBus)
 
         val buzzer = quizService.buzzer(BuzzerCommand(quizId, lenasId))
+        StepVerifier.create(buzzer)
+                .verifyComplete()
+
+        verifyNoInteractions(eventBus)
+    }
+
+    @Test
+    fun shouldNotAllowEstimationCommandForBuzzerQuestion() {
+        // The Beuke Bug
+        val quizId = UUID.randomUUID()
+        val beukesId = UUID.randomUUID()
+        val questionId = UUID.randomUUID()
+
+        `when`(quizRepository.determineEvents(quizId))
+                .thenReturn(Flux.just(
+                        QuizCreatedEvent(quizId, Quiz(quizId, "Quiz")),
+                        QuestionCreatedEvent(quizId, question = Question(questionId, "Warum ist die Banane krum?")),
+                        ParticipantCreatedEvent(quizId, Participant(beukesId, "Beuke")),
+                        QuestionAskedEvent(quizId, questionId)
+                ))
+
+        val quizService = DefaultQuizService(quizRepository, UndoneEventsCache(), eventBus)
+
+        val buzzer = quizService.estimate(EstimationCommand(quizId, beukesId, "32"))
         StepVerifier.create(buzzer)
                 .verifyComplete()
 
@@ -371,7 +412,7 @@ internal class DefaultQuizServiceTest {
         `when`(quizRepository.determineEvents(quizId))
                 .thenReturn(Flux.just(
                         QuizCreatedEvent(quizId, Quiz(quizId, "Quiz")),
-                        QuestionCreatedEvent(quizId, question = Question(questionId, "Warum ist die Banane krum?")),
+                        QuestionCreatedEvent(quizId, question = Question(questionId, "Warum ist die Banane krum?", estimates = HashMap())),
                         ParticipantCreatedEvent(quizId, Participant(participantId, "Lena")),
                         QuestionAskedEvent(quizId, questionId)
                 ))
@@ -381,6 +422,53 @@ internal class DefaultQuizServiceTest {
         StepVerifier.create(quizService.estimate(EstimationCommand(quizId, participantId, "myEstimatedValue")))
                 .consumeNextWith {
                     verify(eventBus).post(argThat { (it as EstimatedEvent).quizId == quizId && it.participantId == participantId && it.estimatedValue == "myEstimatedValue" })
+                }
+                .verifyComplete()
+    }
+
+    @Test
+    fun shouldPreventDuplicateEstimates() {
+        val quizId = UUID.randomUUID()
+        val questionId = UUID.randomUUID()
+        val participantId = UUID.randomUUID()
+
+        `when`(quizRepository.determineEvents(quizId))
+                .thenReturn(Flux.just(
+                        QuizCreatedEvent(quizId, Quiz(quizId, "Quiz")),
+                        QuestionCreatedEvent(quizId, question = Question(questionId, "Warum ist die Banane krum?", estimates = HashMap())),
+                        ParticipantCreatedEvent(quizId, Participant(participantId, "Lena")),
+                        QuestionAskedEvent(quizId, questionId),
+                        EstimatedEvent(quizId, participantId, "Darum")
+                ))
+
+        val quizService = DefaultQuizService(quizRepository, UndoneEventsCache(), eventBus)
+
+        StepVerifier.create(quizService.estimate(EstimationCommand(quizId, participantId, "Darum")))
+                .verifyComplete()
+
+        verifyNoInteractions(eventBus)
+    }
+
+    @Test
+    fun shouldPreventAllowMultipleAnswersThatDiffer() {
+        val quizId = UUID.randomUUID()
+        val questionId = UUID.randomUUID()
+        val participantId = UUID.randomUUID()
+
+        `when`(quizRepository.determineEvents(quizId))
+                .thenReturn(Flux.just(
+                        QuizCreatedEvent(quizId, Quiz(quizId, "Quiz")),
+                        QuestionCreatedEvent(quizId, question = Question(questionId, "Warum ist die Banane krum?", estimates = HashMap())),
+                        ParticipantCreatedEvent(quizId, Participant(participantId, "Lena")),
+                        QuestionAskedEvent(quizId, questionId),
+                        EstimatedEvent(quizId, participantId, "Darum")
+                ))
+
+        val quizService = DefaultQuizService(quizRepository, UndoneEventsCache(), eventBus)
+
+        StepVerifier.create(quizService.estimate(EstimationCommand(quizId, participantId, "Oder?")))
+                .consumeNextWith {
+                    verify(eventBus).post(argThat { (it as EstimatedEvent).quizId == quizId && it.participantId == participantId && it.estimatedValue == "Oder?" })
                 }
                 .verifyComplete()
     }
