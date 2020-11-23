@@ -3,7 +3,7 @@
     "headlineJoinQuiz": "Nimm an einem Quiz teil",
     "quizIdLabel": "Quiz ID",
     "playerNameLabel": "Name",
-    "buttonJoin": "Nimm teil!",
+    "buttonJoin": "Teilnehmen!",
 
     "errorQuizNotFound": "Sorry {{participantName}}, das Quiz mit der ID {{quizId}} wurde nicht gefunden",
     "errorQuizIdNotValid": "Sorry {{participantName}}, '{{quizId}}' ist keine valide Quiz ID",
