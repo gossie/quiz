@@ -129,7 +129,7 @@ class QuizController(private val quizService: QuizService,
                 .map { quizProjection.determineQuiz(quizId) }
                 .flatMap { it!!.map() }
                 .map {
-                    logger.info("Sending quiz {} to the client as heartbeat", it)
+                    logger.info("Sending quiz {} to the client as heartbeat", it.id)
                     ServerSentEvent.builder<QuizDTO>()
                             .event("quiz")
                             .data(it)

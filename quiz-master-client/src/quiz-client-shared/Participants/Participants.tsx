@@ -5,6 +5,7 @@ import FlipMove from "react-flip-move"
 import './Participants.css';
 import ParticipantItem from './ParticipantItem';
 import InviteButton from '../../InviteButton/InviteButton';
+import { useTranslation } from 'react-i18next';
 const buzzerfile = require('./../../assets/buzzer.mp3');
 
 interface ParticipantsProps {
@@ -23,6 +24,8 @@ const Participants: React.FC<ParticipantsProps> = (props: ParticipantsProps) => 
     const [stateAfterLastQuestion, setStateAfterLastQuestion] = useState(new Array<ParticipantState>()); 
     const [currentQuestionId, setCurrentQuestionId] = useState('');
     const [wasAPlayersTurnBefore, setWasAPlayersTurnBefore] = useState(false);
+
+    const { t } = useTranslation();
 
     const getPointsAfterLastQuestionForParticipant = (participant: Participant) => {
         const participantStateAfterLastQuestion = stateAfterLastQuestion.find(p => p.id === participant.id);
@@ -93,7 +96,7 @@ const Participants: React.FC<ParticipantsProps> = (props: ParticipantsProps) => 
 
     return (
         <div>
-            <h4 className="title is-4">Participants</h4>
+            <h4 className="title is-4">{t('headlineParticipants')}</h4>
             <audio src={buzzerfile} ref={buzzerAudio} preload='auto'></audio>
             { props.quiz.participants.length === 0 && 
                 <InviteButton quizId={props.quiz.id}></InviteButton>
@@ -104,10 +107,10 @@ const Participants: React.FC<ParticipantsProps> = (props: ParticipantsProps) => 
                 </FlipMove>     
             </div>
             <div>
-                { pendingQuestion && pendingQuestion.secondsLeft != null && <span data-testid="question-counter">{pendingQuestion.secondsLeft} seconds left</span> }
+                { pendingQuestion && pendingQuestion.secondsLeft != null && <span data-testid="question-counter">{t('secondsLeft', { seconds: pendingQuestion.secondsLeft })}</span> }
             </div>
             <div>
-                { (pendingQuestion && pendingQuestion.estimates) && <button onClick={revealAnswers} className="button is-link">Reveal answers</button> }
+                { (pendingQuestion && pendingQuestion.estimates) && <button onClick={revealAnswers} className="button is-link">{t('buttonReveal')}</button> }
             </div>
         </div>
     )

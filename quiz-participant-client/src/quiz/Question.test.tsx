@@ -3,6 +3,18 @@ import { render } from '@testing-library/react';
 import Quiz from './quiz';
 import Question from './Question';
 
+jest.mock('react-i18next', () => ({
+    useTranslation: () => {
+        return {
+            t: (str: string, keys: object) => str === 'secondsLeft' ? `${keys['seconds']} seconds left` : null,
+            i18n: {
+                changeLanguage: () => new Promise(() => {}),
+            },
+        };
+        
+    },
+}));
+
 test('has no questions', () => {
     const quiz: Quiz = {
         id: 5,

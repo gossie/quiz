@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import Quiz from '../../quiz-client-shared/quiz';
 
 interface EstimationProps {
@@ -7,8 +8,10 @@ interface EstimationProps {
 }
 
 const Estimation: React.FC<EstimationProps> = (props: EstimationProps) => {
+    const { t } = useTranslation();
+
     const [estimation, setEstimation] = useState('');
-    const [currentAnswer, setCurrentAnswer] = useState('Answer');
+    const [currentAnswer, setCurrentAnswer] = useState(t('placeholderAnswer') as string);
     const [sendButtonCssClasses, setSendButtonCssClasses] = useState('button is-primary');
     const [errorMessage, setErrorMessage] = useState('');
 
@@ -42,7 +45,7 @@ const Estimation: React.FC<EstimationProps> = (props: EstimationProps) => {
         })
         .catch(e => {
             console.error(e);
-            setErrorMessage('Something went wrong. Please send the data again.');
+            setErrorMessage(t('errorEstimation'));
         });
     }
 
@@ -63,7 +66,7 @@ const Estimation: React.FC<EstimationProps> = (props: EstimationProps) => {
             <div className="field is-grouped">
                 <div className="control">
                     <button data-testid="send" onClick={sendEstimation} className={sendButtonCssClasses} disabled={disabled}>
-                        Answer
+                        {t('buttonAnswer')}
                     </button>
                 </div>
             </div>
