@@ -1,8 +1,10 @@
 import React from 'react';
+import { useTranslation } from 'react-i18next';
+import { connect } from 'react-redux';
 import Quiz, { Participant } from "../quiz";
 import Answers from '../../Answers/Answers';
 import './ParticipantItem.scss';
-import { useTranslation } from 'react-i18next';
+import { showError } from '../../redux/actions';
 
 interface ParticipantProps {
     quiz: Quiz;
@@ -10,7 +12,11 @@ interface ParticipantProps {
     pointsAfterLastQuestion: number;
 }
 
-const ParticipantItem: React.FC<ParticipantProps> = (props: ParticipantProps) => {
+interface InternalParticipantProps extends ParticipantProps {
+    showError: (errorMessage: string) => void;
+}
+
+const ParticipantItem: React.FC<ParticipantProps> = (props: InternalParticipantProps) => {
 
     const { t } = useTranslation();
 
@@ -37,6 +43,11 @@ const ParticipantItem: React.FC<ParticipantProps> = (props: ParticipantProps) =>
         fetch(`${process.env.REACT_APP_BASE_URL}${deleteUrl}`, {
             method: 'DELETE'
         })
+        .then(response => {
+            if (response.status === 409) {
+                props.showError('Das Quiz wurde beendet und kann deshalb nicht mehr geändert werden. Falls das ein Versehen war, kann das Quiz per undo wieder geöffnent werden.');
+            }
+        })
     }
 
     return <div data-testid="participant-wrapper" className="participant" >
@@ -62,4 +73,7 @@ const ParticipantItem: React.FC<ParticipantProps> = (props: ParticipantProps) =>
             </div>
 }
 
-export default ParticipantItem;
+export default connect(
+    null,
+    {showError}
+)(ParticipantItem);
