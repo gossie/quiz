@@ -38,7 +38,8 @@ const QuestionForm: React.FC<QuestionFormProps> = (props: QuestionFormProps) => 
                 timeToAnswer: parseInt(timeToAnswer),
                 imagePath: imagePath,
                 publicVisible: visibility,
-                estimates: estimation ? {} : undefined
+                estimates: estimation ? {} : undefined,
+                previousQuestionId: props.questionToChange.previousQuestionId
             }),
             headers: {
                 'Content-Type': 'application/json',

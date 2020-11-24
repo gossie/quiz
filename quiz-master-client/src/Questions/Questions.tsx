@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import Quiz, { Question } from '../quiz-client-shared/quiz';
 import './Questions.scss'
 import QuestionElement from './Question/Question';
@@ -21,19 +21,39 @@ const Questions: React.FC<QuestionsProps> = (props: QuestionsProps) => {
         setQuestionToEdit(question);
     };
 
+    useEffect(() => {
+        setSortedOpenQuestions(props.quiz.openQuestions);
+    }, [props.quiz.openQuestions]);
+
+    const updatePreviousQuestionId = async (question, newPreviewQuestionId) => {
+        let questionLink = question.links.find(link => link.rel === 'self')?.href;      
+        let newQuestion = Object.assign(question, {previousQuestionId: newPreviewQuestionId})
+        await fetch(`${process.env.REACT_APP_BASE_URL}${questionLink}`, {
+            method: 'PUT',
+            body: JSON.stringify(newQuestion),
+            headers: {
+                'Content-Type': 'application/json',
+                Accept: 'application/json'
+            }
+        });
+    };
 
     const onDragEnd = (result) => {
-        console.log("DRAG END", result);
         if (!result.destination) {
             return;
         }
-        console.log([...sortedOpenQuestions]);
         let newSortedOpenQuestions: Question[] = [...sortedOpenQuestions];
         const removed: Question[] = newSortedOpenQuestions.splice(result.source.index, 1);
         newSortedOpenQuestions.splice(result.destination.index, 0, ...removed);
 
+        if (result.destination.index === 0) {
+            updatePreviousQuestionId(removed[0], null);
+        } else {
+            updatePreviousQuestionId(removed[0], newSortedOpenQuestions[result.destination.index - 1].id)
+        }
+
         setSortedOpenQuestions(newSortedOpenQuestions);
-        console.log([...sortedOpenQuestions]);
+
     };
 
     const playedQuestions = props.quiz.playedQuestions.map((q, index) => 
