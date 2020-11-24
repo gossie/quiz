@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import Quiz, { AnswerStatistics } from "../quiz";
 import './QuizStatistics.scss';
 
@@ -13,16 +14,18 @@ const QuizStatistics: React.FC<QuizStatisticsProps> = (props: QuizStatisticsProp
 
     const [closed, setClosed] = useState(false);
 
+    const { t } = useTranslation();
+
     const determineRows = () => {
         const buzzers = (answerStatistics: Array<AnswerStatistics>) => answerStatistics.map((answerStatistic, index) => {
             if (answerStatistic.answer) {
                 if (answerStatistic.participant.revealAllowed) {
-                    return <li data-testid={`answer-statistic-${index}`} key={index} className="answer-statistic">{answerStatistic.participant.name} has answered "{answerStatistic.answer}" after {answerStatistic.duration / 1000} seconds and it was {answerStatistic.rating}</li>
+                    return <li data-testid={`answer-statistic-${index}`} key={index} className="answer-statistic">{t('answerStatisticAllowedAnswer', { participantName: answerStatistic.participant.name, answer: answerStatistic.answer, time: answerStatistic.duration / 1000, rating: answerStatistic.rating })}</li>
                 } else {
-                    return <li data-testid={`answer-statistic-${index}`} key={index} className="answer-statistic">{answerStatistic.participant.name} has answered after {answerStatistic.duration / 1000} seconds and it was {answerStatistic.rating}</li>
+                    return <li data-testid={`answer-statistic-${index}`} key={index} className="answer-statistic">{t('answerStatisticWithoutAnswer', { participantName: answerStatistic.participant.name, time: answerStatistic.duration / 1000, rating: answerStatistic.rating })}</li>
                 }
             } else {
-                return <li data-testid={`answer-statistic-${index}`} key={index} className="answer-statistic">{answerStatistic.participant.name} has buzzered after {answerStatistic.duration / 1000} seconds and it was {answerStatistic.rating}</li>
+                return <li data-testid={`answer-statistic-${index}`} key={index} className="answer-statistic">{t('buzzerStatistic', { participantName: answerStatistic.participant.name, time: answerStatistic.duration / 1000, rating: answerStatistic.rating })}</li>
             }
         });
 
@@ -53,8 +56,8 @@ const QuizStatistics: React.FC<QuizStatisticsProps> = (props: QuizStatisticsProp
                         <table className="table box">
                             <thead>
                                 <tr>
-                                    <th>Question</th>
-                                    <th>Buzzers</th>
+                                    <th>{t('columnHeadlineQuestions')}</th>
+                                    <th>{t('columnHeadlineAnswers')}</th>
                                 </tr>
                             </thead>
                             <tbody>

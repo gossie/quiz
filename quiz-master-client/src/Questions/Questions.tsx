@@ -5,6 +5,7 @@ import QuestionElement from './Question/Question';
 import QuestionForm from './QuestionForm/QuestionForm';
 import QuestionPool from './QuestionPool/QuestionPool';
 import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
+import { useTranslation } from 'react-i18next';
 
 interface QuestionsProps {
     quiz: Quiz;
@@ -16,6 +17,8 @@ const Questions: React.FC<QuestionsProps> = (props: QuestionsProps) => {
     const [questionToAdd, setQuestionToAdd] = useState(false);
     const [tabIndex, setTabIndex] = useState(0);
     const [questionToEdit, setQuestionToEdit] = useState<Question | undefined>(undefined);
+
+    const { t } = useTranslation();
 
     const onEdit = (question: Question) => {
         setQuestionToEdit(question);
@@ -76,7 +79,7 @@ const Questions: React.FC<QuestionsProps> = (props: QuestionsProps) => {
     return (
         <div className="questions-column">
             <div className="level not-responsive title">
-                <h4 className="title is-4 no-margin">Questions</h4>
+                <h4 className="title is-4 no-margin">{t('headlingQuestions')}</h4>
                 <button data-testid="add-question-button" className="button level-right is-primary" onClick={() => setQuestionToAdd(true)}>
                      <i className="fas fa-plus"></i>
                 </button>
@@ -113,7 +116,7 @@ const Questions: React.FC<QuestionsProps> = (props: QuestionsProps) => {
                 <div data-testid="image-dialog" className="modal is-active">
                     <div className="modal-background"></div>
                     <div className="modal-card">
-                        <img data-testid="image" src={imageToDisplay} alt="There should be something here" />
+                        <img data-testid="image" src={imageToDisplay} alt={t('imageAlt')} />
                     </div>
                     <button data-testid="close-button" className="modal-close is-large" aria-label="close" onClick={() => setImageToDisplay('')}></button>
                 </div>
@@ -123,7 +126,7 @@ const Questions: React.FC<QuestionsProps> = (props: QuestionsProps) => {
                     <div className="modal-background"></div>
                     <div className="modal-card fixed-height">
                         <header className="modal-card-head">
-                            <p className="modal-card-title">Edit Question</p>
+                            <p className="modal-card-title">{t('headlineEditQuestion')}</p>
                             <button data-testid="close-button" className="delete" aria-label="close" onClick={() => setQuestionToEdit(undefined)}></button>
                         </header>
                         <section className="modal-card-body">
@@ -137,7 +140,7 @@ const Questions: React.FC<QuestionsProps> = (props: QuestionsProps) => {
                     <div className="modal-background"></div>
                     <div className="modal-card fixed-height">
                         <header className="modal-card-head">
-                            <p className="modal-card-title">Add Question</p>
+                            <p className="modal-card-title">{t('headlineAddQuestion')}</p>
                             <button data-testid="close-button" className="delete" aria-label="close" onClick={() => setQuestionToAdd(false)}></button>
                         </header>
                         <section className="modal-card-body">
@@ -146,13 +149,13 @@ const Questions: React.FC<QuestionsProps> = (props: QuestionsProps) => {
                                     <li className={tabIndex === 0 ? "is-active" : ""}>
                                         <a onClick={() => setTabIndex(0)}>
                                             <span className="icon is-small"><i className="far fa-lightbulb" aria-hidden="true"></i></span>
-                                            <span>Create a new question</span>
+                                            <span>{t('tabCreateNewQuestion')}</span>
                                         </a>
                                     </li>
                                     <li className={tabIndex === 1 ? "is-active" : ""}>
                                         <a onClick={() => setTabIndex(1)}>
                                             <span className="icon is-small"><i className="fas fa-cart-arrow-down" aria-hidden="true"></i></span>
-                                            <span>Pick from played questions</span>
+                                            <span>{t('tabPickExistingQuestion')}</span>
                                         </a>
                                     </li>
                                 </ul>

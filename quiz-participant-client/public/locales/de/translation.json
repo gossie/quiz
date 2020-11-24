@@ -1,0 +1,33 @@
+{
+    "title": "Quiz",
+    "headlineJoinQuiz": "Nimm an einem Quiz teil",
+    "quizIdLabel": "Quiz ID",
+    "playerNameLabel": "Name",
+    "buttonJoin": "Teilnehmen!",
+
+    "errorQuizNotFound": "Sorry {{participantName}}, das Quiz mit der ID {{quizId}} wurde nicht gefunden",
+    "errorQuizIdNotValid": "Sorry {{participantName}}, '{{quizId}}' ist keine valide Quiz ID",
+
+    "hintRevealNotAllowed": "Die anderen Teilnehmer können deine Antwort sehen, wenn sie aufgedeckt wird",
+    "headlineCurrentQuestion": "Aktuelle Frage",
+
+    "headlineParticipants": "Teilnehmer",
+    "buzzerHint": "Ich habe gebuzzert!",
+
+    "placeholderAnswer": "Antwort",
+    "buttonAnswer": "Antworten",
+    "errorEstimation": "Da ist etwas schief gelaufen. Versuch es nochmal.",
+
+    "buzzerOpen": "Ich weiß es!",
+    "buzzerClosed": "Zu spät!",
+    "buzzerHit": "Du bist dran!",
+
+    "secondsLeft": "{{seconds}} Sekunden noch",
+    "imageAlt": "Hier sollte eigentlich ein Bild angezeigt werden",
+
+    "columnHeadlineQuestions": "Frage",
+    "columnHeadlineAnswers": "Antworten",
+    "answerStatisticAllowedAnswer": "{{participantName}} hat nach {{time}} Sekunden mit '{{answer}}' geantwortet und es war {{rating}}",
+    "answerStatisticWithoutAnswer": "{{participantName}} hat nach {{time}} Sekunden geantwortet und es war {{rating}}",
+    "buzzerStatistic": "{{participantName}} hat nach {{time}} Sekunden gebuzzert und es war {{rating}}"
+}
