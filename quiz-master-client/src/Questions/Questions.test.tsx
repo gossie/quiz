@@ -47,8 +47,8 @@ test('should display questions', () => {
     const openQuestions = getByTestId('open-questions').querySelectorAll('li')
 
     expect(openQuestions.length).toBe(2);
-    expect(openQuestions[0].textContent).toEqual('1Frage 2');
-    expect(openQuestions[1].textContent).toEqual('2Frage 3');
+    expect(openQuestions[0].textContent).toEqual('2Frage 2');
+    expect(openQuestions[1].textContent).toEqual('3Frage 3');
 
     const playedQuestions = getByTestId('played-questions').querySelectorAll('li')
 
@@ -241,7 +241,7 @@ test('should start question', () => {
     }
     const { getByTestId } = render(<Questions quiz={quiz} />);
 
-    getByTestId('start-question-0').click();
+    getByTestId('start-question-1').click();
 });
 
 test('should delete question', () => {
@@ -290,7 +290,7 @@ test('should delete question', () => {
     }
     const { getByTestId } = render(<Questions quiz={quiz} />);
 
-    getByTestId('delete-question-0').click();
+    getByTestId('delete-question-1').click();
 });
 
 test('should open and close image modal', () => {
