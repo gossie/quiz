@@ -6,7 +6,6 @@ import './Participants.css';
 import ParticipantItem from './ParticipantItem';
 import InviteButton from '../../InviteButton/InviteButton';
 import { useTranslation } from 'react-i18next';
-const buzzerfile = require('./../../assets/buzzer.mp3');
 
 interface ParticipantsProps {
     quiz: Quiz;
@@ -97,7 +96,7 @@ const Participants: React.FC<ParticipantsProps> = (props: ParticipantsProps) => 
     return (
         <div>
             <h4 className="title is-4">{t('headlineParticipants')}</h4>
-            <audio src={buzzerfile} ref={buzzerAudio} preload='auto'></audio>
+            <audio src='./assets/buzzer.mp3' ref={buzzerAudio} preload='auto'></audio>
             { props.quiz.participants.length === 0 && 
                 <InviteButton quizId={props.quiz.id}></InviteButton>
             }
