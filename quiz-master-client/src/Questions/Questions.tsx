@@ -66,6 +66,7 @@ const Questions: React.FC<QuestionsProps> = (props: QuestionsProps) => {
         <Draggable key={item.id} draggableId={item.id} index={index}>
           {(provided, snapshot) => (
             <li key={item.id}
+                data-testid='dragquestion'
                 className="no-padding"
                 ref={provided.innerRef}
                 {...provided.draggableProps}
