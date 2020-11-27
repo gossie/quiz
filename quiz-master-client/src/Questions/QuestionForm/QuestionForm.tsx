@@ -1,14 +1,24 @@
 import React, { useState } from 'react';
+import { connect } from 'react-redux';
 import { useTranslation } from 'react-i18next';
 import Quiz, { Question } from '../../quiz-client-shared/quiz';
+import { showError } from '../../redux/actions';
 
 import './QuestionForm.css';
 
-interface QuestionFormProps {
+interface StateProps {}
+
+interface DispatchProps {
+    showError: (errorMessage: string) => void;
+}
+
+interface OwnProps {
     quiz: Quiz;
     questionToChange?: Question;
     onSubmit?: () => void;
 }
+
+type QuestionFormProps = StateProps & DispatchProps & OwnProps;
 
 const QuestionForm: React.FC<QuestionFormProps> = (props: QuestionFormProps) => {
     const [newQuestion, setNewQuestion] = useState(props.questionToChange?.question);
@@ -17,7 +27,7 @@ const QuestionForm: React.FC<QuestionFormProps> = (props: QuestionFormProps) => 
     const [timeToAnswer, setTimeToAnswer] = useState(props.questionToChange?.timeToAnswer ? `${props.questionToChange?.timeToAnswer}` : '');
     const [questionButtonCssClasses, setQuestionButtonCssClasses] = useState('button is-link');
     const [visibility, setVisibility] = useState(props.questionToChange ? props.questionToChange.publicVisible : false);
-    const [estimation, setEstimation] = useState(props.questionToChange ? (props.questionToChange.estimates !== null && props.questionToChange.estimates !== undefined) : false);
+    const [estimation, setEstimation] = useState(props.questionToChange?.estimates != null);
 
     const { t } = useTranslation();
     
@@ -33,7 +43,7 @@ const QuestionForm: React.FC<QuestionFormProps> = (props: QuestionFormProps) => 
             method = 'POST';
         }
 
-        await fetch(`${process.env.REACT_APP_BASE_URL}${questionLink}`, {
+        fetch(`${process.env.REACT_APP_BASE_URL}${questionLink}`, {
             method: method,
             body: JSON.stringify({
                 question: newQuestion,
@@ -48,15 +58,20 @@ const QuestionForm: React.FC<QuestionFormProps> = (props: QuestionFormProps) => 
                 'Content-Type': 'application/json',
                 Accept: 'application/json'
             }
-        });
-        
-        setNewQuestion('');
-        setCategory('other');
-        setTimeToAnswer('');
-        setImagePath('');
-        setQuestionButtonCssClasses('button is-link');
+        })
+        .then(response => {
+            if (response.status === 409) {
+                props.showError(t('errorMessageConflict'));
+            } else if (response.status === 200 || response.status === 201) {
+                setNewQuestion('');
+                setCategory('other');
+                setTimeToAnswer('');
+                setImagePath('');
+                setQuestionButtonCssClasses('button is-link');
 
-        props.onSubmit && props.onSubmit();
+                props.onSubmit && props.onSubmit();
+            }
+        });
     };
 
     return (
@@ -132,4 +147,7 @@ const QuestionForm: React.FC<QuestionFormProps> = (props: QuestionFormProps) => 
     )
 };
 
-export default QuestionForm;
+export default connect<StateProps, DispatchProps, OwnProps>(
+    null,
+    {showError}
+)(QuestionForm);
