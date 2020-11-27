@@ -42,7 +42,7 @@ const QuestionForm: React.FC<QuestionFormProps> = (props: QuestionFormProps) => 
                 imagePath: imagePath,
                 publicVisible: visibility,
                 estimates: estimation ? {} : undefined,
-                previousQuestionId: props.questionToChange ? props.questionToChange.previousQuestionId: undefined
+                previousQuestionId: props.questionToChange?.previousQuestionId
             }),
             headers: {
                 'Content-Type': 'application/json',
