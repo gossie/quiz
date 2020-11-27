@@ -3,7 +3,6 @@ import './Buzzer.css';
 import Quiz from '../../quiz-client-shared/quiz';
 import { useTranslation } from 'react-i18next';
 
-const buzzerfile = require('./../../assets/buzzer.mp3');
 interface BuzzerProps {
     quiz: Quiz;
     participantId: string;
@@ -67,7 +66,7 @@ const Buzzer: React.FC<BuzzerProps> = (props: BuzzerProps) => {
 
     return (
         <span>
-            <audio src={buzzerfile} ref={buzzerAudio} preload='auto'></audio>
+            <audio src='./assets/buzzer.mp3' ref={buzzerAudio} preload='auto'></audio>
             <button data-testid="buzzer" disabled={!isCurrentQuestionOpen} className={isParticipantActive ? 'buzzer-button active' : 'buzzer-button'} onMouseDown={buzzer}>
                 {isCurrentQuestionOpen ? 
                     t('buzzerOpen') :
