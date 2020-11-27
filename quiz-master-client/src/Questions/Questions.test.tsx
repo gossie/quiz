@@ -3,6 +3,8 @@ import { render, fireEvent, waitFor, cleanup } from '../test-utils';
 import Questions from './Questions';
 import Quiz from '../quiz-client-shared/quiz';
 import {verticalDrag} from 'react-beautiful-dnd-tester';
+import { ErrorAction } from '../redux/actions';
+import { ActionType } from '../redux/action-types';
 
 beforeEach(() => () => cleanup()); 
 afterEach(() => cleanup());
@@ -388,7 +390,7 @@ test('should move question to any position', async () => {
                 Accept: 'application/json'
             }
         });
-        Promise.resolve();
+        return Promise.resolve({status: 200});
     });
 
     const quiz: Quiz = {
@@ -429,6 +431,7 @@ test('should move question to any position', async () => {
         ],
         playedQuestions: [],
         timestamp: 1234,
+        expirationDate: 1234,
         links: []
     }
     const {getAllByTestId} = render(<Questions quiz={quiz}/>);
@@ -462,7 +465,7 @@ test('should move question to first position', async () => {
                 Accept: 'application/json'
             }
         });
-        Promise.resolve();
+        return Promise.resolve({status: 200});
     });
 
     const quiz: Quiz = {
@@ -503,6 +506,7 @@ test('should move question to first position', async () => {
         ],
         playedQuestions: [],
         timestamp: 1234,
+        expirationDate: 1234,
         links: []
     }
     const {getAllByTestId} = render(<Questions quiz={quiz}/>);
@@ -614,4 +618,88 @@ test('should edit question', async () => {
         expect(imagePathField.value).toBe('');
         expect(timeToAnswerField.value).toBe('');
     });
+});
+
+test('should not move question, because the quiz is finished', (done) => {
+    jest.spyOn(global, 'fetch').mockImplementation((url: string, request: object) => {
+        expect(url).toEqual('http://localhost:5000/api/quiz/5/questions/3');
+        expect(request).toEqual({
+            method: 'PUT',
+            body: JSON.stringify({
+                id: '3',
+                question: 'Frage 3',
+                category: 'other',
+                pending: false,
+                imagePath: 'https://path_to_image/',
+                publicVisible: true,
+                links: [{ href: '/api/quiz/5/questions/3', rel: 'self' }],
+                previousQuestionId: '1'
+            }),
+            headers: {
+                'Content-Type': 'application/json',
+                Accept: 'application/json'
+            }
+        });
+        return Promise.resolve({status: 409});
+    });
+
+    const quiz: Quiz = {
+        id: '5',
+        name: "Awesome Quiz",
+        participants: [],
+        openQuestions: [
+            {
+                id: '1',
+                question: 'Frage 1',
+                category: 'other',
+                pending: false,
+                imagePath: 'https://path_to_image/',
+                publicVisible: true,
+                links: [{ href: '/api/quiz/5/questions/1', rel: 'self' }],
+                previousQuestionId: null
+            },
+            {
+                id: '2',
+                question: 'Frage 2',
+                category: 'other',
+                pending: false,
+                imagePath: 'https://path_to_image/',
+                publicVisible: true,
+                links: [{ href: '/api/quiz/5/questions/2', rel: 'self' }],
+                previousQuestionId: '1'
+            },
+            {
+                id: '3',
+                question: 'Frage 3',
+                category: 'other',
+                pending: false,
+                imagePath: 'https://path_to_image/',
+                publicVisible: true,
+                links: [{ href: '/api/quiz/5/questions/3', rel: 'self' }],
+                previousQuestionId: '2'
+            }
+        ],
+        playedQuestions: [],
+        timestamp: 1234,
+        expirationDate: 1234,
+        links: []
+    }
+
+    const onError = (state = {}, action: ErrorAction) => {
+        if (action.type === ActionType.SHOW_ERROR) {
+            expect(action.payload.errorMessage).toBe('errorMessageConflict');
+            done();
+        }
+    }
+
+    const {getAllByTestId} = render(<Questions quiz={quiz}/>, { reducer: onError });
+    
+    let second = getAllByTestId(/dragquestion/i)[1];      
+    let first = getAllByTestId(/dragquestion/i)[0];   
+    let third = getAllByTestId(/dragquestion/i)[2];    
+
+    verticalDrag(third).inFrontOf(second);
+
+    const newSecond = getAllByTestId(/dragquestion/i)[1];
+    expect(newSecond.textContent).toBe(third.textContent);
 });

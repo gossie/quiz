@@ -231,7 +231,6 @@ test('should not reopen question, because the quiz is already finished', (done) 
             expect(action.payload.errorMessage).toBe('errorMessageConflict');
             done();
         }
-
     }
 
     const { getByTestId } = render(<QuestionElement enableOperations={true} index={0} quiz={quiz} question={quiz.openQuestions[0]} setImageToDisplay={(path) => {}} />, { reducer: onError });

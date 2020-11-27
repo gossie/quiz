@@ -1,4 +1,5 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
+import { connect } from 'react-redux';
 import Quiz, { Question } from '../quiz-client-shared/quiz';
 import './Questions.scss'
 import QuestionElement from './Question/Question';
@@ -6,10 +7,19 @@ import QuestionForm from './QuestionForm/QuestionForm';
 import QuestionPool from './QuestionPool/QuestionPool';
 import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
 import { useTranslation } from 'react-i18next';
+import { showError } from '../redux/actions';
 
-interface QuestionsProps {
+interface StateProps {}
+
+interface DispatchProps {
+    showError: (errorMessage: string) => void;
+}
+
+interface OwnProps {
     quiz: Quiz;
 }
+
+type QuestionsProps = StateProps & DispatchProps & OwnProps;
 
 const Questions: React.FC<QuestionsProps> = (props: QuestionsProps) => {
     const [imageToDisplay, setImageToDisplay] = useState('');
@@ -31,12 +41,17 @@ const Questions: React.FC<QuestionsProps> = (props: QuestionsProps) => {
     const updatePreviousQuestionId = async (question, newPreviewQuestionId) => {
         let questionLink = question.links.find(link => link.rel === 'self')?.href;      
         let newQuestion = Object.assign(question, {previousQuestionId: newPreviewQuestionId})
-        await fetch(`${process.env.REACT_APP_BASE_URL}${questionLink}`, {
+        fetch(`${process.env.REACT_APP_BASE_URL}${questionLink}`, {
             method: 'PUT',
             body: JSON.stringify(newQuestion),
             headers: {
                 'Content-Type': 'application/json',
                 Accept: 'application/json'
+            }
+        })
+        .then(response => {
+            if (response.status === 409) {
+                props.showError(t('errorMessageConflict'));
             }
         });
     };
@@ -171,4 +186,7 @@ const Questions: React.FC<QuestionsProps> = (props: QuestionsProps) => {
     )
 };
 
-export default Questions;
+export default connect<StateProps, DispatchProps, OwnProps>(
+    null,
+    {showError}
+)(Questions);
