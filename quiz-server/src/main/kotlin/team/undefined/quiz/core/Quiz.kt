@@ -73,18 +73,30 @@ data class Quiz(
     }
 
     fun addQuestion(question: Question): Quiz {
+        question.previousQuestionId = if (questions.isNotEmpty()) {
+            questions.last().id
+        } else {
+            null
+        }
+
         (questions as MutableList).add(question)
         return this
     }
 
     fun editQuestion(question: Question): Quiz {
-        (questions as MutableList).replaceAll {
-            if (it.id == question.id) {
-                question
+        (questions as MutableList).removeIf { it.id == question.id }
+        val indexOfPrevious = questions.indexOfFirst { it.id == question.previousQuestionId }
+        questions.add(indexOfPrevious + 1, question)
+
+        questions.forEachIndexed { index, question ->
+            val p = if (index == 0) {
+                null
             } else {
-                it
+                questions[index - 1].id
             }
+            question.previousQuestionId = p
         }
+
         return this
     }
 

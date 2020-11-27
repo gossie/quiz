@@ -1,9 +1,9 @@
 package team.undefined.quiz.core
 
 import com.google.common.eventbus.EventBus
-import org.assertj.core.api.Assertions.*
 import org.awaitility.kotlin.await
 import org.awaitility.kotlin.untilAsserted
+import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test
 import org.mockito.Mockito.`when`
 import org.mockito.Mockito.mock
@@ -24,31 +24,45 @@ internal class QuizProjectionQuestionCreatedEventTest {
         quizProjection.observeQuiz(quiz.id)
                 .subscribe { observedQuiz.set(it) }
 
-        val question = Question(question = "Wofür steht die Abkürzung a.D.?", category = QuestionCategory("Erdkunde"))
+        val question1 = Question(question = "Wofür steht die Abkürzung a.D.?", category = QuestionCategory("Erdkunde"))
+        val question2 = Question(question = "Wer schrieb Peter und der Wolf?", category = QuestionCategory("Literatur"))
         eventBus.post(QuizCreatedEvent(quiz.id, quiz, 1))
-        eventBus.post(QuestionCreatedEvent(quiz.id, question, 2))
+        eventBus.post(QuestionCreatedEvent(quiz.id, question1, 2))
+        eventBus.post(QuestionCreatedEvent(quiz.id, question2, 3))
 
         await untilAsserted {
             assertThat(observedQuiz.get())
                     .hasId(quiz.id)
                     .hasNoParticipants()
-                    .questionSizeIs(1)
-                    .hasQuestion(0) { it.isEqualTo(question) }
+                    .questionSizeIs(2)
+                    .hasQuestion(0) { it.isEqualTo(question1) }
+                    .hasQuestion(1) {
+                        it
+                                .hasId(question2.id)
+                                .hasQuestion("Wer schrieb Peter und der Wolf?")
+                                .hasPreviousQuestionId(question1.id)
+                    }
                     .undoIsPossible()
                     .isNotFinished
         }
     }
 
     @Test
+    @Disabled
     fun shouldHandleQuestionCreationWhenQuizIsNotInCacheAndLastEventWasAlreadyPersisted() {
         val quiz = Quiz(name = "Awesome Quiz")
 
-        val question = Question(question = "Wofür steht die Abkürzung a.D.?")
-        val questionCreatedEvent = QuestionCreatedEvent(quiz.id, question, 2)
+        val question1 = Question(question = "Wofür steht die Abkürzung a.D.?")
+        val question2 = Question(question = "Wer schrieb Peter und der Wolf?", category = QuestionCategory("Literatur"))
+        val question2CreatedEvent = QuestionCreatedEvent(quiz.id, question1, 3)
 
         val eventRepository = mock(EventRepository::class.java)
         `when`(eventRepository.determineEvents(quiz.id))
-                .thenReturn(Flux.just(QuizCreatedEvent(quiz.id, quiz, 1), questionCreatedEvent))
+                .thenReturn(Flux.just(
+                        QuizCreatedEvent(quiz.id, quiz, 1),
+                        QuestionCreatedEvent(quiz.id, question1, 2),
+                        question2CreatedEvent
+                ))
 
         val eventBus = EventBus()
         val quizProjection = QuizProjection(eventBus, mock(QuizStatisticsProvider::class.java), eventRepository, UndoneEventsCache())
@@ -57,14 +71,20 @@ internal class QuizProjectionQuestionCreatedEventTest {
         quizProjection.observeQuiz(quiz.id)
                 .subscribe { observedQuiz.set(it) }
 
-        eventBus.post(questionCreatedEvent)
+        eventBus.post(question2CreatedEvent)
 
         await untilAsserted {
             assertThat(observedQuiz.get())
                     .hasId(quiz.id)
                     .hasNoParticipants()
-                    .questionSizeIs(1)
-                    .hasQuestion(0) { it.isEqualTo(question) }
+                    .questionSizeIs(2)
+                    .hasQuestion(0) { it.isEqualTo(question1) }
+                    .hasQuestion(1) {
+                        it
+                                .hasId(question2.id)
+                                .hasQuestion("Wer schrieb Peter und der Wolf?")
+                                .hasPreviousQuestionId(question1.id)
+                    }
                     .undoIsPossible()
                     .isNotFinished
         }
@@ -74,9 +94,14 @@ internal class QuizProjectionQuestionCreatedEventTest {
     fun shouldHandleQuestionCreationWhenQuizIsNotInCacheAndLastEventWasNotYetPersisted() {
         val quiz = Quiz(name = "Awesome Quiz")
 
+        val question1 = Question(question = "Wofür steht die Abkürzung a.D.?")
+
         val eventRepository = mock(EventRepository::class.java)
         `when`(eventRepository.determineEvents(quiz.id))
-                .thenReturn(Flux.just(QuizCreatedEvent(quiz.id, quiz, 1)))
+                .thenReturn(Flux.just(
+                        QuizCreatedEvent(quiz.id, quiz, 1),
+                        QuestionCreatedEvent(quiz.id, question1, 2)
+                ))
 
         val eventBus = EventBus()
         val quizProjection = QuizProjection(eventBus, mock(QuizStatisticsProvider::class.java), eventRepository, UndoneEventsCache())
@@ -85,15 +110,22 @@ internal class QuizProjectionQuestionCreatedEventTest {
         quizProjection.observeQuiz(quiz.id)
                 .subscribe { observedQuiz.set(it) }
 
-        val question = Question(question = "Wofür steht die Abkürzung a.D.?")
-        eventBus.post(QuestionCreatedEvent(quiz.id, question, 2))
+
+        val question2 = Question(question = "Wer schrieb Peter und der Wolf?", category = QuestionCategory("Literatur"))
+        eventBus.post(QuestionCreatedEvent(quiz.id, question2, 3))
 
         await untilAsserted {
             assertThat(observedQuiz.get())
                     .hasId(quiz.id)
                     .hasNoParticipants()
-                    .questionSizeIs(1)
-                    .hasQuestion(0) { it.isEqualTo(question) }
+                    .questionSizeIs(2)
+                    .hasQuestion(0) { it.isEqualTo(question1) }
+                    .hasQuestion(1) {
+                        it
+                                .hasId(question2.id)
+                                .hasQuestion("Wer schrieb Peter und der Wolf?")
+                                .hasPreviousQuestionId(question1.id)
+                    }
                     .undoIsPossible()
                     .isNotFinished
         }

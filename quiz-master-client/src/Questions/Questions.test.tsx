@@ -2,6 +2,7 @@ import React from 'react';
 import { render, fireEvent, waitFor, cleanup } from '../test-utils';
 import Questions from './Questions';
 import Quiz from '../quiz-client-shared/quiz';
+import {verticalDrag} from 'react-beautiful-dnd-tester';
 
 beforeEach(() => () => cleanup()); 
 afterEach(() => cleanup());
@@ -29,7 +30,8 @@ test('should display questions', () => {
                 category: 'other',
                 publicVisible: false,
                 pending: false,
-                links: []
+                links: [], 
+                previousQuestionId: null
             },
         ],
         openQuestions: [
@@ -39,7 +41,8 @@ test('should display questions', () => {
                 category: 'other',
                 publicVisible: false,
                 pending: true,
-                links: []
+                links: [],
+                previousQuestionId: null
             },
             {
                 id: '3',
@@ -47,7 +50,8 @@ test('should display questions', () => {
                 category: 'other',
                 publicVisible: false,
                 pending: false,
-                links: []
+                links: [],
+                previousQuestionId: '2'
             }
         ],
         expirationDate: 1234,
@@ -59,8 +63,8 @@ test('should display questions', () => {
     const openQuestions = getByTestId('open-questions').querySelectorAll('li')
 
     expect(openQuestions.length).toBe(2);
-    expect(openQuestions[0].textContent).toEqual('1Frage 2');
-    expect(openQuestions[1].textContent).toEqual('2Frage 3');
+    expect(openQuestions[0].textContent).toEqual('2Frage 2');
+    expect(openQuestions[1].textContent).toEqual('3Frage 3');
 
     const playedQuestions = getByTestId('played-questions').querySelectorAll('li')
 
@@ -100,7 +104,8 @@ test('should add new private question', async () => {
                 category: 'other',
                 publicVisible: false,
                 pending: false,
-                links: []
+                links: [],
+                previousQuestionId: null
             },
             {
                 id: '2',
@@ -108,7 +113,8 @@ test('should add new private question', async () => {
                 category: 'other',
                 publicVisible: false,
                 pending: true,
-                links: []
+                links: [],
+                previousQuestionId: '1'
             }
         ],
         expirationDate: 1234,
@@ -168,7 +174,8 @@ test('should add new public question', async () => {
                 category: 'other',
                 publicVisible: false,
                 pending: false,
-                links: []
+                links: [],
+                previousQuestionId: null
             },
             {
                 id: '2',
@@ -176,7 +183,8 @@ test('should add new public question', async () => {
                 category: 'other',
                 publicVisible: false,
                 pending: true,
-                links: []
+                links: [],
+                previousQuestionId: '2'
             }
         ],
         expirationDate: 1234,
@@ -226,7 +234,8 @@ test('should start question', () => {
                 category: 'other',
                 publicVisible: false,
                 pending: false,
-                links: []
+                links: [],
+                previousQuestionId: null
             },
         ],
         openQuestions: [
@@ -236,7 +245,8 @@ test('should start question', () => {
                 category: 'other',
                 publicVisible: false,
                 pending: false,
-                links: [{ href: '/api/quiz/5/questions/11', rel: 'self' }]
+                links: [{ href: '/api/quiz/5/questions/11', rel: 'self' }],
+                previousQuestionId: null
             },
             {
                 id: '3',
@@ -244,7 +254,8 @@ test('should start question', () => {
                 category: 'other',
                 publicVisible: false,
                 pending: false,
-                links: []
+                links: [],
+                previousQuestionId:'2'
             }
         ],
         expirationDate: 1234,
@@ -253,7 +264,7 @@ test('should start question', () => {
     }
     const { getByTestId } = render(<Questions quiz={quiz} />);
 
-    getByTestId('start-question-0').click();
+    getByTestId('start-question-1').click();
 });
 
 test('should delete question', () => {
@@ -276,7 +287,8 @@ test('should delete question', () => {
                 category: 'other',
                 publicVisible: false,
                 pending: false,
-                links: []
+                links: [],
+                previousQuestionId: null
             },
         ],
         openQuestions: [
@@ -286,7 +298,8 @@ test('should delete question', () => {
                 category: 'other',
                 publicVisible: false,
                 pending: false,
-                links: [{ href: '/api/quiz/5/questions/11', rel: 'self' }]
+                links: [{ href: '/api/quiz/5/questions/11', rel: 'self' }],
+                previousQuestionId: null
             },
             {
                 id: '3',
@@ -294,7 +307,8 @@ test('should delete question', () => {
                 category: 'other',
                 publicVisible: false,
                 pending: false,
-                links: []
+                links: [],
+                previousQuestionId: '2'
             }
         ],
         expirationDate: 1234,
@@ -303,7 +317,7 @@ test('should delete question', () => {
     }
     const { getByTestId } = render(<Questions quiz={quiz} />);
 
-    getByTestId('delete-question-0').click();
+    getByTestId('delete-question-1').click();
 });
 
 test('should open and close image modal', () => {
@@ -318,7 +332,8 @@ test('should open and close image modal', () => {
                 category: 'other',
                 publicVisible: false,
                 pending: true,
-                links: []
+                links: [],
+                previousQuestionId: null
             },
             {
                 id: '3',
@@ -327,7 +342,8 @@ test('should open and close image modal', () => {
                 pending: false,
                 imagePath: 'https://path_to_image/',
                 publicVisible: false,
-                links: []
+                links: [],
+                previousQuestionId: '2'
             }
         ],
         playedQuestions: [],
@@ -352,6 +368,154 @@ test('should open and close image modal', () => {
     expect(() => getByTestId('image-dialog')).toThrowError();
 });
 
+test('should move question to any position', async () => {
+    jest.spyOn(global, 'fetch').mockImplementation((url: string, request: object) => {
+        expect(url).toEqual('http://localhost:5000/api/quiz/5/questions/3');
+        expect(request).toEqual({
+            method: 'PUT',
+            body: JSON.stringify({
+                id: '3',
+                question: 'Frage 3',
+                category: 'other',
+                pending: false,
+                imagePath: 'https://path_to_image/',
+                publicVisible: true,
+                links: [{ href: '/api/quiz/5/questions/3', rel: 'self' }],
+                previousQuestionId: '1'
+            }),
+            headers: {
+                'Content-Type': 'application/json',
+                Accept: 'application/json'
+            }
+        });
+        Promise.resolve();
+    });
+
+    const quiz: Quiz = {
+        id: '5',
+        name: "Awesome Quiz",
+        participants: [],
+        openQuestions: [
+            {
+                id: '1',
+                question: 'Frage 1',
+                category: 'other',
+                pending: false,
+                imagePath: 'https://path_to_image/',
+                publicVisible: true,
+                links: [{ href: '/api/quiz/5/questions/1', rel: 'self' }],
+                previousQuestionId: null
+            },
+            {
+                id: '2',
+                question: 'Frage 2',
+                category: 'other',
+                pending: false,
+                imagePath: 'https://path_to_image/',
+                publicVisible: true,
+                links: [{ href: '/api/quiz/5/questions/2', rel: 'self' }],
+                previousQuestionId: '1'
+            },
+            {
+                id: '3',
+                question: 'Frage 3',
+                category: 'other',
+                pending: false,
+                imagePath: 'https://path_to_image/',
+                publicVisible: true,
+                links: [{ href: '/api/quiz/5/questions/3', rel: 'self' }],
+                previousQuestionId: '2'
+            }
+        ],
+        playedQuestions: [],
+        timestamp: 1234,
+        links: []
+    }
+    const {getAllByTestId} = render(<Questions quiz={quiz}/>);
+    let second = getAllByTestId(/dragquestion/i)[1];      
+    let first = getAllByTestId(/dragquestion/i)[0];   
+    let third = getAllByTestId(/dragquestion/i)[2];    
+
+    verticalDrag(third).inFrontOf(second);
+
+   const newSecond = getAllByTestId(/dragquestion/i)[1];
+   expect(newSecond.textContent).toBe(third.textContent);
+});
+
+test('should move question to first position', async () => {
+    jest.spyOn(global, 'fetch').mockImplementation((url: string, request: object) => {
+        expect(url).toEqual('http://localhost:5000/api/quiz/5/questions/3');
+        expect(request).toEqual({
+            method: 'PUT',
+            body: JSON.stringify({
+                id: '3',
+                question: 'Frage 3',
+                category: 'other',
+                pending: false,
+                imagePath: 'https://path_to_image/',
+                publicVisible: true,
+                links: [{ href: '/api/quiz/5/questions/3', rel: 'self' }],
+                previousQuestionId: null
+            }),
+            headers: {
+                'Content-Type': 'application/json',
+                Accept: 'application/json'
+            }
+        });
+        Promise.resolve();
+    });
+
+    const quiz: Quiz = {
+        id: '5',
+        name: "Awesome Quiz",
+        participants: [],
+        openQuestions: [
+            {
+                id: '1',
+                question: 'Frage 1',
+                category: 'other',
+                pending: false,
+                imagePath: 'https://path_to_image/',
+                publicVisible: true,
+                links: [{ href: '/api/quiz/5/questions/1', rel: 'self' }],
+                previousQuestionId: null
+            },
+            {
+                id: '2',
+                question: 'Frage 2',
+                category: 'other',
+                pending: false,
+                imagePath: 'https://path_to_image/',
+                publicVisible: true,
+                links: [{ href: '/api/quiz/5/questions/2', rel: 'self' }],
+                previousQuestionId: '1'
+            },
+            {
+                id: '3',
+                question: 'Frage 3',
+                category: 'other',
+                pending: false,
+                imagePath: 'https://path_to_image/',
+                publicVisible: true,
+                links: [{ href: '/api/quiz/5/questions/3', rel: 'self' }],
+                previousQuestionId: '2'
+            }
+        ],
+        playedQuestions: [],
+        timestamp: 1234,
+        links: []
+    }
+    const {getAllByTestId} = render(<Questions quiz={quiz}/>);
+    let second = getAllByTestId(/dragquestion/i)[1];      
+    let first = getAllByTestId(/dragquestion/i)[0];   
+    let third = getAllByTestId(/dragquestion/i)[2];    
+
+    verticalDrag(third).inFrontOf(first);
+
+   const newFirst = getAllByTestId(/dragquestion/i)[0];
+   expect(newFirst.textContent).toBe(third.textContent);
+});
+
 test('should edit question', async () => {
     jest.spyOn(global, 'fetch').mockImplementation((url: string, request: object) => {
         expect(url).toEqual('http://localhost:5000/api/quiz/5/questions/3');
@@ -363,7 +527,8 @@ test('should edit question', async () => {
                 timeToAnswer: 45,
                 imagePath: 'https://path_to_image_changed/',
                 publicVisible: false,
-                estimates: {}
+                estimates: {},
+                previousQuestionId: '2'
             }),
             headers: {
                 'Content-Type': 'application/json',
@@ -384,7 +549,8 @@ test('should edit question', async () => {
                 category: 'other',
                 publicVisible: false,
                 pending: true,
-                links: []
+                links: [],
+                previousQuestionId: null
             },
             {
                 id: '3',
@@ -393,7 +559,8 @@ test('should edit question', async () => {
                 pending: false,
                 imagePath: 'https://path_to_image/',
                 publicVisible: true,
-                links: [{ href: '/api/quiz/5/questions/3', rel: 'self' }]
+                links: [{ href: '/api/quiz/5/questions/3', rel: 'self' }],
+                previousQuestionId: '2'
             }
         ],
         playedQuestions: [],

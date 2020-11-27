@@ -5,10 +5,15 @@
     flex: 1;
 }
 
-.block-list li.no-padding {
+.block-list.is-question-list li.no-padding {
     padding: 0px;
     background-color: $box-background-color;
     overflow: hidden;
+
+}
+
+.block-list.is-question-list li {
+    background-color: transparent;
 }
 
 .title.no-margin

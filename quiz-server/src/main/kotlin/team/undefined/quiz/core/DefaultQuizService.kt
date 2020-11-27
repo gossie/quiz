@@ -272,7 +272,7 @@ class DefaultQuizService(private val eventRepository: EventRepository,
         return if (undoneEventsCache.isEmpty(command.quizId)) {
             Mono.empty()
         } else {
-            eventRepository.storeEvent(undoneEventsCache.pop(command.quizId!!))
+            eventRepository.storeEvent(undoneEventsCache.pop(command.quizId))
                     .map { eventBus.post(it) }
         }
     }

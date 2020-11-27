@@ -1,9 +1,10 @@
-import React, { useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import Quiz, { Question } from '../quiz-client-shared/quiz';
 import './Questions.scss'
 import QuestionElement from './Question/Question';
 import QuestionForm from './QuestionForm/QuestionForm';
 import QuestionPool from './QuestionPool/QuestionPool';
+import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
 import { useTranslation } from 'react-i18next';
 
 interface QuestionsProps {
@@ -12,6 +13,7 @@ interface QuestionsProps {
 
 const Questions: React.FC<QuestionsProps> = (props: QuestionsProps) => {
     const [imageToDisplay, setImageToDisplay] = useState('');
+    const [sortedOpenQuestions, setSortedOpenQuestions] = useState(props.quiz.openQuestions);
     const [questionToAdd, setQuestionToAdd] = useState(false);
     const [tabIndex, setTabIndex] = useState(0);
     const [questionToEdit, setQuestionToEdit] = useState<Question | undefined>(undefined);
@@ -21,13 +23,60 @@ const Questions: React.FC<QuestionsProps> = (props: QuestionsProps) => {
     const onEdit = (question: Question) => {
         setQuestionToEdit(question);
     };
-    
-    const playedQuestions = props.quiz.playedQuestions
-            .map((q, index) => <li key={q.id} className="no-padding"><QuestionElement question={q} quiz={props.quiz} index={index} setImageToDisplay={setImageToDisplay}></QuestionElement></li>);
 
-    const openQuestions = props.quiz.openQuestions
-            .map((q, index) => <li key={q.id} className="no-padding"><QuestionElement question={q} quiz={props.quiz} index={index} setImageToDisplay={setImageToDisplay} enableOperations={true} onEdit={onEdit}></QuestionElement></li>);
-    
+    useEffect(() => {
+        setSortedOpenQuestions(props.quiz.openQuestions);
+    }, [props.quiz.openQuestions]);
+
+    const updatePreviousQuestionId = async (question, newPreviewQuestionId) => {
+        let questionLink = question.links.find(link => link.rel === 'self')?.href;      
+        let newQuestion = Object.assign(question, {previousQuestionId: newPreviewQuestionId})
+        await fetch(`${process.env.REACT_APP_BASE_URL}${questionLink}`, {
+            method: 'PUT',
+            body: JSON.stringify(newQuestion),
+            headers: {
+                'Content-Type': 'application/json',
+                Accept: 'application/json'
+            }
+        });
+    };
+
+    const onDragEnd = (result) => {
+        if (!result.destination) {
+            return;
+        }
+        let newSortedOpenQuestions: Question[] = [...sortedOpenQuestions];
+        const removed: Question[] = newSortedOpenQuestions.splice(result.source.index, 1);
+        newSortedOpenQuestions.splice(result.destination.index, 0, ...removed);
+
+        if (result.destination.index === 0) {
+            updatePreviousQuestionId(removed[0], null);
+        } else {
+            updatePreviousQuestionId(removed[0], newSortedOpenQuestions[result.destination.index - 1].id)
+        }
+
+        setSortedOpenQuestions(newSortedOpenQuestions);
+
+    };
+
+    const playedQuestions = props.quiz.playedQuestions.map((q, index) => 
+        <li key={q.id} className="no-padding"><QuestionElement question={q} quiz={props.quiz} index={index} setImageToDisplay={setImageToDisplay}></QuestionElement></li>);
+  
+    const openQuestions = sortedOpenQuestions.map((item, index) => (
+        <Draggable key={item.id} draggableId={item.id} index={index}>
+          {(provided, snapshot) => (
+            <li key={item.id}
+                data-testid='dragquestion'
+                className="no-padding"
+                ref={provided.innerRef}
+                {...provided.draggableProps}
+                {...provided.dragHandleProps}>
+             <QuestionElement question={item} quiz={props.quiz} index={props.quiz.playedQuestions.length + index} setImageToDisplay={setImageToDisplay} enableOperations={true} onEdit={onEdit}></QuestionElement>
+            </li>
+          )}
+        </Draggable>
+    ));
+
     return (
         <div className="questions-column">
             <div className="level not-responsive title">
@@ -38,15 +87,26 @@ const Questions: React.FC<QuestionsProps> = (props: QuestionsProps) => {
             </div>
             <div>
                 <div data-testid="open-questions" className="block">
-                    <ul className="block-list has-radius">
-                        {openQuestions}
-                    </ul>
+                  
+                    <DragDropContext onDragEnd={onDragEnd}>
+                        <Droppable droppableId="droppable">
+                        {(provided, snapshot) => (
+                            <ul className="block-list has-radius is-question-list"
+                                {...provided.droppableProps}
+                                ref={provided.innerRef}>
+                                {openQuestions}
+                                {provided.placeholder}
+                            </ul>
+                        )}
+                        </Droppable>
+                    </DragDropContext>
+
                 </div>
 
                 { props.quiz.playedQuestions.length > 0 &&
                     <div data-testid="played-questions" className="block">
                         <hr/>
-                        <ul className="block-list has-radius">
+                        <ul className="block-list has-radius is-question-list">
                             {playedQuestions}
                         </ul>
                     </div>
