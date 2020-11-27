@@ -231,6 +231,7 @@ test('should not reopen question, because the quiz is already finished', (done) 
             expect(action.payload.errorMessage).toBe('errorMessageConflict');
             done();
         }
+        return {};
     }
 
     const { getByTestId } = render(<QuestionElement enableOperations={true} index={0} quiz={quiz} question={quiz.openQuestions[0]} setImageToDisplay={(path) => {}} />, { reducer: onError });
@@ -296,7 +297,7 @@ test('should not delete question, because the quiz is already finished', (done) 
             expect(action.payload.errorMessage).toBe('errorMessageConflict');
             done();
         }
-
+        return {};
     }
 
     const { getByTestId } = render(<QuestionElement enableOperations={true} index={0} quiz={quiz} question={quiz.openQuestions[0]} setImageToDisplay={(path) => {}} />, { reducer: onError });
@@ -362,7 +363,7 @@ test('should not ask question, because the quiz is already finished', (done) => 
             expect(action.payload.errorMessage).toBe('errorMessageConflict');
             done();
         }
-
+        return {};
     }
 
     const { getByTestId } = render(<QuestionElement enableOperations={true} index={0} quiz={quiz} question={quiz.openQuestions[0]} setImageToDisplay={(path) => {}} />, { reducer: onError });

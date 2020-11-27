@@ -9,7 +9,9 @@ import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
 import { useTranslation } from 'react-i18next';
 import { showError } from '../redux/actions';
 
-interface StateProps {}
+interface StateProps {
+    globalErrorMessage: string;
+}
 
 interface DispatchProps {
     showError: (errorMessage: string) => void;
@@ -137,7 +139,7 @@ const Questions: React.FC<QuestionsProps> = (props: QuestionsProps) => {
                     <button data-testid="close-button" className="modal-close is-large" aria-label="close" onClick={() => setImageToDisplay('')}></button>
                 </div>
             }
-            { questionToEdit &&
+            { questionToEdit && !props.globalErrorMessage &&
                 <div data-testid="edit-dialog" className="modal is-active">
                     <div className="modal-background"></div>
                     <div className="modal-card fixed-height">
@@ -151,7 +153,7 @@ const Questions: React.FC<QuestionsProps> = (props: QuestionsProps) => {
                     </div>
                 </div>
             }
-            { questionToAdd &&
+            { questionToAdd && !props.globalErrorMessage &&
                 <div className="add-question-form modal is-active">
                     <div className="modal-background"></div>
                     <div className="modal-card fixed-height">
@@ -186,7 +188,11 @@ const Questions: React.FC<QuestionsProps> = (props: QuestionsProps) => {
     )
 };
 
+const mapStateToProps = state => {
+    return { globalErrorMessage: state.errorMessage };
+};
+
 export default connect<StateProps, DispatchProps, OwnProps>(
-    null,
+    mapStateToProps,
     {showError}
 )(Questions);

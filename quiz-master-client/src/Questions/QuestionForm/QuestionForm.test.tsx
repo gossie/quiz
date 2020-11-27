@@ -150,6 +150,7 @@ test('should not add new question, because quiz is finished', (done) => {
             expect(action.payload.errorMessage).toBe('errorMessageConflict');
             done();
         }
+        return {};
     }
 
     const { getByTestId } = render(<QuestionForm quiz={quiz} />, { reducer: onError });

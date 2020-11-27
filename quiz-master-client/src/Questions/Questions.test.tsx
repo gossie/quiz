@@ -690,6 +690,7 @@ test('should not move question, because the quiz is finished', (done) => {
             expect(action.payload.errorMessage).toBe('errorMessageConflict');
             done();
         }
+        return {};
     }
 
     const {getAllByTestId} = render(<Questions quiz={quiz}/>, { reducer: onError });
