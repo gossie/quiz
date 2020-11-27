@@ -11,7 +11,12 @@ export function showError(state = initialState, action: ShowErrorAction) {
             return {
                 errorMessage: action.payload['errorMessage']
             }
-        }  
+        }
+        case ActionType.RESET_ERROR: {
+            return {
+                errorMessage: undefined
+            }
+        }
         default:
             return state;
     }

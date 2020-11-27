@@ -82,8 +82,7 @@ const Participants: React.FC<ParticipantsProps> = (props: ParticipantsProps) => 
         ?.sort(comparePoints)
         .map((p, index) => 
             <div key={p.name}>
-                <ParticipantItem quiz={props.quiz} participant={p} pointsAfterLastQuestion={getPointsAfterLastQuestionForParticipant(p)}>
-                </ParticipantItem>
+                <ParticipantItem quiz={props.quiz} participant={p} pointsAfterLastQuestion={getPointsAfterLastQuestionForParticipant(p)} />
             </div>
         )
 

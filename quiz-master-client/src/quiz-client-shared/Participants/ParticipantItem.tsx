@@ -6,11 +6,19 @@ import Answers from '../../Answers/Answers';
 import './ParticipantItem.scss';
 import { showError } from '../../redux/actions';
 
-interface ParticipantProps {
+interface StateProps {}
+
+interface DispatchProps {
+    showError: (errorMessage: string) => void;
+}
+
+interface OwnProps {
     quiz: Quiz;
     participant: Participant;
     pointsAfterLastQuestion: number;
 }
+
+type ParticipantProps = StateProps & DispatchProps & OwnProps;
 
 interface InternalParticipantProps extends ParticipantProps {
     showError: (errorMessage: string) => void;
@@ -45,10 +53,10 @@ const ParticipantItem: React.FC<ParticipantProps> = (props: InternalParticipantP
         })
         .then(response => {
             if (response.status === 409) {
-                props.showError('Das Quiz wurde beendet und kann deshalb nicht mehr geändert werden. Falls das ein Versehen war, kann das Quiz per undo wieder geöffnent werden.');
+                props.showError(t('errorMessageConflict'));
             }
-        })
-    }
+        });
+    };
 
     return <div data-testid="participant-wrapper" className="participant" >
                 <div className={"participant-header"}>
@@ -73,7 +81,7 @@ const ParticipantItem: React.FC<ParticipantProps> = (props: InternalParticipantP
             </div>
 }
 
-export default connect(
+export default connect<StateProps, DispatchProps, OwnProps>(
     null,
     {showError}
 )(ParticipantItem);

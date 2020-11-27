@@ -5,14 +5,23 @@ import Questions from './Questions/Questions';
 import Participants from './quiz-client-shared/Participants/Participants';
 import Quiz from './quiz-client-shared/quiz';
 import QuizStatistics from './quiz-client-shared/QuizStatistics/QuizStatistics';
-import { showError } from './redux/actions';
+import { resetError } from './redux/actions';
 
 import './QuizMaster.css';
 
-interface QuizMasterProps {
+interface OwnProps {
     quizId: string;
+}
+
+interface StateProps {
     errorMessage?: string;
 }
+
+interface DispatchProps {
+    resetError: () => void; 
+}
+
+type QuizMasterProps = OwnProps & StateProps & DispatchProps
 
 const QuizMaster: React.FC<QuizMasterProps> = (props: QuizMasterProps) => {
     const [quiz, setQuiz] = useState({} as Quiz);
@@ -83,7 +92,7 @@ const QuizMaster: React.FC<QuizMasterProps> = (props: QuizMasterProps) => {
                                 {props.errorMessage}
                             </div>
                         </div>
-                        { <button data-testid="close-button" className="modal-close is-large" aria-label="close" onClick={() => props['showError'](undefined)}></button> }
+                        { <button data-testid="close-button" className="modal-close is-large" aria-label="close" onClick={() => props.resetError()}></button> }
                     </div>
                 }
             </div>
@@ -119,7 +128,7 @@ const QuizMaster: React.FC<QuizMasterProps> = (props: QuizMasterProps) => {
                     </div>
                 :
                     <div>
-                    The quiz is being loaded. This might take a moment if the application has to be woken up.
+                        The quiz is being loaded. This might take a moment if the application has to be woken up.
                     </div>
                 }
             </div>
@@ -131,7 +140,7 @@ const mapStateToProps = state => {
     return { errorMessage: state.errorMessage };
 };
 
-export default connect(
+export default connect<StateProps, DispatchProps, OwnProps>(
     mapStateToProps,
-    { showError }
+    { resetError }
 )(QuizMaster);

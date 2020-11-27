@@ -1,5 +1,6 @@
 export enum ActionType {
 
-    SHOW_ERROR
-    
+    SHOW_ERROR,
+    RESET_ERROR
+
 }
