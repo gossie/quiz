@@ -62,15 +62,15 @@ const QuestionForm: React.FC<QuestionFormProps> = (props: QuestionFormProps) => 
         .then(response => {
             if (response.status === 409) {
                 props.showError(t('errorMessageConflict'));
-            } else if (response.status === 200 || response.status === 201) {
-                setNewQuestion('');
-                setCategory('other');
-                setTimeToAnswer('');
-                setImagePath('');
-                setQuestionButtonCssClasses('button is-link');
-
-                props.onSubmit && props.onSubmit();
             }
+
+            setNewQuestion('');
+            setCategory('other');
+            setTimeToAnswer('');
+            setImagePath('');
+            setQuestionButtonCssClasses('button is-link');
+
+            props.onSubmit && props.onSubmit();
         });
     };
 
