@@ -1,14 +1,24 @@
 import React from 'react';
+import { useTranslation } from 'react-i18next';
+import { connect } from 'react-redux';
 import Quiz, { Participant } from "../quiz";
 import Answers from '../../Answers/Answers';
 import './ParticipantItem.scss';
-import { useTranslation } from 'react-i18next';
+import { showError } from '../../redux/actions';
 
-interface ParticipantProps {
+interface StateProps {}
+
+interface DispatchProps {
+    showError: (errorMessage: string) => void;
+}
+
+interface OwnProps {
     quiz: Quiz;
     participant: Participant;
     pointsAfterLastQuestion: number;
 }
+
+type ParticipantProps = StateProps & DispatchProps & OwnProps;
 
 const ParticipantItem: React.FC<ParticipantProps> = (props: ParticipantProps) => {
 
@@ -37,7 +47,12 @@ const ParticipantItem: React.FC<ParticipantProps> = (props: ParticipantProps) =>
         fetch(`${process.env.REACT_APP_BASE_URL}${deleteUrl}`, {
             method: 'DELETE'
         })
-    }
+        .then(response => {
+            if (response.status === 409) {
+                props.showError(t('errorMessageConflict'));
+            }
+        });
+    };
 
     return <div data-testid="participant-wrapper" className="participant" >
                 <div className={"participant-header"}>
@@ -62,4 +77,7 @@ const ParticipantItem: React.FC<ParticipantProps> = (props: ParticipantProps) =>
             </div>
 }
 
-export default ParticipantItem;
+export default connect<StateProps, DispatchProps, OwnProps>(
+    null,
+    {showError}
+)(ParticipantItem);

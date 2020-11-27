@@ -1,9 +1,17 @@
 import React from 'react';
+import { connect } from 'react-redux';
 import './Question.scss'
 import Quiz, { Question } from '../../quiz-client-shared/quiz';
 import { useTranslation } from 'react-i18next';
+import { showError } from '../../redux/actions';
 
-interface QuestionElementProps {
+interface StateProps {}
+
+interface DispatchProps {
+    showError: (errorMessage: string) => void;
+}
+
+interface OwnProps {
     enableOperations?: boolean;
     question: Question;
     quiz?: Quiz;
@@ -12,23 +20,32 @@ interface QuestionElementProps {
     onEdit?: (question: Question) => void;
 }
 
+type QuestionElementProps = StateProps & DispatchProps & OwnProps;
+
 const QuestionElement: React.FC<QuestionElementProps> = (props: QuestionElementProps) => {
     const { t } = useTranslation();
 
-    const toggleQuestion = async (question: Question) => {
+    const toggleQuestion = (question: Question) => {
         const questionLink = question.links.find(link => link.rel === 'self')?.href;
-        await fetch(`${process.env.REACT_APP_BASE_URL}${questionLink}`, {
-            method: 'PATCH',
-            headers: {
-                Accept: 'application/json'
+        fetch(`${process.env.REACT_APP_BASE_URL}${questionLink}`, {
+            method: 'PATCH'
+        })
+        .then(response => {
+            if (response.status === 409) {
+                props.showError(t('errorMessageConflict'));
             }
         });
     };
 
     const deleteQuestion = async (question: Question) => {
         const questionLink = question.links.find(link => link.rel === 'self')?.href;
-        await fetch(`${process.env.REACT_APP_BASE_URL}${questionLink}`, {
+        fetch(`${process.env.REACT_APP_BASE_URL}${questionLink}`, {
             method: 'DELETE'
+        })
+        .then(response => {
+            if (response.status === 409) {
+                props.showError(t('errorMessageConflict'));
+            }
         });
     };
 
@@ -42,10 +59,15 @@ const QuestionElement: React.FC<QuestionElementProps> = (props: QuestionElementP
                 .find(link => link.rel === 'reopenQuestion')
                 ?.href;
 
-        await fetch(`${process.env.REACT_APP_BASE_URL}${reopenHref}`, {
+        fetch(`${process.env.REACT_APP_BASE_URL}${reopenHref}`, {
             method: 'PUT',
             headers: {
                 Accept: 'application/json'
+            }
+        })
+        .then(response => {
+            if (response.status === 409) {
+                props.showError(t('errorMessageConflict'));
             }
         });
     };
@@ -86,4 +108,7 @@ const QuestionElement: React.FC<QuestionElementProps> = (props: QuestionElementP
     )
 };
 
-export default QuestionElement;
+export default connect<StateProps, DispatchProps, OwnProps>(
+    null,
+    {showError}
+)(QuestionElement);

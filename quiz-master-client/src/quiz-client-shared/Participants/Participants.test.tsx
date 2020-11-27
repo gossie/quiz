@@ -1,10 +1,21 @@
 import React from 'react';
-import { render, cleanup } from '@testing-library/react';
+import { render, cleanup } from '../../test-utils';
 import Participants from './Participants';
 import Quiz from '../quiz';
 
 beforeEach(() => () => cleanup()); 
 afterEach(() => cleanup());
+
+jest.mock('react-i18next', () => ({
+    useTranslation: () => {
+        return {
+            t: (str: string, keys: object) => str,
+            i18n: {
+                changeLanguage: () => new Promise(() => {}),
+            },
+        };
+    },
+}));
 
 jest.mock('react-i18next', () => ({
     useTranslation: () => {

@@ -25,7 +25,7 @@ interface QuizService {
 
     fun editQuestion(command: EditQuestionCommand): Mono<Unit>
 
-    fun answer(command: AnswerCommand): Mono<Unit>
+    fun rate(command: AnswerCommand): Mono<Unit>
 
     fun reopenQuestion(command: ReopenCurrentQuestionCommand): Mono<Unit>
 
