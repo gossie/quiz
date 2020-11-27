@@ -1,5 +1,5 @@
-import { ActionType } from "./action-types";
-import { ErrorAction } from "./actions";
+import { ActionType } from './action-types';
+import { ErrorAction } from './actions';
 
 const initialState = {
     errorMessage: undefined

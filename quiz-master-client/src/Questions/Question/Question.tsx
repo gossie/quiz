@@ -28,10 +28,7 @@ const QuestionElement: React.FC<QuestionElementProps> = (props: QuestionElementP
     const toggleQuestion = (question: Question) => {
         const questionLink = question.links.find(link => link.rel === 'self')?.href;
         fetch(`${process.env.REACT_APP_BASE_URL}${questionLink}`, {
-            method: 'PATCH',
-            headers: {
-                Accept: 'application/json'
-            }
+            method: 'PATCH'
         })
         .then(response => {
             if (response.status === 409) {
