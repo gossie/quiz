@@ -67,5 +67,5 @@
     "answerStatisticWithoutAnswer": "{{participantName}} has answered after {{time}} seconds and it was {{rating}}",
     "buzzerStatistic": "{{participantName}} has buzzered after {{time}} seconds and it was {{rating}}",
 
-    "errorMessageConflict": "The quiz was already closed and cannot be changed anymore. If that was an accident you can undo that action."
+    "errorMessageConflict": "The quiz has already been closed and cannot be changed anymore. If that was an accident you can undo that action."
 }
