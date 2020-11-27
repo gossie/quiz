@@ -38,7 +38,8 @@ test('should add new estimation question', async () => {
                 category: 'other',
                 publicVisible: false,
                 pending: false,
-                links: []
+                links: [],
+                previousQuestionId: null,
             },
             {
                 id: '2',
@@ -46,7 +47,8 @@ test('should add new estimation question', async () => {
                 category: 'other',
                 publicVisible: false,
                 pending: true,
-                links: []
+                links: [],
+                previousQuestionId: '1'
             }
         ],
         timestamp: 12345678,

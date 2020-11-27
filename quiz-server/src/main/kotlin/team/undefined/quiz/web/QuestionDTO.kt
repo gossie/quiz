@@ -13,5 +13,6 @@ data class QuestionDTO(
         var category: String = "",
         var timeToAnswer: Int? = null,
         var secondsLeft: Int? = null,
-        var revealed: Boolean = false
+        var revealed: Boolean = false,
+        var previousQuestionId: UUID? = null
 ) : RepresentationModel<QuestionDTO>()

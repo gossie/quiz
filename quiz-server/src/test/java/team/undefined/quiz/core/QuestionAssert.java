@@ -16,6 +16,11 @@ public class QuestionAssert extends AbstractAssert<QuestionAssert, Question> {
         return new QuestionAssert(question);
     }
 
+    public QuestionAssert hasId(UUID id) {
+        Assertions.assertThat(actual.getId()).isEqualTo(id);
+        return this;
+    }
+
     public QuestionAssert hasQuestion(String question) {
         Assertions.assertThat(actual.getQuestion()).isEqualTo(question);
         return this;
@@ -53,6 +58,11 @@ public class QuestionAssert extends AbstractAssert<QuestionAssert, Question> {
 
     public QuestionAssert hasEstimates(Map<UUID, String> estimates) {
         Assertions.assertThat(actual.getEstimates()).isEqualTo(estimates);
+        return this;
+    }
+
+    public QuestionAssert hasPreviousQuestionId(UUID previousQuestionId) {
+        Assertions.assertThat(actual.getPreviousQuestionId()).isEqualTo(previousQuestionId);
         return this;
     }
 }
