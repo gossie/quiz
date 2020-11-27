@@ -3,6 +3,17 @@ import { render } from '@testing-library/react';
 import Answers from './Answers';
 import Quiz from '../quiz-client-shared/quiz';
 
+jest.mock('react-i18next', () => ({
+    useTranslation: () => {
+        return {
+            t: (str: string, keys: object) => str,
+            i18n: {
+                changeLanguage: () => new Promise(() => {}),
+            },
+        };
+    },
+}));
+
 test('should show buttons', () => {
     const quiz: Quiz = {
         id: '17',
@@ -13,6 +24,7 @@ test('should show buttons', () => {
                 name: 'Lena',
                 turn: false,
                 points: 13,
+                revealAllowed: true,
                 links: []
             },
             {
@@ -20,11 +32,14 @@ test('should show buttons', () => {
                 name: 'Erik',
                 turn: true,
                 points: 13,
+                revealAllowed: true,
                 links: []
             }
         ],
         openQuestions: [],
         playedQuestions: [],
+        expirationDate: 1234,
+        timestamp: 1234,
         links: []
     }
 
@@ -71,6 +86,8 @@ test('should answer correctly', () => {
         ],
         openQuestions: [],
         playedQuestions: [],
+        expirationDate: 1234,
+        timestamp: 1234,
         links: []
     }
 
@@ -116,6 +133,8 @@ test('should answer correctly', () => {
         ],
         playedQuestions: [],
         openQuestions: [],
+        expirationDate: 1234,
+        timestamp: 1234,
         links: []
     }
 

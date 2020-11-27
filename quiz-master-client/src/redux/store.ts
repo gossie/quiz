@@ -1,4 +1,4 @@
 import { createStore } from "redux";
-import  {showError } from "./reducers";
+import  {handleError } from "./reducers";
 
-export default createStore(showError);
+export default createStore(handleError);

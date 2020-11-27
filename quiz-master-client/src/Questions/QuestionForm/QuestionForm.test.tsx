@@ -6,6 +6,17 @@ import QuestionForm from './QuestionForm';
 beforeEach(() => () => cleanup()); 
 afterEach(() => cleanup());
 
+jest.mock('react-i18next', () => ({
+    useTranslation: () => {
+        return {
+            t: (str: string, keys: object) => str,
+            i18n: {
+                changeLanguage: () => new Promise(() => {}),
+            },
+        };
+    },
+}));
+
 test('should add new estimation question', async () => {
     jest.spyOn(global, 'fetch').mockImplementation((url: string, request: object) => {
         expect(url).toEqual('http://localhost:5000/api/createQuestion');
@@ -49,6 +60,7 @@ test('should add new estimation question', async () => {
                 links: []
             }
         ],
+        expirationDate: 1234,
         timestamp: 12345678,
         links: [{href: '/api/createQuestion', rel: 'createQuestion'}]
     }

@@ -1,21 +1,14 @@
 import { Action } from "redux";
 import { ActionType } from "./action-types";
 
-export interface ShowErrorAction extends Action<ActionType> {
+export interface ErrorAction extends Action<ActionType> {
     type: ActionType;
     payload: {
         errorMessage: string;
     }
 }
 
-export interface ResetErrorAction extends Action<ActionType> {
-    type: ActionType;
-    payload: {
-        errorMessage: string;
-    }
-}
-
-export function showError(errorMessage: string): ShowErrorAction {
+export function showError(errorMessage: string): ErrorAction {
     return {
         type: ActionType.SHOW_ERROR,
         payload: {
@@ -24,7 +17,7 @@ export function showError(errorMessage: string): ShowErrorAction {
     }
 };
 
-export function resetError(): ShowErrorAction {
+export function resetError(): ErrorAction {
     return {
         type: ActionType.RESET_ERROR,
         payload: {

@@ -1,10 +1,21 @@
 import React from 'react';
-import { render, fireEvent, waitFor, cleanup } from '@testing-library/react';
+import { render, fireEvent, waitFor, cleanup } from '../test-utils';
 import Questions from './Questions';
 import Quiz from '../quiz-client-shared/quiz';
 
 beforeEach(() => () => cleanup()); 
 afterEach(() => cleanup());
+
+jest.mock('react-i18next', () => ({
+    useTranslation: () => {
+        return {
+            t: (str: string, keys: object) => str,
+            i18n: {
+                changeLanguage: () => new Promise(() => {}),
+            },
+        };
+    },
+}));
 
 test('should display questions', () => {
     const quiz: Quiz = {
@@ -39,6 +50,7 @@ test('should display questions', () => {
                 links: []
             }
         ],
+        expirationDate: 1234,
         timestamp: 1234,
         links: []
     }
@@ -73,7 +85,7 @@ test('should add new private question', async () => {
                 Accept: 'application/json'
             }
         });
-        Promise.resolve();
+        return Promise.resolve({ status: 201 });
     });
 
     const quiz: Quiz = {
@@ -99,6 +111,7 @@ test('should add new private question', async () => {
                 links: []
             }
         ],
+        expirationDate: 1234,
         timestamp: 1234,
         links: [{href: '/api/createQuestion', rel: 'createQuestion'}]
     }
@@ -140,7 +153,7 @@ test('should add new public question', async () => {
                 Accept: 'application/json'
             }
         });
-        Promise.resolve();
+        return Promise.resolve({ status: 201 });
     });
 
     const quiz: Quiz = {
@@ -166,6 +179,7 @@ test('should add new public question', async () => {
                 links: []
             }
         ],
+        expirationDate: 1234,
         timestamp: 1234,
         links: [{href: '/api/createQuestion', rel: 'createQuestion'}]
     }
@@ -201,7 +215,7 @@ test('should start question', () => {
                 Accept: 'application/json'
             }
         });
-        Promise.resolve();
+        return Promise.resolve({ status: 200 });
     });
 
     const quiz: Quiz = {
@@ -236,6 +250,7 @@ test('should start question', () => {
                 links: []
             }
         ],
+        expirationDate: 1234,
         timestamp: 1234,
         links: []
     }
@@ -250,7 +265,7 @@ test('should delete question', () => {
         expect(request).toEqual({
             method: 'DELETE'
         });
-        Promise.resolve();
+        return Promise.resolve({ status: 200 });
     });
 
     const quiz: Quiz = {
@@ -285,6 +300,7 @@ test('should delete question', () => {
                 links: []
             }
         ],
+        expirationDate: 1234,
         timestamp: 1234,
         links: []
     }
@@ -318,6 +334,7 @@ test('should open and close image modal', () => {
             }
         ],
         playedQuestions: [],
+        expirationDate: 1234,
         timestamp: 1234,
         links: []
     }
@@ -356,7 +373,7 @@ test('should edit question', async () => {
                 Accept: 'application/json'
             }
         });
-        Promise.resolve();
+        return Promise.resolve({ status: 200 });
     });
 
     const quiz: Quiz = {
@@ -383,6 +400,7 @@ test('should edit question', async () => {
             }
         ],
         playedQuestions: [],
+        expirationDate: 1234,
         timestamp: 1234,
         links: []
     }

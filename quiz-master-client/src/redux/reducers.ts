@@ -1,11 +1,11 @@
 import { ActionType } from "./action-types";
-import { ShowErrorAction } from "./actions";
+import { ErrorAction } from "./actions";
 
 const initialState = {
     errorMessage: undefined
 };
 
-export function showError(state = initialState, action: ShowErrorAction) {
+export function handleError(state = initialState, action: ErrorAction) {
     switch (action.type) {
         case ActionType.SHOW_ERROR: {
             return {

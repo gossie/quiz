@@ -20,11 +20,7 @@ interface OwnProps {
 
 type ParticipantProps = StateProps & DispatchProps & OwnProps;
 
-interface InternalParticipantProps extends ParticipantProps {
-    showError: (errorMessage: string) => void;
-}
-
-const ParticipantItem: React.FC<ParticipantProps> = (props: InternalParticipantProps) => {
+const ParticipantItem: React.FC<ParticipantProps> = (props: ParticipantProps) => {
 
     const { t } = useTranslation();
 
