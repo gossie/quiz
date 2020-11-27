@@ -112,7 +112,7 @@ const QuizMaster: React.FC<QuizMasterProps> = (props: QuizMasterProps) => {
                                 <div id="finish-hint">{t('finishQuizNote')}</div>
                                 { quiz.quizStatistics
                                 ?
-                                    <button className={finishButtonCssClasses} onClick={() => setForceStatistics(true)}>{t('butonShowStatistics')}</button>
+                                    <button className={finishButtonCssClasses} onClick={() => setForceStatistics(true)}>{t('buttonShowStatistics')}</button>
                                 :
                                     <button className={finishButtonCssClasses} onClick={finishQuiz}>{t('buttonFinishQuiz')}</button>
                                 }
