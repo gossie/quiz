@@ -22,7 +22,7 @@
     "buzzerHint": "Ich habe gebuzzert!",
     "titleAnswerCorrect": "Antwort korrekt",
     "titleAnswerIncorrect": "Antwort nicht korrekt",
-    "finishQuizNote": "Wenn du hier klickst, schließt du das Quiz, es kann nicht mehr weiter gemacht werden und die finale Statistik wird angezeigt.",
+    "finishQuizNote": "Das Quiz wird beendet. Ihr könnt nicht mehr weitermachen und die finale Statistik wird angezeigt.",
     "expirationNote": "Ein Quiz wird nach vier Wochen Inaktivität automatisch gelöscht. Aktuell ist dieses Quiz noch bit zum {{expirationDate}} gültig.",
     "buttonFinishQuiz": "Quiz beenden",
     "buttonShowStatistics": "Statistik anzeigen",
