@@ -22,10 +22,11 @@
     "buzzerHint": "I have buzzered!",
     "titleAnswerCorrect": "Correct Answer",
     "titleAnswerIncorrect": "Incorrect Answer",
-    "finishQuizNote": "When you push this button, the quiz will be closed and cannot be opened again. The final statisticts will be displayed.",
+    "finishQuizNote": "The quiz will be closed and cannot be opened again. The final statisticts will be displayed.",
     "expirationNote": "A quiz will automatically be deleted after four weeks of inactivity. Currently this quiz is valid until {{expirationDate}}.",
     "buttonFinishQuiz": "Finish Quiz",
     "buttonShowStatistics": "Show statistics",
+    "buttonCancel": "Cancel",
 
     "headlingQuestions": "Questions",
     "imageAlt": "There should be something here",
