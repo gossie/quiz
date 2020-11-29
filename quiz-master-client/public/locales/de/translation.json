@@ -26,6 +26,7 @@
     "expirationNote": "Ein Quiz wird nach vier Wochen Inaktivität automatisch gelöscht. Aktuell ist dieses Quiz noch bit zum {{expirationDate}} gültig.",
     "buttonFinishQuiz": "Quiz beenden",
     "buttonShowStatistics": "Statistik anzeigen",
+    "buttonCancel": "Abbrechen",
 
     "headlingQuestions": "Fragen",
     "imageAlt": "Hier sollte ein Bild sein",

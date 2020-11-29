@@ -25,8 +25,7 @@ type QuizMasterProps = OwnProps & StateProps & DispatchProps
 
 const QuizMaster: React.FC<QuizMasterProps> = (props: QuizMasterProps) => {
     const [quiz, setQuiz] = useState({} as Quiz);
-    const [finishButtonCssClasses, setFinishButtonCssClasses] = useState('button is-link')
-    const [forceStatistics, setForceStatistics] = useState(false);
+
     
     const { t } = useTranslation();
 
@@ -55,13 +54,6 @@ const QuizMaster: React.FC<QuizMasterProps> = (props: QuizMasterProps) => {
         return `${expirationDate.getDate()}.${expirationDate.getMonth() + 1}.${expirationDate.getFullYear()}`
     };
 
-    const finishQuiz = () => {
-        setFinishButtonCssClasses('button is-link is-loading');
-        fetch(`${process.env.REACT_APP_BASE_URL}/api/quiz/${props.quizId}`, {
-            method: 'POST'
-        })
-        .finally(() => setFinishButtonCssClasses('button is-link'));
-    }
 
     const undo = () => {
         if (quiz.undoPossible) {
@@ -109,14 +101,8 @@ const QuizMaster: React.FC<QuizMasterProps> = (props: QuizMasterProps) => {
                         <div className="columns">
                             <div className="column participants box">
                                 <Participants quiz={quiz}></Participants>
-                                <div id="finish-hint">{t('finishQuizNote')}</div>
-                                { quiz.quizStatistics
-                                ?
-                                    <button className={finishButtonCssClasses} onClick={() => setForceStatistics(true)}>{t('buttonShowStatistics')}</button>
-                                :
-                                    <button className={finishButtonCssClasses} onClick={finishQuiz}>{t('buttonFinishQuiz')}</button>
-                                }
-                                <QuizStatistics quiz={quiz} closeable={true} forceOpen={forceStatistics} onClose={() => setForceStatistics(false)}></QuizStatistics>
+                                
+                                
                                 <div id="expiration-date">
                                     {t('expirationNote', { expirationDate: expires() })}
                                 </div> 
