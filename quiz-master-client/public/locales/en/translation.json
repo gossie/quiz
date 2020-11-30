@@ -42,6 +42,7 @@
     "titleDeleteImage": "Delete question",
     "titleReopenQuestion": "Reopen question",
     "labelQuestion": "Question",
+    "labelAnswer": "Answer",
     "labelCategory": "Category",
     "categoryOther": "Other",
     "categoryHistory": "History",
