@@ -36,6 +36,7 @@
     "titleFreetextQuestion": "Freetext question",
     "titleBuzzerQuestion": "Buzzer question",
     "titleSecondsToAnswer": "{{seconds}} seconds to answer",
+    "titleCorrectAnswer": "The answer is '{{answer}}'.",
     "titleShowImage": "Show image",
     "titleAskImage": "Ask question",
     "titleEditImage": "Edit question",

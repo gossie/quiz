@@ -36,6 +36,7 @@
     "titleFreetextQuestion": "Freitext-Frage",
     "titleBuzzerQuestion": "Buzzer-Frage",
     "titleSecondsToAnswer": "{{seconds}} Sekunden Zeit",
+    "titleCorrectAnswer": "Die Antwort ist '{{answer}}'.",
     "titleShowImage": "Bild anzeigen",
     "titleAskImage": "Frage stellen",
     "titleEditImage": "Frage bearbeiten",

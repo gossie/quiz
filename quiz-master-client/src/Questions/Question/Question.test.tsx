@@ -2,7 +2,6 @@ import React from 'react';
 import { render, cleanup } from '../../test-utils';
 import Quiz, { Question } from '../../quiz-client-shared/quiz';
 import QuestionElement from './Question';
-import { waitFor } from '@testing-library/react';
 import { ErrorAction } from '../../redux/actions';
 import { ActionType } from '../../redux/action-types';
 
@@ -12,7 +11,13 @@ afterEach(() => cleanup());
 jest.mock('react-i18next', () => ({
     useTranslation: () => {
         return {
-            t: (str: string, keys: object) => str === 'titleSecondsToAnswer' ? `${keys['seconds']} seconds to answer` : str,
+            t: (str: string, keys: object) => {
+                switch (str) {
+                    case 'titleSecondsToAnswer': return `${keys['seconds']} seconds to answer`;
+                    case 'titleCorrectAnswer': return `The answer is '${keys['answer']}'`;
+                    default: return str;
+                }
+            },
             i18n: {
                 changeLanguage: () => new Promise(() => {}),
             },
@@ -366,7 +371,110 @@ test('should not ask question, because the quiz is already finished', (done) => 
         return {};
     }
 
-    const { getByTestId } = render(<QuestionElement enableOperations={true} index={0} quiz={quiz} question={quiz.openQuestions[0]} setImageToDisplay={(path) => {}} />, { reducer: onError });
+    const { getByTestId } = render(<QuestionElement enableOperations={true} index={0} quiz={quiz} question={quiz.openQuestions[0]} setImageToDisplay={() => {}} />, { reducer: onError });
 
     getByTestId('start-question-0').click();
+});
+
+test('should display answer hint', () => {
+
+    const quiz: Quiz = {
+        id: '17',
+        name: 'Test',
+        participants: [
+            {
+                id: '12',
+                name: 'Lena',
+                turn: false,
+                points: 13,
+                links: [],
+                revealAllowed: false
+            },
+            {
+                id: '13',
+                name: 'Erik',
+                turn: true,
+                points: 13,
+                links: [],
+                revealAllowed: false
+            }
+        ],
+        playedQuestions: [],
+        openQuestions: [
+            { 
+                id: '123',
+                question: 'Who is who?',
+                correctAnswer: 'That is who',
+                pending: false,
+                category: 'Other',
+                publicVisible: true,
+                imagePath: '',
+                links: [
+                    {
+                        rel: 'self',
+                        href: '/api/quiz/17/questions/123'
+                    }
+                ]
+            }
+        ],
+        timestamp: 100,
+        expirationDate: 1234,
+        links: [{ rel: 'reopenQuestion', href: '/api/reopen' }]
+    }
+
+    const { getByTestId } = render(<QuestionElement enableOperations={true} index={0} quiz={quiz} question={quiz.openQuestions[0]} setImageToDisplay={() => {}} />);
+
+    expect(getByTestId('answer-hint-0').title).toBe('The answer is \'That is who\'');
+
+});
+
+test('should not display answer hint', () => {
+
+    const quiz: Quiz = {
+        id: '17',
+        name: 'Test',
+        participants: [
+            {
+                id: '12',
+                name: 'Lena',
+                turn: false,
+                points: 13,
+                links: [],
+                revealAllowed: false
+            },
+            {
+                id: '13',
+                name: 'Erik',
+                turn: true,
+                points: 13,
+                links: [],
+                revealAllowed: false
+            }
+        ],
+        playedQuestions: [],
+        openQuestions: [
+            { 
+                id: '123',
+                question: 'Who is who?',
+                pending: false,
+                category: 'Other',
+                publicVisible: true,
+                imagePath: '',
+                links: [
+                    {
+                        rel: 'self',
+                        href: '/api/quiz/17/questions/123'
+                    }
+                ]
+            }
+        ],
+        timestamp: 100,
+        expirationDate: 1234,
+        links: [{ rel: 'reopenQuestion', href: '/api/reopen' }]
+    }
+
+    const { getByTestId } = render(<QuestionElement enableOperations={true} index={0} quiz={quiz} question={quiz.openQuestions[0]} setImageToDisplay={() => {}} />);
+
+    expect(() => getByTestId('answer-hint-0')).toThrowError();
+
 });
