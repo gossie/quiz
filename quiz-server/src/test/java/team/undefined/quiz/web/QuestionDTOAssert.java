@@ -5,6 +5,7 @@ import org.assertj.core.api.Assertions;
 
 import java.util.Map;
 import java.util.UUID;
+import java.util.function.Consumer;
 
 public class QuestionDTOAssert extends AbstractAssert<QuestionDTOAssert, QuestionDTO> {
 
@@ -43,6 +44,16 @@ public class QuestionDTOAssert extends AbstractAssert<QuestionDTOAssert, Questio
 
     public QuestionDTOAssert hasEstimates(Map<UUID, String> estimates) {
         Assertions.assertThat(actual.getEstimates()).isEqualTo(estimates);
+        return this;
+    }
+
+    public QuestionDTOAssert isMultipleChoiceQuestion() {
+        Assertions.assertThat(actual.getChoices()).isNotEmpty();
+        return this;
+    }
+
+    public QuestionDTOAssert hasChoice(int index, Consumer<ChoiceDTOAssert> consumer) {
+        consumer.accept(ChoiceDTOAssert.assertThat(actual.getChoices().get(index)));
         return this;
     }
 }

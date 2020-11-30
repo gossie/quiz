@@ -9,6 +9,7 @@ import org.springframework.http.MediaType
 import org.springframework.test.web.reactive.server.WebTestClient
 import org.springframework.test.web.reactive.server.expectBody
 import org.springframework.web.reactive.function.BodyInserters
+import team.undefined.quiz.web.ChoiceDTO
 import team.undefined.quiz.web.QuestionDTO
 import team.undefined.quiz.web.QuizDTO
 import team.undefined.quiz.web.QuizDTOAssert.assertThat
@@ -93,7 +94,7 @@ internal class QuizMasterIT {
                 .post()
                 .uri(quizMasterReference.get().getLink("createQuestion").map { it.href }.orElseThrow())
                 .contentType(MediaType.APPLICATION_JSON)
-                .body(BodyInserters.fromValue(QuestionDTO(question = "Wo befindet sich das Kahnbein")))
+                .body(BodyInserters.fromValue(QuestionDTO(question = "Wo befindet sich das Kahnbein", choices = listOf(ChoiceDTO(choice = "Im Fuß"), ChoiceDTO(choice = "In der Hand")))))
                 .exchange()
                 .expectStatus().isCreated
 
@@ -108,6 +109,9 @@ internal class QuizMasterIT {
                     openQuestion
                             .hasQuestion("Wo befindet sich das Kahnbein")
                             .isNotPending
+                            .isMultipleChoiceQuestion
+                            .hasChoice(0) { choice -> choice.hasChoice("Im Fuß") }
+                            .hasChoice(1) { choice -> choice.hasChoice("In der Hand") }
                 }
                 .playedQuestionSizeIs(0)
                 .particpantSizeIs(0)
@@ -122,7 +126,7 @@ internal class QuizMasterIT {
                 .put()
                 .uri(quizMasterReference.get().openQuestions[1].getLink("self").map { it.href }.orElseThrow())
                 .contentType(MediaType.APPLICATION_JSON)
-                .body(BodyInserters.fromValue(QuestionDTO(question = "Wo befindet sich das Kahnbein?", previousQuestionId = quizMasterReference.get().openQuestions[0].id)))
+                .body(BodyInserters.fromValue(QuestionDTO(question = "Wo befindet sich das Kahnbein?", choices = listOf(ChoiceDTO(choice = "Im Fuß"), ChoiceDTO(choice = "In der Hand")), previousQuestionId = quizMasterReference.get().openQuestions[0].id)))
                 .exchange()
                 .expectStatus().isOk
 
@@ -136,7 +140,9 @@ internal class QuizMasterIT {
                 .hasOpenQuestion(1) { openQuestion ->
                     openQuestion
                             .hasQuestion("Wo befindet sich das Kahnbein?")
-                            .isNotPending
+                            .isMultipleChoiceQuestion
+                            .hasChoice(0) { choice -> choice.hasChoice("Im Fuß") }
+                            .hasChoice(1) { choice -> choice.hasChoice("In der Hand") }
                 }
                 .playedQuestionSizeIs(0)
                 .particpantSizeIs(0)
@@ -167,7 +173,9 @@ internal class QuizMasterIT {
                     openQuestion
                             .hasQuestion("Wo befindet sich das Kahnbein?")
                             .isNotPending
-                            .isBuzzerQuestion
+                            .isMultipleChoiceQuestion
+                            .hasChoice(0) { choice -> choice.hasChoice("Im Fuß") }
+                            .hasChoice(1) { choice -> choice.hasChoice("In der Hand") }
                 }
                 .hasOpenQuestion(2) { openQuestion ->
                     openQuestion
@@ -210,7 +218,9 @@ internal class QuizMasterIT {
                     openQuestion
                             .hasQuestion("Wo befindet sich das Kahnbein?")
                             .isNotPending
-                            .isBuzzerQuestion
+                            .isMultipleChoiceQuestion
+                            .hasChoice(0) { choice -> choice.hasChoice("Im Fuß") }
+                            .hasChoice(1) { choice -> choice.hasChoice("In der Hand") }
                 }
                 .playedQuestionSizeIs(0)
                 .particpantSizeIs(0)
@@ -241,7 +251,9 @@ internal class QuizMasterIT {
                     openQuestion
                             .hasQuestion("Wo befindet sich das Kahnbein?")
                             .isNotPending
-                            .isBuzzerQuestion
+                            .isMultipleChoiceQuestion
+                            .hasChoice(0) { choice -> choice.hasChoice("Im Fuß") }
+                            .hasChoice(1) { choice -> choice.hasChoice("In der Hand") }
                 }
                 .hasOpenQuestion(2) { openQuestion ->
                     openQuestion
@@ -278,7 +290,9 @@ internal class QuizMasterIT {
                     openQuestion
                             .hasQuestion("Wo befindet sich das Kahnbein?")
                             .isNotPending
-                            .isBuzzerQuestion
+                            .isMultipleChoiceQuestion
+                            .hasChoice(0) { choice -> choice.hasChoice("Im Fuß") }
+                            .hasChoice(1) { choice -> choice.hasChoice("In der Hand") }
                 }
                 .hasOpenQuestion(2) { openQuestion ->
                     openQuestion
@@ -319,7 +333,9 @@ internal class QuizMasterIT {
                     openQuestion
                             .hasQuestion("Wo befindet sich das Kahnbein?")
                             .isNotPending
-                            .isBuzzerQuestion
+                            .isMultipleChoiceQuestion
+                            .hasChoice(0) { choice -> choice.hasChoice("Im Fuß") }
+                            .hasChoice(1) { choice -> choice.hasChoice("In der Hand") }
                 }
                 .hasOpenQuestion(2) { openQuestion ->
                     openQuestion
@@ -356,7 +372,9 @@ internal class QuizMasterIT {
                     openQuestion
                             .hasQuestion("Wo befindet sich das Kahnbein?")
                             .isNotPending
-                            .isBuzzerQuestion
+                            .isMultipleChoiceQuestion
+                            .hasChoice(0) { choice -> choice.hasChoice("Im Fuß") }
+                            .hasChoice(1) { choice -> choice.hasChoice("In der Hand") }
                 }
                 .hasOpenQuestion(2) { openQuestion ->
                     openQuestion
@@ -394,7 +412,9 @@ internal class QuizMasterIT {
                     openQuestion
                             .hasQuestion("Wo befindet sich das Kahnbein?")
                             .isNotPending
-                            .isBuzzerQuestion
+                            .isMultipleChoiceQuestion
+                            .hasChoice(0) { choice -> choice.hasChoice("Im Fuß") }
+                            .hasChoice(1) { choice -> choice.hasChoice("In der Hand") }
                 }
                 .hasOpenQuestion(2) { openQuestion ->
                     openQuestion
@@ -431,7 +451,9 @@ internal class QuizMasterIT {
                     openQuestion
                             .hasQuestion("Wo befindet sich das Kahnbein?")
                             .isNotPending
-                            .isBuzzerQuestion
+                            .isMultipleChoiceQuestion
+                            .hasChoice(0) { choice -> choice.hasChoice("Im Fuß") }
+                            .hasChoice(1) { choice -> choice.hasChoice("In der Hand") }
                 }
                 .hasOpenQuestion(2) { openQuestion ->
                     openQuestion
@@ -468,7 +490,9 @@ internal class QuizMasterIT {
                     openQuestion
                             .hasQuestion("Wo befindet sich das Kahnbein?")
                             .isNotPending
-                            .isBuzzerQuestion
+                            .isMultipleChoiceQuestion
+                            .hasChoice(0) { choice -> choice.hasChoice("Im Fuß") }
+                            .hasChoice(1) { choice -> choice.hasChoice("In der Hand") }
                 }
                 .hasOpenQuestion(2) { openQuestion ->
                     openQuestion
@@ -507,7 +531,9 @@ internal class QuizMasterIT {
                     openQuestion
                             .hasQuestion("Wo befindet sich das Kahnbein?")
                             .isNotPending
-                            .isBuzzerQuestion
+                            .isMultipleChoiceQuestion
+                            .hasChoice(0) { choice -> choice.hasChoice("Im Fuß") }
+                            .hasChoice(1) { choice -> choice.hasChoice("In der Hand") }
                 }
                 .hasOpenQuestion(2) { openQuestion ->
                     openQuestion
@@ -538,7 +564,9 @@ internal class QuizMasterIT {
                     openQuestion
                             .hasQuestion("Wo befindet sich das Kahnbein?")
                             .isPending
-                            .isBuzzerQuestion
+                            .isMultipleChoiceQuestion
+                            .hasChoice(0) { choice -> choice.hasChoice("Im Fuß") }
+                            .hasChoice(1) { choice -> choice.hasChoice("In der Hand") }
                 }
                 .hasOpenQuestion(1) { openQuestion ->
                     openQuestion
@@ -575,7 +603,9 @@ internal class QuizMasterIT {
                     openQuestion
                             .hasQuestion("Wo befindet sich das Kahnbein?")
                             .isPending
-                            .isBuzzerQuestion
+                            .isMultipleChoiceQuestion
+                            .hasChoice(0) { choice -> choice.hasChoice("Im Fuß") }
+                            .hasChoice(1) { choice -> choice.hasChoice("In der Hand") }
                 }
                 .hasOpenQuestion(1) { openQuestion ->
                     openQuestion
@@ -613,7 +643,9 @@ internal class QuizMasterIT {
                     openQuestion
                             .hasQuestion("Wo befindet sich das Kahnbein?")
                             .isPending
-                            .isBuzzerQuestion
+                            .isMultipleChoiceQuestion
+                            .hasChoice(0) { choice -> choice.hasChoice("Im Fuß") }
+                            .hasChoice(1) { choice -> choice.hasChoice("In der Hand") }
                 }
                 .hasOpenQuestion(1) { openQuestion ->
                     openQuestion
@@ -651,7 +683,9 @@ internal class QuizMasterIT {
                     openQuestion
                             .hasQuestion("Wo befindet sich das Kahnbein?")
                             .isPending
-                            .isBuzzerQuestion
+                            .isMultipleChoiceQuestion
+                            .hasChoice(0) { choice -> choice.hasChoice("Im Fuß") }
+                            .hasChoice(1) { choice -> choice.hasChoice("In der Hand") }
                 }
                 .hasOpenQuestion(1) { openQuestion ->
                     openQuestion
@@ -699,7 +733,9 @@ internal class QuizMasterIT {
                     playedQuestion
                             .hasQuestion("Wo befindet sich das Kahnbein?")
                             .isNotPending
-                            .isBuzzerQuestion
+                            .isMultipleChoiceQuestion
+                            .hasChoice(0) { choice -> choice.hasChoice("Im Fuß") }
+                            .hasChoice(1) { choice -> choice.hasChoice("In der Hand") }
                 }
                 .particpantSizeIs(2)
                 .hasParticipant(0) { it.hasName("André").hasPoints(0).allowsReveal().isNotTurn }
@@ -738,7 +774,9 @@ internal class QuizMasterIT {
                     playedQuestion
                             .hasQuestion("Wo befindet sich das Kahnbein?")
                             .isNotPending
-                            .isBuzzerQuestion
+                            .isMultipleChoiceQuestion
+                            .hasChoice(0) { choice -> choice.hasChoice("Im Fuß") }
+                            .hasChoice(1) { choice -> choice.hasChoice("In der Hand") }
                 }
                 .particpantSizeIs(2)
                 .hasParticipant(0) { it.hasName("André").hasPoints(0).allowsReveal().isNotTurn }
@@ -775,7 +813,9 @@ internal class QuizMasterIT {
                     playedQuestion
                             .hasQuestion("Wo befindet sich das Kahnbein?")
                             .isNotPending
-                            .isBuzzerQuestion
+                            .isMultipleChoiceQuestion
+                            .hasChoice(0) { choice -> choice.hasChoice("Im Fuß") }
+                            .hasChoice(1) { choice -> choice.hasChoice("In der Hand") }
                 }
                 .particpantSizeIs(2)
                 .hasParticipant(0) { it.hasName("André").hasPoints(0).allowsReveal().isNotTurn }
@@ -817,7 +857,9 @@ internal class QuizMasterIT {
                     playedQuestion
                             .hasQuestion("Wo befindet sich das Kahnbein?")
                             .isNotPending
-                            .isBuzzerQuestion
+                            .isMultipleChoiceQuestion
+                            .hasChoice(0) { choice -> choice.hasChoice("Im Fuß") }
+                            .hasChoice(1) { choice -> choice.hasChoice("In der Hand") }
                 }
                 .particpantSizeIs(2)
                 .hasParticipant(0) { it.hasName("André").hasPoints(0).allowsReveal().isNotTurn }
@@ -857,7 +899,9 @@ internal class QuizMasterIT {
                     playedQuestion
                             .hasQuestion("Wo befindet sich das Kahnbein?")
                             .isNotPending
-                            .isBuzzerQuestion
+                            .isMultipleChoiceQuestion
+                            .hasChoice(0) { choice -> choice.hasChoice("Im Fuß") }
+                            .hasChoice(1) { choice -> choice.hasChoice("In der Hand") }
                 }
                 .particpantSizeIs(2)
                 .hasParticipant(0) { it.hasName("André").hasPoints(0).allowsReveal().isNotTurn }
@@ -899,7 +943,9 @@ internal class QuizMasterIT {
                     playedQuestion
                             .hasQuestion("Wo befindet sich das Kahnbein?")
                             .isNotPending
-                            .isBuzzerQuestion
+                            .isMultipleChoiceQuestion
+                            .hasChoice(0) { choice -> choice.hasChoice("Im Fuß") }
+                            .hasChoice(1) { choice -> choice.hasChoice("In der Hand") }
                 }
                 .particpantSizeIs(2)
                 .hasParticipant(0) { it.hasName("André").hasPoints(2).allowsReveal().isNotTurn }
@@ -936,7 +982,9 @@ internal class QuizMasterIT {
                     playedQuestion
                             .hasQuestion("Wo befindet sich das Kahnbein?")
                             .isNotPending
-                            .isBuzzerQuestion
+                            .isMultipleChoiceQuestion
+                            .hasChoice(0) { choice -> choice.hasChoice("Im Fuß") }
+                            .hasChoice(1) { choice -> choice.hasChoice("In der Hand") }
                 }
                 .particpantSizeIs(1)
                 .hasParticipant(0) { it.hasName("Lena").hasPoints(2).doesNotAllowReveal().isNotTurn }
@@ -975,7 +1023,9 @@ internal class QuizMasterIT {
                     playedQuestion
                             .hasQuestion("Wo befindet sich das Kahnbein?")
                             .isNotPending
-                            .isBuzzerQuestion
+                            .isMultipleChoiceQuestion
+                            .hasChoice(0) { choice -> choice.hasChoice("Im Fuß") }
+                            .hasChoice(1) { choice -> choice.hasChoice("In der Hand") }
                 }
                 .particpantSizeIs(2)
                 .hasParticipant(0) { it.hasName("André").hasPoints(2).allowsReveal().isNotTurn }
@@ -1012,7 +1062,9 @@ internal class QuizMasterIT {
                     playedQuestion
                             .hasQuestion("Wo befindet sich das Kahnbein?")
                             .isNotPending
-                            .isBuzzerQuestion
+                            .isMultipleChoiceQuestion
+                            .hasChoice(0) { choice -> choice.hasChoice("Im Fuß") }
+                            .hasChoice(1) { choice -> choice.hasChoice("In der Hand") }
                 }
                 .particpantSizeIs(1)
                 .hasParticipant(0) { it.hasName("Lena").hasPoints(2).doesNotAllowReveal().isNotTurn }
@@ -1049,7 +1101,9 @@ internal class QuizMasterIT {
                     playedQuestion
                             .hasQuestion("Wo befindet sich das Kahnbein?")
                             .isNotPending
-                            .isBuzzerQuestion
+                            .isMultipleChoiceQuestion
+                            .hasChoice(0) { choice -> choice.hasChoice("Im Fuß") }
+                            .hasChoice(1) { choice -> choice.hasChoice("In der Hand") }
                 }
                 .particpantSizeIs(2)
                 .hasParticipant(0) { it.hasName("André").hasPoints(2).allowsReveal().isNotTurn }
@@ -1090,7 +1144,9 @@ internal class QuizMasterIT {
                     playedQuestion
                             .hasQuestion("Wo befindet sich das Kahnbein?")
                             .isNotPending
-                            .isBuzzerQuestion
+                            .isMultipleChoiceQuestion
+                            .hasChoice(0) { choice -> choice.hasChoice("Im Fuß") }
+                            .hasChoice(1) { choice -> choice.hasChoice("In der Hand") }
                 }
                 .particpantSizeIs(2)
                 .hasParticipant(0) { it.hasName("André").hasPoints(2).allowsReveal().isNotTurn }

@@ -14,7 +14,8 @@ data class Question(
         val initialTimeToAnswer: Int? = null,
         var secondsLeft: Int? = initialTimeToAnswer,
         var revealed: Boolean = false,
-        var previousQuestionId: UUID? = null
+        var previousQuestionId: UUID? = null,
+        var choices: List<Choice>? = null
 ) {
 
     enum class QuestionVisibility(private val b: Boolean) {

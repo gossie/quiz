@@ -81,9 +81,26 @@ private fun ParticipantDTO.addLinks(quizId: UUID): Mono<ParticipantDTO> {
 }
 
 fun Question.map(quizId: UUID): QuestionDTO {
-    val questionDTO = QuestionDTO(this.id, this.question, this.pending, this.imageUrl, if (this.estimates != null) { HashMap(this.estimates) } else { this.estimates }, this.visibility.asBoolean(), this.category.category, this.initialTimeToAnswer, this.secondsLeft, this.revealed, this.previousQuestionId)
+    val questionDTO = QuestionDTO(
+            this.id,
+            this.question,
+            this.pending,
+            this.imageUrl,
+            if (this.estimates != null) { HashMap(this.estimates) } else { this.estimates },
+            this.visibility.asBoolean(),
+            this.category.category,
+            this.initialTimeToAnswer,
+            this.secondsLeft,
+            this.revealed,
+            this.previousQuestionId,
+            if (this.choices != null) { this.choices?.map { it.map() } } else { null }
+    )
     questionDTO.add(Link.of("/api/quiz/" + quizId + "/questions/" + this.id, "self"))
     return if (this.imageUrl == "") questionDTO else questionDTO.add(Link.of(this.imageUrl, "image"))
+}
+
+fun Choice.map(): ChoiceDTO {
+    return ChoiceDTO(this.choice)
 }
 
 fun QuestionDTO.map(questionId: UUID): Question {
@@ -97,7 +114,8 @@ fun QuestionDTO.map(questionId: UUID): Question {
             initialTimeToAnswer = this.timeToAnswer,
             secondsLeft = this.timeToAnswer,
             revealed = this.revealed,
-            previousQuestionId = this.previousQuestionId
+            previousQuestionId = this.previousQuestionId,
+            choices = if (this.choices != null) { this.choices?.map { it.map() } } else { null }
     )
 }
 
@@ -110,8 +128,13 @@ fun QuestionDTO.map(): Question {
             category = if (this.category == "") QuestionCategory("other") else QuestionCategory(this.category),
             initialTimeToAnswer = this.timeToAnswer,
             secondsLeft = this.timeToAnswer,
-            previousQuestionId = this.previousQuestionId
+            previousQuestionId = this.previousQuestionId,
+            choices = if (this.choices != null) { this.choices?.map { it.map() } } else { null }
     )
+}
+
+fun ChoiceDTO.map(): Choice {
+    return Choice(choice = this.choice)
 }
 
 fun QuizDTO.map(): Quiz {

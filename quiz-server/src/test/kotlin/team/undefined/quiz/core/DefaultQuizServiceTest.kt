@@ -556,6 +556,21 @@ internal class DefaultQuizServiceTest {
     }
 
     @Test
+    fun shouldCreateNewQuestionWithChoices() {
+        val quizService = DefaultQuizService(quizRepository, UndoneEventsCache(), eventBus)
+
+        val quizId = UUID.randomUUID()
+        val questionId = UUID.randomUUID()
+        val choice1Id = UUID.randomUUID()
+        val choice2Id = UUID.randomUUID()
+        StepVerifier.create(quizService.createQuestion(CreateQuestionCommand(quizId, Question(questionId, "Wer ist das?", choices = listOf(Choice(choice1Id, "a"), Choice(choice2Id, "b")), imageUrl = "pathToImage"))))
+                .consumeNextWith {
+                    verify(eventBus).post(argThat { (it as QuestionCreatedEvent).quizId == quizId && it.question == Question(questionId, "Wer ist das?", choices = listOf(Choice(choice1Id, "a"), Choice(choice2Id, "b")), imageUrl = "pathToImage") })
+                }
+                .verifyComplete()
+    }
+
+    @Test
     fun shouldCreateNewQuestionWithCategory() {
         val quizService = DefaultQuizService(quizRepository, UndoneEventsCache(), eventBus)
 
