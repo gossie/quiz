@@ -42,7 +42,7 @@ test('should start editing', done => {
         done();
     };
 
-    const { getByTestId } = render(<QuestionElement enableOperations={true} question={question} index={0} setImageToDisplay={(path) => {}} onEdit={onEdit} />);
+    const { getByTestId } = render(<QuestionElement enableOperations={true} question={question} index={0} setImageToDisplay={() => {}} onEdit={onEdit} />);
 
     const editModeButton = getByTestId('edit-question-0') as HTMLButtonElement;
     editModeButton.click();
@@ -60,7 +60,7 @@ test('should be a freetext question', async () => {
         links: []
     }
 
-    const { getByTestId } = render(<QuestionElement enableOperations={true} question={question} index={0} setImageToDisplay={(path) => {}} />);
+    const { getByTestId } = render(<QuestionElement enableOperations={true} question={question} index={0} setImageToDisplay={() => {}} />);
     expect(getByTestId('index').textContent).toEqual('1');
     expect(getByTestId('question').textContent).toEqual('Warum?');
     expect(() => getByTestId('freetext-question-0')).not.toThrowError();
@@ -78,7 +78,7 @@ test('should be a buzzer question', async () => {
         links: []
     }
 
-    const { getByTestId } = render(<QuestionElement enableOperations={true} question={question} index={0} setImageToDisplay={(path) => {}} />);
+    const { getByTestId } = render(<QuestionElement enableOperations={true} question={question} index={0} setImageToDisplay={() => {}} />);
 
     expect(getByTestId('index').textContent).toEqual('1');
     expect(getByTestId('question').textContent).toEqual('Warum?');
@@ -98,7 +98,7 @@ test('that stop watch is shown', () => {
         links: []
     }
 
-    const { getByTestId } = render(<QuestionElement enableOperations={true} question={question} index={0} setImageToDisplay={(path) => {}} />);
+    const { getByTestId } = render(<QuestionElement enableOperations={true} question={question} index={0} setImageToDisplay={() => {}} />);
 
     const stopWatchIcon = getByTestId('stop-watch-0') as HTMLSpanElement;
 
@@ -116,7 +116,7 @@ test('that stop watch is not shown', () => {
         links: []
     }
 
-    const { getByTestId } = render(<QuestionElement enableOperations={true} question={question} index={0} setImageToDisplay={(path) => {}} />);
+    const { getByTestId } = render(<QuestionElement enableOperations={true} question={question} index={0} setImageToDisplay={() => {}} />);
 
     expect(() => getByTestId('stop-watch-0')).toThrowError();
 });
@@ -175,7 +175,7 @@ test('should reopen question', (done) => {
         links: [{ rel: 'reopenQuestion', href: '/api/reopen' }]
     }
 
-    const { getByTestId } = render(<QuestionElement enableOperations={true} index={0} quiz={quiz} question={quiz.openQuestions[0]} setImageToDisplay={(path) => {}} />);
+    const { getByTestId } = render(<QuestionElement enableOperations={true} index={0} quiz={quiz} question={quiz.openQuestions[0]} setImageToDisplay={() => {}} />);
 
     getByTestId('reopen-button').click();
 });
@@ -239,7 +239,7 @@ test('should not reopen question, because the quiz is already finished', (done) 
         return {};
     }
 
-    const { getByTestId } = render(<QuestionElement enableOperations={true} index={0} quiz={quiz} question={quiz.openQuestions[0]} setImageToDisplay={(path) => {}} />, { reducer: onError });
+    const { getByTestId } = render(<QuestionElement enableOperations={true} index={0} quiz={quiz} question={quiz.openQuestions[0]} setImageToDisplay={() => {}} />, { reducer: onError });
 
     getByTestId('reopen-button').click();
 });
@@ -305,7 +305,7 @@ test('should not delete question, because the quiz is already finished', (done) 
         return {};
     }
 
-    const { getByTestId } = render(<QuestionElement enableOperations={true} index={0} quiz={quiz} question={quiz.openQuestions[0]} setImageToDisplay={(path) => {}} />, { reducer: onError });
+    const { getByTestId } = render(<QuestionElement enableOperations={true} index={0} quiz={quiz} question={quiz.openQuestions[0]} setImageToDisplay={() => {}} />, { reducer: onError });
 
     getByTestId('delete-question-0').click();
 });
