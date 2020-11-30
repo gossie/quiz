@@ -75,8 +75,10 @@ class QuizController(private val quizService: QuizService,
         eventBus.post(ForceEmitCommand(quizId))
         return Flux.merge(observer, getHeartbeat(quizId))
                 .map {
+                    it.data()?.playedQuestions?.forEach { it.correctAnswer = null }
                     it.data()?.openQuestions
                         ?.forEach { question ->
+                            question.correctAnswer = null
                             question.estimates?.keys?.forEach { id ->
                                 (question.estimates as MutableMap)[id] = determineAnswerToDisplay(it.data()!!, question, id)
                             }

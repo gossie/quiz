@@ -21,6 +21,16 @@ public class QuestionDTOAssert extends AbstractAssert<QuestionDTOAssert, Questio
         return this;
     }
 
+    public QuestionDTOAssert hasAnswerNote(String answerNote) {
+        Assertions.assertThat(actual.getCorrectAnswer()).isEqualTo(answerNote);
+        return this;
+    }
+
+    public QuestionDTOAssert hasNoAnswerNote() {
+        Assertions.assertThat(actual.getCorrectAnswer()).isNull();
+        return this;
+    }
+
     public QuestionDTOAssert isPending() {
         Assertions.assertThat(actual.getPending()).isTrue();
         return this;
