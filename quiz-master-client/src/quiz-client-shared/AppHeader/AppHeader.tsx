@@ -20,11 +20,11 @@ const AppHeader: React.FC<AppHeaderProps> = (props: AppHeaderProps) => {
                 </div> 
                 <div className="app-title">{props.title}</div>
                 { props.quizId &&
-                    <button className="navbar-burger burger" aria-label="menu" aria-expanded="false" data-target="navbarMenu" onClick={() => setBurgerMenuOpen(!burgerMenuOpen)}>
+                    <a className="navbar-burger burger" aria-label="menu" aria-expanded="false" data-target="navbarMenu" onClick={() => setBurgerMenuOpen(!burgerMenuOpen)}>
                         <span aria-hidden="true"></span>
                         <span aria-hidden="true"></span>
                         <span aria-hidden="true"></span>
-                    </button>
+                    </a>
                 }
             </div>
             <div className={'navbar-menu' + (burgerMenuOpen ? ' is-active' : '')} id="navbarMenu">
