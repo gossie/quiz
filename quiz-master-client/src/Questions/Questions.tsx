@@ -8,6 +8,7 @@ import QuestionPool from './QuestionPool/QuestionPool';
 import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
 import { useTranslation } from 'react-i18next';
 import { showError } from '../redux/actions';
+import FinishQuiz from './FinishQuiz/FinishQuiz';
 
 interface StateProps {
     globalErrorMessage: string;
@@ -57,6 +58,7 @@ const Questions: React.FC<QuestionsProps> = (props: QuestionsProps) => {
             }
         });
     };
+
 
     const onDragEnd = (result) => {
         if (!result.destination) {
@@ -119,7 +121,7 @@ const Questions: React.FC<QuestionsProps> = (props: QuestionsProps) => {
                     </DragDropContext>
 
                 </div>
-
+               <FinishQuiz quiz={props.quiz}></FinishQuiz>
                 { props.quiz.playedQuestions.length > 0 &&
                     <div data-testid="played-questions" className="block">
                         <hr/>
