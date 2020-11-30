@@ -23,7 +23,7 @@ export interface Question {
     estimates?: object;
     pending: boolean;
     links: Array<Link>;
-    previousQuestionId: string;
+    previousQuestionId?: string;
 }
 
 export interface AnswerStatistics {
