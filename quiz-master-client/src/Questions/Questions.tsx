@@ -8,6 +8,7 @@ import QuestionPool from './QuestionPool/QuestionPool';
 import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
 import { useTranslation } from 'react-i18next';
 import { showError } from '../redux/actions';
+import FinishQuiz from './FinishQuiz/FinishQuiz';
 
 interface StateProps {
     globalErrorMessage: string;
@@ -57,6 +58,7 @@ const Questions: React.FC<QuestionsProps> = (props: QuestionsProps) => {
             }
         });
     };
+
 
     const onDragEnd = (result) => {
         if (!result.destination) {
@@ -119,7 +121,7 @@ const Questions: React.FC<QuestionsProps> = (props: QuestionsProps) => {
                     </DragDropContext>
 
                 </div>
-
+               <FinishQuiz quiz={props.quiz}></FinishQuiz>
                 { props.quiz.playedQuestions.length > 0 &&
                     <div data-testid="played-questions" className="block">
                         <hr/>
@@ -165,16 +167,16 @@ const Questions: React.FC<QuestionsProps> = (props: QuestionsProps) => {
                             <div className="tabs is-centered is-boxed">
                                 <ul>
                                     <li className={tabIndex === 0 ? "is-active" : ""}>
-                                        <a onClick={() => setTabIndex(0)}>
+                                        <button onClick={() => setTabIndex(0)}>
                                             <span className="icon is-small"><i className="far fa-lightbulb" aria-hidden="true"></i></span>
                                             <span>{t('tabCreateNewQuestion')}</span>
-                                        </a>
+                                        </button>
                                     </li>
                                     <li className={tabIndex === 1 ? "is-active" : ""}>
-                                        <a onClick={() => setTabIndex(1)}>
+                                        <button onClick={() => setTabIndex(1)}>
                                             <span className="icon is-small"><i className="fas fa-cart-arrow-down" aria-hidden="true"></i></span>
                                             <span>{t('tabPickExistingQuestion')}</span>
-                                        </a>
+                                        </button>
                                     </li>
                                 </ul>
                             </div>

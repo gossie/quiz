@@ -10,7 +10,6 @@ import reactor.core.publisher.Flux
 import team.undefined.quiz.core.DeleteQuizCommand
 import team.undefined.quiz.core.QuizService
 import java.time.Duration
-import java.time.Period
 import java.util.*
 
 @SpringBootApplication
@@ -23,7 +22,7 @@ class QuizApplication {
     fun eventBus(): EventBus {
         return EventBus()
     }
-/*
+
     @Bean
     fun databaseCleaner(quizService: QuizService): CommandLineRunner {
         return (CommandLineRunner {
@@ -34,7 +33,7 @@ class QuizApplication {
                     .subscribe { logger.info("deleted old quiz") }
         })
     }
-*/
+
 }
 
 fun main(args: Array<String>) {
