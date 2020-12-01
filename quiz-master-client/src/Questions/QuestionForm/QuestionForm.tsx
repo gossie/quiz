@@ -55,7 +55,7 @@ const QuestionForm: React.FC<QuestionFormProps> = (props: QuestionFormProps) => 
     const choiceElements = choices.map(
         (choice, index) => 
             <div className="multiple-choice-option">
-                {choice}
+                <span className="text">{choice}</span>
                 <span data-testid={`delete-multiple-choice-option-${index}`} className="icon clickable has-text-danger" title={t('titleDeleteMultipleChoiceOption')} onClick={() => deleteOptionFromChoices(index)}><i className="fa fa-trash"></i></span>
             </div>
     );
@@ -163,14 +163,16 @@ const QuestionForm: React.FC<QuestionFormProps> = (props: QuestionFormProps) => 
                 </div>
             </div>
             { questionType == QuestionType.MULTIPLE_CHOICE &&
-                <div data-testid="choices">
-                    {choiceElements}
+                <div data-testid="choices" className="field">
                     <div className="field">
                         <label className="label">{t('labelOption')}</label>
-                        <div className="control">
-                            <input data-testid="new-choice" value={newChoice} onChange={ev => setNewChoice(ev.target.value)} className="input" type="text" />
+                        <div className="multiple-choice-options">
+                            {choiceElements}
                         </div>
-                        <span data-testid="add-option" className="icon clickable" title={t('titleAddMultipleChoiceOption')} onClick={addOptionToChoices}><i className="fas fa-plus"></i></span>
+                        <div className="control">
+                            <input data-testid="new-choice" value={newChoice} onChange={ev => setNewChoice(ev.target.value)} className="input new-multiple-choice-option" type="text" />
+                            <span data-testid="add-option" className="icon has-text-secondary clickable multiple-choice-add-option" title={t('titleAddMultipleChoiceOption')} onClick={addOptionToChoices}><i className="fas fa-plus"></i></span>
+                        </div>
                     </div>
                 </div>
             }

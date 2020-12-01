@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
-import { useTranslation } from 'react-i18next';
 import { Question, Choice } from '../../quiz-client-shared/quiz';
+
+import './MultipleChoice.css';
 
 interface MultipleChoiceProps {
     question: Question;
@@ -24,9 +25,8 @@ const MultipleChoice: React.FC<MultipleChoiceProps> = (props: MultipleChoiceProp
     };
 
     const choices = props.question.choices.map((choice, index) => (
-        <div key={`option-${index}`} data-testid={`multiple-choice-option-${index}`} className="clickable" onClick={() => selectChoice(choice, index)}>
+        <div key={`option-${index}`} data-testid={`multiple-choice-option-${index}`} className={`clickable option ${selectedIndex === index ? 'selected' : ''}`} onClick={() => selectChoice(choice, index)}>
             {choice.choice}
-            { selectedIndex === index && <span className="icon"><i className="fas fa-arrow-left"></i></span>}
         </div>
     ));
 

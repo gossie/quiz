@@ -1,0 +1,22 @@
+.option {
+    border-radius: 0.4em;
+    border: 2px solid #1abc9c;
+    text-align: center;
+    width: 400px;
+    margin-bottom: 15px;
+    padding: 0.75em;
+}
+
+.option.selected {
+    border-radius: 0.4em;
+    border: 2px solid #1abc9c;
+    text-align: center;
+    width: 400px;
+    margin-bottom: 15px;
+    padding: 0.75em;
+    background-color: #1abc9c;
+}
+
+.option:hover {
+    background-color: #1abc9c;
+}
