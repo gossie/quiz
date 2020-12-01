@@ -26,6 +26,8 @@ data class EstimationCommand(override val quizId: UUID, val participantId: UUID,
 
 data class BuzzerCommand(override val quizId: UUID, val participantId: UUID) : Command
 
+data class SelectChoiceCommand(override val quizId: UUID, val participantId: UUID, var choiceId: UUID): Command
+
 data class ToggleAnswerRevealAllowedCommand(override val quizId: UUID, val participantId: UUID) : Command
 
 data class AnswerCommand(override val quizId: UUID, val participantId: UUID, val answer: Answer) : Command {

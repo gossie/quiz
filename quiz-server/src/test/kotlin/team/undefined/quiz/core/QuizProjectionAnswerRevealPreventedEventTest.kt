@@ -6,7 +6,6 @@ import org.awaitility.kotlin.await
 import org.awaitility.kotlin.untilAsserted
 import org.junit.jupiter.api.Test
 import org.mockito.Mockito
-import reactor.core.publisher.Flux
 import java.util.concurrent.atomic.AtomicReference
 
 internal class QuizProjectionAnswerRevealPreventedEventTest {

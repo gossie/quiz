@@ -17,7 +17,7 @@ internal class QuizProjectionQuizFinishedEventTest {
         val quiz = Quiz(name = "Awesome Quiz")
 
         val buzzerQuestion = Question(question = "Wofür steht die Abkürzung a.D.?")
-        val freetextQuestion = Question(question = "Wer schrieb Peter und der Wolf?", estimates = HashMap(), initialTimeToAnswer = 45)
+        val freetextQuestion = Question(question = "Wer schrieb Peter und der Wolf?", initialTimeToAnswer = 45, estimates = HashMap())
         val participant1 = Participant(name = "Lena")
         val participant2 = Participant(name = "Erik")
         val finishedEvent = QuizFinishedEvent(quiz.id, 13)
@@ -94,7 +94,7 @@ internal class QuizProjectionQuizFinishedEventTest {
         val quiz = Quiz(name = "Awesome Quiz")
 
         val buzzerQuestion = Question(question = "Wofür steht die Abkürzung a.D.?")
-        val freetextQuestion = Question(question = "Wer schrieb Peter und der Wolf?", estimates = HashMap(), initialTimeToAnswer = 45)
+        val freetextQuestion = Question(question = "Wer schrieb Peter und der Wolf?", initialTimeToAnswer = 45, estimates = HashMap())
         val participant1 = Participant(name = "Lena")
         val participant2 = Participant(name = "Erik")
 

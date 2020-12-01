@@ -135,6 +135,22 @@ class DefaultQuizService(private val eventRepository: EventRepository,
     }
 
     @WriteLock
+    override fun selectChoice(command: SelectChoiceCommand): Mono<Unit> {
+        logger.info("'{}' selected choice '{}' in quiz '{}'", command.participantId, command.choiceId, command.quizId)
+        return eventRepository.determineEvents(command.quizId)
+                .reduce(Quiz(name = "")) { quiz: Quiz, event: Event -> event.process(quiz) }
+                .filter { !it.finished }
+                .switchIfEmpty(Mono.error(QuizFinishedException()))
+                .filter { it.currentQuestionIsMultipleChoiceQuestion() }
+                .filter { it.currentChoiceIsDifferent(command.participantId, command.choiceId) }
+                .flatMap { eventRepository.storeEvent(ChoiceSelectedEvent(command.quizId, command.participantId, command.choiceId)) }
+                .map {
+                    undoneEventsCache.remove(it.quizId)
+                    eventBus.post(it)
+                }
+    }
+
+    @WriteLock
     override fun toggleAnswerRevealAllowed(command: ToggleAnswerRevealAllowedCommand): Mono<Unit> {
         logger.info("{} prevents the reveal of answers for quiz {}", command.participantId, command.quizId)
         return eventRepository.determineEvents(command.quizId)

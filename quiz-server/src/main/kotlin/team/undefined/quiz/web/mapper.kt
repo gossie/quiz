@@ -86,7 +86,8 @@ fun Question.map(quizId: UUID): QuestionDTO {
             this.question,
             this.pending,
             this.imageUrl,
-            if (this.estimates != null) { HashMap(this.estimates) } else { this.estimates },
+            if (this.estimates != null) { HashMap(this.estimates) } else { this.estimates
+            },
             this.visibility.asBoolean(),
             this.category.category,
             this.initialTimeToAnswer,
@@ -108,14 +109,14 @@ fun QuestionDTO.map(questionId: UUID): Question {
             questionId,
             question = this.question,
             imageUrl = this.imagePath,
-            estimates = this.estimates,
             visibility = if (this.publicVisible) Question.QuestionVisibility.PUBLIC else Question.QuestionVisibility.PRIVATE,
             category = if (this.category == "") QuestionCategory("other") else QuestionCategory(this.category),
             initialTimeToAnswer = this.timeToAnswer,
             secondsLeft = this.timeToAnswer,
             revealed = this.revealed,
             previousQuestionId = this.previousQuestionId,
-            choices = if (this.choices != null) { this.choices?.map { it.map() } } else { null }
+            choices = this.choices?.map { it.map() },
+            estimates = this.estimates
     )
 }
 
@@ -123,13 +124,13 @@ fun QuestionDTO.map(): Question {
     return Question(
             question = this.question,
             imageUrl = this.imagePath,
-            estimates = this.estimates,
             visibility = if (this.publicVisible) Question.QuestionVisibility.PUBLIC else Question.QuestionVisibility.PRIVATE,
             category = if (this.category == "") QuestionCategory("other") else QuestionCategory(this.category),
             initialTimeToAnswer = this.timeToAnswer,
             secondsLeft = this.timeToAnswer,
             previousQuestionId = this.previousQuestionId,
-            choices = if (this.choices != null) { this.choices?.map { it.map() } } else { null }
+            choices = this.choices?.map { it.map() },
+            estimates = this.estimates
     )
 }
 
