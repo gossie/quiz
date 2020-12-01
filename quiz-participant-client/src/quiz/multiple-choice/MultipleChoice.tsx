@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Question, Choice } from '../../quiz-client-shared/quiz';
 
-import './MultipleChoice.css';
+import './MultipleChoice.scss';
 
 interface MultipleChoiceProps {
     question: Question;
