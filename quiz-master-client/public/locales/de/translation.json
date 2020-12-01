@@ -62,6 +62,7 @@
     "radioBuzzer": "Buzzer",
     "radioFreetext": "Freitext",
     "radioMultipleChoice": "Multiple choice",
+    "labelOption": "Antwortmöglichkeit",
     "questionPoolHint": "Frage kann von anderen Nutzern übernommen werden, nachdem sie gespielt wurde",
     "buttonAddQuestion": "Frage hinzufügen",
     "buttonEditQuestion": "Frage bearbeiten",

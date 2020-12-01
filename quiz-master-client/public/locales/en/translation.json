@@ -62,6 +62,7 @@
     "radioBuzzer": "Buzzer",
     "radioFreetext": "Freetext",
     "radioMultipleChoice": "Multiple choice",
+    "labelOption": "Possible answer",
     "questionPoolHint": "Question can be used by others after it is played",
     "buttonAddQuestion": "Add question",
     "buttonEditQuestion": "Edit question",
