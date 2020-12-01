@@ -43,7 +43,7 @@ internal class QuizStatisticsProviderTest {
         StepVerifier.create(quizStatisticsProvider.generateStatistics(quiz.id))
                 .consumeNextWith { quiz ->
                     assertThat(quiz)
-                            .questionStatisticsSizeId(2)
+                            .questionStatisticsSizeIs(2)
                             .hasQuestionStatistics(0) { questionStatistics ->
                                 questionStatistics
                                         .hasQuestionId(buzzerQuestion.id)
@@ -55,7 +55,7 @@ internal class QuizStatisticsProviderTest {
                                 questionStatistics
                                         .hasQuestionId(freetextQuestion.id)
                                         .answerStatisticsSizeIs(2)
-                                        .hasAnswerStatistics(0) { it.isEqualTo(AnswerStatistics(participant1.id, 1L, "Sergej Prokofjew", AnswerCommand.Answer.CORRECT)) }
+                                        .hasAnswerStatistics(0) { it.isEqualTo(AnswerStatistics(participant1.id, 1L, "Sergej Prokofjew", rating = AnswerCommand.Answer.CORRECT)) }
                                         .hasAnswerStatistics(1) { it.isEqualTo(AnswerStatistics(participant2.id, 2L, "Max Mustermann")) }
                             }
                 }
@@ -100,7 +100,7 @@ internal class QuizStatisticsProviderTest {
         StepVerifier.create(quizStatisticsProvider.generateStatistics(quiz.id))
                 .consumeNextWith { quiz ->
                     assertThat(quiz)
-                            .questionStatisticsSizeId(2)
+                            .questionStatisticsSizeIs(2)
                             .hasQuestionStatistics(0) { questionStatistics ->
                                 questionStatistics
                                         .hasQuestionId(buzzerQuestion.id)
@@ -112,7 +112,7 @@ internal class QuizStatisticsProviderTest {
                                 questionStatistics
                                         .hasQuestionId(freetextQuestion.id)
                                         .answerStatisticsSizeIs(2)
-                                        .hasAnswerStatistics(0) { it.isEqualTo(AnswerStatistics(participant1.id, 1L, "Sergej Prokofjew", AnswerCommand.Answer.CORRECT)) }
+                                        .hasAnswerStatistics(0) { it.isEqualTo(AnswerStatistics(participant1.id, 1L, "Sergej Prokofjew", rating = AnswerCommand.Answer.CORRECT)) }
                                         .hasAnswerStatistics(1) { it.isEqualTo(AnswerStatistics(participant2.id, 2L, "Max Mustermann")) }
                             }
                 }

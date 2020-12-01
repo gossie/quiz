@@ -67,7 +67,7 @@ internal class QuizProjectionQuizReloadCommandTest {
                     .isFinished
                     .hasQuizStatistics { quizStatistics ->
                         quizStatistics
-                                .questionStatisticsSizeId(2)
+                                .questionStatisticsSizeIs(2)
                                 .hasQuestionStatistics(0) { questionStatistics ->
                                     questionStatistics
                                             .hasQuestionId(buzzerQuestion.id)
