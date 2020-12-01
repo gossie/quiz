@@ -81,6 +81,7 @@ test('should add new private question', async () => {
             method: 'POST',
             body: JSON.stringify({
                 question: 'Frage 3',
+                correctAnswer: 'Antwort 3',
                 category: 'other',
                 timeToAnswer: null,
                 imagePath: 'https://pathToImage',
@@ -128,18 +129,22 @@ test('should add new private question', async () => {
     addQuestionButton.click();
     const questionButton = getByTestId('create-question-button');
     const questionField = getByTestId('new-question')  as HTMLInputElement;
+    const answerField = getByTestId('new-correct-answer')  as HTMLInputElement;
     const imagePathField = getByTestId('image-path')  as HTMLInputElement;
 
     fireEvent.change(questionField, { target: { value: 'Frage 3' } });
+    fireEvent.change(answerField, { target: { value: 'Antwort 3' } });
     fireEvent.change(imagePathField, { target: { value: 'https://pathToImage' } });
 
     expect(questionField.value).toBe('Frage 3');
+    expect(answerField.value).toBe('Antwort 3');
     expect(imagePathField.value).toBe('https://pathToImage');
 
     questionButton.click();
 
     await waitFor(() =>{
         expect(questionField.value).toBe('');
+        expect(answerField.value).toBe('');
         expect(imagePathField.value).toBe('');
     });
 });
@@ -527,6 +532,7 @@ test('should edit question', async () => {
             method: 'PUT',
             body: JSON.stringify({
                 question: 'Frage 4',
+                correctAnswer: 'Antwort 4',
                 category: 'history',
                 timeToAnswer: 45,
                 imagePath: 'https://path_to_image_changed/',
@@ -559,6 +565,7 @@ test('should edit question', async () => {
             {
                 id: '3',
                 question: 'Frage 3',
+                correctAnswer: 'Antwort 3',
                 category: 'other',
                 pending: false,
                 imagePath: 'https://path_to_image/',
@@ -583,6 +590,7 @@ test('should edit question', async () => {
 
     const questionButton = getByTestId('edit-question-button');
     const questionField = getByTestId('question-to-edit')  as HTMLInputElement;
+    const answerField = getByTestId('answer-to-edit')  as HTMLInputElement;
     const categoryField = getByTestId('category-to-edit')  as HTMLSelectElement;
     const timeToAnswerField = getByTestId('time-to-answer-to-edit')  as HTMLInputElement;
     const imagePathField = getByTestId('image-path-to-edit')  as HTMLInputElement;
@@ -590,6 +598,7 @@ test('should edit question', async () => {
     const visibilityField = getByTestId('visibility-to-edit')  as HTMLInputElement;
 
     expect(questionField.value).toBe('Frage 3');
+    expect(answerField.value).toBe('Antwort 3');
     expect(categoryField.value).toBe('other');
     expect(imagePathField.value).toBe('https://path_to_image/');
     expect(timeToAnswerField.value).toBe('');
@@ -597,6 +606,7 @@ test('should edit question', async () => {
     expect(visibilityField.checked).toBe(true);
 
     fireEvent.change(questionField, { target: { value: 'Frage 4' } });
+    fireEvent.change(answerField, { target: { value: 'Antwort 4' } });
     fireEvent.change(categoryField, { target: { value: 'history' } });
     fireEvent.change(imagePathField, { target: { value: 'https://path_to_image_changed/' } });
     fireEvent.change(timeToAnswerField, { target: { value: '45' } });
@@ -604,6 +614,7 @@ test('should edit question', async () => {
     visibilityField.click();
 
     expect(questionField.value).toBe('Frage 4');
+    expect(answerField.value).toBe('Antwort 4');
     expect(categoryField.value).toBe('history');
     expect(imagePathField.value).toBe('https://path_to_image_changed/');
     expect(timeToAnswerField.value).toBe('45');
@@ -614,6 +625,7 @@ test('should edit question', async () => {
 
     await waitFor(() =>{
         expect(questionField.value).toBe('');
+        expect(answerField.value).toBe('');
         expect(categoryField.value).toBe('other');
         expect(imagePathField.value).toBe('');
         expect(timeToAnswerField.value).toBe('');

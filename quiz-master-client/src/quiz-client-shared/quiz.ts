@@ -15,6 +15,7 @@ export interface Participant {
 export interface Question {
     id: string;
     question: string;
+    correctAnswer?: string;
     category: string;
     timeToAnswer?: number;
     secondsLeft?: number;
@@ -23,7 +24,7 @@ export interface Question {
     estimates?: object;
     pending: boolean;
     links: Array<Link>;
-    previousQuestionId: string;
+    previousQuestionId?: string;
 }
 
 export interface AnswerStatistics {

@@ -22,6 +22,7 @@ type QuestionFormProps = StateProps & DispatchProps & OwnProps;
 
 const QuestionForm: React.FC<QuestionFormProps> = (props: QuestionFormProps) => {
     const [newQuestion, setNewQuestion] = useState(props.questionToChange?.question);
+    const [newAnswer, setNewAnswer] = useState(props.questionToChange?.correctAnswer);
     const [category, setCategory] = useState(props.questionToChange ? props.questionToChange.category : 'other');
     const [imagePath, setImagePath] = useState(props.questionToChange?.imagePath);
     const [timeToAnswer, setTimeToAnswer] = useState(props.questionToChange?.timeToAnswer ? `${props.questionToChange?.timeToAnswer}` : '');
@@ -47,6 +48,7 @@ const QuestionForm: React.FC<QuestionFormProps> = (props: QuestionFormProps) => 
             method: method,
             body: JSON.stringify({
                 question: newQuestion,
+                correctAnswer: newAnswer,
                 category: category,
                 timeToAnswer: parseInt(timeToAnswer),
                 imagePath: imagePath,
@@ -65,6 +67,7 @@ const QuestionForm: React.FC<QuestionFormProps> = (props: QuestionFormProps) => 
             }
 
             setNewQuestion('');
+            setNewAnswer('');
             setCategory('other');
             setTimeToAnswer('');
             setImagePath('');
@@ -79,7 +82,14 @@ const QuestionForm: React.FC<QuestionFormProps> = (props: QuestionFormProps) => 
             <div className="field">
                 <label className="label">{t('labelQuestion')}</label>
                 <div className="control">
-                    <input data-testid={props.questionToChange ? 'question-to-edit' : 'new-question'} value={newQuestion || ''} onChange={ev => setNewQuestion(ev.target.value)} className="input" type="text" />
+                    <input data-testid={props.questionToChange ? 'question-to-edit' : 'new-question'} value={newQuestion ?? ''} onChange={ev => setNewQuestion(ev.target.value)} className="input" type="text" />
+                </div>
+            </div>
+
+            <div className="field">
+                <label className="label">{t('labelAnswer')}</label>
+                <div className="control">
+                    <input data-testid={props.questionToChange ? 'answer-to-edit' : 'new-correct-answer'} value={newAnswer ?? ''} onChange={ev => setNewAnswer(ev.target.value)} className="input" type="text" />
                 </div>
             </div>
             
@@ -87,7 +97,7 @@ const QuestionForm: React.FC<QuestionFormProps> = (props: QuestionFormProps) => 
                 <label className="label">{t('labelCategory')}</label>
                 <div className="control">
                     <div className="select">
-                        <select data-testid={props.questionToChange ? 'category-to-edit' : 'category'} value={category || null} onChange={ev => setCategory(ev.target.value)}>
+                        <select data-testid={props.questionToChange ? 'category-to-edit' : 'category'} value={category} onChange={ev => setCategory(ev.target.value)}>
                             <option value="other">{t('categoryOther')}</option>
                             <option value="history">{t('categoryHistory')}</option>
                             <option value="science">{t('categoryScience')}</option>
@@ -105,7 +115,7 @@ const QuestionForm: React.FC<QuestionFormProps> = (props: QuestionFormProps) => 
             <div className="field">
                 <label className="label">{t('labelSecondsToAnswer')}</label>
                 <div className="control">
-                    <input data-testid={props.questionToChange ? 'time-to-answer-to-edit' : 'time-to-answer'} value={timeToAnswer  || ''} onChange={ev => setTimeToAnswer(ev.target.value)} className="input" type="text" pattern="[0-9]*"/>
+                    <input data-testid={props.questionToChange ? 'time-to-answer-to-edit' : 'time-to-answer'} value={timeToAnswer ?? ''} onChange={ev => setTimeToAnswer(ev.target.value)} className="input" type="text" pattern="[0-9]*"/>
                 </div>
             </div>
 
