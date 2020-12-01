@@ -7,6 +7,7 @@ import './QuizDashboard.css';
 import QuizStatistics from '../quiz-client-shared/QuizStatistics/QuizStatistics';
 import Estimation from './estimation/Estimation';
 import { useTranslation } from 'react-i18next';
+import MultipleChoice from './multiple-choice/MultipleChoice';
 
 interface QuizDashboardProps {
     quizId: string;
@@ -76,10 +77,18 @@ const QuizDashboard: React.FC<QuizDashboardProps> = (props: QuizDashboardProps) 
         }
     });
 
-    const isEstimationQuestion = (quiz: Quiz) => {
+    const hasPendingQuestion = () => quiz.openQuestions.find(q => q.pending) !== undefined;
+
+    const questionInteraction = () => {
         const pendingQuestion = quiz.openQuestions.find(q => q.pending);
-        return pendingQuestion !== undefined && pendingQuestion.estimates !== null;
-    }
+        if (pendingQuestion.choices) {
+            return <MultipleChoice question={pendingQuestion} participantId={participantId} />
+        } else if (pendingQuestion.estimates) {
+            return <Estimation quiz={quiz} participantId={participantId} />
+        } else {
+            return <Buzzer quiz={quiz} participantId={participantId} />
+        }                 
+    };
 
     const toggleRevealAllowed = (allowed: boolean) => {
         setRevealAllowed(allowed);
@@ -115,12 +124,7 @@ const QuizDashboard: React.FC<QuizDashboardProps> = (props: QuizDashboardProps) 
                         </div>
                         <div className="column question box">
                             <h5 className="title is-5">{t('headlineCurrentQuestion')}</h5>
-                            { isEstimationQuestion(quiz)
-                            ?
-                                <Estimation quiz={quiz} participantId={participantId}></Estimation>
-                            :
-                                <Buzzer quiz={quiz} participantId={participantId}></Buzzer>
-                            }
+                            { hasPendingQuestion() && questionInteraction() }
                             {<Question quiz={quiz}></Question>}
                         </div>
                     </div>

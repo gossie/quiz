@@ -4,7 +4,6 @@ import { connect } from "react-redux";
 import Questions from './Questions/Questions';
 import Participants from './quiz-client-shared/Participants/Participants';
 import Quiz from './quiz-client-shared/quiz';
-import QuizStatistics from './quiz-client-shared/QuizStatistics/QuizStatistics';
 import { resetError } from './redux/actions';
 
 import './QuizMaster.css';

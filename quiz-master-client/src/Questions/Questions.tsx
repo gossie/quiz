@@ -167,16 +167,16 @@ const Questions: React.FC<QuestionsProps> = (props: QuestionsProps) => {
                             <div className="tabs is-centered is-boxed">
                                 <ul>
                                     <li className={tabIndex === 0 ? "is-active" : ""}>
-                                        <button onClick={() => setTabIndex(0)}>
+                                        <a onClick={() => setTabIndex(0)}>
                                             <span className="icon is-small"><i className="far fa-lightbulb" aria-hidden="true"></i></span>
                                             <span>{t('tabCreateNewQuestion')}</span>
-                                        </button>
+                                        </a>
                                     </li>
                                     <li className={tabIndex === 1 ? "is-active" : ""}>
-                                        <button onClick={() => setTabIndex(1)}>
+                                        <a onClick={() => setTabIndex(1)}>
                                             <span className="icon is-small"><i className="fas fa-cart-arrow-down" aria-hidden="true"></i></span>
                                             <span>{t('tabPickExistingQuestion')}</span>
-                                        </button>
+                                        </a>
                                     </li>
                                 </ul>
                             </div>
