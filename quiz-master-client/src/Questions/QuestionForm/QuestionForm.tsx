@@ -5,6 +5,7 @@ import Quiz, { Question } from '../../quiz-client-shared/quiz';
 import { showError } from '../../redux/actions';
 
 import './QuestionForm.css';
+import { setUncaughtExceptionCaptureCallback } from 'process';
 
 enum QuestionType {
     BUZZER,
@@ -102,6 +103,7 @@ const QuestionForm: React.FC<QuestionFormProps> = (props: QuestionFormProps) => 
             setTimeToAnswer('');
             setImagePath('');
             setQuestionButtonCssClasses('button is-link');
+            setChoices([]);
 
             props.onSubmit && props.onSubmit();
         });

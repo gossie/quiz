@@ -277,6 +277,7 @@ test('should create multiple choice question', async () => {
         expect(categoryField.value).toBe('other');
         expect(imagePathField.value).toBe('');
         expect(timeToAnswerField.value).toBe('');
+        expect(choicesWrapper.querySelectorAll('.multiple-choice-option').length).toBe(0); 
     });
 
 });
@@ -368,5 +369,6 @@ test('should edit multiple choice question', async () => {
         expect(categoryField.value).toBe('other');
         expect(imagePathField.value).toBe('');
         expect(timeToAnswerField.value).toBe('');
+        expect(choicesWrapper.querySelectorAll('.multiple-choice-option').length).toBe(0);
     });
 });
