@@ -28,7 +28,7 @@ class QuizApplication {
         return (CommandLineRunner {
             Flux.interval(Duration.ofSeconds(30), Duration.ofHours(12))
                     .flatMap { quizService.determineQuizzes() }
-                    .filter { it.getTimestamp() < (Date().time - ACTIVE_TIME) }
+                    .filter { it.timestamp < (Date().time - ACTIVE_TIME) }
                     .flatMap { quizService.deleteQuiz(DeleteQuizCommand(it.id)) }
                     .subscribe { logger.info("deleted old quiz") }
         })

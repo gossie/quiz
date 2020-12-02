@@ -78,7 +78,7 @@ internal class QuizProjectionQuestionAnsweredCorrectEventTest {
             assertThat(q.questions[0].pending).isTrue()
             assertThat(q.questions[0].revealed).isFalse()
             assertThat(q.questions[0].alreadyPlayed).isFalse()
-            assertThat(q.isUndoPossible()).isTrue()
+            assertThat(q.undoPossible).isTrue()
             assertThat(q.finished).isFalse()
         }
     }
@@ -121,7 +121,7 @@ internal class QuizProjectionQuestionAnsweredCorrectEventTest {
             assertThat(q.questions[0].pending).isTrue()
             assertThat(q.questions[0].revealed).isFalse()
             assertThat(q.questions[0].alreadyPlayed).isFalse()
-            assertThat(q.isUndoPossible()).isTrue()
+            assertThat(q.undoPossible).isTrue()
             assertThat(q.finished).isFalse()
         }
     }
@@ -161,7 +161,7 @@ internal class QuizProjectionQuestionAnsweredCorrectEventTest {
             assertThat(q.questions[0].pending).isTrue()
             assertThat(q.questions[0].revealed).isFalse()
             assertThat(q.questions[0].alreadyPlayed).isFalse()
-            assertThat(q.isUndoPossible()).isTrue()
+            assertThat(q.undoPossible).isTrue()
             assertThat(q.finished).isFalse()
         }
     }

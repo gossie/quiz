@@ -49,7 +49,7 @@ internal class QuizProjectionQuestionWithTimeConstraintReopenedEventTest {
             assertThat(q.questions[0].alreadyPlayed).isFalse()
             assertThat(q.questions[0].initialTimeToAnswer).isEqualTo(5)
             assertThat(q.questions[0].secondsLeft).isEqualTo(5)
-            assertThat(q.isUndoPossible()).isTrue()
+            assertThat(q.undoPossible).isTrue()
             assertThat(q.finished).isFalse()
         }
     }
@@ -97,7 +97,7 @@ internal class QuizProjectionQuestionWithTimeConstraintReopenedEventTest {
             assertThat(q.questions[0].alreadyPlayed).isFalse()
             assertThat(q.questions[0].initialTimeToAnswer).isEqualTo(5)
             assertThat(q.questions[0].secondsLeft).isEqualTo(5)
-            assertThat(q.isUndoPossible()).isTrue()
+            assertThat(q.undoPossible).isTrue()
             assertThat(q.finished).isFalse()
         }
     }
@@ -142,7 +142,7 @@ internal class QuizProjectionQuestionWithTimeConstraintReopenedEventTest {
             assertThat(q.questions[0].alreadyPlayed).isFalse()
             assertThat(q.questions[0].initialTimeToAnswer).isEqualTo(5)
             assertThat(q.questions[0].secondsLeft).isEqualTo(5)
-            assertThat(q.isUndoPossible()).isTrue()
+            assertThat(q.undoPossible).isTrue()
             assertThat(q.finished).isFalse()
         }
     }
