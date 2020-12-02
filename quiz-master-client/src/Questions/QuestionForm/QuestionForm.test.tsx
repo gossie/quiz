@@ -26,6 +26,7 @@ test('should add new estimation question', async () => {
             method: 'POST',
             body: JSON.stringify({
                 question: 'Frage 3',
+                correctAnswer: 'Antwort 3',
                 category: 'science',
                 timeToAnswer: 30,
                 publicVisible: false,
@@ -71,17 +72,20 @@ test('should add new estimation question', async () => {
     const { getByTestId } = render(<QuestionForm quiz={quiz} />);
     const questionButton = getByTestId('create-question-button');
     const questionField = getByTestId('new-question')  as HTMLInputElement;
+    const answerField = getByTestId('new-correct-answer')  as HTMLInputElement;
     const categoryField = getByTestId('category')  as HTMLSelectElement;
     const timeToAnswerField = getByTestId('time-to-answer')  as HTMLInputElement;
     const imagePathField = getByTestId('image-path')  as HTMLInputElement;
     const estimationField = getByTestId('type-estimation')  as HTMLInputElement;
 
     fireEvent.change(questionField, { target: { value: 'Frage 3' } });
+    fireEvent.change(answerField, { target: { value: 'Antwort 3' } })
     fireEvent.change(categoryField, { target: { value: 'science' } });
     fireEvent.change(timeToAnswerField, { target: { value: '30' } });
     estimationField.click();
 
     expect(questionField.value).toBe('Frage 3');
+    expect(answerField.value).toBe('Antwort 3');
     expect(categoryField.value).toBe('science');
     expect(timeToAnswerField.value).toBe('30');
     expect(imagePathField.value).toBe('');
@@ -90,6 +94,7 @@ test('should add new estimation question', async () => {
 
     await waitFor(() =>{
         expect(questionField.value).toBe('');
+        expect(answerField.value).toBe('');
         expect(categoryField.value).toBe('other');
         expect(imagePathField.value).toBe('');
         expect(timeToAnswerField.value).toBe('');

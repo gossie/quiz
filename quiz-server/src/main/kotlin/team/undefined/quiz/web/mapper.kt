@@ -113,8 +113,9 @@ fun Question.map(quizId: UUID): QuestionDTO {
             this.secondsLeft,
             this.revealed,
             this.previousQuestionId,
-            if (this.choices != null) { this.choices?.map { it.map() } } else { null }
-    )
+            if (this.choices != null) { this.choices?.map { it.map() } } else { null },
+            this.correctAnswer
+    }
     questionDTO.add(Link.of("/api/quiz/" + quizId + "/questions/" + this.id, "self"))
     return if (this.imageUrl == "") questionDTO else questionDTO.add(Link.of(this.imageUrl, "image"))
 }
@@ -143,7 +144,8 @@ fun QuestionDTO.map(questionId: UUID): Question {
             revealed = this.revealed,
             previousQuestionId = this.previousQuestionId,
             choices = this.choices?.map { it.map() },
-            estimates = this.estimates
+            estimates = this.estimates,
+            correctAnswer = this.correctAnswer
     )
 }
 
@@ -157,7 +159,8 @@ fun QuestionDTO.map(): Question {
             secondsLeft = this.timeToAnswer,
             previousQuestionId = this.previousQuestionId,
             choices = this.choices?.map { it.map() },
-            estimates = this.estimates
+            estimates = this.estimates,
+            correctAnswer = this.correctAnswer
     )
 }
 

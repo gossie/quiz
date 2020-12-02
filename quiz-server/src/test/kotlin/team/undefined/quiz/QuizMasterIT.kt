@@ -41,7 +41,7 @@ internal class QuizMasterIT {
                 .returnResult()
                 .responseBody
 
-        assertThat(quizId).isNotNull()
+        assertThat(quizId).isNotNull
 
         Thread.sleep(10)
 
@@ -70,7 +70,7 @@ internal class QuizMasterIT {
                 .post()
                 .uri(quizMasterReference.get().getLink("createQuestion").map { it.href }.orElseThrow())
                 .contentType(MediaType.APPLICATION_JSON)
-                .body(BodyInserters.fromValue(QuestionDTO(question = "Wer schrieb das Buch Animal Farm?")))
+                .body(BodyInserters.fromValue(QuestionDTO(question = "Wer schrieb das Buch Animal Farm?", correctAnswer = "George Orwell")))
                 .exchange()
                 .expectStatus().isCreated
 
@@ -79,6 +79,7 @@ internal class QuizMasterIT {
                 .hasOpenQuestion(0) { openQuestion ->
                     openQuestion
                             .hasQuestion("Wer schrieb das Buch Animal Farm?")
+                            .hasAnswerNote("George Orwell")
                             .isNotPending
                 }
                 .playedQuestionSizeIs(0)
@@ -103,6 +104,7 @@ internal class QuizMasterIT {
                 .hasOpenQuestion(0) { openQuestion ->
                     openQuestion
                             .hasQuestion("Wer schrieb das Buch Animal Farm?")
+                            .hasAnswerNote("George Orwell")
                             .isNotPending
                 }
                 .hasOpenQuestion(1) { openQuestion ->
@@ -135,6 +137,7 @@ internal class QuizMasterIT {
                 .hasOpenQuestion(0) { openQuestion ->
                     openQuestion
                             .hasQuestion("Wer schrieb das Buch Animal Farm?")
+                            .hasAnswerNote("George Orwell")
                             .isNotPending
                 }
                 .hasOpenQuestion(1) { openQuestion ->
@@ -166,6 +169,45 @@ internal class QuizMasterIT {
                 .hasOpenQuestion(0) { openQuestion ->
                     openQuestion
                             .hasQuestion("Wer schrieb das Buch Animal Farm?")
+                            .hasAnswerNote("George Orwell")
+                            .isNotPending
+                            .isBuzzerQuestion
+                }
+                .hasOpenQuestion(1) { openQuestion ->
+                    openQuestion
+                            .hasQuestion("Wo befindet sich das Kahnbein?")
+                            .isNotPending
+                            .isBuzzerQuestion
+                }
+                .hasOpenQuestion(2) { openQuestion ->
+                    openQuestion
+                            .hasQuestion("Was ist ein Robo-Advisor?")
+                            .isNotPending
+                            .isEstimationQuestion
+                }
+                .playedQuestionSizeIs(0)
+                .particpantSizeIs(0)
+                .undoIsPossible()
+                .redoIsNotPossible()
+                .isNotFinished
+
+        Thread.sleep(10)
+
+        // Third question is created
+        webTestClient
+                .put()
+                .uri(quizMasterReference.get().openQuestions[2].getLink("self").map { it.href }.orElseThrow())
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(BodyInserters.fromValue(QuestionDTO(question = "Was ist ein Robo-Advisor?", correctAnswer = "Ein algorithmen gesteuertes Dings", estimates = HashMap(), timeToAnswer = 45, previousQuestionId = quizMasterReference.get().openQuestions[1].id)))
+                .exchange()
+                .expectStatus().isOk
+
+        assertThat(quizMasterReference.get())
+                .openQuestionSizeIs(3)
+                .hasOpenQuestion(0) { openQuestion ->
+                    openQuestion
+                            .hasQuestion("Wer schrieb das Buch Animal Farm?")
+                            .hasAnswerNote("George Orwell")
                             .isNotPending
                             .isBuzzerQuestion
                 }
@@ -196,7 +238,7 @@ internal class QuizMasterIT {
                 .put()
                 .uri(quizMasterReference.get().openQuestions[2].getLink("self").map { it.href }.orElseThrow())
                 .contentType(MediaType.APPLICATION_JSON)
-                .body(BodyInserters.fromValue(QuestionDTO(question = "Was ist ein Robo-Advisor?", estimates = HashMap(), timeToAnswer = 45, previousQuestionId = quizMasterReference.get().openQuestions[0].id)))
+                .body(BodyInserters.fromValue(QuestionDTO(question = "Was ist ein Robo-Advisor?", correctAnswer = "Ein algorithmen gesteuertes Dings", estimates = HashMap(), timeToAnswer = 45, previousQuestionId = quizMasterReference.get().openQuestions[0].id)))
                 .exchange()
                 .expectStatus().isOk
 
@@ -205,12 +247,14 @@ internal class QuizMasterIT {
                 .hasOpenQuestion(0) { openQuestion ->
                     openQuestion
                             .hasQuestion("Wer schrieb das Buch Animal Farm?")
+                            .hasAnswerNote("George Orwell")
                             .isNotPending
                             .isBuzzerQuestion
                 }
                 .hasOpenQuestion(1) { openQuestion ->
                     openQuestion
                             .hasQuestion("Was ist ein Robo-Advisor?")
+                            .hasAnswerNote("Ein algorithmen gesteuertes Dings")
                             .isNotPending
                             .isEstimationQuestion
                 }
@@ -235,7 +279,7 @@ internal class QuizMasterIT {
                 .put()
                 .uri(quizMasterReference.get().openQuestions[1].getLink("self").map { it.href }.orElseThrow())
                 .contentType(MediaType.APPLICATION_JSON)
-                .body(BodyInserters.fromValue(QuestionDTO(question = "Was ist ein Robo-Advisor?", estimates = HashMap(), timeToAnswer = 45, previousQuestionId = quizMasterReference.get().openQuestions[2].id)))
+                .body(BodyInserters.fromValue(QuestionDTO(question = "Was ist ein Robo-Advisor?", correctAnswer = "Ein algorithmen gesteuertes Dings", estimates = HashMap(), timeToAnswer = 45, previousQuestionId = quizMasterReference.get().openQuestions[2].id)))
                 .exchange()
                 .expectStatus().isOk
 
@@ -244,6 +288,7 @@ internal class QuizMasterIT {
                 .hasOpenQuestion(0) { openQuestion ->
                     openQuestion
                             .hasQuestion("Wer schrieb das Buch Animal Farm?")
+                            .hasAnswerNote("George Orwell")
                             .isNotPending
                             .isBuzzerQuestion
                 }
@@ -258,6 +303,7 @@ internal class QuizMasterIT {
                 .hasOpenQuestion(2) { openQuestion ->
                     openQuestion
                             .hasQuestion("Was ist ein Robo-Advisor?")
+                            .hasAnswerNote("Ein algorithmen gesteuertes Dings")
                             .isNotPending
                             .isEstimationQuestion
                 }
@@ -283,6 +329,7 @@ internal class QuizMasterIT {
                 .hasOpenQuestion(0) { openQuestion ->
                     openQuestion
                             .hasQuestion("Wer schrieb das Buch Animal Farm?")
+                            .hasAnswerNote("George Orwell")
                             .isNotPending
                             .isBuzzerQuestion
                 }
@@ -297,6 +344,7 @@ internal class QuizMasterIT {
                 .hasOpenQuestion(2) { openQuestion ->
                     openQuestion
                             .hasQuestion("Was ist ein Robo-Advisor?")
+                            .hasAnswerNote("Ein algorithmen gesteuertes Dings")
                             .isNotPending
                             .isEstimationQuestion
                 }
@@ -326,6 +374,7 @@ internal class QuizMasterIT {
                 .hasOpenQuestion(0) { openQuestion ->
                     openQuestion
                             .hasQuestion("Wer schrieb das Buch Animal Farm?")
+                            .hasAnswerNote("George Orwell")
                             .isNotPending
                             .isBuzzerQuestion
                 }
@@ -340,6 +389,7 @@ internal class QuizMasterIT {
                 .hasOpenQuestion(2) { openQuestion ->
                     openQuestion
                             .hasQuestion("Was ist ein Robo-Advisor?")
+                            .hasAnswerNote("Ein algorithmen gesteuertes Dings")
                             .isNotPending
                             .isEstimationQuestion
                 }
@@ -365,6 +415,7 @@ internal class QuizMasterIT {
                 .hasOpenQuestion(0) { openQuestion ->
                     openQuestion
                             .hasQuestion("Wer schrieb das Buch Animal Farm?")
+                            .hasAnswerNote("George Orwell")
                             .isNotPending
                             .isBuzzerQuestion
                 }
@@ -379,6 +430,7 @@ internal class QuizMasterIT {
                 .hasOpenQuestion(2) { openQuestion ->
                     openQuestion
                             .hasQuestion("Was ist ein Robo-Advisor?")
+                            .hasAnswerNote("Ein algorithmen gesteuertes Dings")
                             .isNotPending
                             .isEstimationQuestion
                 }
@@ -405,6 +457,7 @@ internal class QuizMasterIT {
                 .hasOpenQuestion(0) { openQuestion ->
                     openQuestion
                             .hasQuestion("Wer schrieb das Buch Animal Farm?")
+                            .hasAnswerNote("George Orwell")
                             .isNotPending
                             .isBuzzerQuestion
                 }
@@ -419,6 +472,7 @@ internal class QuizMasterIT {
                 .hasOpenQuestion(2) { openQuestion ->
                     openQuestion
                             .hasQuestion("Was ist ein Robo-Advisor?")
+                            .hasAnswerNote("Ein algorithmen gesteuertes Dings")
                             .isNotPending
                             .isEstimationQuestion
                 }
@@ -444,6 +498,7 @@ internal class QuizMasterIT {
                 .hasOpenQuestion(0) { openQuestion ->
                     openQuestion
                             .hasQuestion("Wer schrieb das Buch Animal Farm?")
+                            .hasAnswerNote("George Orwell")
                             .isPending
                             .isBuzzerQuestion
                 }
@@ -458,6 +513,7 @@ internal class QuizMasterIT {
                 .hasOpenQuestion(2) { openQuestion ->
                     openQuestion
                             .hasQuestion("Was ist ein Robo-Advisor?")
+                            .hasAnswerNote("Ein algorithmen gesteuertes Dings")
                             .isNotPending
                             .isEstimationQuestion
                 }
@@ -483,6 +539,7 @@ internal class QuizMasterIT {
                 .hasOpenQuestion(0) { openQuestion ->
                     openQuestion
                             .hasQuestion("Wer schrieb das Buch Animal Farm?")
+                            .hasAnswerNote("George Orwell")
                             .isPending
                             .isBuzzerQuestion
                 }
@@ -497,6 +554,7 @@ internal class QuizMasterIT {
                 .hasOpenQuestion(2) { openQuestion ->
                     openQuestion
                             .hasQuestion("Was ist ein Robo-Advisor?")
+                            .hasAnswerNote("Ein algorithmen gesteuertes Dings")
                             .isNotPending
                             .isEstimationQuestion
                 }
@@ -524,6 +582,7 @@ internal class QuizMasterIT {
                 .hasOpenQuestion(0) { openQuestion ->
                     openQuestion
                             .hasQuestion("Wer schrieb das Buch Animal Farm?")
+                            .hasAnswerNote("George Orwell")
                             .isPending
                             .isBuzzerQuestion
                 }
@@ -538,6 +597,7 @@ internal class QuizMasterIT {
                 .hasOpenQuestion(2) { openQuestion ->
                     openQuestion
                             .hasQuestion("Was ist ein Robo-Advisor?")
+                            .hasAnswerNote("Ein algorithmen gesteuertes Dings")
                             .isNotPending
                             .isEstimationQuestion
                 }
@@ -571,6 +631,7 @@ internal class QuizMasterIT {
                 .hasOpenQuestion(1) { openQuestion ->
                     openQuestion
                             .hasQuestion("Was ist ein Robo-Advisor?")
+                            .hasAnswerNote("Ein algorithmen gesteuertes Dings")
                             .isNotPending
                             .isEstimationQuestion
                 }
@@ -578,6 +639,7 @@ internal class QuizMasterIT {
                 .hasPlayedQuestion(0) { playedQuestion ->
                     playedQuestion
                             .hasQuestion("Wer schrieb das Buch Animal Farm?")
+                            .hasAnswerNote("George Orwell")
                             .isNotPending
                             .isBuzzerQuestion
                 }
@@ -611,6 +673,7 @@ internal class QuizMasterIT {
                 .hasOpenQuestion(1) { openQuestion ->
                     openQuestion
                             .hasQuestion("Was ist ein Robo-Advisor?")
+                            .hasAnswerNote("Ein algorithmen gesteuertes Dings")
                             .isNotPending
                             .isEstimationQuestion
                 }
@@ -618,6 +681,7 @@ internal class QuizMasterIT {
                 .hasPlayedQuestion(0) { playedQuestion ->
                     playedQuestion
                             .hasQuestion("Wer schrieb das Buch Animal Farm?")
+                            .hasAnswerNote("George Orwell")
                             .isNotPending
                 }
                 .particpantSizeIs(2)
@@ -739,6 +803,7 @@ internal class QuizMasterIT {
                 .hasOpenQuestion(1) { openQuestion ->
                     openQuestion
                             .hasQuestion("Was ist ein Robo-Advisor?")
+                            .hasAnswerNote("Ein algorithmen gesteuertes Dings")
                             .isNotPending
                             .isEstimationQuestion
                 }
@@ -746,6 +811,7 @@ internal class QuizMasterIT {
                 .hasPlayedQuestion(0) { playedQuestion ->
                     playedQuestion
                             .hasQuestion("Wer schrieb das Buch Animal Farm?")
+                            .hasAnswerNote("George Orwell")
                             .isNotPending
                 }
                 .particpantSizeIs(2)
@@ -779,6 +845,7 @@ internal class QuizMasterIT {
                 .hasOpenQuestion(1) { openQuestion ->
                     openQuestion
                             .hasQuestion("Was ist ein Robo-Advisor?")
+                            .hasAnswerNote("Ein algorithmen gesteuertes Dings")
                             .isNotPending
                             .isEstimationQuestion
                 }
@@ -786,6 +853,7 @@ internal class QuizMasterIT {
                 .hasPlayedQuestion(0) { playedQuestion ->
                     playedQuestion
                             .hasQuestion("Wer schrieb das Buch Animal Farm?")
+                            .hasAnswerNote("George Orwell")
                             .isNotPending
                 }
                 .particpantSizeIs(2)
@@ -809,6 +877,7 @@ internal class QuizMasterIT {
                 .hasOpenQuestion(0) { openQuestion ->
                     openQuestion
                             .hasQuestion("Was ist ein Robo-Advisor?")
+                            .hasAnswerNote("Ein algorithmen gesteuertes Dings")
                             .isPending
                             .isEstimationQuestion
                 }
@@ -816,6 +885,7 @@ internal class QuizMasterIT {
                 .hasPlayedQuestion(0) { playedQuestion ->
                     playedQuestion
                             .hasQuestion("Wer schrieb das Buch Animal Farm?")
+                            .hasAnswerNote("George Orwell")
                             .isNotPending
                 }
                 .hasPlayedQuestion(1) { playedQuestion ->
@@ -849,6 +919,7 @@ internal class QuizMasterIT {
                 .hasOpenQuestion(0) { openQuestion ->
                     openQuestion
                             .hasQuestion("Was ist ein Robo-Advisor?")
+                            .hasAnswerNote("Ein algorithmen gesteuertes Dings")
                             .isPending
                             .isEstimationQuestion
                             .hasEstimates(mapOf(Pair(quizMasterReference.get().participants[0].id, "Antwort von André")))
@@ -857,6 +928,7 @@ internal class QuizMasterIT {
                 .hasPlayedQuestion(0) { playedQuestion ->
                     playedQuestion
                             .hasQuestion("Wer schrieb das Buch Animal Farm?")
+                            .hasAnswerNote("George Orwell")
                             .isNotPending
                 }
                 .hasPlayedQuestion(1) { playedQuestion ->
@@ -888,6 +960,7 @@ internal class QuizMasterIT {
                 .hasOpenQuestion(0) { openQuestion ->
                     openQuestion
                             .hasQuestion("Was ist ein Robo-Advisor?")
+                            .hasAnswerNote("Ein algorithmen gesteuertes Dings")
                             .isPending
                             .isEstimationQuestion
                             .hasEstimates(java.util.Map.of(quizMasterReference.get().participants[0].id, "Antwort von André"))
@@ -896,6 +969,7 @@ internal class QuizMasterIT {
                 .hasPlayedQuestion(0) { playedQuestion ->
                     playedQuestion
                             .hasQuestion("Wer schrieb das Buch Animal Farm?")
+                            .hasAnswerNote("George Orwell")
                             .isNotPending
                 }
                 .hasPlayedQuestion(1) { playedQuestion ->
@@ -929,6 +1003,7 @@ internal class QuizMasterIT {
                 .hasOpenQuestion(0) { openQuestion ->
                     openQuestion
                             .hasQuestion("Was ist ein Robo-Advisor?")
+                            .hasAnswerNote("Ein algorithmen gesteuertes Dings")
                             .isPending
                             .isEstimationQuestion
                             .hasEstimates(java.util.Map.of(
@@ -940,6 +1015,7 @@ internal class QuizMasterIT {
                 .hasPlayedQuestion(0) { playedQuestion ->
                     playedQuestion
                             .hasQuestion("Wer schrieb das Buch Animal Farm?")
+                            .hasAnswerNote("George Orwell")
                             .isNotPending
                 }
                 .hasPlayedQuestion(1) { playedQuestion ->
@@ -971,6 +1047,7 @@ internal class QuizMasterIT {
                 .hasOpenQuestion(0) { openQuestion ->
                     openQuestion
                             .hasQuestion("Was ist ein Robo-Advisor?")
+                            .hasAnswerNote("Ein algorithmen gesteuertes Dings")
                             .isPending
                             .isEstimationQuestion
                             .hasEstimates(java.util.Map.of(
@@ -982,6 +1059,7 @@ internal class QuizMasterIT {
                 .hasPlayedQuestion(0) { playedQuestion ->
                     playedQuestion
                             .hasQuestion("Wer schrieb das Buch Animal Farm?")
+                            .hasAnswerNote("George Orwell")
                             .isNotPending
                 }
                 .hasPlayedQuestion(1) { playedQuestion ->
@@ -1015,6 +1093,7 @@ internal class QuizMasterIT {
                 .hasOpenQuestion(0) { openQuestion ->
                     openQuestion
                             .hasQuestion("Was ist ein Robo-Advisor?")
+                            .hasAnswerNote("Ein algorithmen gesteuertes Dings")
                             .isPending
                             .isEstimationQuestion
                             .hasEstimates(java.util.Map.of(
@@ -1026,6 +1105,7 @@ internal class QuizMasterIT {
                 .hasPlayedQuestion(0) { playedQuestion ->
                     playedQuestion
                             .hasQuestion("Wer schrieb das Buch Animal Farm?")
+                            .hasAnswerNote("George Orwell")
                             .isNotPending
                 }
                 .hasPlayedQuestion(1) { playedQuestion ->
@@ -1057,6 +1137,7 @@ internal class QuizMasterIT {
                 .hasOpenQuestion(0) { openQuestion ->
                     openQuestion
                             .hasQuestion("Was ist ein Robo-Advisor?")
+                            .hasAnswerNote("Ein algorithmen gesteuertes Dings")
                             .isPending
                             .isEstimationQuestion
                             .hasEstimates(java.util.Map.of(quizMasterReference.get().participants[0].id, "Antwort von Lena"))
@@ -1065,6 +1146,7 @@ internal class QuizMasterIT {
                 .hasPlayedQuestion(0) { playedQuestion ->
                     playedQuestion
                             .hasQuestion("Wer schrieb das Buch Animal Farm?")
+                            .hasAnswerNote("George Orwell")
                             .isNotPending
                 }
                 .hasPlayedQuestion(1) { playedQuestion ->
@@ -1095,6 +1177,7 @@ internal class QuizMasterIT {
                 .hasOpenQuestion(0) { openQuestion ->
                     openQuestion
                             .hasQuestion("Was ist ein Robo-Advisor?")
+                            .hasAnswerNote("Ein algorithmen gesteuertes Dings")
                             .isPending
                             .isEstimationQuestion
                             .hasEstimates(java.util.Map.of(
@@ -1106,6 +1189,7 @@ internal class QuizMasterIT {
                 .hasPlayedQuestion(0) { playedQuestion ->
                     playedQuestion
                             .hasQuestion("Wer schrieb das Buch Animal Farm?")
+                            .hasAnswerNote("George Orwell")
                             .isNotPending
                 }
                 .hasPlayedQuestion(1) { playedQuestion ->
@@ -1137,6 +1221,7 @@ internal class QuizMasterIT {
                 .hasOpenQuestion(0) { openQuestion ->
                     openQuestion
                             .hasQuestion("Was ist ein Robo-Advisor?")
+                            .hasAnswerNote("Ein algorithmen gesteuertes Dings")
                             .isPending
                             .isEstimationQuestion
                             .hasEstimates(java.util.Map.of(quizMasterReference.get().participants[0].id, "Antwort von Lena"))
@@ -1145,6 +1230,7 @@ internal class QuizMasterIT {
                 .hasPlayedQuestion(0) { playedQuestion ->
                     playedQuestion
                             .hasQuestion("Wer schrieb das Buch Animal Farm?")
+                            .hasAnswerNote("George Orwell")
                             .isNotPending
                 }
                 .hasPlayedQuestion(1) { playedQuestion ->
@@ -1173,6 +1259,7 @@ internal class QuizMasterIT {
                 .hasOpenQuestion(0) { openQuestion ->
                     openQuestion
                             .hasQuestion("Was ist ein Robo-Advisor?")
+                            .hasAnswerNote("Ein algorithmen gesteuertes Dings")
                             .isPending
                             .isEstimationQuestion
                             .hasEstimates(java.util.Map.of(
@@ -1184,6 +1271,7 @@ internal class QuizMasterIT {
                 .hasPlayedQuestion(0) { playedQuestion ->
                     playedQuestion
                             .hasQuestion("Wer schrieb das Buch Animal Farm?")
+                            .hasAnswerNote("George Orwell")
                             .isNotPending
                 }
                 .hasPlayedQuestion(1) { playedQuestion ->
@@ -1216,6 +1304,7 @@ internal class QuizMasterIT {
                 .hasOpenQuestion(0) { openQuestion ->
                     openQuestion
                             .hasQuestion("Was ist ein Robo-Advisor?")
+                            .hasAnswerNote("Ein algorithmen gesteuertes Dings")
                             .isPending
                             .isEstimationQuestion
                             .hasEstimates(java.util.Map.of(
@@ -1227,6 +1316,7 @@ internal class QuizMasterIT {
                 .hasPlayedQuestion(0) { playedQuestion ->
                     playedQuestion
                             .hasQuestion("Wer schrieb das Buch Animal Farm?")
+                            .hasAnswerNote("George Orwell")
                             .isNotPending
                 }
                 .hasPlayedQuestion(1) { playedQuestion ->

@@ -19,6 +19,7 @@ export interface Choice {
 export interface Question {
     id: string;
     question: string;
+    correctAnswer?: string;
     category: string;
     timeToAnswer?: number;
     secondsLeft?: number;
