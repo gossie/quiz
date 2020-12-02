@@ -135,15 +135,15 @@ internal class QuizProjectionQuestionWithTimeConstraintReopenedEventTest {
 
             assertThat(q.id).isEqualTo(quiz.id)
             assertThat(q.participants).hasSize(1)
-            assertThat(q.participants[0].turn).isFalse()
+            assertThat(q.participants[0].turn).isFalse
             assertThat(q.participants[0].points).isEqualTo(0L)
             assertThat(q.questions).hasSize(1)
-            assertThat(q.questions[0].pending).isTrue()
-            assertThat(q.questions[0].alreadyPlayed).isFalse()
+            assertThat(q.questions[0].pending).isTrue
+            assertThat(q.questions[0].alreadyPlayed).isFalse
             assertThat(q.questions[0].initialTimeToAnswer).isEqualTo(5)
             assertThat(q.questions[0].secondsLeft).isEqualTo(5)
-            assertThat(q.undoPossible).isTrue()
-            assertThat(q.finished).isFalse()
+            assertThat(q.undoPossible).isTrue
+            assertThat(q.finished).isFalse
         }
     }
 
