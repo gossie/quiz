@@ -182,7 +182,7 @@ const QuestionForm: React.FC<QuestionFormProps> = (props: QuestionFormProps) => 
                             {choiceElements}
                         </div>
                         <div className="control">
-                            <input data-testid="new-choice" value={newChoice} onChange={ev => setNewChoice(ev.target.value)} className="input new-multiple-choice-option" type="text" />
+                            <input data-testid="new-choice" value={newChoice} onChange={ev => setNewChoice(ev.target.value)} onKeyUp={ev => {if (ev.keyCode === 13) addOptionToChoices()}} className="input new-multiple-choice-option" type="text" />
                             <span data-testid="add-option" className="icon has-text-secondary clickable multiple-choice-add-option" title={t('titleAddMultipleChoiceOption')} onClick={addOptionToChoices}><i className="fas fa-plus"></i></span>
                         </div>
                     </div>
