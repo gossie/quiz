@@ -94,7 +94,8 @@ fun Question.map(quiz: Quiz): QuestionDTO {
             this.secondsLeft,
             this.revealed,
             this.previousQuestionId,
-            if (this.choices != null) { this.choices?.map { it.map(quiz) } } else { null }
+            if (this.choices != null) { this.choices?.map { it.map(quiz) } } else { null },
+            this.correctAnswer
     )
     questionDTO.add(Link.of("/api/quiz/" + quiz.id + "/questions/" + this.id, "self"))
     return if (this.imageUrl == "") questionDTO else questionDTO.add(Link.of(this.imageUrl, "image"))

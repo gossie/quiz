@@ -177,7 +177,7 @@ internal class QuizMasterIT {
                     openQuestion
                             .hasQuestion("Wo befindet sich das Kahnbein?")
                             .isNotPending
-                            .isBuzzerQuestion
+                            .isMultipleChoiceQuestion
                 }
                 .hasOpenQuestion(2) { openQuestion ->
                     openQuestion
