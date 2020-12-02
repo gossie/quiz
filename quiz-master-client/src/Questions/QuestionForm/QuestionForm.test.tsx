@@ -355,7 +355,7 @@ test('should edit multiple choice question', async () => {
     expect(newChoiceField.value).toBe('');
 
     fireEvent.change(newChoiceField, { target: { value: 'Option 2' } });
-    addOption.click();
+    fireEvent.keyUp(newChoiceField, { key: 'Enter', keyCode: 13 });
 
     expect(choicesWrapper.querySelectorAll('.multiple-choice-option').length).toBe(2);
     expect(choicesWrapper.querySelectorAll('.multiple-choice-option')[0].textContent).toBe('Option 1');
