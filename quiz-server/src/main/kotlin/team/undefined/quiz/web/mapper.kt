@@ -115,7 +115,7 @@ fun Question.map(quizId: UUID): QuestionDTO {
             this.previousQuestionId,
             if (this.choices != null) { this.choices?.map { it.map() } } else { null },
             this.correctAnswer
-    }
+    )
     questionDTO.add(Link.of("/api/quiz/" + quizId + "/questions/" + this.id, "self"))
     return if (this.imageUrl == "") questionDTO else questionDTO.add(Link.of(this.imageUrl, "image"))
 }
