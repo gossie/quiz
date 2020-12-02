@@ -14,5 +14,7 @@ data class QuestionDTO(
         var timeToAnswer: Int? = null,
         var secondsLeft: Int? = null,
         var revealed: Boolean = false,
-        var previousQuestionId: UUID? = null
+        var previousQuestionId: UUID? = null,
+        var choices: List<ChoiceDTO>? = null,
+        var correctAnswer: String? = null
 ) : RepresentationModel<QuestionDTO>()

@@ -88,6 +88,13 @@ data class EstimatedEvent(@JsonProperty("quizId") override val quizId: UUID, @Js
     }
 }
 
+data class ChoiceSelectedEvent(@JsonProperty("quizId") override val quizId: UUID, @JsonProperty("participantId") val participantId: UUID, @JsonProperty("choiceId") val choiceId: UUID, @JsonProperty("timestamp") override val timestamp: Long = Date().time) : Event {
+    override fun process(quiz: Quiz): Quiz {
+        return quiz.selectChoice(participantId, choiceId)
+                .setTimestamp(timestamp)
+    }
+}
+
 data class ToggleAnswerRevealAllowedEvent(@JsonProperty("quizId") override val quizId: UUID, @JsonProperty("participantId") val participantId: UUID, @JsonProperty("timestamp") override val timestamp: Long = Date().time) : Event {
     override fun process(quiz: Quiz): Quiz {
         return quiz.toggleAnswerRevealAllowed(participantId)

@@ -10,10 +10,10 @@ import org.mockito.Mockito.mock
 import reactor.core.publisher.Flux
 import java.util.concurrent.atomic.AtomicReference
 
-internal class QuizProjectionTimeToAnswerDecreasedEventTest {
+internal class QuizProjectionChoiceSelectedEventTest {
 
     @Test
-    fun shouldHandleTimeToAnswerDecreasedEventWhenQuizIsAlreadyInCache() {
+    fun shouldHandleChoiceSelectedEventWhenQuizIsAlreadyInCache() {
         val quiz = Quiz(name = "Awesome Quiz")
 
         val eventBus = EventBus()
@@ -23,35 +23,39 @@ internal class QuizProjectionTimeToAnswerDecreasedEventTest {
         quizProjection.observeQuiz(quiz.id)
                 .subscribe { observedQuiz.set(it) }
 
-        val question = Question(question = "Wofür steht die Abkürzung a.D.?", initialTimeToAnswer = 30, secondsLeft = 30)
+        val choice1 = Choice(choice = "a")
+        val choice2 = Choice(choice = "b")
+        val question = Question(question = "Wofür steht die Abkürzung a.D.?", choices = listOf(choice1, choice2))
         val participant = Participant(name = "Lena")
         eventBus.post(QuizCreatedEvent(quiz.id, quiz, 1))
         eventBus.post(QuestionCreatedEvent(quiz.id, question, 2))
         eventBus.post(ParticipantCreatedEvent(quiz.id, participant, 3))
         eventBus.post(QuestionAskedEvent(quiz.id, question.id, 4))
-        eventBus.post(TimeToAnswerDecreasedEvent(quiz.id, question.id, 5))
+        eventBus.post(ChoiceSelectedEvent(quiz.id, participant.id, choice1.id, 5))
 
         await untilAsserted {
             val q = observedQuiz.get()
 
             assertThat(q.id).isEqualTo(quiz.id)
             assertThat(q.participants).hasSize(1)
-            assertThat(q.participants[0].turn).isFalse()
             assertThat(q.questions).hasSize(1)
             assertThat(q.questions[0].pending).isTrue()
-            assertThat(q.questions[0].initialTimeToAnswer).isEqualTo(30)
-            assertThat(q.questions[0].secondsLeft).isEqualTo(29)
+            assertThat(q.questions[0].estimates).hasSize(1)
+            assertThat(q.questions[0].estimates!![participant.id]).isEqualTo("a")
+            assertThat(q.isUndoPossible()).isTrue()
             assertThat(q.finished).isFalse()
         }
     }
 
     @Test
-    fun shouldHandleTimeToAnswerDecreasedEventWhenQuizIsNotInCacheAndLastEventWasAlreadyPersisted() {
+    fun shouldHandleChoiceSelectedEventWhenQuizIsNotInCacheAndLastEventWasAlreadyPersisted() {
         val quiz = Quiz(name = "Awesome Quiz")
 
-        val question = Question(question = "Wofür steht die Abkürzung a.D.?", initialTimeToAnswer = 30, secondsLeft = 30)
+        val choice1 = Choice(choice = "a")
+        val choice2 = Choice(choice = "b")
+        val question = Question(question = "Wofür steht die Abkürzung a.D.?", choices = listOf(choice1, choice2))
         val participant = Participant(name = "Lena")
-        val timeToAnswerDecreasedEvent = TimeToAnswerDecreasedEvent(quiz.id, question.id, 5)
+        val choiceSelectedEvent = ChoiceSelectedEvent(quiz.id, participant.id, choice1.id, 5)
 
         val eventRepository = mock(EventRepository::class.java)
         `when`(eventRepository.determineEvents(quiz.id))
@@ -60,7 +64,7 @@ internal class QuizProjectionTimeToAnswerDecreasedEventTest {
                         QuestionCreatedEvent(quiz.id, question, 2),
                         ParticipantCreatedEvent(quiz.id, participant, 3),
                         QuestionAskedEvent(quiz.id, question.id, 4),
-                        timeToAnswerDecreasedEvent
+                        choiceSelectedEvent
                 ))
 
         val eventBus = EventBus()
@@ -70,26 +74,28 @@ internal class QuizProjectionTimeToAnswerDecreasedEventTest {
         quizProjection.observeQuiz(quiz.id)
                 .subscribe { observedQuiz.set(it) }
 
-        eventBus.post(timeToAnswerDecreasedEvent)
+        eventBus.post(choiceSelectedEvent)
 
         await untilAsserted {
             val q = observedQuiz.get()
 
             assertThat(q.id).isEqualTo(quiz.id)
             assertThat(q.participants).hasSize(1)
-            assertThat(q.participants[0].turn).isFalse()
             assertThat(q.questions).hasSize(1)
             assertThat(q.questions[0].pending).isTrue()
-            assertThat(q.questions[0].initialTimeToAnswer).isEqualTo(30)
-            assertThat(q.questions[0].secondsLeft).isEqualTo(29)
+            assertThat(q.questions[0].estimates).hasSize(1)
+            assertThat(q.questions[0].estimates!![participant.id]).isEqualTo("a")
+            assertThat(q.isUndoPossible()).isTrue()
             assertThat(q.finished).isFalse()
         }
     }
 
     @Test
-    fun shouldHandleTimeToAnswerDecreasedEventCreationWhenQuizIsNotInCacheAndLastEventWasNotYetPersisted() {
+    fun shouldHandleChoiceSelectedEventCreationWhenQuizIsNotInCacheAndLastEventWasNotYetPersisted() {
         val quiz = Quiz(name = "Awesome Quiz")
-        val question = Question(question = "Wofür steht die Abkürzung a.D.?", initialTimeToAnswer = 30, secondsLeft = 30)
+        val choice1 = Choice(choice = "a")
+        val choice2 = Choice(choice = "b")
+        val question = Question(question = "Wofür steht die Abkürzung a.D.?", choices = listOf(choice1, choice2))
         val participant = Participant(name = "Lena")
 
         val eventRepository = mock(EventRepository::class.java)
@@ -108,18 +114,18 @@ internal class QuizProjectionTimeToAnswerDecreasedEventTest {
         quizProjection.observeQuiz(quiz.id)
                 .subscribe { observedQuiz.set(it) }
 
-        eventBus.post(TimeToAnswerDecreasedEvent(quiz.id, question.id, 5))
+        eventBus.post(ChoiceSelectedEvent(quiz.id, participant.id, choice1.id, 5))
 
         await untilAsserted {
             val q = observedQuiz.get()
 
             assertThat(q.id).isEqualTo(quiz.id)
             assertThat(q.participants).hasSize(1)
-            assertThat(q.participants[0].turn).isFalse()
             assertThat(q.questions).hasSize(1)
             assertThat(q.questions[0].pending).isTrue()
-            assertThat(q.questions[0].initialTimeToAnswer).isEqualTo(30)
-            assertThat(q.questions[0].secondsLeft).isEqualTo(29)
+            assertThat(q.questions[0].estimates).hasSize(1)
+            assertThat(q.questions[0].estimates!![participant.id]).isEqualTo("a")
+            assertThat(q.isUndoPossible()).isTrue()
             assertThat(q.finished).isFalse()
         }
     }

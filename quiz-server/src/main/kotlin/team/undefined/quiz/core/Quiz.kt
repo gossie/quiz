@@ -43,6 +43,11 @@ data class Quiz(
         return this
     }
 
+    fun selectChoice(participantId: UUID, choiceId: UUID): Quiz {
+        val choice = questions.find { it.pending }?.choices?.find { it.id == choiceId }
+        return estimate(participantId, choice?.choice ?: "")
+    }
+
     fun toggleAnswerRevealAllowed(participantId: UUID): Quiz {
         val participant = participants.find { it.id == participantId }
         participant?.revealAllowed = participant?.revealAllowed?.not() ?: false
@@ -122,18 +127,32 @@ data class Quiz(
     }
 
     fun currentQuestionIsBuzzerQuestion(): Boolean {
-        return questions.find { it.pending }
-                ?.estimates == null
+        val currentQuestion = questions.find { it.pending }
+        return currentQuestion?.estimates == null
     }
 
     fun currentQuestionIsFreetextQuestion(): Boolean {
-        return !currentQuestionIsBuzzerQuestion()
+        val currentQuestion = questions.find { it.pending }
+        return currentQuestion?.choices == null
+                && currentQuestion?.estimates != null
+    }
+
+    fun currentQuestionIsMultipleChoiceQuestion(): Boolean {
+        val currentQuestion = questions.find { it.pending }
+        return currentQuestion?.choices?.isNotEmpty() ?: false
+                && currentQuestion?.estimates != null
     }
 
     fun currentAnswerIsDifferent(participantId: UUID, value: String): Boolean {
         return questions.find { it.pending }
                 ?.estimates
                 ?.get(participantId) != value
+    }
+
+    fun currentChoiceIsDifferent(participantId: UUID, choiceId: UUID): Boolean {
+        val currentQuestion = questions.find { it.pending }
+        val choice = currentQuestion?.choices?.find { it.id == choiceId }
+        return currentAnswerIsDifferent(participantId, choice?.choice ?: "")
     }
 
     private fun checkParticipant(participant: Participant, participantId: UUID?): Boolean {

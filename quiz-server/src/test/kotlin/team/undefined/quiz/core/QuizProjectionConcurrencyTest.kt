@@ -27,7 +27,7 @@ internal class QuizProjectionConcurrencyTest {
             quizProjection.observeQuiz(quiz.id)
                     .subscribe { observedQuiz.set(it) }
 
-            val question = Question(question = "Wofür steht die Abkürzung a.D.?", estimates = HashMap(), initialTimeToAnswer = 45)
+            val question = Question(question = "Wofür steht die Abkürzung a.D.?", initialTimeToAnswer = 45, estimates = HashMap())
             val participant = Participant(name = "Lena")
             eventBus.post(QuizCreatedEvent(quiz.id, quiz, 1))
             eventBus.post(QuestionCreatedEvent(quiz.id, question, 2))

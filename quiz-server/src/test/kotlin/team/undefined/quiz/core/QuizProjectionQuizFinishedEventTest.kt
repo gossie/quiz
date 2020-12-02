@@ -17,10 +17,13 @@ internal class QuizProjectionQuizFinishedEventTest {
         val quiz = Quiz(name = "Awesome Quiz")
 
         val buzzerQuestion = Question(question = "Wofür steht die Abkürzung a.D.?")
-        val freetextQuestion = Question(question = "Wer schrieb Peter und der Wolf?", estimates = HashMap(), initialTimeToAnswer = 45)
+        val freetextQuestion = Question(question = "Wer schrieb Peter und der Wolf?", initialTimeToAnswer = 45, estimates = HashMap())
+        val choice1 = Choice(choice = "Zugspitze")
+        val choice2 = Choice(choice = "Brocken")
+        val multipleChoiceQuestion = Question(question = "Was ist der höchste Berg Deutschlands?", choices = listOf(choice1, choice2))
         val participant1 = Participant(name = "Lena")
         val participant2 = Participant(name = "Erik")
-        val finishedEvent = QuizFinishedEvent(quiz.id, 13)
+        val finishedEvent = QuizFinishedEvent(quiz.id, 19)
 
         val eventRepository = mock(EventRepository::class.java)
         `when`(eventRepository.determineEvents(quiz.id))
@@ -28,15 +31,21 @@ internal class QuizProjectionQuizFinishedEventTest {
                         QuizCreatedEvent(quiz.id, quiz, 1),
                         QuestionCreatedEvent(quiz.id, buzzerQuestion, 2),
                         QuestionCreatedEvent(quiz.id, freetextQuestion, 3),
-                        ParticipantCreatedEvent(quiz.id, participant1, 4),
-                        ParticipantCreatedEvent(quiz.id, participant2, 5),
-                        QuestionAskedEvent(quiz.id, buzzerQuestion.id, 6),
-                        BuzzeredEvent(quiz.id, participant1.id, 7),
-                        AnsweredEvent(quiz.id, participant1.id, AnswerCommand.Answer.CORRECT, 8),
-                        QuestionAskedEvent(quiz.id, freetextQuestion.id, 9),
-                        EstimatedEvent(quiz.id, participant1.id, "Sergej Prokofjew", 10),
-                        EstimatedEvent(quiz.id, participant2.id, "Max Mustermann", 11),
-                        AnsweredEvent(quiz.id, participant1.id, AnswerCommand.Answer.CORRECT, 12),
+                        QuestionCreatedEvent(quiz.id, multipleChoiceQuestion, 4),
+                        ParticipantCreatedEvent(quiz.id, participant1, 5),
+                        ParticipantCreatedEvent(quiz.id, participant2, 6),
+                        QuestionAskedEvent(quiz.id, buzzerQuestion.id, 7),
+                        BuzzeredEvent(quiz.id, participant1.id, 8),
+                        AnsweredEvent(quiz.id, participant1.id, AnswerCommand.Answer.CORRECT, 9),
+                        QuestionAskedEvent(quiz.id, freetextQuestion.id, 10),
+                        EstimatedEvent(quiz.id, participant1.id, "Sergej Prokofjew", 11),
+                        EstimatedEvent(quiz.id, participant2.id, "Max Mustermann", 12),
+                        AnsweredEvent(quiz.id, participant1.id, AnswerCommand.Answer.CORRECT, 13),
+                        QuestionAskedEvent(quiz.id, multipleChoiceQuestion.id, 14),
+                        ChoiceSelectedEvent(quiz.id, participant1.id, choice1.id, 15),
+                        ChoiceSelectedEvent(quiz.id, participant2.id, choice1.id, 16),
+                        AnsweredEvent(quiz.id, participant1.id, AnswerCommand.Answer.CORRECT, 17),
+                        AnsweredEvent(quiz.id, participant2.id, AnswerCommand.Answer.CORRECT, 18),
                         finishedEvent
                 ))
 
@@ -56,7 +65,7 @@ internal class QuizProjectionQuizFinishedEventTest {
                     .isFinished
                     .hasQuizStatistics { quizStatistics ->
                         quizStatistics
-                                .questionStatisticsSizeId(2)
+                                .questionStatisticsSizeIs(3)
                                 .hasQuestionStatistics(0) { questionStatistics ->
                                     questionStatistics
                                             .hasQuestionId(buzzerQuestion.id)
@@ -76,13 +85,34 @@ internal class QuizProjectionQuizFinishedEventTest {
                                                 answerStatistics
                                                         .hasDuration(1L)
                                                         .hasParticipantId(participant1.id)
+                                                        .hasAnswer("Sergej Prokofjew")
                                                         .isCorrect
                                             }
                                             .hasAnswerStatistics(1) { answerStatistics ->
                                                 answerStatistics
                                                         .hasDuration(2L)
                                                         .hasParticipantId(participant2.id)
+                                                        .hasAnswer("Max Mustermann")
                                                         .isIncorrect
+                                            }
+                                }
+                                .hasQuestionStatistics(2) { questionStatistics ->
+                                    questionStatistics
+                                            .hasQuestionId(multipleChoiceQuestion.id)
+                                            .answerStatisticsSizeIs(2)
+                                            .hasAnswerStatistics(0) { answerStatistics ->
+                                                answerStatistics
+                                                        .hasDuration(1L)
+                                                        .hasParticipantId(participant1.id)
+                                                        .hasChoiceId(choice1.id)
+                                                        .isCorrect
+                                            }
+                                            .hasAnswerStatistics(1) { answerStatistics ->
+                                                answerStatistics
+                                                        .hasDuration(2L)
+                                                        .hasParticipantId(participant2.id)
+                                                        .hasChoiceId(choice1.id)
+                                                        .isCorrect
                                             }
                                 }
                     }
@@ -94,7 +124,10 @@ internal class QuizProjectionQuizFinishedEventTest {
         val quiz = Quiz(name = "Awesome Quiz")
 
         val buzzerQuestion = Question(question = "Wofür steht die Abkürzung a.D.?")
-        val freetextQuestion = Question(question = "Wer schrieb Peter und der Wolf?", estimates = HashMap(), initialTimeToAnswer = 45)
+        val freetextQuestion = Question(question = "Wer schrieb Peter und der Wolf?", initialTimeToAnswer = 45, estimates = HashMap())
+        val choice1 = Choice(choice = "Zugspitze")
+        val choice2 = Choice(choice = "Brocken")
+        val multipleChoiceQuestion = Question(question = "Was ist der höchste Berg Deutschlands?", choices = listOf(choice1, choice2))
         val participant1 = Participant(name = "Lena")
         val participant2 = Participant(name = "Erik")
 
@@ -104,15 +137,21 @@ internal class QuizProjectionQuizFinishedEventTest {
                         QuizCreatedEvent(quiz.id, quiz, 1),
                         QuestionCreatedEvent(quiz.id, buzzerQuestion, 2),
                         QuestionCreatedEvent(quiz.id, freetextQuestion, 3),
-                        ParticipantCreatedEvent(quiz.id, participant1, 4),
-                        ParticipantCreatedEvent(quiz.id, participant2, 5),
-                        QuestionAskedEvent(quiz.id, buzzerQuestion.id, 6),
-                        BuzzeredEvent(quiz.id, participant1.id, 7),
-                        AnsweredEvent(quiz.id, participant1.id, AnswerCommand.Answer.CORRECT, 8),
-                        QuestionAskedEvent(quiz.id, freetextQuestion.id, 9),
-                        EstimatedEvent(quiz.id, participant1.id, "Sergej Prokofjew", 10),
-                        EstimatedEvent(quiz.id, participant2.id, "Max Mustermann", 11),
-                        AnsweredEvent(quiz.id, participant1.id, AnswerCommand.Answer.CORRECT, 12)
+                        QuestionCreatedEvent(quiz.id, multipleChoiceQuestion, 4),
+                        ParticipantCreatedEvent(quiz.id, participant1, 5),
+                        ParticipantCreatedEvent(quiz.id, participant2, 6),
+                        QuestionAskedEvent(quiz.id, buzzerQuestion.id, 7),
+                        BuzzeredEvent(quiz.id, participant1.id, 8),
+                        AnsweredEvent(quiz.id, participant1.id, AnswerCommand.Answer.CORRECT, 9),
+                        QuestionAskedEvent(quiz.id, freetextQuestion.id, 10),
+                        EstimatedEvent(quiz.id, participant1.id, "Sergej Prokofjew", 11),
+                        EstimatedEvent(quiz.id, participant2.id, "Max Mustermann", 12),
+                        AnsweredEvent(quiz.id, participant1.id, AnswerCommand.Answer.CORRECT, 13),
+                        QuestionAskedEvent(quiz.id, multipleChoiceQuestion.id, 14),
+                        ChoiceSelectedEvent(quiz.id, participant1.id, choice1.id, 15),
+                        ChoiceSelectedEvent(quiz.id, participant2.id, choice1.id, 16),
+                        AnsweredEvent(quiz.id, participant1.id, AnswerCommand.Answer.CORRECT, 17),
+                        AnsweredEvent(quiz.id, participant2.id, AnswerCommand.Answer.CORRECT, 18),
                 ))
 
         val eventBus = EventBus()
@@ -122,7 +161,7 @@ internal class QuizProjectionQuizFinishedEventTest {
         quizProjection.observeQuiz(quiz.id)
                 .subscribe { observedQuiz.set(it) }
 
-        eventBus.post(QuizFinishedEvent(quiz.id, 13))
+        eventBus.post(QuizFinishedEvent(quiz.id, 19))
 
         await untilAsserted {
             assertThat(observedQuiz.get())
@@ -131,7 +170,7 @@ internal class QuizProjectionQuizFinishedEventTest {
                     .isFinished
                     .hasQuizStatistics { quizStatistics ->
                         quizStatistics
-                                .questionStatisticsSizeId(2)
+                                .questionStatisticsSizeIs(3)
                                 .hasQuestionStatistics(0) { questionStatistics ->
                                     questionStatistics
                                             .hasQuestionId(buzzerQuestion.id)
@@ -151,17 +190,37 @@ internal class QuizProjectionQuizFinishedEventTest {
                                                 answerStatistics
                                                         .hasDuration(1L)
                                                         .hasParticipantId(participant1.id)
+                                                        .hasAnswer("Sergej Prokofjew")
                                                         .isCorrect
                                             }
                                             .hasAnswerStatistics(1) { answerStatistics ->
                                                 answerStatistics
                                                         .hasDuration(2L)
                                                         .hasParticipantId(participant2.id)
+                                                        .hasAnswer("Max Mustermann")
                                                         .isIncorrect
+                                            }
+                                }
+                                .hasQuestionStatistics(2) { questionStatistics ->
+                                    questionStatistics
+                                            .hasQuestionId(multipleChoiceQuestion.id)
+                                            .answerStatisticsSizeIs(2)
+                                            .hasAnswerStatistics(0) { answerStatistics ->
+                                                answerStatistics
+                                                        .hasDuration(1L)
+                                                        .hasParticipantId(participant1.id)
+                                                        .hasChoiceId(choice1.id)
+                                                        .isCorrect
+                                            }
+                                            .hasAnswerStatistics(1) { answerStatistics ->
+                                                answerStatistics
+                                                        .hasDuration(2L)
+                                                        .hasParticipantId(participant2.id)
+                                                        .hasChoiceId(choice1.id)
+                                                        .isCorrect
                                             }
                                 }
                     }
         }
     }
-
 }

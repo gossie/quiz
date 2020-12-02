@@ -7,14 +7,16 @@ data class Question(
         val question: String,
         var pending: Boolean = false,
         val imageUrl: String = "",
-        val estimates: Map<UUID, String>? = null,
         var visibility: QuestionVisibility = QuestionVisibility.PRIVATE,
         var alreadyPlayed: Boolean = false,
         val category: QuestionCategory = QuestionCategory("other"),
         val initialTimeToAnswer: Int? = null,
         var secondsLeft: Int? = initialTimeToAnswer,
         var revealed: Boolean = false,
-        var previousQuestionId: UUID? = null
+        var previousQuestionId: UUID? = null,
+        var choices: List<Choice>? = null,
+        val estimates: Map<UUID, String>? = if(choices != null) { HashMap() } else { null },
+        val correctAnswer: String? = null
 ) {
 
     enum class QuestionVisibility(private val b: Boolean) {

@@ -12,11 +12,17 @@ export interface Participant {
     links: Array<Link>;
 }
 
+export interface Choice {
+    choice: string;
+    links: Array<Link>;
+}
+
 export interface Question {
     id: string;
     question: string;
     imagePath?: string;
     estimates?: object,
+    choices?: Array<Choice>;
     secondsLeft?: number;
     pending: boolean;
     revealed: boolean;

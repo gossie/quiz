@@ -206,6 +206,35 @@ internal class DefaultQuizServiceForbidChangesOnFinishedQuizTest {
     }
 
     @Test
+    fun shouldPreventChoiceSelectionIfQuizIsAlreadyFinished() {
+        val quizId = UUID.randomUUID()
+        val questionId = UUID.randomUUID()
+        val choice1Id = UUID.randomUUID()
+        val choice2Id = UUID.randomUUID()
+        val participantId = UUID.randomUUID()
+
+        val eventRepository = mock(EventRepository::class.java)
+        `when`(eventRepository.determineEvents(quizId)).thenReturn(
+                Flux.just(
+                        QuizCreatedEvent(quizId, Quiz(quizId, "Ein Quiz")),
+                        QuestionCreatedEvent(quizId, Question(questionId, "Eine Frage", choices = listOf(Choice(choice1Id, "a"), Choice(choice2Id, "b")))),
+                        ParticipantCreatedEvent(quizId, Participant(participantId, "Volker")),
+                        QuestionAskedEvent(quizId, questionId),
+                        QuizFinishedEvent(quizId)
+                )
+        )
+
+        val eventBus = mock(EventBus::class.java)
+
+        val quizService = DefaultQuizService(eventRepository, UndoneEventsCache(), eventBus)
+
+        StepVerifier.create(quizService.selectChoice(SelectChoiceCommand(quizId, participantId, choice1Id)))
+                .verifyError(QuizFinishedException::class.java)
+
+        verifyNoInteractions(eventBus)
+    }
+
+    @Test
     fun shouldPreventToggleIfQuizIsAlreadyFinished() {
         val quizId = UUID.randomUUID()
         val participantId = UUID.randomUUID()

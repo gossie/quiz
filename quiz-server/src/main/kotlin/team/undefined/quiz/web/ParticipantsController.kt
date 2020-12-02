@@ -37,6 +37,12 @@ class ParticipantsController(private val quizService: QuizService) {
         }
     }
 
+    @PutMapping("/{participantId}/choices/{choiceId}")
+    @ResponseStatus(HttpStatus.OK)
+    fun selectChoice(@PathVariable quizId: UUID, @PathVariable participantId: UUID, @PathVariable choiceId: UUID): Mono<Unit> {
+        return quizService.selectChoice(SelectChoiceCommand(quizId, participantId, choiceId))
+    }
+
     @PutMapping("/{participantId}/togglereveal")
     @ResponseStatus(HttpStatus.OK)
     fun toggleRevealPrevention(@PathVariable quizId: UUID, @PathVariable participantId: UUID): Mono<Unit> {
