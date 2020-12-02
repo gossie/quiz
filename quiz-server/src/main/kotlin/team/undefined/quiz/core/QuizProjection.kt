@@ -89,7 +89,7 @@ class QuizProjection(eventBus: EventBus,
                         }
                         quizStatisticsProvider.generateStatistics(event.quizId)
                                 .subscribe {
-                                    quizCache[event.quizId]!!.quizStatistics = it
+                                    quizCache[event.quizId] = quizCache[event.quizId]!!.setQuizStatistics(it)
                                     emitQuiz(quizCache[event.quizId]!!)
                                 }
                     }
@@ -97,7 +97,7 @@ class QuizProjection(eventBus: EventBus,
             quizCache[event.quizId] = event.process(quiz)
             quizStatisticsProvider.generateStatistics(event.quizId)
                     .subscribe {
-                        quizCache[event.quizId]!!.quizStatistics = it
+                        quizCache[event.quizId] = quizCache[event.quizId]!!.setQuizStatistics(it)
                         emitQuiz(quizCache[event.quizId]!!)
                     }
         }
@@ -163,9 +163,8 @@ class QuizProjection(eventBus: EventBus,
     }
 
     private fun emitQuiz(quiz: Quiz) {
-        quiz.setRedoPossible(undoneEventsCache.isNotEmpty(quiz.id))
         observables.computeIfAbsent(quiz.id) { EmitterProcessor.create(false) }
-                .onNext(quiz)
+                .onNext(quiz.setRedoPossible(undoneEventsCache.isNotEmpty(quiz.id)))
     }
 
     fun removeObserver(quizId: UUID) {

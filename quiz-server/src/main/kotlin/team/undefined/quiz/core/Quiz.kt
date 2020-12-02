@@ -8,12 +8,12 @@ data class Quiz(
         val name: String,
         val participants: List<Participant> = ArrayList(),
         val questions: List<Question> = ArrayList(),
-        var finished: Boolean = false,
-        var quizStatistics: QuizStatistics? = null) {
-
-    private var timestamp: Long = Date().time
-    private var undoPossible: Boolean = false
-    private var redoPossible: Boolean = false
+        val finished: Boolean = false,
+        val quizStatistics: QuizStatistics? = null,
+        private val timestamp: Long = Date().time,
+        private val undoPossible: Boolean = false,
+        private val redoPossible: Boolean = false
+) {
 
     val pendingQuestion: Question?
         get() = questions.filter { it.pending }.firstOrNull()
@@ -196,13 +196,15 @@ data class Quiz(
     }
 
     fun finishQuiz(): Quiz {
-        finished = true
-        return this
+        return Quiz(id, name, participants, questions, true, quizStatistics, timestamp, undoPossible, redoPossible)
+    }
+
+    fun setQuizStatistics(quizStatistics: QuizStatistics): Quiz {
+        return Quiz(id, name, participants, questions, finished, quizStatistics, timestamp, undoPossible, redoPossible)
     }
 
     fun setTimestamp(timestamp: Long): Quiz {
-        this.timestamp = timestamp
-        return this
+        return Quiz(id, name, participants, questions, finished, quizStatistics, timestamp, undoPossible, redoPossible)
     }
 
     fun getTimestamp(): Long {
@@ -214,8 +216,7 @@ data class Quiz(
     }
 
     fun setUndoPossible(): Quiz {
-        this.undoPossible = true
-        return this
+        return Quiz(id, name, participants, questions, finished, quizStatistics, timestamp, true, redoPossible)
     }
 
     fun isRedoPossible(): Boolean {
@@ -223,8 +224,7 @@ data class Quiz(
     }
 
     fun setRedoPossible(redoPossible: Boolean): Quiz {
-        this.redoPossible = redoPossible
-        return this
+        return Quiz(id, name, participants, questions, finished, quizStatistics, timestamp, undoPossible, redoPossible)
     }
 
 }
