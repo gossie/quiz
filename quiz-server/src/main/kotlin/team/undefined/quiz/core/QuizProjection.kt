@@ -82,22 +82,22 @@ class QuizProjection(eventBus: EventBus,
             eventRepository.determineEvents(event.quizId)
                     .reduce(Quiz(name = "")) { q: Quiz, e: Event -> e.process(q)}
                     .subscribe {
-                        if (it.getTimestamp() < event.timestamp) {
+                        if (it.timestamp < event.timestamp) {
                             quizCache[event.quizId] = event.process(it)
                         } else {
                             quizCache[event.quizId] = it
                         }
                         quizStatisticsProvider.generateStatistics(event.quizId)
                                 .subscribe {
-                                    quizCache[event.quizId]!!.quizStatistics = it
+                                    quizCache[event.quizId] = quizCache[event.quizId]!!.setQuizStatistics(it)
                                     emitQuiz(quizCache[event.quizId]!!)
                                 }
                     }
-        } else if (quiz.getTimestamp() < event.timestamp) {
+        } else if (quiz.timestamp < event.timestamp) {
             quizCache[event.quizId] = event.process(quiz)
             quizStatisticsProvider.generateStatistics(event.quizId)
                     .subscribe {
-                        quizCache[event.quizId]!!.quizStatistics = it
+                        quizCache[event.quizId] = quizCache[event.quizId]!!.setQuizStatistics(it)
                         emitQuiz(quizCache[event.quizId]!!)
                     }
         }
@@ -141,7 +141,7 @@ class QuizProjection(eventBus: EventBus,
                 eventRepository.determineEvents(event.quizId)
                         .reduce(Quiz(name = "")) { q: Quiz, e: Event -> e.process(q) }
                         .subscribe {
-                            if (it.getTimestamp() < event.timestamp) {
+                            if (it.timestamp < event.timestamp) {
                                 quizCache[event.quizId] = event.process(it)
                             } else {
                                 quizCache[event.quizId] = it
@@ -163,9 +163,8 @@ class QuizProjection(eventBus: EventBus,
     }
 
     private fun emitQuiz(quiz: Quiz) {
-        quiz.setRedoPossible(undoneEventsCache.isNotEmpty(quiz.id))
         observables.computeIfAbsent(quiz.id) { EmitterProcessor.create(false) }
-                .onNext(quiz)
+                .onNext(quiz.setRedoPossible(undoneEventsCache.isNotEmpty(quiz.id)))
     }
 
     fun removeObserver(quizId: UUID) {

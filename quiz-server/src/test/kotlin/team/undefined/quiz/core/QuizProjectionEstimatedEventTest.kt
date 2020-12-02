@@ -40,7 +40,7 @@ internal class QuizProjectionEstimatedEventTest {
             assertThat(q.questions[0].pending).isTrue()
             assertThat(q.questions[0].estimates).hasSize(1)
             assertThat(q.questions[0].estimates!![participant.id]).isEqualTo("myEstimatedValue")
-            assertThat(q.isUndoPossible()).isTrue()
+            assertThat(q.undoPossible).isTrue()
             assertThat(q.finished).isFalse()
         }
     }
@@ -81,7 +81,7 @@ internal class QuizProjectionEstimatedEventTest {
             assertThat(q.questions[0].pending).isTrue()
             assertThat(q.questions[0].estimates).hasSize(1)
             assertThat(q.questions[0].estimates!![participant.id]).isEqualTo("myEstimatedValue")
-            assertThat(q.isUndoPossible()).isTrue()
+            assertThat(q.undoPossible).isTrue()
             assertThat(q.finished).isFalse()
         }
     }
@@ -119,7 +119,7 @@ internal class QuizProjectionEstimatedEventTest {
             assertThat(q.questions[0].pending).isTrue()
             assertThat(q.questions[0].estimates).hasSize(1)
             assertThat(q.questions[0].estimates!![participant.id]).isEqualTo("myEstimatedValue")
-            assertThat(q.isUndoPossible()).isTrue()
+            assertThat(q.undoPossible).isTrue()
             assertThat(q.finished).isFalse()
         }
     }

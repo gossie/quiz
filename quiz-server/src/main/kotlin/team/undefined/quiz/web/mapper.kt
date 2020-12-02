@@ -14,7 +14,7 @@ fun Quiz.map(): Mono<QuizDTO> {
             .flatMap { it.map(this.id) }
             .collect(Collectors.toList())
             .flatMap { participants ->
-                val quizDTO = QuizDTO(this.id, this.name, participants, this.questions.filter { it.alreadyPlayed }.map { it.map(this) }, this.questions.filter { !it.alreadyPlayed }.map { it.map(this) }, this.isUndoPossible(), this.isRedoPossible(), this.finished, timestamp = this.getTimestamp(), expirationDate = this.getTimestamp() + 2_419_200_000)
+                val quizDTO = QuizDTO(this.id, this.name, participants, this.questions.filter { it.alreadyPlayed }.map { it.map(this) }, this.questions.filter { !it.alreadyPlayed }.map { it.map(this) }, this.undoPossible, this.redoPossible, this.finished, timestamp = this.timestamp, expirationDate = this.timestamp + 2_419_200_000)
                 if (this.quizStatistics == null) {
                      Mono.just(quizDTO)
                 } else {

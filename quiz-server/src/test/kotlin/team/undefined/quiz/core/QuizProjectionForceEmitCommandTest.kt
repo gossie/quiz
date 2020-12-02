@@ -17,7 +17,7 @@ internal class QuizProjectionForceEmitCommandTest {
 
         val eventRepository = mock(EventRepository::class.java)
         `when`(eventRepository.determineEvents(quiz.id))
-                .thenReturn(Flux.just(QuizCreatedEvent(quiz.id, quiz, 1)))
+                .thenReturn(Flux.just(QuizCreatedEvent(quiz.id, quiz, quiz.timestamp)))
 
         val eventBus = EventBus()
         val quizProjection = QuizProjection(eventBus, mock(QuizStatisticsProvider::class.java), eventRepository, UndoneEventsCache())

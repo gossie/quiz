@@ -32,7 +32,7 @@ internal class QuizProjectionQuestionDeletedEventTest {
             observedQuiz.get().id == quiz.id
                     && observedQuiz.get().participants.size == 1
                     && observedQuiz.get().questions.isEmpty()
-                    && observedQuiz.get().isUndoPossible()
+                    && observedQuiz.get().undoPossible
                     && !observedQuiz.get().finished
         }
     }
@@ -66,7 +66,7 @@ internal class QuizProjectionQuestionDeletedEventTest {
             observedQuiz.get().id == quiz.id
                     && observedQuiz.get().participants.size == 1
                     && observedQuiz.get().questions.isEmpty()
-                    && observedQuiz.get().isUndoPossible()
+                    && observedQuiz.get().undoPossible
                     && !observedQuiz.get().finished
         }
     }
@@ -97,7 +97,7 @@ internal class QuizProjectionQuestionDeletedEventTest {
             observedQuiz.get().id == quiz.id
                     && observedQuiz.get().participants.size == 1
                     && observedQuiz.get().questions.isEmpty()
-                    && observedQuiz.get().isUndoPossible()
+                    && observedQuiz.get().undoPossible
                     && !observedQuiz.get().finished
         }
     }
