@@ -80,8 +80,9 @@ const QuestionElement: React.FC<QuestionElementProps> = (props: QuestionElementP
             <div className="question-main-column">
                 <div className="question-top-row">   
                     <div className={'question-type-column has-text-weight-semibold' + (props.question.pending ? ' is-pending-question' : '')}>
-                        { props.question.estimates != null && <span data-testid={`freetext-question-${props.index}`} className="icon" title={t('titleFreetextQuestion')}><i className="far fa-keyboard"></i></span> }
+                        { props.question.estimates != null && props.question.choices == null && <span data-testid={`freetext-question-${props.index}`} className="icon" title={t('titleFreetextQuestion')}><i className="far fa-keyboard"></i></span> }
                         { props.question.estimates == null && <span data-testid={`buzzer-question-${props.index}`} className="icon" title={t('titleBuzzerQuestion')}><i className="fas fa-hockey-puck"></i></span> }
+                        { props.question.choices != null && <span data-testid={`multiple-choice-question-${props.index}`} className="icon" title={t('titleMultipleChoiceQuestion')}><i className="fas fa-list"></i></span> }
                         { props.question.timeToAnswer != null && <span data-testid={`stop-watch-${props.index}`} className="icon" title={t('titleSecondsToAnswer', { seconds: props.question.timeToAnswer })}><i className="fas fa-hourglass-half"></i></span> }
                         { props.question.imagePath?.length > 0 && <span data-testid={`image-icon-${props.index}`} title={t('titleShowImage')} className="icon clickable" onClick={() => props.setImageToDisplay(props.question.imagePath!)}><i className="fas fa-images"></i></span>}
                         { props.question.correctAnswer?.length > 0 && <span data-testid={`answer-hint-${props.index}`} title={t('titleCorrectAnswer', { answer: props.question.correctAnswer })} className="icon"><i className="far fa-comment-dots"></i></span>}

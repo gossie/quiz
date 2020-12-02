@@ -12,7 +12,7 @@ class QuizStatisticsProvider(private val eventRepository: EventRepository) {
 
     fun generateStatistics(quizId: UUID): Mono<QuizStatistics> {
         return eventRepository.determineEvents(quizId)
-                .filter { it is QuestionAskedEvent || it is BuzzeredEvent || it is EstimatedEvent || it is AnsweredEvent }
+                .filter { it is QuestionAskedEvent || it is BuzzeredEvent || it is EstimatedEvent || it is ChoiceSelectedEvent || it is AnsweredEvent }
                 .collectList()
                 .map { createQuizStatistics(it) }
     }
@@ -29,7 +29,7 @@ class QuizStatisticsProvider(private val eventRepository: EventRepository) {
                 is QuestionAskedEvent -> {
                     if (!map.isEmpty) {
                         map.forEach { participantId, answerStatisticsInformation ->
-                            currentQuestion?.addAnswerStatistics(AnswerStatistics(participantId, answerStatisticsInformation.duration, answerStatisticsInformation.answer, answerStatisticsInformation.rating))
+                            currentQuestion?.addAnswerStatistics(AnswerStatistics(participantId, answerStatisticsInformation.duration, answerStatisticsInformation.answer, answerStatisticsInformation.choiceId, answerStatisticsInformation.rating))
                         }
                         map.clear()
                     }
@@ -40,6 +40,7 @@ class QuizStatisticsProvider(private val eventRepository: EventRepository) {
 
                 is BuzzeredEvent -> map.put(event.participantId, AnswerStatisticsInformation(event.timestamp - currentQuestionTimestamp))
                 is EstimatedEvent -> map.put(event.participantId, AnswerStatisticsInformation(event.timestamp - currentQuestionTimestamp, event.estimatedValue))
+                is ChoiceSelectedEvent -> map.put(event.participantId, AnswerStatisticsInformation(event.timestamp - currentQuestionTimestamp, choiceId = event.choiceId))
                 is AnsweredEvent -> {
                     val lastPair = map.get(event.participantId).last()
                     lastPair.rating = event.answer
@@ -49,13 +50,19 @@ class QuizStatisticsProvider(private val eventRepository: EventRepository) {
 
         if (!map.isEmpty) {
             map.forEach { participantId, answerStatisticsInformation ->
-                currentQuestion?.addAnswerStatistics(AnswerStatistics(participantId, answerStatisticsInformation.duration, answerStatisticsInformation.answer, answerStatisticsInformation.rating))
+                currentQuestion?.addAnswerStatistics(AnswerStatistics(participantId, answerStatisticsInformation.duration, answerStatisticsInformation.answer, answerStatisticsInformation.choiceId, answerStatisticsInformation.rating))
             }
             map.clear()
         }
 
         return QuizStatistics(questionStatistics)
     }
+
 }
 
-private data class AnswerStatisticsInformation(val duration: Long, val answer: String? = null, var rating: AnswerCommand.Answer = AnswerCommand.Answer.INCORRECT)
+private data class AnswerStatisticsInformation(
+        val duration: Long,
+        val answer: String? = null,
+        val choiceId: UUID? = null,
+        var rating: AnswerCommand.Answer = AnswerCommand.Answer.INCORRECT
+)

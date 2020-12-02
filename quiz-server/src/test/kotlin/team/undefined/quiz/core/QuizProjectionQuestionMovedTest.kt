@@ -1,15 +1,10 @@
 package team.undefined.quiz.core
 
 import com.google.common.eventbus.EventBus
-import org.assertj.core.api.Assertions
-import org.assertj.core.api.Assertions.assertThat
 import org.awaitility.kotlin.await
 import org.awaitility.kotlin.untilAsserted
 import org.junit.jupiter.api.Test
-import org.mockito.Mockito.`when`
 import org.mockito.Mockito.mock
-import reactor.core.publisher.Flux
-import java.util.*
 import java.util.concurrent.atomic.AtomicReference
 
 internal class QuizProjectionQuestionMovedTest {

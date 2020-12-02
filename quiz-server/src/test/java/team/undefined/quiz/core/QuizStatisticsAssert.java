@@ -15,7 +15,7 @@ public class QuizStatisticsAssert extends AbstractAssert<QuizStatisticsAssert, Q
         return new QuizStatisticsAssert(actual);
     }
 
-    public QuizStatisticsAssert questionStatisticsSizeId(int size) {
+    public QuizStatisticsAssert questionStatisticsSizeIs(int size) {
         Assertions.assertThat(actual.getQuestionStatistics()).hasSize(size);
         return this;
     }

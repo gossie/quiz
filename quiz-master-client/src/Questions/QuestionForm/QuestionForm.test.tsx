@@ -173,5 +173,200 @@ test('should not add new question, because quiz is finished', (done) => {
 
     questionButton.click();
 
-    
+});
+
+test('should create multiple choice question', async () => {
+    jest.spyOn(global, 'fetch').mockImplementation((url: string, request: object) => {
+        expect(url).toEqual('http://localhost:5000/api/createQuestion');
+        expect(request).toEqual({
+            method: 'POST',
+            body: JSON.stringify({
+                question: 'Frage 3',
+                category: 'science',
+                timeToAnswer: 30,
+                publicVisible: false,
+                estimates: {},
+                choices: [{choice: 'Option 1'}]
+            }),
+            headers: {
+                'Content-Type': 'application/json',
+                Accept: 'application/json'
+            }
+        });
+        return Promise.resolve({status: 201});
+    });
+
+    const quiz: Quiz = {
+        id: '5',
+        name: "Awesome Quiz",
+        participants: [],
+        playedQuestions: [],
+        openQuestions: [
+            {
+                id: '1',
+                question: 'Frage 1',
+                category: 'other',
+                publicVisible: false,
+                pending: false,
+                links: [],
+                previousQuestionId: null,
+            },
+            {
+                id: '2',
+                question: 'Frage 2',
+                category: 'other',
+                publicVisible: false,
+                pending: true,
+                links: [],
+                previousQuestionId: '1'
+            }
+        ],
+        expirationDate: 1234,
+        timestamp: 12345678,
+        links: [{href: '/api/createQuestion', rel: 'createQuestion'}]
+    }
+    const { getByTestId } = render(<QuestionForm quiz={quiz} />);
+    const questionButton = getByTestId('create-question-button');
+    const questionField = getByTestId('new-question')  as HTMLInputElement;
+    const categoryField = getByTestId('category')  as HTMLSelectElement;
+    const timeToAnswerField = getByTestId('time-to-answer')  as HTMLInputElement;
+    const imagePathField = getByTestId('image-path')  as HTMLInputElement;
+    const multipleChoiceField = getByTestId('type-multiple-choice')  as HTMLInputElement;
+
+    fireEvent.change(questionField, { target: { value: 'Frage 3' } });
+    fireEvent.change(categoryField, { target: { value: 'science' } });
+    fireEvent.change(timeToAnswerField, { target: { value: '30' } });
+
+    expect(() => getByTestId('choices')).toThrowError();
+    multipleChoiceField.click();
+
+    const choicesWrapper = getByTestId('choices') as HTMLDivElement;
+    const newChoiceField = getByTestId('new-choice') as HTMLInputElement;
+    const addOption = getByTestId('add-option');
+
+    fireEvent.change(newChoiceField, { target: { value: 'Option 1' } });
+    addOption.click();
+
+    expect(choicesWrapper.querySelectorAll('.multiple-choice-option').length).toBe(1);
+    expect(choicesWrapper.querySelectorAll('.multiple-choice-option')[0].textContent).toBe('Option 1');
+    expect(newChoiceField.value).toBe('');
+
+    fireEvent.change(newChoiceField, { target: { value: 'Option 2' } });
+    addOption.click();
+
+    expect(choicesWrapper.querySelectorAll('.multiple-choice-option').length).toBe(2);
+    expect(choicesWrapper.querySelectorAll('.multiple-choice-option')[0].textContent).toBe('Option 1');
+    expect(choicesWrapper.querySelectorAll('.multiple-choice-option')[1].textContent).toBe('Option 2');
+    expect(newChoiceField.value).toBe('');
+
+    getByTestId('delete-multiple-choice-option-1').click();
+
+    expect(choicesWrapper.querySelectorAll('.multiple-choice-option').length).toBe(1);
+    expect(choicesWrapper.querySelectorAll('.multiple-choice-option')[0].textContent).toBe('Option 1');
+    expect(newChoiceField.value).toBe('');
+
+    expect(questionField.value).toBe('Frage 3');
+    expect(categoryField.value).toBe('science');
+    expect(timeToAnswerField.value).toBe('30');
+    expect(imagePathField.value).toBe('');
+
+    questionButton.click();
+
+    await waitFor(() =>{
+        expect(questionField.value).toBe('');
+        expect(categoryField.value).toBe('other');
+        expect(imagePathField.value).toBe('');
+        expect(timeToAnswerField.value).toBe('');
+    });
+
+});
+
+test('should edit multiple choice question', async () => {
+    jest.spyOn(global, 'fetch').mockImplementation((url: string, request: object) => {
+        console.log('bin da');
+        expect(url).toEqual('http://localhost:5000/api/editQuestion');
+        expect(request).toEqual({
+            method: 'PUT',
+            body: JSON.stringify({
+                question: 'Frage 2',
+                category: 'other',
+                timeToAnswer: null,
+                publicVisible: false,
+                estimates: {},
+                choices: [{choice: 'Option 1'}, {choice: 'Option 2'}],
+                previousQuestionId: '1'
+            }),
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json'
+            }
+        });
+        return Promise.resolve({status: 200});
+    });
+
+    const quiz: Quiz = {
+        id: '5',
+        name: "Awesome Quiz",
+        participants: [],
+        playedQuestions: [],
+        openQuestions: [
+            {
+                id: '1',
+                question: 'Frage 1',
+                category: 'other',
+                publicVisible: false,
+                pending: false,
+                links: [],
+                previousQuestionId: null,
+            },
+            {
+                id: '2',
+                question: 'Frage 2',
+                category: 'other',
+                publicVisible: false,
+                estimates: {},
+                choices: [
+                    {
+                        choice: 'Option 1'
+                    }
+                ],
+                pending: false,
+                previousQuestionId: '1',
+                links: [{href: '/api/editQuestion', rel: 'self'}]
+            }
+        ],
+        expirationDate: 1234,
+        timestamp: 12345678,
+        links: []
+    }
+    const { getByTestId } = render(<QuestionForm quiz={quiz} questionToChange={quiz.openQuestions[1]} />);
+    const questionField = getByTestId('question-to-edit')  as HTMLInputElement;
+    const categoryField = getByTestId('category-to-edit')  as HTMLSelectElement;
+    const timeToAnswerField = getByTestId('time-to-answer-to-edit')  as HTMLInputElement;
+    const imagePathField = getByTestId('image-path-to-edit')  as HTMLInputElement;
+
+    const choicesWrapper = getByTestId('choices') as HTMLDivElement;
+    const newChoiceField = getByTestId('new-choice') as HTMLInputElement;
+    const addOption = getByTestId('add-option');
+
+    expect(choicesWrapper.querySelectorAll('.multiple-choice-option').length).toBe(1);
+    expect(choicesWrapper.querySelectorAll('.multiple-choice-option')[0].textContent).toBe('Option 1');
+    expect(newChoiceField.value).toBe('');
+
+    fireEvent.change(newChoiceField, { target: { value: 'Option 2' } });
+    addOption.click();
+
+    expect(choicesWrapper.querySelectorAll('.multiple-choice-option').length).toBe(2);
+    expect(choicesWrapper.querySelectorAll('.multiple-choice-option')[0].textContent).toBe('Option 1');
+    expect(choicesWrapper.querySelectorAll('.multiple-choice-option')[1].textContent).toBe('Option 2');
+    expect(newChoiceField.value).toBe('');
+
+    getByTestId('edit-question-button').click();
+
+    await waitFor(() =>{
+        expect(questionField.value).toBe('');
+        expect(categoryField.value).toBe('other');
+        expect(imagePathField.value).toBe('');
+        expect(timeToAnswerField.value).toBe('');
+    });
 });

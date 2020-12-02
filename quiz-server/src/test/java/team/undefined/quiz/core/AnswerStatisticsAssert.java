@@ -25,6 +25,16 @@ public class AnswerStatisticsAssert extends AbstractAssert<AnswerStatisticsAsser
         return this;
     }
 
+    public AnswerStatisticsAssert hasAnswer(String answer) {
+        Assertions.assertThat(actual.getAnswer()).isEqualTo(answer);
+        return this;
+    }
+
+    public AnswerStatisticsAssert hasChoiceId(UUID choiceId) {
+        Assertions.assertThat(actual.getChoiceId()).isEqualTo(choiceId);
+        return this;
+    }
+
     public AnswerStatisticsAssert isCorrect() {
         Assertions.assertThat(actual.getRating()).isEqualTo(AnswerCommand.Answer.CORRECT);
         return this;

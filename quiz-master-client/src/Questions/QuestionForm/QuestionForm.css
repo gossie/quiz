@@ -5,3 +5,29 @@
 .checkbox input {
     margin-right: 5px;
 }
+
+.multiple-choice-options {
+    margin-bottom: 5px;
+}
+
+.multiple-choice-option {
+    margin-bottom: 3px;
+}
+
+.multiple-choice-option .text {
+    margin-right: 5px;
+}
+
+.multiple-choice-option .icon {
+    vertical-align: middle;
+}
+
+.input.new-multiple-choice-option {
+    width: 90%;
+    max-width: 90%;
+    margin-right: 5px;
+}
+
+.multiple-choice-add-option {
+    vertical-align: -webkit-baseline-middle;
+}
