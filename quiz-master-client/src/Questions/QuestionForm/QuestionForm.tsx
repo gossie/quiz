@@ -37,8 +37,14 @@ const QuestionForm: React.FC<QuestionFormProps> = (props: QuestionFormProps) => 
     const [questionType, setQuestionType] = useState(props.questionToChange?.choices != null ? QuestionType.MULTIPLE_CHOICE : props.questionToChange?.estimates != null ? QuestionType.FREETEXT : QuestionType.BUZZER);
     const [newChoice, setNewChoice] = useState('');
     const [choices, setChoices] = useState(props.questionToChange?.choices?.map(c => c.choice) ?? []);
+    const [questionIsMissing, setQuestionIsMissing] = useState(false);
 
     const { t } = useTranslation();
+
+    const onQuestionChange = (changeQuestion: string) => {
+        changeQuestion.trim().length === 0 ? setQuestionIsMissing(true) : setQuestionIsMissing(false);
+        setNewQuestion(changeQuestion);
+    };
 
     const addOptionToChoices = () => {
         setChoices(oldChoices => [...oldChoices, newChoice]);
@@ -62,50 +68,55 @@ const QuestionForm: React.FC<QuestionFormProps> = (props: QuestionFormProps) => 
     );
 
     const createQuestion = async () => {
-        setQuestionButtonCssClasses('button is-link is-loading');
-        let questionLink: string;
-        let method: string;
-        if (props.questionToChange) {
-            questionLink = props.questionToChange.links.find(link => link.rel === 'self')?.href;
-            method = 'PUT';
+        if (newQuestion) {
+            setQuestionIsMissing(false);
+            setQuestionButtonCssClasses('button is-link is-loading');
+            let questionLink: string;
+            let method: string;
+            if (props.questionToChange) {
+                questionLink = props.questionToChange.links.find(link => link.rel === 'self')?.href;
+                method = 'PUT';
+            } else {
+                questionLink = props.quiz.links.find(link => link.rel === 'createQuestion')?.href;
+                method = 'POST';
+            }
+
+            fetch(`${process.env.REACT_APP_BASE_URL}${questionLink}`, {
+                method: method,
+                body: JSON.stringify({
+                    question: newQuestion,
+                    correctAnswer: newAnswer,
+                    category: category,
+                    timeToAnswer: parseInt(timeToAnswer),
+                    imagePath: imagePath,
+                    publicVisible: visibility,
+                    estimates: questionType === QuestionType.FREETEXT || questionType === QuestionType.MULTIPLE_CHOICE ? {} : undefined,
+                    choices: questionType === QuestionType.MULTIPLE_CHOICE ? choices.map(c => ({ choice: c })) : undefined,
+                    previousQuestionId: props.questionToChange?.previousQuestionId
+                }),
+                headers: {
+                    'Content-Type': 'application/json',
+                    Accept: 'application/json'
+                }
+            })
+            .then(response => {
+                if (response.status === 409) {
+                    response.json().then(json => props.showError(t(json.message)));
+                }
+
+                setNewQuestion('');
+                setNewAnswer('');
+                setCategory('other');
+                setTimeToAnswer('');
+                setImagePath('');
+                setQuestionButtonCssClasses('button is-link');
+                setChoices([]);
+
+                props.onSubmit && props.onSubmit();
+            });
         } else {
-            questionLink = props.quiz.links.find(link => link.rel === 'createQuestion')?.href;
-            method = 'POST';
+            setQuestionIsMissing(true);
         }
-
-        fetch(`${process.env.REACT_APP_BASE_URL}${questionLink}`, {
-            method: method,
-            body: JSON.stringify({
-                question: newQuestion,
-                correctAnswer: newAnswer,
-                category: category,
-                timeToAnswer: parseInt(timeToAnswer),
-                imagePath: imagePath,
-                publicVisible: visibility,
-                estimates: questionType === QuestionType.FREETEXT || questionType === QuestionType.MULTIPLE_CHOICE ? {} : undefined,
-                choices: questionType === QuestionType.MULTIPLE_CHOICE ? choices.map(c => ({ choice: c })) : undefined,
-                previousQuestionId: props.questionToChange?.previousQuestionId
-            }),
-            headers: {
-                'Content-Type': 'application/json',
-                Accept: 'application/json'
-            }
-        })
-        .then(response => {
-            if (response.status === 409) {
-                response.json().then(json => props.showError(t(json.message)));
-            }
-
-            setNewQuestion('');
-            setNewAnswer('');
-            setCategory('other');
-            setTimeToAnswer('');
-            setImagePath('');
-            setQuestionButtonCssClasses('button is-link');
-            setChoices([]);
-
-            props.onSubmit && props.onSubmit();
-        });
     };
 
     return (
@@ -113,8 +124,9 @@ const QuestionForm: React.FC<QuestionFormProps> = (props: QuestionFormProps) => 
             <div className="field">
                 <label className="label">{t('labelQuestion')}</label>
                 <div className="control">
-                    <input data-testid={props.questionToChange ? 'question-to-edit' : 'new-question'} value={newQuestion ?? ''} onChange={ev => setNewQuestion(ev.target.value)} className="input" type="text" />
+                    <input data-testid={props.questionToChange ? 'question-to-edit' : 'new-question'} value={newQuestion ?? ''} onChange={ev => onQuestionChange(ev.target.value)} className={`input ${questionIsMissing ? 'is-danger' : ''}`} type="text" />
                 </div>
+                { questionIsMissing && <div data-testid="question-error" className="has-text-danger">{t('errorQuestionMandatory')}</div> }
             </div>
 
             <div className="field">

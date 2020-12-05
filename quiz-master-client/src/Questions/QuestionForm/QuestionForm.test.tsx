@@ -117,7 +117,10 @@ test('should not add new question, because quiz is finished', (done) => {
                 Accept: 'application/json'
             }
         });
-        return Promise.resolve({status: 409});
+        return Promise.resolve({
+            status: 409,
+            json: () => Promise.resolve({message: 'errorMessageConflict'})
+        });
     });
 
     const quiz: Quiz = {
@@ -371,4 +374,83 @@ test('should edit multiple choice question', async () => {
         expect(timeToAnswerField.value).toBe('');
         expect(choicesWrapper.querySelectorAll('.multiple-choice-option').length).toBe(0);
     });
+});
+
+test('that form is not valid when question is missing', async () => {
+
+    const fetchSpy = jest.spyOn(global, 'fetch');
+
+    const quiz: Quiz = {
+        id: '5',
+        name: "Awesome Quiz",
+        participants: [],
+        playedQuestions: [],
+        openQuestions: [],
+        expirationDate: 1234,
+        timestamp: 12345678,
+        links: [{href: '/api/createQuestion', rel: 'createQuestion'}]
+    }
+    const { getByTestId } = render(<QuestionForm quiz={quiz} />);
+    const questionButton = getByTestId('create-question-button');
+    const questionField = getByTestId('new-question')  as HTMLInputElement;
+    const categoryField = getByTestId('category')  as HTMLSelectElement;
+    const timeToAnswerField = getByTestId('time-to-answer')  as HTMLInputElement;
+    const imagePathField = getByTestId('image-path')  as HTMLInputElement;
+
+    fireEvent.change(categoryField, { target: { value: 'science' } });
+    fireEvent.change(timeToAnswerField, { target: { value: '30' } });
+
+    expect(questionField.value).toBe('');
+    expect(categoryField.value).toBe('science');
+    expect(timeToAnswerField.value).toBe('30');
+    expect(imagePathField.value).toBe('');
+    expect(() => getByTestId('question-error')).toThrowError();
+
+    questionButton.click();
+
+    await waitFor(() =>{
+        expect(questionField.value).toBe('');
+        expect(getByTestId('question-error').textContent).toBe('errorQuestionMandatory');
+        expect(categoryField.value).toBe('science');
+        expect(imagePathField.value).toBe('');
+        expect(timeToAnswerField.value).toBe('30');
+    });
+
+    expect(fetchSpy).not.toHaveBeenCalled();
+});
+
+test('that error message shown and removed depending on the question', () => {
+
+    const quiz: Quiz = {
+        id: '5',
+        name: "Awesome Quiz",
+        participants: [],
+        playedQuestions: [],
+        openQuestions: [],
+        expirationDate: 1234,
+        timestamp: 12345678,
+        links: [{href: '/api/createQuestion', rel: 'createQuestion'}]
+    }
+
+    const { getByTestId } = render(<QuestionForm quiz={quiz} />);
+    
+    const questionField = getByTestId('new-question')  as HTMLInputElement;
+
+    expect(questionField.value).toBe('');
+    expect(() => getByTestId('question-error')).toThrowError();
+
+    fireEvent.change(questionField, { target: { value: 'Frage 1' } });
+
+    expect(questionField.value).toBe('Frage 1');
+    expect(() => getByTestId('question-error')).toThrowError();
+
+    fireEvent.change(questionField, { target: { value: '' } });
+
+    expect(questionField.value).toBe('');
+    expect(getByTestId('question-error').textContent).toBe('errorQuestionMandatory');
+
+    fireEvent.change(questionField, { target: { value: 'Frage 1' } });
+
+    expect(questionField.value).toBe('Frage 1');
+    expect(() => getByTestId('question-error')).toThrowError();
 });
