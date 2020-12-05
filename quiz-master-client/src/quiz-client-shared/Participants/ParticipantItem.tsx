@@ -49,7 +49,7 @@ const ParticipantItem: React.FC<ParticipantProps> = (props: ParticipantProps) =>
         })
         .then(response => {
             if (response.status === 409) {
-                props.showError(t('errorMessageConflict'));
+                response.json().then(json => props.showError(t(json.message)));
             }
         });
     };

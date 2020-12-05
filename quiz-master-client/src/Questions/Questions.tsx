@@ -54,7 +54,7 @@ const Questions: React.FC<QuestionsProps> = (props: QuestionsProps) => {
         })
         .then(response => {
             if (response.status === 409) {
-                props.showError(t('errorMessageConflict'));
+                response.json().then(json => props.showError(t(json.message)));
             }
         });
     };

@@ -32,7 +32,7 @@ const QuestionElement: React.FC<QuestionElementProps> = (props: QuestionElementP
         })
         .then(response => {
             if (response.status === 409) {
-                props.showError(t('errorMessageConflict'));
+                response.json().then(json => props.showError(t(json.message)));
             }
         });
     };
@@ -44,7 +44,7 @@ const QuestionElement: React.FC<QuestionElementProps> = (props: QuestionElementP
         })
         .then(response => {
             if (response.status === 409) {
-                props.showError(t('errorMessageConflict'));
+                response.json().then(json => props.showError(t(json.message)));
             }
         });
     };
@@ -67,7 +67,7 @@ const QuestionElement: React.FC<QuestionElementProps> = (props: QuestionElementP
         })
         .then(response => {
             if (response.status === 409) {
-                props.showError(t('errorMessageConflict'));
+                response.json().then(json => props.showError(t(json.message)));
             }
         });
     };

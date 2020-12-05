@@ -5,7 +5,6 @@ import Quiz, { Question } from '../../quiz-client-shared/quiz';
 import { showError } from '../../redux/actions';
 
 import './QuestionForm.css';
-import { setUncaughtExceptionCaptureCallback } from 'process';
 
 enum QuestionType {
     BUZZER,
@@ -94,7 +93,7 @@ const QuestionForm: React.FC<QuestionFormProps> = (props: QuestionFormProps) => 
         })
         .then(response => {
             if (response.status === 409) {
-                props.showError(t('errorMessageConflict'));
+                response.json().then(json => props.showError(t(json.message)));
             }
 
             setNewQuestion('');
@@ -161,20 +160,20 @@ const QuestionForm: React.FC<QuestionFormProps> = (props: QuestionFormProps) => 
                 <label className="label">{t('labelQuestionType')}</label>
                 <div className="control">
                     <label className="radio">
-                        <input data-testid={props.questionToChange ? 'type-buzzer-to-edit' : 'type-buzzer'} type="radio" name="answer" checked={questionType == QuestionType.BUZZER} onChange={ev => setQuestionType(QuestionType.BUZZER)}/>
+                        <input data-testid={props.questionToChange ? 'type-buzzer-to-edit' : 'type-buzzer'} type="radio" name="answer" checked={questionType === QuestionType.BUZZER} onChange={ev => setQuestionType(QuestionType.BUZZER)}/>
                         &nbsp;&nbsp;{t('radioBuzzer')}
                     </label>
                     <label className="radio">
-                        <input data-testid={props.questionToChange ? 'type-estimation-to-edit' : 'type-estimation'} type="radio" name="answer" checked={questionType == QuestionType.FREETEXT} onChange={ev => setQuestionType(QuestionType.FREETEXT)}/>
+                        <input data-testid={props.questionToChange ? 'type-estimation-to-edit' : 'type-estimation'} type="radio" name="answer" checked={questionType === QuestionType.FREETEXT} onChange={ev => setQuestionType(QuestionType.FREETEXT)}/>
                         &nbsp;&nbsp;{t('radioFreetext')}
                     </label>
                     <label className="radio">
-                        <input data-testid={props.questionToChange ? 'type-multiple-choice-to-edit' : 'type-multiple-choice'} type="radio" name="answer" checked={questionType == QuestionType.MULTIPLE_CHOICE} onChange={ev => setQuestionType(QuestionType.MULTIPLE_CHOICE)}/>
+                        <input data-testid={props.questionToChange ? 'type-multiple-choice-to-edit' : 'type-multiple-choice'} type="radio" name="answer" checked={questionType === QuestionType.MULTIPLE_CHOICE} onChange={ev => setQuestionType(QuestionType.MULTIPLE_CHOICE)}/>
                         &nbsp;&nbsp;{t('radioMultipleChoice')}
                     </label>
                 </div>
             </div>
-            { questionType == QuestionType.MULTIPLE_CHOICE &&
+            { questionType === QuestionType.MULTIPLE_CHOICE &&
                 <div data-testid="choices" className="field">
                     <div className="field">
                         <label className="label">{t('labelOption')}</label>
