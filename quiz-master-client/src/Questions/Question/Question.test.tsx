@@ -190,7 +190,10 @@ test('should not reopen question, because the quiz is already finished', (done) 
                 Accept: 'application/json'
             }
         });
-        return Promise.resolve({status: 409});
+        return Promise.resolve({
+            status: 409,
+            json: () => Promise.resolve({message: 'errorMessageConflict'})
+        });
     });
 
     const quiz: Quiz = {
@@ -251,7 +254,10 @@ test('should not delete question, because the quiz is already finished', (done) 
         expect(request).toEqual({
             method: 'DELETE'
         });
-        return Promise.resolve({status: 409});
+        return Promise.resolve({
+            status: 409,
+            json: () => Promise.resolve({message: 'errorMessageConflict'})
+        });
     });
 
     const quiz: Quiz = {
@@ -317,7 +323,10 @@ test('should not ask question, because the quiz is already finished', (done) => 
         expect(request).toEqual({
             method: 'PATCH'
         });
-        return Promise.resolve({status: 409});
+        return Promise.resolve({
+            status: 409,
+            json: () => Promise.resolve({message: 'errorMessageConflict'})
+        });
     });
 
     const quiz: Quiz = {

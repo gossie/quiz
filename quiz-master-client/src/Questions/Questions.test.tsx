@@ -652,7 +652,10 @@ test('should not move question, because the quiz is finished', (done) => {
                 Accept: 'application/json'
             }
         });
-        return Promise.resolve({status: 409});
+        return Promise.resolve({
+            status: 409,
+            json: () => Promise.resolve({message: 'errorMessageConflict'})
+        });
     });
 
     const quiz: Quiz = {
