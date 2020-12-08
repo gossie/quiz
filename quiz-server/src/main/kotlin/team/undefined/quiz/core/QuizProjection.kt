@@ -133,7 +133,7 @@ class QuizProjection(eventBus: EventBus,
     }
 
     private fun handleEvent(event: Event) {
-        logger.info("handling event {}", event)
+        logger.trace("handling event {}", event)
         try {
             locks.computeIfAbsent(event.quizId) { Semaphore(1) }.acquire()
             val quiz = quizCache[event.quizId]
