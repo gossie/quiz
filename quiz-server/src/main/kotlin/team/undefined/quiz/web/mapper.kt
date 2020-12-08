@@ -18,7 +18,7 @@ fun Quiz.map(): Mono<QuizDTO> {
                 if (this.quizStatistics == null) {
                      Mono.just(quizDTO)
                 } else {
-                    this.quizStatistics!!
+                    this.quizStatistics
                             .map(this)
                             .map {
                                 quizDTO.quizStatistics = it
@@ -51,11 +51,11 @@ private fun QuestionStatistics.map(quiz: Quiz): Mono<QuestionStatisticsDTO> {
 private fun AnswerStatistics.map(quiz: Quiz, questionStatistics: QuestionStatistics): Mono<AnswerStatisticsDTO> {
     val question = quiz.questions.find { it.id == questionStatistics.questionId }
     return quiz.participants.find { it.id == this.participantId }!!.map(quiz.id)
-            .map {
+            .map { participant ->
                 AnswerStatisticsDTO(
-                        it,
+                        participant,
                         this.duration,
-                        if (this.choiceId != null) { question?.estimates?.get(this.participantId) } else { this.answer },
+                        if (this.choiceId != null) { question?.choices?.find { it.id == this.choiceId }?.choice } else { this.answer },
                         this.rating
                 )
             }
