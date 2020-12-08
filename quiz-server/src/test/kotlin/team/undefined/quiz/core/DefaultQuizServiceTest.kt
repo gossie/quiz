@@ -478,6 +478,58 @@ internal class DefaultQuizServiceTest {
     }
 
     @Test
+    fun shouldPreventDuplicateSelections() {
+        val quizId = UUID.randomUUID()
+        val questionId = UUID.randomUUID()
+        val choice1Id = UUID.randomUUID()
+        val choice2Id = UUID.randomUUID()
+        val participantId = UUID.randomUUID()
+
+        `when`(quizRepository.determineEvents(quizId))
+            .thenReturn(Flux.just(
+                QuizCreatedEvent(quizId, Quiz(quizId, "Quiz")),
+                QuestionCreatedEvent(quizId, question = Question(questionId, "Wo befindet sich das Kahnbein?", choices = listOf(Choice(choice1Id, "im Fuß"), Choice(choice2Id, "In der Hand")))),
+                ParticipantCreatedEvent(quizId, Participant(participantId, "Lena")),
+                QuestionAskedEvent(quizId, questionId),
+                ChoiceSelectedEvent(quizId, participantId, choice1Id),
+                ChoiceSelectedEvent(quizId, participantId, choice2Id)
+            ))
+
+        val quizService = DefaultQuizService(quizRepository, UndoneEventsCache(), eventBus)
+
+        StepVerifier.create(quizService.selectChoice(SelectChoiceCommand(quizId, participantId, choice2Id)))
+            .verifyComplete()
+
+        verifyNoInteractions(eventBus);
+    }
+
+    @Test
+    fun shouldAllowMultipleSelectionsThatDiffer() {
+        val quizId = UUID.randomUUID()
+        val questionId = UUID.randomUUID()
+        val choice1Id = UUID.randomUUID()
+        val choice2Id = UUID.randomUUID()
+        val participantId = UUID.randomUUID()
+
+        `when`(quizRepository.determineEvents(quizId))
+            .thenReturn(Flux.just(
+                QuizCreatedEvent(quizId, Quiz(quizId, "Quiz")),
+                QuestionCreatedEvent(quizId, question = Question(questionId, "Wo befindet sich das Kahnbein?", choices = listOf(Choice(choice1Id, "im Fuß"), Choice(choice2Id, "In der Hand")))),
+                ParticipantCreatedEvent(quizId, Participant(participantId, "Lena")),
+                QuestionAskedEvent(quizId, questionId),
+                ChoiceSelectedEvent(quizId, participantId, choice1Id)
+            ))
+
+        val quizService = DefaultQuizService(quizRepository, UndoneEventsCache(), eventBus)
+
+        StepVerifier.create(quizService.selectChoice(SelectChoiceCommand(quizId, participantId, choice2Id)))
+            .consumeNextWith {
+                verify(eventBus).post(argThat { (it as ChoiceSelectedEvent).quizId == quizId && it.participantId == participantId && it.choiceId == choice2Id })
+            }
+            .verifyComplete()
+    }
+
+    @Test
     fun shouldNotSelectChoiceBecauseItIsNoMultipleChoiceQuestion() {
         val quizId = UUID.randomUUID()
         val questionId = UUID.randomUUID()
@@ -571,7 +623,7 @@ internal class DefaultQuizServiceTest {
     }
 
     @Test
-    fun shouldPreventAllowMultipleAnswersThatDiffer() {
+    fun shouldAllowMultipleAnswersThatDiffer() {
         val quizId = UUID.randomUUID()
         val questionId = UUID.randomUUID()
         val participantId = UUID.randomUUID()

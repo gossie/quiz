@@ -696,6 +696,50 @@ internal class QuizMasterIT {
         // Participant 2 answers
         webTestClient
                 .put()
+                .uri(quizMasterReference.get().openQuestions[0].choices!![0].getLink("${quizMasterReference.get().participants[1].id}-selects-choice").map { it.href }.orElseThrow())
+                .exchange()
+                .expectStatus().isOk
+
+        assertThat(quizMasterReference.get())
+                .openQuestionSizeIs(2)
+                .hasOpenQuestion(0) { openQuestion ->
+                        openQuestion
+                                .hasQuestion("Wo befindet sich das Kahnbein?")
+                                .isPending
+                                .isMultipleChoiceQuestion
+                                .hasEstimates(mapOf(
+                                        Pair(quizMasterReference.get().participants[0].id, "Im Fuß"),
+                                        Pair(quizMasterReference.get().participants[1].id, "Im Fuß")
+                                ))
+                                .hasChoice(0) { choice -> choice.hasChoice("Im Fuß") }
+                                .hasChoice(1) { choice -> choice.hasChoice("In der Hand") }
+                }
+                .hasOpenQuestion(1) { openQuestion ->
+                        openQuestion
+                                .hasQuestion("Was ist ein Robo-Advisor?")
+                                .hasAnswerNote("Ein algorithmen gesteuertes Dings")
+                                .isNotPending
+                                .isEstimationQuestion
+                }
+                .playedQuestionSizeIs(1)
+                .hasPlayedQuestion(0) { playedQuestion ->
+                        playedQuestion
+                                .hasQuestion("Wer schrieb das Buch Animal Farm?")
+                                .hasAnswerNote("George Orwell")
+                                .isNotPending
+                }
+                .particpantSizeIs(2)
+                .hasParticipant(0) { it.hasName("André").hasPoints(0).allowsReveal().isNotTurn }
+                .hasParticipant(1) { it.hasName("Lena").hasPoints(2).allowsReveal().isNotTurn }
+                .undoIsPossible()
+                .redoIsNotPossible()
+                .isNotFinished
+
+        Thread.sleep(10)
+
+        // Participant 2 changes the answer
+        webTestClient
+                .put()
                 .uri(quizMasterReference.get().openQuestions[0].choices!![1].getLink("${quizMasterReference.get().participants[1].id}-selects-choice").map { it.href }.orElseThrow())
                 .exchange()
                 .expectStatus().isOk
@@ -1349,7 +1393,7 @@ internal class QuizMasterIT {
                             .hasQuestionStatistics(1) { questionStatistics ->
                                 questionStatistics
                                         .hasQuestion { it.isEqualTo(quizMasterReference.get().playedQuestions[1]) }
-                                        .answerStatisticsSizeIs(2)
+                                        .answerStatisticsSizeIs(3)
                                         .hasAnswerStatistics(0) { answerStatistics ->
                                             answerStatistics
                                                     .hasParticipantId { it.isEqualTo(quizMasterReference.get().participants[0])}
@@ -1357,10 +1401,16 @@ internal class QuizMasterIT {
                                                     .isIncorrect
                                         }
                                         .hasAnswerStatistics(1) { answerStatistics ->
-                                            answerStatistics
-                                                    .hasParticipantId { it.isEqualTo(quizMasterReference.get().participants[1])}
-                                                    .hasAnswer("In der Hand")
-                                                    .isCorrect
+                                                answerStatistics
+                                                        .hasParticipantId { it.isEqualTo(quizMasterReference.get().participants[1])}
+                                                        .hasAnswer("Im Fuß")
+                                                        .isIncorrect
+                                        }
+                                        .hasAnswerStatistics(2) { answerStatistics ->
+                                                answerStatistics
+                                                        .hasParticipantId { it.isEqualTo(quizMasterReference.get().participants[1])}
+                                                        .hasAnswer("In der Hand")
+                                                        .isCorrect
                                         }
                             }
                             .hasQuestionStatistics(2) { questionStatistics ->
