@@ -6,6 +6,7 @@ import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Component
 import reactor.core.publisher.EmitterProcessor
 import reactor.core.publisher.Flux
+import reactor.core.publisher.Sinks
 import java.util.*
 import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.Semaphore
@@ -19,7 +20,7 @@ class QuizProjection(eventBus: EventBus,
     private val logger = LoggerFactory.getLogger(QuizProjection::class.java)
 
     private val quizCache = ConcurrentHashMap<UUID, Quiz>()
-    private val observables = ConcurrentHashMap<UUID, EmitterProcessor<Quiz>>()
+    private val observables = ConcurrentHashMap<UUID, Sinks.Many<Quiz>>()
     private val locks = ConcurrentHashMap<UUID, Semaphore>()
 
     init {
@@ -159,12 +160,15 @@ class QuizProjection(eventBus: EventBus,
     }
 
     fun observeQuiz(quizId: UUID): Flux<Quiz> {
-        return observables.computeIfAbsent(quizId) { EmitterProcessor.create(false) }
+        return observables
+            .computeIfAbsent(quizId) { Sinks.many().multicast().onBackpressureBuffer() }
+            .asFlux()
     }
 
     private fun emitQuiz(quiz: Quiz) {
-        observables.computeIfAbsent(quiz.id) { EmitterProcessor.create(false) }
-                .onNext(quiz.setRedoPossible(undoneEventsCache.isNotEmpty(quiz.id)))
+        observables
+            .computeIfAbsent(quiz.id) { Sinks.many().multicast().onBackpressureBuffer() }
+            .tryEmitNext(quiz.setRedoPossible(undoneEventsCache.isNotEmpty(quiz.id)))
     }
 
     fun removeObserver(quizId: UUID) {
