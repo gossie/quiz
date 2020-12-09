@@ -29,5 +29,8 @@
     "columnHeadlineAnswers": "Antworten",
     "answerStatisticAllowedAnswer": "{{participantName}} hat nach {{time}} Sekunden mit '{{answer}}' geantwortet und es war {{rating}}",
     "answerStatisticWithoutAnswer": "{{participantName}} hat nach {{time}} Sekunden geantwortet und es war {{rating}}",
-    "buzzerStatistic": "{{participantName}} hat nach {{time}} Sekunden gebuzzert und es war {{rating}}"
+    "buzzerStatistic": "{{participantName}} hat nach {{time}} Sekunden gebuzzert und es war {{rating}}",
+
+    "footerQuestion": "Du willst nicht nur teilnehmen, sondern selber ein Quiz veranstalten?",
+    "footerLink": "Dann los!"
 }
