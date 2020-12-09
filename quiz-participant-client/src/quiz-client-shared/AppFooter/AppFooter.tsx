@@ -11,7 +11,7 @@ const AppFooter: React.FC<AppFooterProps> = (props: AppFooterProps) => {
         <footer className="footer">
             <nav className="content has-text-centered">
                 <p>
-                    { t('footerQuestion') } <a href={process.env.REACT_APP_QUIZ_MASTER_BASE_URL}>{ t('footerLink') }</a>
+                    { t('footerQuestion') } <a href={process.env.REACT_APP_QUIZ_MASTER_BASE_URL} target="_blank">{ t('footerLink') }</a>
                 </p>
             </nav>
     </footer>
