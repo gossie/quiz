@@ -31,7 +31,7 @@ internal class QuizProjectionQuizDeletedEventTest {
                         AnsweredEvent(quiz.id, participant.id, AnswerCommand.Answer.CORRECT, 6),
                         QuizFinishedEvent(quiz.id, 7)
                 ))
-        val quizProjection = QuizProjection(eventBus, QuizStatisticsProvider(eventRepository), eventRepository, UndoneEventsCache())
+        val quizProjection = DefaultQuizProjection(eventBus, QuizStatisticsProvider(eventRepository), eventRepository, UndoneEventsCache())
 
         val observedQuiz = AtomicReference<Quiz>()
         quizProjection.observeQuiz(quiz.id)

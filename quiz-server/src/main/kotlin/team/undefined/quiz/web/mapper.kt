@@ -94,7 +94,7 @@ fun Question.map(quiz: Quiz): QuestionDTO {
             this.secondsLeft,
             this.revealed,
             this.previousQuestionId,
-            if (this.choices != null) { this.choices?.map { it.map(quiz) } } else { null },
+            if (this.choices != null) { this.choices.map { it.map(quiz) } } else { null },
             this.correctAnswer
     )
     questionDTO.add(Link.of("/api/quiz/" + quiz.id + "/questions/" + this.id, "self"))
@@ -114,7 +114,7 @@ fun Question.map(quizId: UUID): QuestionDTO {
             this.secondsLeft,
             this.revealed,
             this.previousQuestionId,
-            if (this.choices != null) { this.choices?.map { it.map() } } else { null },
+            if (this.choices != null) { this.choices.map { it.map() } } else { null },
             this.correctAnswer
     )
     questionDTO.add(Link.of("/api/quiz/" + quizId + "/questions/" + this.id, "self"))

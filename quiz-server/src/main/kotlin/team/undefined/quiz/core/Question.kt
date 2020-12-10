@@ -97,7 +97,7 @@ data class Question(
         return Question(
             id,
             question,
-            !pending,
+            true,
             imageUrl,
             visibility,
             alreadyPlayed,

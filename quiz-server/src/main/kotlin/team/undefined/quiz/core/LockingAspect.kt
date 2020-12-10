@@ -1,5 +1,7 @@
 package team.undefined.quiz.core
 
+import com.google.common.eventbus.EventBus
+import com.google.common.eventbus.Subscribe
 import org.aspectj.lang.ProceedingJoinPoint
 import org.aspectj.lang.annotation.Around
 import org.aspectj.lang.annotation.Aspect
@@ -11,7 +13,11 @@ import java.util.concurrent.Semaphore
 
 @Component
 @Aspect
-class LockingAspect {
+class LockingAspect(private val eventBus: EventBus) {
+
+    init {
+        eventBus.register(this)
+    }
 
     private val locks = ConcurrentHashMap<UUID, Semaphore>()
 
@@ -27,17 +33,9 @@ class LockingAspect {
                 .doFinally { lock.release() }
     }
 
-/*
-    @Around("execution(@ReadLock * *(*))")
-    fun performReadLock(point: ProceedingJoinPoint): Mono<*> {
-        val command = point.args[0] as Command
-        val quizId = command.quizId
-        val lock = locks.computeIfAbsent(quizId) { Semaphore(1) }
-
-        lock.acquire()
-        val mono = point.proceed() as Mono<*>
-        return mono
-                .doFinally { lock.release() }
+    @Subscribe
+    fun handleQuizDeletion(event: QuizDeletedEvent) {
+        locks.remove(event.quizId)
     }
-*/
+
 }
