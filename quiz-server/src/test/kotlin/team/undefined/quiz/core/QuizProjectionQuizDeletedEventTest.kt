@@ -31,7 +31,7 @@ internal class QuizProjectionQuizDeletedEventTest {
                         AnsweredEvent(quiz.id, participant.id, AnswerCommand.Answer.CORRECT, 6),
                         QuizFinishedEvent(quiz.id, 7)
                 ))
-        val quizProjection = DefaultQuizProjection(eventBus, QuizStatisticsProvider(eventRepository), eventRepository, UndoneEventsCache())
+        val quizProjection = DefaultQuizProjection(eventBus, eventRepository, UndoneEventsCache())
 
         val observedQuiz = AtomicReference<Quiz>()
         quizProjection.observeQuiz(quiz.id)
@@ -50,10 +50,6 @@ internal class QuizProjectionQuizDeletedEventTest {
 
             assertThat(q.id).isEqualTo(quiz.id)
             assertThat(q.finished).isTrue()
-            assertThat(q.quizStatistics!!.questionStatistics).hasSize(1)
-            assertThat(q.quizStatistics!!.questionStatistics[0].answerStatistics[0].duration).isEqualTo(1L)
-            assertThat(q.quizStatistics!!.questionStatistics[0].answerStatistics[0].participantId).isEqualTo(participant.id)
-            assertThat(q.quizStatistics!!.questionStatistics[0].answerStatistics[0].rating).isEqualTo(AnswerCommand.Answer.CORRECT)
         }
 
         eventBus.post(QuizDeletedEvent(quiz.id, 8))

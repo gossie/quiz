@@ -1,12 +1,14 @@
 package team.undefined.quiz.core
 
+import com.google.common.eventbus.EventBus
 import org.junit.jupiter.api.Test
 import org.mockito.Mockito
+import org.mockito.Mockito.mock
 import reactor.core.publisher.Flux
 import reactor.test.StepVerifier
 import team.undefined.quiz.core.QuizStatisticsAssert.assertThat
 
-internal class QuizStatisticsProviderTest {
+internal class QuizStatisticsProjectionTest {
 
     @Test
     fun shouldHandleBuzzerWithoutAskedQuestion() {
@@ -17,7 +19,7 @@ internal class QuizStatisticsProviderTest {
         val participant1 = Participant(name = "Lena")
         val participant2 = Participant(name = "Erik")
 
-        val eventRepository = Mockito.mock(EventRepository::class.java)
+        val eventRepository = mock(EventRepository::class.java)
         Mockito.`when`(eventRepository.determineEvents(quiz.id))
                 .thenReturn(Flux.just(
                         QuizCreatedEvent(quiz.id, quiz, 1),
@@ -38,7 +40,7 @@ internal class QuizStatisticsProviderTest {
                         QuizFinishedEvent(quiz.id, 17)
                 ))
 
-        val quizStatisticsProvider = QuizStatisticsProvider(eventRepository)
+        val quizStatisticsProvider = QuizStatisticsProjection(eventRepository, mock(EventBus::class.java))
 
         StepVerifier.create(quizStatisticsProvider.generateStatistics(quiz.id))
                 .consumeNextWith { quiz ->
@@ -72,7 +74,7 @@ internal class QuizStatisticsProviderTest {
         val participant1 = Participant(name = "Lena")
         val participant2 = Participant(name = "Erik")
 
-        val eventRepository = Mockito.mock(EventRepository::class.java)
+        val eventRepository = mock(EventRepository::class.java)
         Mockito.`when`(eventRepository.determineEvents(quiz.id))
                 .thenReturn(Flux.just(
                         QuizCreatedEvent(quiz.id, quiz, 1),
@@ -95,7 +97,7 @@ internal class QuizStatisticsProviderTest {
                         QuizFinishedEvent(quiz.id, 18)
                 ))
 
-        val quizStatisticsProvider = QuizStatisticsProvider(eventRepository)
+        val quizStatisticsProvider = QuizStatisticsProjection(eventRepository, mock(EventBus::class.java))
 
         StepVerifier.create(quizStatisticsProvider.generateStatistics(quiz.id))
                 .consumeNextWith { quiz ->
@@ -117,6 +119,96 @@ internal class QuizStatisticsProviderTest {
                             }
                 }
                 .verifyComplete()
+    }
+
+    @Test
+    fun shouldHandleEventsAsSoonAsTheyComeIn() {
+        val quiz = Quiz(name = "Awesome Quiz")
+
+        val buzzerQuestion = Question(question = "Wofür steht die Abkürzung a.D.?")
+        val freetextQuestion = Question(question = "Wer schrieb Peter und der Wolf?", initialTimeToAnswer = 45, estimates = HashMap())
+        val choice1 = Choice(choice = "Zugspitze")
+        val choice2 = Choice(choice = "Brocken")
+        val multipleChoiceQuestion = Question(question = "Was ist der höchste Berg Deutschlands?", choices = listOf(choice1, choice2))
+        val participant1 = Participant(name = "Lena")
+        val participant2 = Participant(name = "Erik")
+
+        val eventRepository = mock(EventRepository::class.java)
+        val eventBus = EventBus()
+
+        val quizStatisticsProjection = QuizStatisticsProjection(eventRepository, eventBus)
+
+        eventBus.post(QuizCreatedEvent(quiz.id, quiz, 1))
+        eventBus.post(QuestionCreatedEvent(quiz.id, buzzerQuestion, 2))
+        eventBus.post(QuestionCreatedEvent(quiz.id, freetextQuestion, 3))
+        eventBus.post(QuestionCreatedEvent(quiz.id, multipleChoiceQuestion, 4))
+        eventBus.post(ParticipantCreatedEvent(quiz.id, participant1, 5))
+        eventBus.post(ParticipantCreatedEvent(quiz.id, participant2, 6))
+        eventBus.post(QuestionAskedEvent(quiz.id, buzzerQuestion.id, 7))
+        eventBus.post(BuzzeredEvent(quiz.id, participant1.id, 8))
+        eventBus.post(AnsweredEvent(quiz.id, participant1.id, AnswerCommand.Answer.CORRECT, 9))
+        eventBus.post(QuestionAskedEvent(quiz.id, freetextQuestion.id, 10))
+        eventBus.post(EstimatedEvent(quiz.id, participant1.id, "Sergej Prokofjew", 11))
+        eventBus.post(EstimatedEvent(quiz.id, participant2.id, "Max Mustermann", 12))
+        eventBus.post(AnsweredEvent(quiz.id, participant1.id, AnswerCommand.Answer.CORRECT, 13))
+        eventBus.post(QuestionAskedEvent(quiz.id, multipleChoiceQuestion.id, 14))
+        eventBus.post(ChoiceSelectedEvent(quiz.id, participant1.id, choice1.id, 15))
+        eventBus.post(ChoiceSelectedEvent(quiz.id, participant2.id, choice1.id, 16))
+        eventBus.post(AnsweredEvent(quiz.id, participant1.id, AnswerCommand.Answer.CORRECT, 17))
+        eventBus.post(AnsweredEvent(quiz.id, participant2.id, AnswerCommand.Answer.CORRECT, 18))
+        eventBus.post(QuizFinishedEvent(quiz.id, 19))
+
+        assertThat(quizStatisticsProjection.determineQuizStatistics(quiz.id))
+            .questionStatisticsSizeIs(3)
+            .hasQuestionStatistics(0) { questionStatistics ->
+                questionStatistics
+                    .hasQuestionId(buzzerQuestion.id)
+                    .answerStatisticsSizeIs(1)
+                    .hasAnswerStatistics(0) { answerStatistics ->
+                        answerStatistics
+                            .hasDuration(1L)
+                            .hasParticipantId(participant1.id)
+                            .isCorrect
+                    }
+            }
+            .hasQuestionStatistics(1) { questionStatistics ->
+                questionStatistics
+                    .hasQuestionId(freetextQuestion.id)
+                    .answerStatisticsSizeIs(2)
+                    .hasAnswerStatistics(0) { answerStatistics ->
+                        answerStatistics
+                            .hasDuration(1L)
+                            .hasParticipantId(participant1.id)
+                            .hasAnswer("Sergej Prokofjew")
+                            .isCorrect
+                    }
+                    .hasAnswerStatistics(1) { answerStatistics ->
+                        answerStatistics
+                            .hasDuration(2L)
+                            .hasParticipantId(participant2.id)
+                            .hasAnswer("Max Mustermann")
+                            .isIncorrect
+                    }
+            }
+            .hasQuestionStatistics(2) { questionStatistics ->
+                questionStatistics
+                    .hasQuestionId(multipleChoiceQuestion.id)
+                    .answerStatisticsSizeIs(2)
+                    .hasAnswerStatistics(0) { answerStatistics ->
+                        answerStatistics
+                            .hasDuration(1L)
+                            .hasParticipantId(participant1.id)
+                            .hasChoiceId(choice1.id)
+                            .isCorrect
+                    }
+                    .hasAnswerStatistics(1) { answerStatistics ->
+                        answerStatistics
+                            .hasDuration(2L)
+                            .hasParticipantId(participant2.id)
+                            .hasChoiceId(choice1.id)
+                            .isCorrect
+                    }
+            }
     }
 
 }

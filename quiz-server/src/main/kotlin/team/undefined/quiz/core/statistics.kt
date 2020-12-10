@@ -3,9 +3,17 @@ package team.undefined.quiz.core
 import java.util.*
 import kotlin.collections.ArrayList
 
-data class QuizStatistics(val questionStatistics: List<QuestionStatistics> = ArrayList())
+data class QuizStatistics(val questionStatistics: List<QuestionStatistics> = ArrayList()) {
 
-data class QuestionStatistics(val questionId: UUID, val answerStatistics: List<AnswerStatistics> = ArrayList()) {
+    fun addQuestionStatistic(questionStatistic: QuestionStatistics): QuizStatistics {
+        val newQuestionStatistics = ArrayList(questionStatistics)
+        newQuestionStatistics.add(questionStatistic)
+        return QuizStatistics(newQuestionStatistics)
+    }
+
+}
+
+data class QuestionStatistics(val questionId: UUID, val timestamp: Long, val answerStatistics: List<AnswerStatistics> = ArrayList()) {
 
     fun addAnswerStatistics(answerStatistic: AnswerStatistics) {
         (answerStatistics as MutableList).add(answerStatistic)
@@ -19,5 +27,5 @@ data class AnswerStatistics(
         val duration: Long,
         val answer: String? = null,
         val choiceId: UUID? = null,
-        val rating: AnswerCommand.Answer = AnswerCommand.Answer.INCORRECT
+        var rating: AnswerCommand.Answer = AnswerCommand.Answer.INCORRECT
 )

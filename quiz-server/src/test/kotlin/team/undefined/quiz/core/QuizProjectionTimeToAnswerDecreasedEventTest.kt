@@ -17,7 +17,7 @@ internal class QuizProjectionTimeToAnswerDecreasedEventTest {
         val quiz = Quiz(name = "Awesome Quiz")
 
         val eventBus = EventBus()
-        val quizProjection = DefaultQuizProjection(eventBus, mock(QuizStatisticsProvider::class.java), mock(EventRepository::class.java), UndoneEventsCache())
+        val quizProjection = DefaultQuizProjection(eventBus, mock(EventRepository::class.java), UndoneEventsCache())
 
         val observedQuiz = AtomicReference<Quiz>()
         quizProjection.observeQuiz(quiz.id)
@@ -64,7 +64,7 @@ internal class QuizProjectionTimeToAnswerDecreasedEventTest {
                 ))
 
         val eventBus = EventBus()
-        val quizProjection = DefaultQuizProjection(eventBus, mock(QuizStatisticsProvider::class.java), eventRepository, UndoneEventsCache())
+        val quizProjection = DefaultQuizProjection(eventBus, eventRepository, UndoneEventsCache())
 
         val observedQuiz = AtomicReference<Quiz>()
         quizProjection.observeQuiz(quiz.id)
@@ -81,7 +81,7 @@ internal class QuizProjectionTimeToAnswerDecreasedEventTest {
             assertThat(q.questions).hasSize(1)
             assertThat(q.questions[0].pending).isTrue()
             assertThat(q.questions[0].initialTimeToAnswer).isEqualTo(30)
-            assertThat(q.questions[0].secondsLeft).isEqualTo(29)
+            assertThat(q.questions[0].secondsLeft).isEqualTo(28)
             assertThat(q.finished).isFalse()
         }
     }
@@ -102,7 +102,7 @@ internal class QuizProjectionTimeToAnswerDecreasedEventTest {
                 ))
 
         val eventBus = EventBus()
-        val quizProjection = DefaultQuizProjection(eventBus, mock(QuizStatisticsProvider::class.java), eventRepository, UndoneEventsCache())
+        val quizProjection = DefaultQuizProjection(eventBus, eventRepository, UndoneEventsCache())
 
         val observedQuiz = AtomicReference<Quiz>()
         quizProjection.observeQuiz(quiz.id)

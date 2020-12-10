@@ -14,12 +14,12 @@ import java.util.*
 
 data class TestEvent(@JsonProperty("quizId") override val quizId: UUID, @JsonProperty("timestamp") override val timestamp: Long, @JsonProperty("payload") val payload: Map<String, String>) : Event {
     override fun process(quiz: Quiz): Quiz {
-        TODO("Not yet implemented")
+        return quiz.setTimestamp(Date().time)
     }
 }
 
 @DataR2dbcTest
-@Import(DefaultEventRepository::class, PersistenceConfiguration::class, UndoneEventsCache::class, DefaultQuizService::class, DefaultQuizProjection::class, ObjectMapper::class, QuizStatisticsProvider::class)
+@Import(DefaultEventRepository::class, PersistenceConfiguration::class, UndoneEventsCache::class, DefaultQuizService::class, DefaultQuizProjection::class, ObjectMapper::class, QuizStatisticsProjection::class)
 internal class DefaultEventRepositoryTest {
 
     @Autowired

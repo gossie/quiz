@@ -9,22 +9,16 @@ import team.undefined.quiz.core.*
 import java.util.*
 import java.util.stream.Collectors
 
-fun Quiz.map(): Mono<QuizDTO> {
+fun Quiz.map(quizStatistics: QuizStatistics?): Mono<QuizDTO> {
     return Flux.fromIterable(this.participants)
             .flatMap { it.map(this.id) }
             .collect(Collectors.toList())
             .flatMap { participants ->
                 val quizDTO = QuizDTO(this.id, this.name, participants, this.questions.filter { it.alreadyPlayed }.map { it.map(this) }, this.questions.filter { !it.alreadyPlayed }.map { it.map(this) }, this.undoPossible, this.redoPossible, this.finished, timestamp = this.timestamp, expirationDate = this.timestamp + 2_419_200_000)
-                if (this.quizStatistics == null) {
-                     Mono.just(quizDTO)
-                } else {
-                    this.quizStatistics
-                            .map(this)
-                            .map {
-                                quizDTO.quizStatistics = it
-                                quizDTO
-                            }
-                }
+                quizStatistics?.map(this)?.map {
+                    quizDTO.quizStatistics = it
+                    quizDTO
+                } ?: Mono.just(quizDTO)
             }
             .flatMap { it.addLinks() }
 }

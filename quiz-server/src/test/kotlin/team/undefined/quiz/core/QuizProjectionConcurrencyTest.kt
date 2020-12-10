@@ -21,7 +21,11 @@ internal class QuizProjectionConcurrencyTest {
             val quiz = Quiz(name = "Awesome Quiz")
 
             val eventBus = EventBus()
-            val quizProjection = DefaultQuizProjection(eventBus, Mockito.mock(QuizStatisticsProvider::class.java), Mockito.mock(EventRepository::class.java), UndoneEventsCache())
+            val quizProjection = DefaultQuizProjection(
+                eventBus,
+                Mockito.mock(EventRepository::class.java),
+                UndoneEventsCache()
+            )
 
             val observedQuiz = AtomicReference<Quiz>()
             quizProjection.observeQuiz(quiz.id)

@@ -18,6 +18,7 @@ import java.util.*
 @RequestMapping("/api/quiz")
 class QuizController(private val quizService: QuizService,
                      private val quizProjection: QuizProjection,
+                     private val quizStatisticsProjection: QuizStatisticsProjection,
                      private val eventBus: EventBus) {
 
     private val logger = LoggerFactory.getLogger(QuizController::class.java)
@@ -115,21 +116,35 @@ class QuizController(private val quizService: QuizService,
 
     private fun getObserver(quizId: UUID): Flux<ServerSentEvent<QuizDTO>> {
         return quizProjection.observeQuiz(quizId)
-                .flatMap { it.map() }
-                .map {
-                    logger.trace("Sending quiz {} to the client", it.id)
-                    ServerSentEvent.builder<QuizDTO>()
-                            .event("quiz")
-                            .data(it)
-                            .build()
+            .flatMap {
+                val quizStatistics = if (it?.finished == true) {
+                    quizStatisticsProjection.determineQuizStatistics(quizId)
+                } else {
+                    null
                 }
+                it!!.map(quizStatistics)
+            }
+            .map {
+                logger.trace("Sending quiz {} to the client", it.id)
+                ServerSentEvent.builder<QuizDTO>()
+                    .event("quiz")
+                    .data(it)
+                    .build()
+            }
     }
 
     private fun getHeartbeat(quizId: UUID): Flux<ServerSentEvent<QuizDTO>> {
         return Flux.interval(Duration.ofSeconds(10))
                 .filter { quizProjection.determineQuiz(quizId) != null }
                 .map { quizProjection.determineQuiz(quizId) }
-                .flatMap { it!!.map() }
+                .flatMap {
+                    val quizStatistics = if (it?.finished == true) {
+                        quizStatisticsProjection.determineQuizStatistics(quizId)
+                    } else {
+                        null
+                    }
+                    it!!.map(quizStatistics)
+                }
                 .map {
                     logger.trace("Sending quiz {} to the client as heartbeat", it.id)
                     ServerSentEvent.builder<QuizDTO>()

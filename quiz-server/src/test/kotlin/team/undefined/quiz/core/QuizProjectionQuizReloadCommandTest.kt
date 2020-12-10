@@ -41,7 +41,7 @@ internal class QuizProjectionQuizReloadCommandTest {
                 ))
 
         val eventBus = EventBus()
-        val quizProjection = DefaultQuizProjection(eventBus, QuizStatisticsProvider(eventRepository), eventRepository, UndoneEventsCache())
+        val quizProjection = DefaultQuizProjection(eventBus, eventRepository, UndoneEventsCache())
 
         val observedQuiz = AtomicReference<Quiz>()
         quizProjection.observeQuiz(quizId)
@@ -65,38 +65,6 @@ internal class QuizProjectionQuizReloadCommandTest {
             assertThat(observedQuiz.get())
                     .hasId(quizId)
                     .isFinished
-                    .hasQuizStatistics { quizStatistics ->
-                        quizStatistics
-                                .questionStatisticsSizeIs(2)
-                                .hasQuestionStatistics(0) { questionStatistics ->
-                                    questionStatistics
-                                            .hasQuestionId(buzzerQuestion.id)
-                                            .answerStatisticsSizeIs(1)
-                                            .hasAnswerStatistics(0) { buzzerStatistics ->
-                                                buzzerStatistics
-                                                        .hasDuration(1L)
-                                                        .hasParticipantId(participant1.id)
-                                                        .isCorrect
-                                            }
-                                }
-                                .hasQuestionStatistics(1) { questionStatistics ->
-                                    questionStatistics
-                                            .hasQuestionId(freetextQuestion.id)
-                                            .answerStatisticsSizeIs(2)
-                                            .hasAnswerStatistics(0) { buzzerStatistics ->
-                                                buzzerStatistics
-                                                        .hasDuration(1L)
-                                                        .hasParticipantId(participant1.id)
-                                                        .isCorrect
-                                            }
-                                            .hasAnswerStatistics(1) { buzzerStatistics ->
-                                                buzzerStatistics
-                                                        .hasDuration(2L)
-                                                        .hasParticipantId(participant2.id)
-                                                        .isIncorrect
-                                            }
-                                }
-                    }
         }
 
         eventBus.post(ReloadQuizCommand(quizId))
@@ -105,7 +73,6 @@ internal class QuizProjectionQuizReloadCommandTest {
             assertThat(observedQuiz.get())
                     .hasId(quizId)
                     .isNotFinished
-                    .hasNoQuizStatistics()
         }
     }
 }

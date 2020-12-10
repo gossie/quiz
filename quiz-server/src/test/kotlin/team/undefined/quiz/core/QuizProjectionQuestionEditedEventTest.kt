@@ -19,7 +19,7 @@ internal class QuizProjectionQuestionEditedEventTest {
         val questionId = UUID.randomUUID()
 
         val eventBus = EventBus()
-        val quizProjection = DefaultQuizProjection(eventBus, mock(QuizStatisticsProvider::class.java), mock(EventRepository::class.java), UndoneEventsCache())
+        val quizProjection = DefaultQuizProjection(eventBus, mock(EventRepository::class.java), UndoneEventsCache())
 
         val observedQuiz = AtomicReference<Quiz>()
         quizProjection.observeQuiz(quiz.id)
@@ -53,7 +53,7 @@ internal class QuizProjectionQuestionEditedEventTest {
                 .thenReturn(Flux.just(QuizCreatedEvent(quiz.id, quiz, 1), QuestionCreatedEvent(quiz.id, Question(questionId, question = "Wofür steht die Abkürzung a.D.?"), 2), questionEditedEvent))
 
         val eventBus = EventBus()
-        val quizProjection = DefaultQuizProjection(eventBus, mock(QuizStatisticsProvider::class.java), eventRepository, UndoneEventsCache())
+        val quizProjection = DefaultQuizProjection(eventBus, eventRepository, UndoneEventsCache())
 
         val observedQuiz = AtomicReference<Quiz>()
         quizProjection.observeQuiz(quiz.id)
@@ -84,7 +84,7 @@ internal class QuizProjectionQuestionEditedEventTest {
                 .thenReturn(Flux.just(QuizCreatedEvent(quiz.id, quiz, 1), QuestionCreatedEvent(quiz.id, Question(questionId, question = "Wofür steht die Abkürzung a.D.?"), 2)))
 
         val eventBus = EventBus()
-        val quizProjection = DefaultQuizProjection(eventBus, mock(QuizStatisticsProvider::class.java), eventRepository, UndoneEventsCache())
+        val quizProjection = DefaultQuizProjection(eventBus, eventRepository, UndoneEventsCache())
 
         val observedQuiz = AtomicReference<Quiz>()
         quizProjection.observeQuiz(quiz.id)

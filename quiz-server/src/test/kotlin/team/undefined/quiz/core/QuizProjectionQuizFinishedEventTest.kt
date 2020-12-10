@@ -50,7 +50,7 @@ internal class QuizProjectionQuizFinishedEventTest {
                 ))
 
         val eventBus = EventBus()
-        val quizProjection = DefaultQuizProjection(eventBus, QuizStatisticsProvider(eventRepository), eventRepository, UndoneEventsCache())
+        val quizProjection = DefaultQuizProjection(eventBus, eventRepository, UndoneEventsCache())
 
         val observedQuiz = AtomicReference<Quiz>()
         quizProjection.observeQuiz(quiz.id)
@@ -63,59 +63,6 @@ internal class QuizProjectionQuizFinishedEventTest {
                     .hasId(quiz.id)
                     .undoIsPossible()
                     .isFinished
-                    .hasQuizStatistics { quizStatistics ->
-                        quizStatistics
-                                .questionStatisticsSizeIs(3)
-                                .hasQuestionStatistics(0) { questionStatistics ->
-                                    questionStatistics
-                                            .hasQuestionId(buzzerQuestion.id)
-                                            .answerStatisticsSizeIs(1)
-                                            .hasAnswerStatistics(0) { answerStatistics ->
-                                                answerStatistics
-                                                        .hasDuration(1L)
-                                                        .hasParticipantId(participant1.id)
-                                                        .isCorrect
-                                            }
-                                }
-                                .hasQuestionStatistics(1) { questionStatistics ->
-                                    questionStatistics
-                                            .hasQuestionId(freetextQuestion.id)
-                                            .answerStatisticsSizeIs(2)
-                                            .hasAnswerStatistics(0) { answerStatistics ->
-                                                answerStatistics
-                                                        .hasDuration(1L)
-                                                        .hasParticipantId(participant1.id)
-                                                        .hasAnswer("Sergej Prokofjew")
-                                                        .isCorrect
-                                            }
-                                            .hasAnswerStatistics(1) { answerStatistics ->
-                                                answerStatistics
-                                                        .hasDuration(2L)
-                                                        .hasParticipantId(participant2.id)
-                                                        .hasAnswer("Max Mustermann")
-                                                        .isIncorrect
-                                            }
-                                }
-                                .hasQuestionStatistics(2) { questionStatistics ->
-                                    questionStatistics
-                                            .hasQuestionId(multipleChoiceQuestion.id)
-                                            .answerStatisticsSizeIs(2)
-                                            .hasAnswerStatistics(0) { answerStatistics ->
-                                                answerStatistics
-                                                        .hasDuration(1L)
-                                                        .hasParticipantId(participant1.id)
-                                                        .hasChoiceId(choice1.id)
-                                                        .isCorrect
-                                            }
-                                            .hasAnswerStatistics(1) { answerStatistics ->
-                                                answerStatistics
-                                                        .hasDuration(2L)
-                                                        .hasParticipantId(participant2.id)
-                                                        .hasChoiceId(choice1.id)
-                                                        .isCorrect
-                                            }
-                                }
-                    }
         }
     }
 
@@ -155,7 +102,7 @@ internal class QuizProjectionQuizFinishedEventTest {
                 ))
 
         val eventBus = EventBus()
-        val quizProjection = DefaultQuizProjection(eventBus, QuizStatisticsProvider(eventRepository), eventRepository, UndoneEventsCache())
+        val quizProjection = DefaultQuizProjection(eventBus, eventRepository, UndoneEventsCache())
 
         val observedQuiz = AtomicReference<Quiz>()
         quizProjection.observeQuiz(quiz.id)
@@ -168,59 +115,6 @@ internal class QuizProjectionQuizFinishedEventTest {
                     .hasId(quiz.id)
                     .undoIsPossible()
                     .isFinished
-                    .hasQuizStatistics { quizStatistics ->
-                        quizStatistics
-                                .questionStatisticsSizeIs(3)
-                                .hasQuestionStatistics(0) { questionStatistics ->
-                                    questionStatistics
-                                            .hasQuestionId(buzzerQuestion.id)
-                                            .answerStatisticsSizeIs(1)
-                                            .hasAnswerStatistics(0) { answerStatistics ->
-                                                answerStatistics
-                                                        .hasDuration(1L)
-                                                        .hasParticipantId(participant1.id)
-                                                        .isCorrect
-                                            }
-                                }
-                                .hasQuestionStatistics(1) { questionStatistics ->
-                                    questionStatistics
-                                            .hasQuestionId(freetextQuestion.id)
-                                            .answerStatisticsSizeIs(2)
-                                            .hasAnswerStatistics(0) { answerStatistics ->
-                                                answerStatistics
-                                                        .hasDuration(1L)
-                                                        .hasParticipantId(participant1.id)
-                                                        .hasAnswer("Sergej Prokofjew")
-                                                        .isCorrect
-                                            }
-                                            .hasAnswerStatistics(1) { answerStatistics ->
-                                                answerStatistics
-                                                        .hasDuration(2L)
-                                                        .hasParticipantId(participant2.id)
-                                                        .hasAnswer("Max Mustermann")
-                                                        .isIncorrect
-                                            }
-                                }
-                                .hasQuestionStatistics(2) { questionStatistics ->
-                                    questionStatistics
-                                            .hasQuestionId(multipleChoiceQuestion.id)
-                                            .answerStatisticsSizeIs(2)
-                                            .hasAnswerStatistics(0) { answerStatistics ->
-                                                answerStatistics
-                                                        .hasDuration(1L)
-                                                        .hasParticipantId(participant1.id)
-                                                        .hasChoiceId(choice1.id)
-                                                        .isCorrect
-                                            }
-                                            .hasAnswerStatistics(1) { answerStatistics ->
-                                                answerStatistics
-                                                        .hasDuration(2L)
-                                                        .hasParticipantId(participant2.id)
-                                                        .hasChoiceId(choice1.id)
-                                                        .isCorrect
-                                            }
-                                }
-                    }
         }
     }
 }

@@ -14,10 +14,11 @@ import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.Semaphore
 
 @Component
-class DefaultQuizProjection(eventBus: EventBus,
-                     private val quizStatisticsProvider: QuizStatisticsProvider,
-                     private val eventRepository: EventRepository,
-                     private val undoneEventsCache: UndoneEventsCache) : QuizProjection {
+class DefaultQuizProjection(
+    eventBus: EventBus,
+    private val eventRepository: EventRepository,
+    private val undoneEventsCache: UndoneEventsCache
+) : QuizProjection {
 
     private val logger = LoggerFactory.getLogger(QuizProjection::class.java)
 
@@ -96,12 +97,7 @@ class DefaultQuizProjection(eventBus: EventBus,
         if (quiz.timestamp < event.timestamp) {
             quizCache.put(event.quizId, event.process(quiz))
         }
-
-        quizStatisticsProvider.generateStatistics(event.quizId)
-            .subscribe {
-                quizCache.put(event.quizId, quizCache[event.quizId]!!.setQuizStatistics(it))
-                emitQuiz(quizCache[event.quizId]!!)
-            }
+        emitQuiz(quizCache[event.quizId]!!)
     }
 
     @Subscribe
@@ -137,12 +133,8 @@ class DefaultQuizProjection(eventBus: EventBus,
         logger.trace("handling event {}", event)
         try {
             locks.computeIfAbsent(event.quizId) { Semaphore(1) }.acquire()
-            var quiz = quizCache[event.quizId]
-            if (quiz.timestamp < event.timestamp) {
-                quiz = event.process(quiz)
-                quizCache.put(event.quizId, quiz)
-            }
-            emitQuiz(quiz)
+            quizCache.put(event.quizId, event.process(quizCache[event.quizId]))
+            emitQuiz(quizCache[event.quizId])
         } finally {
             locks[event.quizId]!!.release()
         }

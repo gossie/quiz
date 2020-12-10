@@ -22,17 +22,17 @@ class QuestionProjection(eventBus: EventBus,
         eventBus.register(this)
 
         Mono.delay(ofSeconds(5))
-                .flatMapMany { eventRepository.determineEvents() }
-                .filter { it is QuestionCreatedEvent || it is QuestionDeletedEvent || it is QuestionEditedEvent || it is QuestionAskedEvent || it is QuizDeletedEvent }
-                .subscribe {
-                    when (it) {
-                        is QuestionCreatedEvent -> handleQuestionCreation(it)
-                        is QuestionDeletedEvent -> handleQuestionDeletion(it)
-                        is QuestionEditedEvent -> handleQuestionEdit(it)
-                        is QuestionAskedEvent -> handleQuestionAsked(it)
-                        is QuizDeletedEvent -> handleQuizDeletion(it)
-                    }
+            .flatMapMany { eventRepository.determineEvents() }
+            .filter { it is QuestionCreatedEvent || it is QuestionDeletedEvent || it is QuestionEditedEvent || it is QuestionAskedEvent || it is QuizDeletedEvent }
+            .subscribe {
+                when (it) {
+                    is QuestionCreatedEvent -> handleQuestionCreation(it)
+                    is QuestionDeletedEvent -> handleQuestionDeletion(it)
+                    is QuestionEditedEvent -> handleQuestionEdit(it)
+                    is QuestionAskedEvent -> handleQuestionAsked(it)
+                    is QuizDeletedEvent -> handleQuizDeletion(it)
                 }
+            }
     }
 
     @Subscribe
