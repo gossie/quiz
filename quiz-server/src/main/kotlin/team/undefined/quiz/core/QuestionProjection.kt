@@ -25,38 +25,36 @@ class QuestionProjection(eventBus: EventBus,
                 .flatMapMany { eventRepository.determineEvents() }
                 .filter { it is QuestionCreatedEvent || it is QuestionDeletedEvent || it is QuestionEditedEvent || it is QuestionAskedEvent || it is QuizDeletedEvent }
                 .subscribe {
-                    if (it is QuestionCreatedEvent) {
-                        handleQuestionCreation(it)
-                    } else if (it is QuestionDeletedEvent) {
-                        handleQuestionDeletion(it)
-                    } else if (it is QuestionEditedEvent) {
-                        handleQuestionEdit(it)
-                    } else if (it is QuestionAskedEvent) {
-                        handleQuestionAsked(it)
-                    } else if (it is QuizDeletedEvent) {
-                        handleQuizDeletion(it)
+                    when (it) {
+                        is QuestionCreatedEvent -> handleQuestionCreation(it)
+                        is QuestionDeletedEvent -> handleQuestionDeletion(it)
+                        is QuestionEditedEvent -> handleQuestionEdit(it)
+                        is QuestionAskedEvent -> handleQuestionAsked(it)
+                        is QuizDeletedEvent -> handleQuizDeletion(it)
                     }
                 }
     }
 
     @Subscribe
     fun handleQuestionCreation(event: QuestionCreatedEvent) {
-        questions.put(event.quizId, event.question.copy())
+        if (questionShouldBeAdded(event.question)) {
+            questions.put(event.quizId, event.question.copy())
+        }
     }
 
+    private fun questionShouldBeAdded(question: Question) =
+        question.visibility == Question.QuestionVisibility.PUBLIC
+                && !StringUtils.hasText(question.imageUrl)
+
     @Subscribe
-    fun handleQuestionDeletion(event: QuestionDeletedEvent) {
+    fun handleQuestionDeletion(event: QuestionDeletedEvent) =
         questions[event.quizId].removeIf { it.id == event.questionId }
-    }
 
     @Subscribe
     fun handleQuestionEdit(event: QuestionEditedEvent) {
-        questions[event.quizId].replaceAll {
-            if (it.id == event.question.id) {
-                event.question.copy()
-            } else {
-                it
-            }
+        questions[event.quizId].removeIf { it.id == event.question.id }
+        if (questionShouldBeAdded(event.question)) {
+            questions.put(event.quizId, event.question.copy())
         }
     }
 
@@ -77,9 +75,8 @@ class QuestionProjection(eventBus: EventBus,
     }
 
     @Subscribe
-    fun handleQuizDeletion(event: QuizDeletedEvent) {
+    fun handleQuizDeletion(event: QuizDeletedEvent) =
         questions.removeAll(event.quizId)
-    }
 
     fun determineQuestions(category: QuestionCategory): Map<UUID, List<Question>> {
         val proposedQuestions = HashMap<UUID, List<Question>>()
@@ -90,8 +87,6 @@ class QuestionProjection(eventBus: EventBus,
             val filteredQuestions = entry.value.asSequence()
                     .filter { it.category == category }
                     .filter { it.alreadyPlayed }
-                    .filter { it.visibility == Question.QuestionVisibility.PUBLIC }
-                    .filter { StringUtils.isEmpty(it.imageUrl) }
                     .filter { distinct.add(it.question) }
                     .toList()
 
