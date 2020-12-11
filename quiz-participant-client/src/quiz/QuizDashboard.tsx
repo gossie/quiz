@@ -1,13 +1,10 @@
 import React, { useEffect, useRef, useState } from 'react';
 import Participants from '../quiz-client-shared/Participants/Participants';
 import Quiz from '../quiz-client-shared/quiz';
-import Buzzer from './buzzer/Buzzer';
 import Question from './Question';
 import './QuizDashboard.css';
 import QuizStatistics from '../quiz-client-shared/QuizStatistics/QuizStatistics';
-import Estimation from './estimation/Estimation';
 import { useTranslation } from 'react-i18next';
-import MultipleChoice from './multiple-choice/MultipleChoice';
 
 interface QuizDashboardProps {
     quizId: string;
@@ -77,19 +74,6 @@ const QuizDashboard: React.FC<QuizDashboardProps> = (props: QuizDashboardProps) 
         }
     });
 
-    const hasPendingQuestion = () => quiz.openQuestions.find(q => q.pending) !== undefined;
-
-    const questionInteraction = () => {
-        const pendingQuestion = quiz.openQuestions.find(q => q.pending);
-        if (pendingQuestion.choices) {
-            return <MultipleChoice question={pendingQuestion} participantId={participantId} />
-        } else if (pendingQuestion.estimates) {
-            return <Estimation quiz={quiz} participantId={participantId} />
-        } else {
-            return <Buzzer quiz={quiz} participantId={participantId} />
-        }                 
-    };
-
     const toggleRevealAllowed = (allowed: boolean) => {
         setRevealAllowed(allowed);
         const href = quiz.participants.find(p => p.id === participantId).links.find(link => link.rel === 'toggleRevealAllowed').href;
@@ -124,8 +108,7 @@ const QuizDashboard: React.FC<QuizDashboardProps> = (props: QuizDashboardProps) 
                         </div>
                         <div className="column question box">
                             <h5 className="title is-5">{t('headlineCurrentQuestion')}</h5>
-                            { hasPendingQuestion() && questionInteraction() }
-                            {<Question quiz={quiz}></Question>}
+                            {<Question quiz={quiz} participantId={participantId}></Question>}
                         </div>
                     </div>
                 </div>
