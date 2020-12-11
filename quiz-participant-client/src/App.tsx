@@ -4,6 +4,7 @@ import QuizDashboard from './quiz/QuizDashboard';
 import LoginPageWidget, { InputInformation } from './quiz-client-shared/LoginPageWidget/LoginPageWidget';
 import AppHeader from './quiz-client-shared/AppHeader/AppHeader';
 import { useTranslation } from 'react-i18next';
+import AppFooter from './quiz-client-shared/AppFooter/AppFooter';
 
 function App() {
     const { t } = useTranslation();
@@ -67,6 +68,7 @@ function App() {
                 </div>
             }
             </div>
+            <AppFooter />
         </div>
     );
 }
