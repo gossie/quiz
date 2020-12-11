@@ -9,6 +9,7 @@ import org.springframework.http.MediaType
 import org.springframework.test.web.reactive.server.WebTestClient
 import org.springframework.test.web.reactive.server.expectBody
 import org.springframework.web.reactive.function.BodyInserters
+import team.undefined.quiz.web.ChoiceDTO
 import team.undefined.quiz.web.QuestionDTO
 import team.undefined.quiz.web.QuizDTO
 import team.undefined.quiz.web.QuizDTOAssert.assertThat
@@ -40,7 +41,7 @@ internal class QuizMasterIT {
                 .returnResult()
                 .responseBody
 
-        assertThat(quizId).isNotNull()
+        assertThat(quizId).isNotNull
 
         Thread.sleep(10)
 
@@ -69,7 +70,7 @@ internal class QuizMasterIT {
                 .post()
                 .uri(quizMasterReference.get().getLink("createQuestion").map { it.href }.orElseThrow())
                 .contentType(MediaType.APPLICATION_JSON)
-                .body(BodyInserters.fromValue(QuestionDTO(question = "Wer schrieb das Buch Animal Farm?")))
+                .body(BodyInserters.fromValue(QuestionDTO(question = "Wer schrieb das Buch Animal Farm?", correctAnswer = "George Orwell")))
                 .exchange()
                 .expectStatus().isCreated
 
@@ -78,6 +79,7 @@ internal class QuizMasterIT {
                 .hasOpenQuestion(0) { openQuestion ->
                     openQuestion
                             .hasQuestion("Wer schrieb das Buch Animal Farm?")
+                            .hasAnswerNote("George Orwell")
                             .isNotPending
                 }
                 .playedQuestionSizeIs(0)
@@ -93,7 +95,7 @@ internal class QuizMasterIT {
                 .post()
                 .uri(quizMasterReference.get().getLink("createQuestion").map { it.href }.orElseThrow())
                 .contentType(MediaType.APPLICATION_JSON)
-                .body(BodyInserters.fromValue(QuestionDTO(question = "Wo befindet sich das Kahnbein")))
+                .body(BodyInserters.fromValue(QuestionDTO(question = "Wo befindet sich das Kahnbein", choices = listOf(ChoiceDTO(choice = "Im Fuß"), ChoiceDTO(choice = "In der Hand")), estimates = HashMap())))
                 .exchange()
                 .expectStatus().isCreated
 
@@ -102,12 +104,16 @@ internal class QuizMasterIT {
                 .hasOpenQuestion(0) { openQuestion ->
                     openQuestion
                             .hasQuestion("Wer schrieb das Buch Animal Farm?")
+                            .hasAnswerNote("George Orwell")
                             .isNotPending
                 }
                 .hasOpenQuestion(1) { openQuestion ->
                     openQuestion
                             .hasQuestion("Wo befindet sich das Kahnbein")
                             .isNotPending
+                            .isMultipleChoiceQuestion
+                            .hasChoice(0) { choice -> choice.hasChoice("Im Fuß") }
+                            .hasChoice(1) { choice -> choice.hasChoice("In der Hand") }
                 }
                 .playedQuestionSizeIs(0)
                 .particpantSizeIs(0)
@@ -122,7 +128,7 @@ internal class QuizMasterIT {
                 .put()
                 .uri(quizMasterReference.get().openQuestions[1].getLink("self").map { it.href }.orElseThrow())
                 .contentType(MediaType.APPLICATION_JSON)
-                .body(BodyInserters.fromValue(QuestionDTO(question = "Wo befindet sich das Kahnbein?")))
+                .body(BodyInserters.fromValue(QuestionDTO(question = "Wo befindet sich das Kahnbein?", choices = listOf(ChoiceDTO(choice = "Im Fuß"), ChoiceDTO(choice = "In der Hand")), estimates = HashMap(), previousQuestionId = quizMasterReference.get().openQuestions[0].id)))
                 .exchange()
                 .expectStatus().isOk
 
@@ -131,12 +137,15 @@ internal class QuizMasterIT {
                 .hasOpenQuestion(0) { openQuestion ->
                     openQuestion
                             .hasQuestion("Wer schrieb das Buch Animal Farm?")
+                            .hasAnswerNote("George Orwell")
                             .isNotPending
                 }
                 .hasOpenQuestion(1) { openQuestion ->
                     openQuestion
                             .hasQuestion("Wo befindet sich das Kahnbein?")
-                            .isNotPending
+                            .isMultipleChoiceQuestion
+                            .hasChoice(0) { choice -> choice.hasChoice("Im Fuß") }
+                            .hasChoice(1) { choice -> choice.hasChoice("In der Hand") }
                 }
                 .playedQuestionSizeIs(0)
                 .particpantSizeIs(0)
@@ -160,6 +169,7 @@ internal class QuizMasterIT {
                 .hasOpenQuestion(0) { openQuestion ->
                     openQuestion
                             .hasQuestion("Wer schrieb das Buch Animal Farm?")
+                            .hasAnswerNote("George Orwell")
                             .isNotPending
                             .isBuzzerQuestion
                 }
@@ -167,11 +177,133 @@ internal class QuizMasterIT {
                     openQuestion
                             .hasQuestion("Wo befindet sich das Kahnbein?")
                             .isNotPending
-                            .isBuzzerQuestion
+                            .isMultipleChoiceQuestion
                 }
                 .hasOpenQuestion(2) { openQuestion ->
                     openQuestion
                             .hasQuestion("Was ist ein Robo-Advisor?")
+                            .isNotPending
+                            .isEstimationQuestion
+                }
+                .playedQuestionSizeIs(0)
+                .particpantSizeIs(0)
+                .undoIsPossible()
+                .redoIsNotPossible()
+                .isNotFinished
+
+        Thread.sleep(10)
+
+        // Third question is created
+        webTestClient
+                .put()
+                .uri(quizMasterReference.get().openQuestions[2].getLink("self").map { it.href }.orElseThrow())
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(BodyInserters.fromValue(QuestionDTO(question = "Was ist ein Robo-Advisor?", correctAnswer = "Ein algorithmen gesteuertes Dings", estimates = HashMap(), timeToAnswer = 45, previousQuestionId = quizMasterReference.get().openQuestions[1].id)))
+                .exchange()
+                .expectStatus().isOk
+
+        assertThat(quizMasterReference.get())
+                .openQuestionSizeIs(3)
+                .hasOpenQuestion(0) { openQuestion ->
+                    openQuestion
+                            .hasQuestion("Wer schrieb das Buch Animal Farm?")
+                            .hasAnswerNote("George Orwell")
+                            .isNotPending
+                            .isBuzzerQuestion
+                }
+                .hasOpenQuestion(1) { openQuestion ->
+                    openQuestion
+                            .hasQuestion("Wo befindet sich das Kahnbein?")
+                            .isNotPending
+                            .isMultipleChoiceQuestion
+                            .hasChoice(0) { choice -> choice.hasChoice("Im Fuß") }
+                            .hasChoice(1) { choice -> choice.hasChoice("In der Hand") }
+                }
+                .hasOpenQuestion(2) { openQuestion ->
+                    openQuestion
+                            .hasQuestion("Was ist ein Robo-Advisor?")
+                            .isNotPending
+                            .isEstimationQuestion
+                }
+                .playedQuestionSizeIs(0)
+                .particpantSizeIs(0)
+                .undoIsPossible()
+                .redoIsNotPossible()
+                .isNotFinished
+
+        Thread.sleep(10)
+
+        // change order of questions
+        webTestClient
+                .put()
+                .uri(quizMasterReference.get().openQuestions[2].getLink("self").map { it.href }.orElseThrow())
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(BodyInserters.fromValue(QuestionDTO(question = "Was ist ein Robo-Advisor?", correctAnswer = "Ein algorithmen gesteuertes Dings", estimates = HashMap(), timeToAnswer = 45, previousQuestionId = quizMasterReference.get().openQuestions[0].id)))
+                .exchange()
+                .expectStatus().isOk
+
+        assertThat(quizMasterReference.get())
+                .openQuestionSizeIs(3)
+                .hasOpenQuestion(0) { openQuestion ->
+                    openQuestion
+                            .hasQuestion("Wer schrieb das Buch Animal Farm?")
+                            .hasAnswerNote("George Orwell")
+                            .isNotPending
+                            .isBuzzerQuestion
+                }
+                .hasOpenQuestion(1) { openQuestion ->
+                    openQuestion
+                            .hasQuestion("Was ist ein Robo-Advisor?")
+                            .hasAnswerNote("Ein algorithmen gesteuertes Dings")
+                            .isNotPending
+                            .isEstimationQuestion
+                }
+                .hasOpenQuestion(2) { openQuestion ->
+                    openQuestion
+                            .hasQuestion("Wo befindet sich das Kahnbein?")
+                            .isNotPending
+                            .isMultipleChoiceQuestion
+                            .hasChoice(0) { choice -> choice.hasChoice("Im Fuß") }
+                            .hasChoice(1) { choice -> choice.hasChoice("In der Hand") }
+                }
+                .playedQuestionSizeIs(0)
+                .particpantSizeIs(0)
+                .undoIsPossible()
+                .redoIsNotPossible()
+                .isNotFinished
+
+        Thread.sleep(10)
+
+        // change it back
+        webTestClient
+                .put()
+                .uri(quizMasterReference.get().openQuestions[1].getLink("self").map { it.href }.orElseThrow())
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(BodyInserters.fromValue(QuestionDTO(question = "Was ist ein Robo-Advisor?", correctAnswer = "Ein algorithmen gesteuertes Dings", estimates = HashMap(), timeToAnswer = 45, previousQuestionId = quizMasterReference.get().openQuestions[2].id)))
+                .exchange()
+                .expectStatus().isOk
+
+        assertThat(quizMasterReference.get())
+                .openQuestionSizeIs(3)
+                .hasOpenQuestion(0) { openQuestion ->
+                    openQuestion
+                            .hasQuestion("Wer schrieb das Buch Animal Farm?")
+                            .hasAnswerNote("George Orwell")
+                            .isNotPending
+                            .isBuzzerQuestion
+                }
+                .hasOpenQuestion(1) { openQuestion ->
+                    openQuestion
+                            .hasQuestion("Wo befindet sich das Kahnbein?")
+                            .isNotPending
+                            .isMultipleChoiceQuestion
+                            .hasChoice(0) { choice -> choice.hasChoice("Im Fuß") }
+                            .hasChoice(1) { choice -> choice.hasChoice("In der Hand") }
+                }
+                .hasOpenQuestion(2) { openQuestion ->
+                    openQuestion
+                            .hasQuestion("Was ist ein Robo-Advisor?")
+                            .hasAnswerNote("Ein algorithmen gesteuertes Dings")
                             .isNotPending
                             .isEstimationQuestion
                 }
@@ -197,6 +329,7 @@ internal class QuizMasterIT {
                 .hasOpenQuestion(0) { openQuestion ->
                     openQuestion
                             .hasQuestion("Wer schrieb das Buch Animal Farm?")
+                            .hasAnswerNote("George Orwell")
                             .isNotPending
                             .isBuzzerQuestion
                 }
@@ -204,11 +337,14 @@ internal class QuizMasterIT {
                     openQuestion
                             .hasQuestion("Wo befindet sich das Kahnbein?")
                             .isNotPending
-                            .isBuzzerQuestion
+                            .isMultipleChoiceQuestion
+                            .hasChoice(0) { choice -> choice.hasChoice("Im Fuß") }
+                            .hasChoice(1) { choice -> choice.hasChoice("In der Hand") }
                 }
                 .hasOpenQuestion(2) { openQuestion ->
                     openQuestion
                             .hasQuestion("Was ist ein Robo-Advisor?")
+                            .hasAnswerNote("Ein algorithmen gesteuertes Dings")
                             .isNotPending
                             .isEstimationQuestion
                 }
@@ -238,6 +374,7 @@ internal class QuizMasterIT {
                 .hasOpenQuestion(0) { openQuestion ->
                     openQuestion
                             .hasQuestion("Wer schrieb das Buch Animal Farm?")
+                            .hasAnswerNote("George Orwell")
                             .isNotPending
                             .isBuzzerQuestion
                 }
@@ -245,11 +382,14 @@ internal class QuizMasterIT {
                     openQuestion
                             .hasQuestion("Wo befindet sich das Kahnbein?")
                             .isNotPending
-                            .isBuzzerQuestion
+                            .isMultipleChoiceQuestion
+                            .hasChoice(0) { choice -> choice.hasChoice("Im Fuß") }
+                            .hasChoice(1) { choice -> choice.hasChoice("In der Hand") }
                 }
                 .hasOpenQuestion(2) { openQuestion ->
                     openQuestion
                             .hasQuestion("Was ist ein Robo-Advisor?")
+                            .hasAnswerNote("Ein algorithmen gesteuertes Dings")
                             .isNotPending
                             .isEstimationQuestion
                 }
@@ -275,6 +415,7 @@ internal class QuizMasterIT {
                 .hasOpenQuestion(0) { openQuestion ->
                     openQuestion
                             .hasQuestion("Wer schrieb das Buch Animal Farm?")
+                            .hasAnswerNote("George Orwell")
                             .isNotPending
                             .isBuzzerQuestion
                 }
@@ -282,11 +423,14 @@ internal class QuizMasterIT {
                     openQuestion
                             .hasQuestion("Wo befindet sich das Kahnbein?")
                             .isNotPending
-                            .isBuzzerQuestion
+                            .isMultipleChoiceQuestion
+                            .hasChoice(0) { choice -> choice.hasChoice("Im Fuß") }
+                            .hasChoice(1) { choice -> choice.hasChoice("In der Hand") }
                 }
                 .hasOpenQuestion(2) { openQuestion ->
                     openQuestion
                             .hasQuestion("Was ist ein Robo-Advisor?")
+                            .hasAnswerNote("Ein algorithmen gesteuertes Dings")
                             .isNotPending
                             .isEstimationQuestion
                 }
@@ -313,6 +457,7 @@ internal class QuizMasterIT {
                 .hasOpenQuestion(0) { openQuestion ->
                     openQuestion
                             .hasQuestion("Wer schrieb das Buch Animal Farm?")
+                            .hasAnswerNote("George Orwell")
                             .isNotPending
                             .isBuzzerQuestion
                 }
@@ -320,11 +465,14 @@ internal class QuizMasterIT {
                     openQuestion
                             .hasQuestion("Wo befindet sich das Kahnbein?")
                             .isNotPending
-                            .isBuzzerQuestion
+                            .isMultipleChoiceQuestion
+                            .hasChoice(0) { choice -> choice.hasChoice("Im Fuß") }
+                            .hasChoice(1) { choice -> choice.hasChoice("In der Hand") }
                 }
                 .hasOpenQuestion(2) { openQuestion ->
                     openQuestion
                             .hasQuestion("Was ist ein Robo-Advisor?")
+                            .hasAnswerNote("Ein algorithmen gesteuertes Dings")
                             .isNotPending
                             .isEstimationQuestion
                 }
@@ -350,6 +498,7 @@ internal class QuizMasterIT {
                 .hasOpenQuestion(0) { openQuestion ->
                     openQuestion
                             .hasQuestion("Wer schrieb das Buch Animal Farm?")
+                            .hasAnswerNote("George Orwell")
                             .isPending
                             .isBuzzerQuestion
                 }
@@ -357,11 +506,14 @@ internal class QuizMasterIT {
                     openQuestion
                             .hasQuestion("Wo befindet sich das Kahnbein?")
                             .isNotPending
-                            .isBuzzerQuestion
+                            .isMultipleChoiceQuestion
+                            .hasChoice(0) { choice -> choice.hasChoice("Im Fuß") }
+                            .hasChoice(1) { choice -> choice.hasChoice("In der Hand") }
                 }
                 .hasOpenQuestion(2) { openQuestion ->
                     openQuestion
                             .hasQuestion("Was ist ein Robo-Advisor?")
+                            .hasAnswerNote("Ein algorithmen gesteuertes Dings")
                             .isNotPending
                             .isEstimationQuestion
                 }
@@ -387,6 +539,7 @@ internal class QuizMasterIT {
                 .hasOpenQuestion(0) { openQuestion ->
                     openQuestion
                             .hasQuestion("Wer schrieb das Buch Animal Farm?")
+                            .hasAnswerNote("George Orwell")
                             .isPending
                             .isBuzzerQuestion
                 }
@@ -394,11 +547,14 @@ internal class QuizMasterIT {
                     openQuestion
                             .hasQuestion("Wo befindet sich das Kahnbein?")
                             .isNotPending
-                            .isBuzzerQuestion
+                            .isMultipleChoiceQuestion
+                            .hasChoice(0) { choice -> choice.hasChoice("Im Fuß") }
+                            .hasChoice(1) { choice -> choice.hasChoice("In der Hand") }
                 }
                 .hasOpenQuestion(2) { openQuestion ->
                     openQuestion
                             .hasQuestion("Was ist ein Robo-Advisor?")
+                            .hasAnswerNote("Ein algorithmen gesteuertes Dings")
                             .isNotPending
                             .isEstimationQuestion
                 }
@@ -426,6 +582,7 @@ internal class QuizMasterIT {
                 .hasOpenQuestion(0) { openQuestion ->
                     openQuestion
                             .hasQuestion("Wer schrieb das Buch Animal Farm?")
+                            .hasAnswerNote("George Orwell")
                             .isPending
                             .isBuzzerQuestion
                 }
@@ -433,11 +590,14 @@ internal class QuizMasterIT {
                     openQuestion
                             .hasQuestion("Wo befindet sich das Kahnbein?")
                             .isNotPending
-                            .isBuzzerQuestion
+                            .isMultipleChoiceQuestion
+                            .hasChoice(0) { choice -> choice.hasChoice("Im Fuß") }
+                            .hasChoice(1) { choice -> choice.hasChoice("In der Hand") }
                 }
                 .hasOpenQuestion(2) { openQuestion ->
                     openQuestion
                             .hasQuestion("Was ist ein Robo-Advisor?")
+                            .hasAnswerNote("Ein algorithmen gesteuertes Dings")
                             .isNotPending
                             .isEstimationQuestion
                 }
@@ -451,7 +611,7 @@ internal class QuizMasterIT {
 
         Thread.sleep(10)
 
-        // Second buzzer question is asked
+        // Multiple choice question is asked
         webTestClient
                 .patch()
                 .uri(quizMasterReference.get().openQuestions[1].getLink("self").map { it.href }.orElseThrow())
@@ -464,11 +624,14 @@ internal class QuizMasterIT {
                     openQuestion
                             .hasQuestion("Wo befindet sich das Kahnbein?")
                             .isPending
-                            .isBuzzerQuestion
+                            .isMultipleChoiceQuestion
+                            .hasChoice(0) { choice -> choice.hasChoice("Im Fuß") }
+                            .hasChoice(1) { choice -> choice.hasChoice("In der Hand") }
                 }
                 .hasOpenQuestion(1) { openQuestion ->
                     openQuestion
                             .hasQuestion("Was ist ein Robo-Advisor?")
+                            .hasAnswerNote("Ein algorithmen gesteuertes Dings")
                             .isNotPending
                             .isEstimationQuestion
                 }
@@ -476,6 +639,7 @@ internal class QuizMasterIT {
                 .hasPlayedQuestion(0) { playedQuestion ->
                     playedQuestion
                             .hasQuestion("Wer schrieb das Buch Animal Farm?")
+                            .hasAnswerNote("George Orwell")
                             .isNotPending
                             .isBuzzerQuestion
                 }
@@ -488,10 +652,10 @@ internal class QuizMasterIT {
 
         Thread.sleep(10)
 
-        // Participant 1 buzzers
+        // Participant 1 answers
         webTestClient
                 .put()
-                .uri(quizMasterReference.get().participants[0].getLink("buzzer").map { it.href }.orElseThrow())
+                .uri(quizMasterReference.get().openQuestions[0].choices!![0].getLink("${quizMasterReference.get().participants[0].id}-selects-choice").map { it.href }.orElseThrow())
                 .exchange()
                 .expectStatus().isOk
 
@@ -501,11 +665,15 @@ internal class QuizMasterIT {
                     openQuestion
                             .hasQuestion("Wo befindet sich das Kahnbein?")
                             .isPending
-                            .isBuzzerQuestion
+                            .isMultipleChoiceQuestion
+                            .hasEstimates(mapOf(Pair(quizMasterReference.get().participants[0].id, "Im Fuß")))
+                            .hasChoice(0) { choice -> choice.hasChoice("Im Fuß") }
+                            .hasChoice(1) { choice -> choice.hasChoice("In der Hand") }
                 }
                 .hasOpenQuestion(1) { openQuestion ->
                     openQuestion
                             .hasQuestion("Was ist ein Robo-Advisor?")
+                            .hasAnswerNote("Ein algorithmen gesteuertes Dings")
                             .isNotPending
                             .isEstimationQuestion
                 }
@@ -513,10 +681,11 @@ internal class QuizMasterIT {
                 .hasPlayedQuestion(0) { playedQuestion ->
                     playedQuestion
                             .hasQuestion("Wer schrieb das Buch Animal Farm?")
+                            .hasAnswerNote("George Orwell")
                             .isNotPending
                 }
                 .particpantSizeIs(2)
-                .hasParticipant(0) { it.hasName("André").hasPoints(0).allowsReveal().isTurn }
+                .hasParticipant(0) { it.hasName("André").hasPoints(0).allowsReveal().isNotTurn }
                 .hasParticipant(1) { it.hasName("Lena").hasPoints(2).allowsReveal().isNotTurn }
                 .undoIsPossible()
                 .redoIsNotPossible()
@@ -524,12 +693,54 @@ internal class QuizMasterIT {
 
         Thread.sleep(10)
 
-        // Answer is wrong
+        // Participant 2 answers
         webTestClient
-                .post()
-                .uri(quizMasterReference.get().getLink("answer-${quizMasterReference.get().participants[0].id}").map { it.href }.orElseThrow())
-                .contentType(MediaType.TEXT_PLAIN)
-                .body(BodyInserters.fromValue("false"))
+                .put()
+                .uri(quizMasterReference.get().openQuestions[0].choices!![0].getLink("${quizMasterReference.get().participants[1].id}-selects-choice").map { it.href }.orElseThrow())
+                .exchange()
+                .expectStatus().isOk
+
+        assertThat(quizMasterReference.get())
+                .openQuestionSizeIs(2)
+                .hasOpenQuestion(0) { openQuestion ->
+                        openQuestion
+                                .hasQuestion("Wo befindet sich das Kahnbein?")
+                                .isPending
+                                .isMultipleChoiceQuestion
+                                .hasEstimates(mapOf(
+                                        Pair(quizMasterReference.get().participants[0].id, "Im Fuß"),
+                                        Pair(quizMasterReference.get().participants[1].id, "Im Fuß")
+                                ))
+                                .hasChoice(0) { choice -> choice.hasChoice("Im Fuß") }
+                                .hasChoice(1) { choice -> choice.hasChoice("In der Hand") }
+                }
+                .hasOpenQuestion(1) { openQuestion ->
+                        openQuestion
+                                .hasQuestion("Was ist ein Robo-Advisor?")
+                                .hasAnswerNote("Ein algorithmen gesteuertes Dings")
+                                .isNotPending
+                                .isEstimationQuestion
+                }
+                .playedQuestionSizeIs(1)
+                .hasPlayedQuestion(0) { playedQuestion ->
+                        playedQuestion
+                                .hasQuestion("Wer schrieb das Buch Animal Farm?")
+                                .hasAnswerNote("George Orwell")
+                                .isNotPending
+                }
+                .particpantSizeIs(2)
+                .hasParticipant(0) { it.hasName("André").hasPoints(0).allowsReveal().isNotTurn }
+                .hasParticipant(1) { it.hasName("Lena").hasPoints(2).allowsReveal().isNotTurn }
+                .undoIsPossible()
+                .redoIsNotPossible()
+                .isNotFinished
+
+        Thread.sleep(10)
+
+        // Participant 2 changes the answer
+        webTestClient
+                .put()
+                .uri(quizMasterReference.get().openQuestions[0].choices!![1].getLink("${quizMasterReference.get().participants[1].id}-selects-choice").map { it.href }.orElseThrow())
                 .exchange()
                 .expectStatus().isOk
 
@@ -539,7 +750,13 @@ internal class QuizMasterIT {
                     openQuestion
                             .hasQuestion("Wo befindet sich das Kahnbein?")
                             .isPending
-                            .isBuzzerQuestion
+                            .isMultipleChoiceQuestion
+                            .hasEstimates(mapOf(
+                                    Pair(quizMasterReference.get().participants[0].id, "Im Fuß"),
+                                    Pair(quizMasterReference.get().participants[1].id, "In der Hand")
+                            ))
+                            .hasChoice(0) { choice -> choice.hasChoice("Im Fuß") }
+                            .hasChoice(1) { choice -> choice.hasChoice("In der Hand") }
                 }
                 .hasOpenQuestion(1) { openQuestion ->
                     openQuestion
@@ -554,8 +771,96 @@ internal class QuizMasterIT {
                             .isNotPending
                 }
                 .particpantSizeIs(2)
-                .hasParticipant(0) { it.hasName("André").hasPoints(0).allowsReveal().isTurn }
+                .hasParticipant(0) { it.hasName("André").hasPoints(0).allowsReveal().isNotTurn }
                 .hasParticipant(1) { it.hasName("Lena").hasPoints(2).allowsReveal().isNotTurn }
+                .undoIsPossible()
+                .redoIsNotPossible()
+                .isNotFinished
+
+        Thread.sleep(10)
+
+        // Answers are revealed
+        webTestClient
+                .patch()
+                .uri(quizMasterReference.get().getLink("revealAnswers").map { it.href }.orElseThrow())
+                .exchange()
+                .expectStatus().isOk
+
+        assertThat(quizMasterReference.get())
+                .openQuestionSizeIs(2)
+                .hasOpenQuestion(0) { openQuestion ->
+                    openQuestion
+                            .hasQuestion("Wo befindet sich das Kahnbein?")
+                            .isPending
+                            .isMultipleChoiceQuestion
+                            .hasEstimates(mapOf(
+                                    Pair(quizMasterReference.get().participants[0].id, "Im Fuß"),
+                                    Pair(quizMasterReference.get().participants[1].id, "In der Hand")
+                            ))
+                            .hasChoice(0) { choice -> choice.hasChoice("Im Fuß") }
+                            .hasChoice(1) { choice -> choice.hasChoice("In der Hand") }
+                }
+                .hasOpenQuestion(1) { openQuestion ->
+                    openQuestion
+                            .hasQuestion("Was ist ein Robo-Advisor?")
+                            .isNotPending
+                            .isEstimationQuestion
+                }
+                .playedQuestionSizeIs(1)
+                .hasPlayedQuestion(0) { playedQuestion ->
+                    playedQuestion
+                            .hasQuestion("Wer schrieb das Buch Animal Farm?")
+                            .isNotPending
+                }
+                .particpantSizeIs(2)
+                .hasParticipant(0) { it.hasName("André").hasPoints(0).allowsReveal().isNotTurn }
+                .hasParticipant(1) { it.hasName("Lena").hasPoints(2).allowsReveal().isNotTurn }
+                .undoIsPossible()
+                .redoIsNotPossible()
+                .isNotFinished
+
+        Thread.sleep(10)
+
+        // Answer of participant 2 was correct
+        webTestClient
+                .post()
+                .uri(quizMasterReference.get().getLink("answer-${quizMasterReference.get().participants[1].id}").map { it.href }.orElseThrow())
+                .contentType(MediaType.TEXT_PLAIN)
+                .body(BodyInserters.fromValue("true"))
+                .exchange()
+                .expectStatus().isOk
+
+        assertThat(quizMasterReference.get())
+                .openQuestionSizeIs(2)
+                .hasOpenQuestion(0) { openQuestion ->
+                    openQuestion
+                            .hasQuestion("Wo befindet sich das Kahnbein?")
+                            .isPending
+                            .isMultipleChoiceQuestion
+                            .hasEstimates(mapOf(
+                                    Pair(quizMasterReference.get().participants[0].id, "Im Fuß"),
+                                    Pair(quizMasterReference.get().participants[1].id, "In der Hand")
+                            ))
+                            .hasChoice(0) { choice -> choice.hasChoice("Im Fuß") }
+                            .hasChoice(1) { choice -> choice.hasChoice("In der Hand") }
+                }
+                .hasOpenQuestion(1) { openQuestion ->
+                    openQuestion
+                            .hasQuestion("Was ist ein Robo-Advisor?")
+                            .hasAnswerNote("Ein algorithmen gesteuertes Dings")
+                            .isNotPending
+                            .isEstimationQuestion
+                }
+                .playedQuestionSizeIs(1)
+                .hasPlayedQuestion(0) { playedQuestion ->
+                    playedQuestion
+                            .hasQuestion("Wer schrieb das Buch Animal Farm?")
+                            .hasAnswerNote("George Orwell")
+                            .isNotPending
+                }
+                .particpantSizeIs(2)
+                .hasParticipant(0) { it.hasName("André").hasPoints(0).allowsReveal().isNotTurn }
+                .hasParticipant(1) { it.hasName("Lena").hasPoints(4).allowsReveal().isNotTurn }
                 .undoIsPossible()
                 .redoIsNotPossible()
                 .isNotFinished
@@ -577,11 +882,14 @@ internal class QuizMasterIT {
                     openQuestion
                             .hasQuestion("Wo befindet sich das Kahnbein?")
                             .isPending
-                            .isBuzzerQuestion
+                            .isMultipleChoiceQuestion
+                            .hasChoice(0) { choice -> choice.hasChoice("Im Fuß") }
+                            .hasChoice(1) { choice -> choice.hasChoice("In der Hand") }
                 }
                 .hasOpenQuestion(1) { openQuestion ->
                     openQuestion
                             .hasQuestion("Was ist ein Robo-Advisor?")
+                            .hasAnswerNote("Ein algorithmen gesteuertes Dings")
                             .isNotPending
                             .isEstimationQuestion
                 }
@@ -589,11 +897,12 @@ internal class QuizMasterIT {
                 .hasPlayedQuestion(0) { playedQuestion ->
                     playedQuestion
                             .hasQuestion("Wer schrieb das Buch Animal Farm?")
+                            .hasAnswerNote("George Orwell")
                             .isNotPending
                 }
                 .particpantSizeIs(2)
-                .hasParticipant(0) { it.hasName("André").hasPoints(0).allowsReveal().isTurn }
-                .hasParticipant(1) { it.hasName("Lena").hasPoints(2).allowsReveal().isNotTurn }
+                .hasParticipant(0) { it.hasName("André").hasPoints(0).allowsReveal().isNotTurn }
+                .hasParticipant(1) { it.hasName("Lena").hasPoints(4).allowsReveal().isNotTurn }
                 .undoIsPossible()
                 .redoIsNotPossible()
                 .isNotFinished
@@ -612,6 +921,7 @@ internal class QuizMasterIT {
                 .hasOpenQuestion(0) { openQuestion ->
                     openQuestion
                             .hasQuestion("Was ist ein Robo-Advisor?")
+                            .hasAnswerNote("Ein algorithmen gesteuertes Dings")
                             .isPending
                             .isEstimationQuestion
                 }
@@ -619,17 +929,20 @@ internal class QuizMasterIT {
                 .hasPlayedQuestion(0) { playedQuestion ->
                     playedQuestion
                             .hasQuestion("Wer schrieb das Buch Animal Farm?")
+                            .hasAnswerNote("George Orwell")
                             .isNotPending
                 }
                 .hasPlayedQuestion(1) { playedQuestion ->
                     playedQuestion
                             .hasQuestion("Wo befindet sich das Kahnbein?")
                             .isNotPending
-                            .isBuzzerQuestion
+                            .isMultipleChoiceQuestion
+                            .hasChoice(0) { choice -> choice.hasChoice("Im Fuß") }
+                            .hasChoice(1) { choice -> choice.hasChoice("In der Hand") }
                 }
                 .particpantSizeIs(2)
                 .hasParticipant(0) { it.hasName("André").hasPoints(0).allowsReveal().isNotTurn }
-                .hasParticipant(1) { it.hasName("Lena").hasPoints(2).allowsReveal().isNotTurn }
+                .hasParticipant(1) { it.hasName("Lena").hasPoints(4).allowsReveal().isNotTurn }
                 .undoIsPossible()
                 .redoIsNotPossible()
                 .isNotFinished
@@ -650,25 +963,29 @@ internal class QuizMasterIT {
                 .hasOpenQuestion(0) { openQuestion ->
                     openQuestion
                             .hasQuestion("Was ist ein Robo-Advisor?")
+                            .hasAnswerNote("Ein algorithmen gesteuertes Dings")
                             .isPending
                             .isEstimationQuestion
-                            .hasEstimates(java.util.Map.of(quizMasterReference.get().participants[0].id, "Antwort von André"))
+                            .hasEstimates(mapOf(Pair(quizMasterReference.get().participants[0].id, "Antwort von André")))
                 }
                 .playedQuestionSizeIs(2)
                 .hasPlayedQuestion(0) { playedQuestion ->
                     playedQuestion
                             .hasQuestion("Wer schrieb das Buch Animal Farm?")
+                            .hasAnswerNote("George Orwell")
                             .isNotPending
                 }
                 .hasPlayedQuestion(1) { playedQuestion ->
                     playedQuestion
                             .hasQuestion("Wo befindet sich das Kahnbein?")
                             .isNotPending
-                            .isBuzzerQuestion
+                            .isMultipleChoiceQuestion
+                            .hasChoice(0) { choice -> choice.hasChoice("Im Fuß") }
+                            .hasChoice(1) { choice -> choice.hasChoice("In der Hand") }
                 }
                 .particpantSizeIs(2)
                 .hasParticipant(0) { it.hasName("André").hasPoints(0).allowsReveal().isNotTurn }
-                .hasParticipant(1) { it.hasName("Lena").hasPoints(2).allowsReveal().isNotTurn }
+                .hasParticipant(1) { it.hasName("Lena").hasPoints(4).allowsReveal().isNotTurn }
                 .undoIsPossible()
                 .redoIsNotPossible()
                 .isNotFinished
@@ -687,6 +1004,7 @@ internal class QuizMasterIT {
                 .hasOpenQuestion(0) { openQuestion ->
                     openQuestion
                             .hasQuestion("Was ist ein Robo-Advisor?")
+                            .hasAnswerNote("Ein algorithmen gesteuertes Dings")
                             .isPending
                             .isEstimationQuestion
                             .hasEstimates(java.util.Map.of(quizMasterReference.get().participants[0].id, "Antwort von André"))
@@ -695,17 +1013,20 @@ internal class QuizMasterIT {
                 .hasPlayedQuestion(0) { playedQuestion ->
                     playedQuestion
                             .hasQuestion("Wer schrieb das Buch Animal Farm?")
+                            .hasAnswerNote("George Orwell")
                             .isNotPending
                 }
                 .hasPlayedQuestion(1) { playedQuestion ->
                     playedQuestion
                             .hasQuestion("Wo befindet sich das Kahnbein?")
                             .isNotPending
-                            .isBuzzerQuestion
+                            .isMultipleChoiceQuestion
+                            .hasChoice(0) { choice -> choice.hasChoice("Im Fuß") }
+                            .hasChoice(1) { choice -> choice.hasChoice("In der Hand") }
                 }
                 .particpantSizeIs(2)
                 .hasParticipant(0) { it.hasName("André").hasPoints(0).allowsReveal().isNotTurn }
-                .hasParticipant(1) { it.hasName("Lena").hasPoints(2).doesNotAllowReveal().isNotTurn }
+                .hasParticipant(1) { it.hasName("Lena").hasPoints(4).doesNotAllowReveal().isNotTurn }
                 .undoIsPossible()
                 .redoIsNotPossible()
                 .isNotFinished
@@ -726,6 +1047,7 @@ internal class QuizMasterIT {
                 .hasOpenQuestion(0) { openQuestion ->
                     openQuestion
                             .hasQuestion("Was ist ein Robo-Advisor?")
+                            .hasAnswerNote("Ein algorithmen gesteuertes Dings")
                             .isPending
                             .isEstimationQuestion
                             .hasEstimates(java.util.Map.of(
@@ -737,17 +1059,20 @@ internal class QuizMasterIT {
                 .hasPlayedQuestion(0) { playedQuestion ->
                     playedQuestion
                             .hasQuestion("Wer schrieb das Buch Animal Farm?")
+                            .hasAnswerNote("George Orwell")
                             .isNotPending
                 }
                 .hasPlayedQuestion(1) { playedQuestion ->
                     playedQuestion
                             .hasQuestion("Wo befindet sich das Kahnbein?")
                             .isNotPending
-                            .isBuzzerQuestion
+                            .isMultipleChoiceQuestion
+                            .hasChoice(0) { choice -> choice.hasChoice("Im Fuß") }
+                            .hasChoice(1) { choice -> choice.hasChoice("In der Hand") }
                 }
                 .particpantSizeIs(2)
                 .hasParticipant(0) { it.hasName("André").hasPoints(0).allowsReveal().isNotTurn }
-                .hasParticipant(1) { it.hasName("Lena").hasPoints(2).doesNotAllowReveal().isNotTurn }
+                .hasParticipant(1) { it.hasName("Lena").hasPoints(4).doesNotAllowReveal().isNotTurn }
                 .undoIsPossible()
                 .redoIsNotPossible()
                 .isNotFinished
@@ -766,6 +1091,7 @@ internal class QuizMasterIT {
                 .hasOpenQuestion(0) { openQuestion ->
                     openQuestion
                             .hasQuestion("Was ist ein Robo-Advisor?")
+                            .hasAnswerNote("Ein algorithmen gesteuertes Dings")
                             .isPending
                             .isEstimationQuestion
                             .hasEstimates(java.util.Map.of(
@@ -777,17 +1103,20 @@ internal class QuizMasterIT {
                 .hasPlayedQuestion(0) { playedQuestion ->
                     playedQuestion
                             .hasQuestion("Wer schrieb das Buch Animal Farm?")
+                            .hasAnswerNote("George Orwell")
                             .isNotPending
                 }
                 .hasPlayedQuestion(1) { playedQuestion ->
                     playedQuestion
                             .hasQuestion("Wo befindet sich das Kahnbein?")
                             .isNotPending
-                            .isBuzzerQuestion
+                            .isMultipleChoiceQuestion
+                            .hasChoice(0) { choice -> choice.hasChoice("Im Fuß") }
+                            .hasChoice(1) { choice -> choice.hasChoice("In der Hand") }
                 }
                 .particpantSizeIs(2)
                 .hasParticipant(0) { it.hasName("André").hasPoints(0).allowsReveal().isNotTurn }
-                .hasParticipant(1) { it.hasName("Lena").hasPoints(2).doesNotAllowReveal().isNotTurn }
+                .hasParticipant(1) { it.hasName("Lena").hasPoints(4).doesNotAllowReveal().isNotTurn }
                 .undoIsPossible()
                 .redoIsNotPossible()
                 .isNotFinished
@@ -808,6 +1137,7 @@ internal class QuizMasterIT {
                 .hasOpenQuestion(0) { openQuestion ->
                     openQuestion
                             .hasQuestion("Was ist ein Robo-Advisor?")
+                            .hasAnswerNote("Ein algorithmen gesteuertes Dings")
                             .isPending
                             .isEstimationQuestion
                             .hasEstimates(java.util.Map.of(
@@ -819,17 +1149,20 @@ internal class QuizMasterIT {
                 .hasPlayedQuestion(0) { playedQuestion ->
                     playedQuestion
                             .hasQuestion("Wer schrieb das Buch Animal Farm?")
+                            .hasAnswerNote("George Orwell")
                             .isNotPending
                 }
                 .hasPlayedQuestion(1) { playedQuestion ->
                     playedQuestion
                             .hasQuestion("Wo befindet sich das Kahnbein?")
                             .isNotPending
-                            .isBuzzerQuestion
+                            .isMultipleChoiceQuestion
+                            .hasChoice(0) { choice -> choice.hasChoice("Im Fuß") }
+                            .hasChoice(1) { choice -> choice.hasChoice("In der Hand") }
                 }
                 .particpantSizeIs(2)
                 .hasParticipant(0) { it.hasName("André").hasPoints(2).allowsReveal().isNotTurn }
-                .hasParticipant(1) { it.hasName("Lena").hasPoints(2).doesNotAllowReveal().isNotTurn }
+                .hasParticipant(1) { it.hasName("Lena").hasPoints(4).doesNotAllowReveal().isNotTurn }
                 .undoIsPossible()
                 .redoIsNotPossible()
                 .isNotFinished
@@ -848,6 +1181,7 @@ internal class QuizMasterIT {
                 .hasOpenQuestion(0) { openQuestion ->
                     openQuestion
                             .hasQuestion("Was ist ein Robo-Advisor?")
+                            .hasAnswerNote("Ein algorithmen gesteuertes Dings")
                             .isPending
                             .isEstimationQuestion
                             .hasEstimates(java.util.Map.of(quizMasterReference.get().participants[0].id, "Antwort von Lena"))
@@ -856,16 +1190,19 @@ internal class QuizMasterIT {
                 .hasPlayedQuestion(0) { playedQuestion ->
                     playedQuestion
                             .hasQuestion("Wer schrieb das Buch Animal Farm?")
+                            .hasAnswerNote("George Orwell")
                             .isNotPending
                 }
                 .hasPlayedQuestion(1) { playedQuestion ->
                     playedQuestion
                             .hasQuestion("Wo befindet sich das Kahnbein?")
                             .isNotPending
-                            .isBuzzerQuestion
+                            .isMultipleChoiceQuestion
+                            .hasChoice(0) { choice -> choice.hasChoice("Im Fuß") }
+                            .hasChoice(1) { choice -> choice.hasChoice("In der Hand") }
                 }
                 .particpantSizeIs(1)
-                .hasParticipant(0) { it.hasName("Lena").hasPoints(2).doesNotAllowReveal().isNotTurn }
+                .hasParticipant(0) { it.hasName("Lena").hasPoints(4).doesNotAllowReveal().isNotTurn }
                 .undoIsPossible()
                 .redoIsNotPossible()
                 .isNotFinished
@@ -884,6 +1221,7 @@ internal class QuizMasterIT {
                 .hasOpenQuestion(0) { openQuestion ->
                     openQuestion
                             .hasQuestion("Was ist ein Robo-Advisor?")
+                            .hasAnswerNote("Ein algorithmen gesteuertes Dings")
                             .isPending
                             .isEstimationQuestion
                             .hasEstimates(java.util.Map.of(
@@ -895,17 +1233,20 @@ internal class QuizMasterIT {
                 .hasPlayedQuestion(0) { playedQuestion ->
                     playedQuestion
                             .hasQuestion("Wer schrieb das Buch Animal Farm?")
+                            .hasAnswerNote("George Orwell")
                             .isNotPending
                 }
                 .hasPlayedQuestion(1) { playedQuestion ->
                     playedQuestion
                             .hasQuestion("Wo befindet sich das Kahnbein?")
                             .isNotPending
-                            .isBuzzerQuestion
+                            .isMultipleChoiceQuestion
+                            .hasChoice(0) { choice -> choice.hasChoice("Im Fuß") }
+                            .hasChoice(1) { choice -> choice.hasChoice("In der Hand") }
                 }
                 .particpantSizeIs(2)
                 .hasParticipant(0) { it.hasName("André").hasPoints(2).allowsReveal().isNotTurn }
-                .hasParticipant(1) { it.hasName("Lena").hasPoints(2).doesNotAllowReveal().isNotTurn }
+                .hasParticipant(1) { it.hasName("Lena").hasPoints(4).doesNotAllowReveal().isNotTurn }
                 .undoIsPossible()
                 .redoIsPossible()
                 .isNotFinished
@@ -924,6 +1265,7 @@ internal class QuizMasterIT {
                 .hasOpenQuestion(0) { openQuestion ->
                     openQuestion
                             .hasQuestion("Was ist ein Robo-Advisor?")
+                            .hasAnswerNote("Ein algorithmen gesteuertes Dings")
                             .isPending
                             .isEstimationQuestion
                             .hasEstimates(java.util.Map.of(quizMasterReference.get().participants[0].id, "Antwort von Lena"))
@@ -932,16 +1274,19 @@ internal class QuizMasterIT {
                 .hasPlayedQuestion(0) { playedQuestion ->
                     playedQuestion
                             .hasQuestion("Wer schrieb das Buch Animal Farm?")
+                            .hasAnswerNote("George Orwell")
                             .isNotPending
                 }
                 .hasPlayedQuestion(1) { playedQuestion ->
                     playedQuestion
                             .hasQuestion("Wo befindet sich das Kahnbein?")
                             .isNotPending
-                            .isBuzzerQuestion
+                            .isMultipleChoiceQuestion
+                            .hasChoice(0) { choice -> choice.hasChoice("Im Fuß") }
+                            .hasChoice(1) { choice -> choice.hasChoice("In der Hand") }
                 }
                 .particpantSizeIs(1)
-                .hasParticipant(0) { it.hasName("Lena").hasPoints(2).doesNotAllowReveal().isNotTurn }
+                .hasParticipant(0) { it.hasName("Lena").hasPoints(4).doesNotAllowReveal().isNotTurn }
                 .undoIsPossible()
                 .redoIsNotPossible()
                 .isNotFinished
@@ -958,6 +1303,7 @@ internal class QuizMasterIT {
                 .hasOpenQuestion(0) { openQuestion ->
                     openQuestion
                             .hasQuestion("Was ist ein Robo-Advisor?")
+                            .hasAnswerNote("Ein algorithmen gesteuertes Dings")
                             .isPending
                             .isEstimationQuestion
                             .hasEstimates(java.util.Map.of(
@@ -969,17 +1315,20 @@ internal class QuizMasterIT {
                 .hasPlayedQuestion(0) { playedQuestion ->
                     playedQuestion
                             .hasQuestion("Wer schrieb das Buch Animal Farm?")
+                            .hasAnswerNote("George Orwell")
                             .isNotPending
                 }
                 .hasPlayedQuestion(1) { playedQuestion ->
                     playedQuestion
                             .hasQuestion("Wo befindet sich das Kahnbein?")
                             .isNotPending
-                            .isBuzzerQuestion
+                            .isMultipleChoiceQuestion
+                            .hasChoice(0) { choice -> choice.hasChoice("Im Fuß") }
+                            .hasChoice(1) { choice -> choice.hasChoice("In der Hand") }
                 }
                 .particpantSizeIs(2)
                 .hasParticipant(0) { it.hasName("André").hasPoints(2).allowsReveal().isNotTurn }
-                .hasParticipant(1) { it.hasName("Lena").hasPoints(2).doesNotAllowReveal().isNotTurn }
+                .hasParticipant(1) { it.hasName("Lena").hasPoints(4).doesNotAllowReveal().isNotTurn }
                 .undoIsPossible()
                 .redoIsPossible()
                 .isNotFinished
@@ -999,6 +1348,7 @@ internal class QuizMasterIT {
                 .hasOpenQuestion(0) { openQuestion ->
                     openQuestion
                             .hasQuestion("Was ist ein Robo-Advisor?")
+                            .hasAnswerNote("Ein algorithmen gesteuertes Dings")
                             .isPending
                             .isEstimationQuestion
                             .hasEstimates(java.util.Map.of(
@@ -1010,17 +1360,20 @@ internal class QuizMasterIT {
                 .hasPlayedQuestion(0) { playedQuestion ->
                     playedQuestion
                             .hasQuestion("Wer schrieb das Buch Animal Farm?")
+                            .hasAnswerNote("George Orwell")
                             .isNotPending
                 }
                 .hasPlayedQuestion(1) { playedQuestion ->
                     playedQuestion
                             .hasQuestion("Wo befindet sich das Kahnbein?")
                             .isNotPending
-                            .isBuzzerQuestion
+                            .isMultipleChoiceQuestion
+                            .hasChoice(0) { choice -> choice.hasChoice("Im Fuß") }
+                            .hasChoice(1) { choice -> choice.hasChoice("In der Hand") }
                 }
                 .particpantSizeIs(2)
                 .hasParticipant(0) { it.hasName("André").hasPoints(2).allowsReveal().isNotTurn }
-                .hasParticipant(1) { it.hasName("Lena").hasPoints(2).doesNotAllowReveal().isNotTurn }
+                .hasParticipant(1) { it.hasName("Lena").hasPoints(4).doesNotAllowReveal().isNotTurn }
                 .undoIsPossible()
                 .redoIsNotPossible()
                 .hasQuizStatistics() { quizStatistics ->
@@ -1040,12 +1393,24 @@ internal class QuizMasterIT {
                             .hasQuestionStatistics(1) { questionStatistics ->
                                 questionStatistics
                                         .hasQuestion { it.isEqualTo(quizMasterReference.get().playedQuestions[1]) }
-                                        .answerStatisticsSizeIs(1)
+                                        .answerStatisticsSizeIs(3)
                                         .hasAnswerStatistics(0) { answerStatistics ->
                                             answerStatistics
                                                     .hasParticipantId { it.isEqualTo(quizMasterReference.get().participants[0])}
-                                                    .hasNoAnswer()
+                                                    .hasAnswer("Im Fuß")
                                                     .isIncorrect
+                                        }
+                                        .hasAnswerStatistics(1) { answerStatistics ->
+                                                answerStatistics
+                                                        .hasParticipantId { it.isEqualTo(quizMasterReference.get().participants[1])}
+                                                        .hasAnswer("Im Fuß")
+                                                        .isIncorrect
+                                        }
+                                        .hasAnswerStatistics(2) { answerStatistics ->
+                                                answerStatistics
+                                                        .hasParticipantId { it.isEqualTo(quizMasterReference.get().participants[1])}
+                                                        .hasAnswer("In der Hand")
+                                                        .isCorrect
                                         }
                             }
                             .hasQuestionStatistics(2) { questionStatistics ->

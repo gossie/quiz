@@ -1,10 +1,24 @@
 import React from 'react';
-import { render, fireEvent, waitFor, cleanup } from '@testing-library/react';
+import { render, fireEvent, waitFor, cleanup } from '../test-utils';
 import Questions from './Questions';
 import Quiz from '../quiz-client-shared/quiz';
+import {verticalDrag} from 'react-beautiful-dnd-tester';
+import { ErrorAction } from '../redux/actions';
+import { ActionType } from '../redux/action-types';
 
 beforeEach(() => () => cleanup()); 
 afterEach(() => cleanup());
+
+jest.mock('react-i18next', () => ({
+    useTranslation: () => {
+        return {
+            t: (str: string, keys: object) => str,
+            i18n: {
+                changeLanguage: () => new Promise(() => {}),
+            },
+        };
+    },
+}));
 
 test('should display questions', () => {
     const quiz: Quiz = {
@@ -18,7 +32,8 @@ test('should display questions', () => {
                 category: 'other',
                 publicVisible: false,
                 pending: false,
-                links: []
+                links: [], 
+                previousQuestionId: null
             },
         ],
         openQuestions: [
@@ -28,7 +43,8 @@ test('should display questions', () => {
                 category: 'other',
                 publicVisible: false,
                 pending: true,
-                links: []
+                links: [],
+                previousQuestionId: null
             },
             {
                 id: '3',
@@ -36,9 +52,11 @@ test('should display questions', () => {
                 category: 'other',
                 publicVisible: false,
                 pending: false,
-                links: []
+                links: [],
+                previousQuestionId: '2'
             }
         ],
+        expirationDate: 1234,
         timestamp: 1234,
         links: []
     }
@@ -47,8 +65,8 @@ test('should display questions', () => {
     const openQuestions = getByTestId('open-questions').querySelectorAll('li')
 
     expect(openQuestions.length).toBe(2);
-    expect(openQuestions[0].textContent).toEqual('1Frage 2');
-    expect(openQuestions[1].textContent).toEqual('2Frage 3');
+    expect(openQuestions[0].textContent).toEqual('2Frage 2');
+    expect(openQuestions[1].textContent).toEqual('3Frage 3');
 
     const playedQuestions = getByTestId('played-questions').querySelectorAll('li')
 
@@ -63,6 +81,7 @@ test('should add new private question', async () => {
             method: 'POST',
             body: JSON.stringify({
                 question: 'Frage 3',
+                correctAnswer: 'Antwort 3',
                 category: 'other',
                 timeToAnswer: null,
                 imagePath: 'https://pathToImage',
@@ -73,7 +92,7 @@ test('should add new private question', async () => {
                 Accept: 'application/json'
             }
         });
-        Promise.resolve();
+        return Promise.resolve({ status: 201 });
     });
 
     const quiz: Quiz = {
@@ -88,7 +107,8 @@ test('should add new private question', async () => {
                 category: 'other',
                 publicVisible: false,
                 pending: false,
-                links: []
+                links: [],
+                previousQuestionId: null
             },
             {
                 id: '2',
@@ -96,9 +116,11 @@ test('should add new private question', async () => {
                 category: 'other',
                 publicVisible: false,
                 pending: true,
-                links: []
+                links: [],
+                previousQuestionId: '1'
             }
         ],
+        expirationDate: 1234,
         timestamp: 1234,
         links: [{href: '/api/createQuestion', rel: 'createQuestion'}]
     }
@@ -107,18 +129,22 @@ test('should add new private question', async () => {
     addQuestionButton.click();
     const questionButton = getByTestId('create-question-button');
     const questionField = getByTestId('new-question')  as HTMLInputElement;
+    const answerField = getByTestId('new-correct-answer')  as HTMLInputElement;
     const imagePathField = getByTestId('image-path')  as HTMLInputElement;
 
     fireEvent.change(questionField, { target: { value: 'Frage 3' } });
+    fireEvent.change(answerField, { target: { value: 'Antwort 3' } });
     fireEvent.change(imagePathField, { target: { value: 'https://pathToImage' } });
 
     expect(questionField.value).toBe('Frage 3');
+    expect(answerField.value).toBe('Antwort 3');
     expect(imagePathField.value).toBe('https://pathToImage');
 
     questionButton.click();
 
     await waitFor(() =>{
         expect(questionField.value).toBe('');
+        expect(answerField.value).toBe('');
         expect(imagePathField.value).toBe('');
     });
 });
@@ -140,7 +166,7 @@ test('should add new public question', async () => {
                 Accept: 'application/json'
             }
         });
-        Promise.resolve();
+        return Promise.resolve({ status: 201 });
     });
 
     const quiz: Quiz = {
@@ -155,7 +181,8 @@ test('should add new public question', async () => {
                 category: 'other',
                 publicVisible: false,
                 pending: false,
-                links: []
+                links: [],
+                previousQuestionId: null
             },
             {
                 id: '2',
@@ -163,9 +190,11 @@ test('should add new public question', async () => {
                 category: 'other',
                 publicVisible: false,
                 pending: true,
-                links: []
+                links: [],
+                previousQuestionId: '2'
             }
         ],
+        expirationDate: 1234,
         timestamp: 1234,
         links: [{href: '/api/createQuestion', rel: 'createQuestion'}]
     }
@@ -196,12 +225,9 @@ test('should start question', () => {
     jest.spyOn(global, 'fetch').mockImplementation((url: string, request: object) => {
         expect(url).toEqual('http://localhost:5000/api/quiz/5/questions/11');
         expect(request).toEqual({
-            method: 'PATCH',
-            headers: {
-                Accept: 'application/json'
-            }
+            method: 'PATCH'
         });
-        Promise.resolve();
+        return Promise.resolve({ status: 200 });
     });
 
     const quiz: Quiz = {
@@ -215,7 +241,8 @@ test('should start question', () => {
                 category: 'other',
                 publicVisible: false,
                 pending: false,
-                links: []
+                links: [],
+                previousQuestionId: null
             },
         ],
         openQuestions: [
@@ -225,7 +252,8 @@ test('should start question', () => {
                 category: 'other',
                 publicVisible: false,
                 pending: false,
-                links: [{ href: '/api/quiz/5/questions/11', rel: 'self' }]
+                links: [{ href: '/api/quiz/5/questions/11', rel: 'self' }],
+                previousQuestionId: null
             },
             {
                 id: '3',
@@ -233,15 +261,17 @@ test('should start question', () => {
                 category: 'other',
                 publicVisible: false,
                 pending: false,
-                links: []
+                links: [],
+                previousQuestionId:'2'
             }
         ],
+        expirationDate: 1234,
         timestamp: 1234,
         links: []
     }
     const { getByTestId } = render(<Questions quiz={quiz} />);
 
-    getByTestId('start-question-0').click();
+    getByTestId('start-question-1').click();
 });
 
 test('should delete question', () => {
@@ -250,7 +280,7 @@ test('should delete question', () => {
         expect(request).toEqual({
             method: 'DELETE'
         });
-        Promise.resolve();
+        return Promise.resolve({ status: 200 });
     });
 
     const quiz: Quiz = {
@@ -264,7 +294,8 @@ test('should delete question', () => {
                 category: 'other',
                 publicVisible: false,
                 pending: false,
-                links: []
+                links: [],
+                previousQuestionId: null
             },
         ],
         openQuestions: [
@@ -274,7 +305,8 @@ test('should delete question', () => {
                 category: 'other',
                 publicVisible: false,
                 pending: false,
-                links: [{ href: '/api/quiz/5/questions/11', rel: 'self' }]
+                links: [{ href: '/api/quiz/5/questions/11', rel: 'self' }],
+                previousQuestionId: null
             },
             {
                 id: '3',
@@ -282,15 +314,17 @@ test('should delete question', () => {
                 category: 'other',
                 publicVisible: false,
                 pending: false,
-                links: []
+                links: [],
+                previousQuestionId: '2'
             }
         ],
+        expirationDate: 1234,
         timestamp: 1234,
         links: []
     }
     const { getByTestId } = render(<Questions quiz={quiz} />);
 
-    getByTestId('delete-question-0').click();
+    getByTestId('delete-question-1').click();
 });
 
 test('should open and close image modal', () => {
@@ -305,7 +339,8 @@ test('should open and close image modal', () => {
                 category: 'other',
                 publicVisible: false,
                 pending: true,
-                links: []
+                links: [],
+                previousQuestionId: null
             },
             {
                 id: '3',
@@ -314,10 +349,12 @@ test('should open and close image modal', () => {
                 pending: false,
                 imagePath: 'https://path_to_image/',
                 publicVisible: false,
-                links: []
+                links: [],
+                previousQuestionId: '2'
             }
         ],
         playedQuestions: [],
+        expirationDate: 1234,
         timestamp: 1234,
         links: []
     }
@@ -338,6 +375,156 @@ test('should open and close image modal', () => {
     expect(() => getByTestId('image-dialog')).toThrowError();
 });
 
+test('should move question to any position', async () => {
+    jest.spyOn(global, 'fetch').mockImplementation((url: string, request: object) => {
+        expect(url).toEqual('http://localhost:5000/api/quiz/5/questions/3');
+        expect(request).toEqual({
+            method: 'PUT',
+            body: JSON.stringify({
+                id: '3',
+                question: 'Frage 3',
+                category: 'other',
+                pending: false,
+                imagePath: 'https://path_to_image/',
+                publicVisible: true,
+                links: [{ href: '/api/quiz/5/questions/3', rel: 'self' }],
+                previousQuestionId: '1'
+            }),
+            headers: {
+                'Content-Type': 'application/json',
+                Accept: 'application/json'
+            }
+        });
+        return Promise.resolve({status: 200});
+    });
+
+    const quiz: Quiz = {
+        id: '5',
+        name: "Awesome Quiz",
+        participants: [],
+        openQuestions: [
+            {
+                id: '1',
+                question: 'Frage 1',
+                category: 'other',
+                pending: false,
+                imagePath: 'https://path_to_image/',
+                publicVisible: true,
+                links: [{ href: '/api/quiz/5/questions/1', rel: 'self' }],
+                previousQuestionId: null
+            },
+            {
+                id: '2',
+                question: 'Frage 2',
+                category: 'other',
+                pending: false,
+                imagePath: 'https://path_to_image/',
+                publicVisible: true,
+                links: [{ href: '/api/quiz/5/questions/2', rel: 'self' }],
+                previousQuestionId: '1'
+            },
+            {
+                id: '3',
+                question: 'Frage 3',
+                category: 'other',
+                pending: false,
+                imagePath: 'https://path_to_image/',
+                publicVisible: true,
+                links: [{ href: '/api/quiz/5/questions/3', rel: 'self' }],
+                previousQuestionId: '2'
+            }
+        ],
+        playedQuestions: [],
+        timestamp: 1234,
+        expirationDate: 1234,
+        links: []
+    }
+    const {getAllByTestId} = render(<Questions quiz={quiz}/>);
+    let second = getAllByTestId(/dragquestion/i)[1];      
+    let first = getAllByTestId(/dragquestion/i)[0];   
+    let third = getAllByTestId(/dragquestion/i)[2];    
+
+    verticalDrag(third).inFrontOf(second);
+
+   const newSecond = getAllByTestId(/dragquestion/i)[1];
+   expect(newSecond.textContent).toBe(third.textContent);
+});
+
+test('should move question to first position', async () => {
+    jest.spyOn(global, 'fetch').mockImplementation((url: string, request: object) => {
+        expect(url).toEqual('http://localhost:5000/api/quiz/5/questions/3');
+        expect(request).toEqual({
+            method: 'PUT',
+            body: JSON.stringify({
+                id: '3',
+                question: 'Frage 3',
+                category: 'other',
+                pending: false,
+                imagePath: 'https://path_to_image/',
+                publicVisible: true,
+                links: [{ href: '/api/quiz/5/questions/3', rel: 'self' }],
+                previousQuestionId: null
+            }),
+            headers: {
+                'Content-Type': 'application/json',
+                Accept: 'application/json'
+            }
+        });
+        return Promise.resolve({status: 200});
+    });
+
+    const quiz: Quiz = {
+        id: '5',
+        name: "Awesome Quiz",
+        participants: [],
+        openQuestions: [
+            {
+                id: '1',
+                question: 'Frage 1',
+                category: 'other',
+                pending: false,
+                imagePath: 'https://path_to_image/',
+                publicVisible: true,
+                links: [{ href: '/api/quiz/5/questions/1', rel: 'self' }],
+                previousQuestionId: null
+            },
+            {
+                id: '2',
+                question: 'Frage 2',
+                category: 'other',
+                pending: false,
+                imagePath: 'https://path_to_image/',
+                publicVisible: true,
+                links: [{ href: '/api/quiz/5/questions/2', rel: 'self' }],
+                previousQuestionId: '1'
+            },
+            {
+                id: '3',
+                question: 'Frage 3',
+                category: 'other',
+                pending: false,
+                imagePath: 'https://path_to_image/',
+                publicVisible: true,
+                links: [{ href: '/api/quiz/5/questions/3', rel: 'self' }],
+                previousQuestionId: '2'
+            }
+        ],
+        playedQuestions: [],
+        timestamp: 1234,
+        expirationDate: 1234,
+        links: []
+    }
+    const {getAllByTestId} = render(<Questions quiz={quiz}/>);
+    let second = getAllByTestId(/dragquestion/i)[1];      
+    let first = getAllByTestId(/dragquestion/i)[0];   
+    let third = getAllByTestId(/dragquestion/i)[2];    
+
+    verticalDrag(third).inFrontOf(first);
+
+   const newFirst = getAllByTestId(/dragquestion/i)[0];
+   expect(newFirst.textContent).toBe(third.textContent);
+});
+
 test('should edit question', async () => {
     jest.spyOn(global, 'fetch').mockImplementation((url: string, request: object) => {
         expect(url).toEqual('http://localhost:5000/api/quiz/5/questions/3');
@@ -345,18 +532,20 @@ test('should edit question', async () => {
             method: 'PUT',
             body: JSON.stringify({
                 question: 'Frage 4',
+                correctAnswer: 'Antwort 4',
                 category: 'history',
                 timeToAnswer: 45,
                 imagePath: 'https://path_to_image_changed/',
                 publicVisible: false,
-                estimates: {}
+                estimates: {},
+                previousQuestionId: '2'
             }),
             headers: {
                 'Content-Type': 'application/json',
                 Accept: 'application/json'
             }
         });
-        Promise.resolve();
+        return Promise.resolve({ status: 200 });
     });
 
     const quiz: Quiz = {
@@ -370,19 +559,23 @@ test('should edit question', async () => {
                 category: 'other',
                 publicVisible: false,
                 pending: true,
-                links: []
+                links: [],
+                previousQuestionId: null
             },
             {
                 id: '3',
                 question: 'Frage 3',
+                correctAnswer: 'Antwort 3',
                 category: 'other',
                 pending: false,
                 imagePath: 'https://path_to_image/',
                 publicVisible: true,
-                links: [{ href: '/api/quiz/5/questions/3', rel: 'self' }]
+                links: [{ href: '/api/quiz/5/questions/3', rel: 'self' }],
+                previousQuestionId: '2'
             }
         ],
         playedQuestions: [],
+        expirationDate: 1234,
         timestamp: 1234,
         links: []
     }
@@ -397,6 +590,7 @@ test('should edit question', async () => {
 
     const questionButton = getByTestId('edit-question-button');
     const questionField = getByTestId('question-to-edit')  as HTMLInputElement;
+    const answerField = getByTestId('answer-to-edit')  as HTMLInputElement;
     const categoryField = getByTestId('category-to-edit')  as HTMLSelectElement;
     const timeToAnswerField = getByTestId('time-to-answer-to-edit')  as HTMLInputElement;
     const imagePathField = getByTestId('image-path-to-edit')  as HTMLInputElement;
@@ -404,6 +598,7 @@ test('should edit question', async () => {
     const visibilityField = getByTestId('visibility-to-edit')  as HTMLInputElement;
 
     expect(questionField.value).toBe('Frage 3');
+    expect(answerField.value).toBe('Antwort 3');
     expect(categoryField.value).toBe('other');
     expect(imagePathField.value).toBe('https://path_to_image/');
     expect(timeToAnswerField.value).toBe('');
@@ -411,6 +606,7 @@ test('should edit question', async () => {
     expect(visibilityField.checked).toBe(true);
 
     fireEvent.change(questionField, { target: { value: 'Frage 4' } });
+    fireEvent.change(answerField, { target: { value: 'Antwort 4' } });
     fireEvent.change(categoryField, { target: { value: 'history' } });
     fireEvent.change(imagePathField, { target: { value: 'https://path_to_image_changed/' } });
     fireEvent.change(timeToAnswerField, { target: { value: '45' } });
@@ -418,6 +614,7 @@ test('should edit question', async () => {
     visibilityField.click();
 
     expect(questionField.value).toBe('Frage 4');
+    expect(answerField.value).toBe('Antwort 4');
     expect(categoryField.value).toBe('history');
     expect(imagePathField.value).toBe('https://path_to_image_changed/');
     expect(timeToAnswerField.value).toBe('45');
@@ -428,8 +625,97 @@ test('should edit question', async () => {
 
     await waitFor(() =>{
         expect(questionField.value).toBe('');
+        expect(answerField.value).toBe('');
         expect(categoryField.value).toBe('other');
         expect(imagePathField.value).toBe('');
         expect(timeToAnswerField.value).toBe('');
     });
+});
+
+test('should not move question, because the quiz is finished', (done) => {
+    jest.spyOn(global, 'fetch').mockImplementation((url: string, request: object) => {
+        expect(url).toEqual('http://localhost:5000/api/quiz/5/questions/3');
+        expect(request).toEqual({
+            method: 'PUT',
+            body: JSON.stringify({
+                id: '3',
+                question: 'Frage 3',
+                category: 'other',
+                pending: false,
+                imagePath: 'https://path_to_image/',
+                publicVisible: true,
+                links: [{ href: '/api/quiz/5/questions/3', rel: 'self' }],
+                previousQuestionId: '1'
+            }),
+            headers: {
+                'Content-Type': 'application/json',
+                Accept: 'application/json'
+            }
+        });
+        return Promise.resolve({
+            status: 409,
+            json: () => Promise.resolve({message: 'errorMessageConflict'})
+        });
+    });
+
+    const quiz: Quiz = {
+        id: '5',
+        name: "Awesome Quiz",
+        participants: [],
+        openQuestions: [
+            {
+                id: '1',
+                question: 'Frage 1',
+                category: 'other',
+                pending: false,
+                imagePath: 'https://path_to_image/',
+                publicVisible: true,
+                links: [{ href: '/api/quiz/5/questions/1', rel: 'self' }],
+                previousQuestionId: null
+            },
+            {
+                id: '2',
+                question: 'Frage 2',
+                category: 'other',
+                pending: false,
+                imagePath: 'https://path_to_image/',
+                publicVisible: true,
+                links: [{ href: '/api/quiz/5/questions/2', rel: 'self' }],
+                previousQuestionId: '1'
+            },
+            {
+                id: '3',
+                question: 'Frage 3',
+                category: 'other',
+                pending: false,
+                imagePath: 'https://path_to_image/',
+                publicVisible: true,
+                links: [{ href: '/api/quiz/5/questions/3', rel: 'self' }],
+                previousQuestionId: '2'
+            }
+        ],
+        playedQuestions: [],
+        timestamp: 1234,
+        expirationDate: 1234,
+        links: []
+    }
+
+    const onError = (state = {}, action: ErrorAction) => {
+        if (action.type === ActionType.SHOW_ERROR) {
+            expect(action.payload.errorMessage).toBe('errorMessageConflict');
+            done();
+        }
+        return {};
+    }
+
+    const {getAllByTestId} = render(<Questions quiz={quiz}/>, { reducer: onError });
+    
+    let second = getAllByTestId(/dragquestion/i)[1];      
+    let first = getAllByTestId(/dragquestion/i)[0];   
+    let third = getAllByTestId(/dragquestion/i)[2];    
+
+    verticalDrag(third).inFrontOf(second);
+
+    const newSecond = getAllByTestId(/dragquestion/i)[1];
+    expect(newSecond.textContent).toBe(third.textContent);
 });

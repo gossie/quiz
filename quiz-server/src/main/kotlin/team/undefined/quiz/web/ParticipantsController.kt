@@ -17,8 +17,11 @@ class ParticipantsController(private val quizService: QuizService) {
     fun create(@PathVariable quizId: UUID, @RequestBody participantName: String, response: ServerHttpResponse?): Mono<Unit> {
         return quizService.createParticipant(CreateParticipantCommand(quizId, Participant(name = participantName)))
                 .onErrorResume {
-                    response?.statusCode = HttpStatus.NOT_FOUND
-                    Mono.just(Unit)
+                    when (it) {
+                        is QuizNotFoundException -> Mono.error(WebException(HttpStatus.NOT_FOUND, it.message))
+                        is QuizFinishedException -> Mono.error(WebException(HttpStatus.CONFLICT, it.message))
+                        else -> Mono.error(WebException(HttpStatus.BAD_REQUEST, it.message))
+                    }
                 }
     }
 
@@ -27,21 +30,31 @@ class ParticipantsController(private val quizService: QuizService) {
     fun buzzer(@PathVariable quizId: UUID, @PathVariable participantId: UUID, @RequestBody(required = false) estimation: String?): Mono<Unit> {
         return if (estimation == null) {
             quizService.buzzer(BuzzerCommand(quizId, participantId))
+                    .onErrorResume { Mono.error(WebException(HttpStatus.CONFLICT, it.message)) }
         } else {
             quizService.estimate(EstimationCommand(quizId, participantId, estimation))
+                    .onErrorResume { Mono.error(WebException(HttpStatus.CONFLICT, it.message)) }
         }
+    }
+
+    @PutMapping("/{participantId}/choices/{choiceId}")
+    @ResponseStatus(HttpStatus.OK)
+    fun selectChoice(@PathVariable quizId: UUID, @PathVariable participantId: UUID, @PathVariable choiceId: UUID): Mono<Unit> {
+        return quizService.selectChoice(SelectChoiceCommand(quizId, participantId, choiceId))
     }
 
     @PutMapping("/{participantId}/togglereveal")
     @ResponseStatus(HttpStatus.OK)
     fun toggleRevealPrevention(@PathVariable quizId: UUID, @PathVariable participantId: UUID): Mono<Unit> {
         return quizService.toggleAnswerRevealAllowed(ToggleAnswerRevealAllowedCommand(quizId, participantId))
+                .onErrorResume { Mono.error(WebException(HttpStatus.CONFLICT, it.message)) }
     }
 
     @DeleteMapping("/{participantId}")
     @ResponseStatus(HttpStatus.OK)
     fun delete(@PathVariable quizId: UUID, @PathVariable participantId: UUID): Mono<Unit> {
         return quizService.deleteParticipant(DeleteParticipantCommand(quizId, participantId))
+                .onErrorResume { Mono.error(WebException(HttpStatus.CONFLICT, it.message)) }
     }
 
 }

@@ -1,14 +1,16 @@
 import React, { useCallback, useEffect, useRef } from 'react';
 import './Buzzer.css';
 import Quiz from '../../quiz-client-shared/quiz';
+import { useTranslation } from 'react-i18next';
 
-const buzzerfile = require('./../../assets/buzzer.mp3');
 interface BuzzerProps {
     quiz: Quiz;
     participantId: string;
 }
 
 const Buzzer: React.FC<BuzzerProps> = (props: BuzzerProps) => {
+    const { t } = useTranslation();
+
     const buzzerAudio = useRef(null);
 
     const isParticipantActive = props.quiz.participants.some(p => p.turn && p.id === props.participantId);
@@ -45,7 +47,7 @@ const Buzzer: React.FC<BuzzerProps> = (props: BuzzerProps) => {
     }, [])
 
     useEffect(() => {
-        console.log("add key listener for buzzer if question is open")
+        console.debug("add key listener for buzzer if question is open")
         if (isCurrentQuestionOpen) {
             console.log("question is open")
             const buzzerOnKeydown = (event) => {
@@ -56,7 +58,7 @@ const Buzzer: React.FC<BuzzerProps> = (props: BuzzerProps) => {
             document.addEventListener('keydown', buzzerOnKeydown);
 
             return () => {
-                console.log("clean buzzer keylistener");
+                console.debug("clean buzzer keylistener");
                 document.removeEventListener('keydown', buzzerOnKeydown);
             }
         }
@@ -64,14 +66,14 @@ const Buzzer: React.FC<BuzzerProps> = (props: BuzzerProps) => {
 
     return (
         <span>
-            <audio src={buzzerfile} ref={buzzerAudio} preload='auto'></audio>
+            <audio src='./assets/buzzer.mp3' ref={buzzerAudio} preload='auto'></audio>
             <button data-testid="buzzer" disabled={!isCurrentQuestionOpen} className={isParticipantActive ? 'buzzer-button active' : 'buzzer-button'} onMouseDown={buzzer}>
                 {isCurrentQuestionOpen ? 
-                    'I know it!' :
+                    t('buzzerOpen') :
                     (!isParticipantActive ?
-                    'Too late!'
+                    t('buzzerClosed')
                     :
-                    'Your turn!')
+                    t('buzzerHit'))
                 }    
             </button>
         </span>

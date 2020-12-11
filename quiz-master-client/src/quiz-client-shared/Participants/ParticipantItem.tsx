@@ -1,15 +1,28 @@
 import React from 'react';
+import { useTranslation } from 'react-i18next';
+import { connect } from 'react-redux';
 import Quiz, { Participant } from "../quiz";
 import Answers from '../../Answers/Answers';
 import './ParticipantItem.scss';
+import { showError } from '../../redux/actions';
 
-interface ParticipantProps {
+interface StateProps {}
+
+interface DispatchProps {
+    showError: (errorMessage: string) => void;
+}
+
+interface OwnProps {
     quiz: Quiz;
     participant: Participant;
     pointsAfterLastQuestion: number;
 }
 
+type ParticipantProps = StateProps & DispatchProps & OwnProps;
+
 const ParticipantItem: React.FC<ParticipantProps> = (props: ParticipantProps) => {
+
+    const { t } = useTranslation();
 
     const pointDifference = () => {
         if (props.pointsAfterLastQuestion !== props.participant.points) {
@@ -34,7 +47,12 @@ const ParticipantItem: React.FC<ParticipantProps> = (props: ParticipantProps) =>
         fetch(`${process.env.REACT_APP_BASE_URL}${deleteUrl}`, {
             method: 'DELETE'
         })
-    }
+        .then(response => {
+            if (response.status === 409) {
+                response.json().then(json => props.showError(t(json.message)));
+            }
+        });
+    };
 
     return <div data-testid="participant-wrapper" className="participant" >
                 <div className={"participant-header"}>
@@ -42,14 +60,14 @@ const ParticipantItem: React.FC<ParticipantProps> = (props: ParticipantProps) =>
                     <div className="points">({props.pointsAfterLastQuestion}{pointDifference()})</div>
                     <div className="participant-actions">
                         { !props.participant.revealAllowed && 
-                            <span data-testid="reveal-not-allowed" className="icon" title="The participant does not want the answer to be shown"><i className="fas fa-eye-slash"></i></span> 
+                            <span data-testid="reveal-not-allowed" className="icon" title={t('titleRevealNotAllowed', { name: props.participant.name })}><i className="fas fa-eye-slash"></i></span> 
                         }
-                        <span data-testid="delete" className="icon clickable has-text-danger" title="Delete participant" onClick={() => deleteParticipant()}><i className="fa fa-trash"></i></span>   
+                        <span data-testid="delete" className="icon clickable has-text-danger" title={t('titleDeleteParticipant')} onClick={() => deleteParticipant()}><i className="fa fa-trash"></i></span>   
                     </div>
                 </div>
                 <div className={'participant-answer' + (props.participant.turn || getEstimatedValue() ? ' visible': '')}>
                     <div className="bubble">
-                        {props.participant.turn ? 'I have buzzered!' : getEstimatedValue()}
+                        {props.participant.turn ? t('buzzerHint') : getEstimatedValue()}
                     </div>
                     <div className={"answer-actions"}>
                         {(props.participant.turn || isEstimationQuestion()) && <Answers quiz={props.quiz} participant={props.participant}></Answers>}
@@ -59,4 +77,7 @@ const ParticipantItem: React.FC<ParticipantProps> = (props: ParticipantProps) =>
             </div>
 }
 
-export default ParticipantItem;
+export default connect<StateProps, DispatchProps, OwnProps>(
+    null,
+    {showError}
+)(ParticipantItem);

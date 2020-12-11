@@ -3,6 +3,28 @@ import { render } from '@testing-library/react';
 import Quiz from '../quiz';
 import QuizStatistics from './QuizStatistics';
 
+jest.mock('react-i18next', () => ({
+    useTranslation: () => {
+        return {
+            t: (str: string, keys: object) => {
+                if (str === 'answerStatisticAllowedAnswer') {
+                    return `${keys["participantName"]} has answered "${keys["answer"]}" after ${keys["time"]} seconds and it was ${keys["rating"]}`;
+                } else if (str === 'answerStatisticWithoutAnswer') {
+                    return `${keys["participantName"]} has answered after ${keys["time"]} seconds and it was ${keys["rating"]}`;
+                } if (str === 'buzzerStatistic') {
+                    return `${keys["participantName"]} has buzzered after ${keys["time"]} seconds and it was ${keys["rating"]}`;
+                } else {
+                    return null;
+                }
+            },
+            i18n: {
+                changeLanguage: () => new Promise(() => {}),
+            },
+        };
+        
+    },
+}));
+
 test('does not display statistics', () => {
     const quiz: Quiz = {
         id: '1',

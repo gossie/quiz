@@ -13,7 +13,7 @@ internal class QuizStatisticsProviderTest {
         val quiz = Quiz(name = "Awesome Quiz")
 
         val buzzerQuestion = Question(question = "Wofür steht die Abkürzung a.D.?")
-        val freetextQuestion = Question(question = "Wer schrieb Peter und der Wolf?", estimates = HashMap(), initialTimeToAnswer = 45)
+        val freetextQuestion = Question(question = "Wer schrieb Peter und der Wolf?", initialTimeToAnswer = 45, estimates = HashMap())
         val participant1 = Participant(name = "Lena")
         val participant2 = Participant(name = "Erik")
 
@@ -43,7 +43,7 @@ internal class QuizStatisticsProviderTest {
         StepVerifier.create(quizStatisticsProvider.generateStatistics(quiz.id))
                 .consumeNextWith { quiz ->
                     assertThat(quiz)
-                            .questionStatisticsSizeId(2)
+                            .questionStatisticsSizeIs(2)
                             .hasQuestionStatistics(0) { questionStatistics ->
                                 questionStatistics
                                         .hasQuestionId(buzzerQuestion.id)
@@ -55,7 +55,7 @@ internal class QuizStatisticsProviderTest {
                                 questionStatistics
                                         .hasQuestionId(freetextQuestion.id)
                                         .answerStatisticsSizeIs(2)
-                                        .hasAnswerStatistics(0) { it.isEqualTo(AnswerStatistics(participant1.id, 1L, "Sergej Prokofjew", AnswerCommand.Answer.CORRECT)) }
+                                        .hasAnswerStatistics(0) { it.isEqualTo(AnswerStatistics(participant1.id, 1L, "Sergej Prokofjew", rating = AnswerCommand.Answer.CORRECT)) }
                                         .hasAnswerStatistics(1) { it.isEqualTo(AnswerStatistics(participant2.id, 2L, "Max Mustermann")) }
                             }
                 }
@@ -67,7 +67,7 @@ internal class QuizStatisticsProviderTest {
         val quiz = Quiz(name = "Awesome Quiz")
 
         val buzzerQuestion = Question(question = "Wofür steht die Abkürzung a.D.?")
-        val freetextQuestion = Question(question = "Wer schrieb Peter und der Wolf?", estimates = HashMap(), initialTimeToAnswer = 45)
+        val freetextQuestion = Question(question = "Wer schrieb Peter und der Wolf?", initialTimeToAnswer = 45, estimates = HashMap())
         val questionToBeDeleted = Question(question = "Ich komme nicht ins Quiz")
         val participant1 = Participant(name = "Lena")
         val participant2 = Participant(name = "Erik")
@@ -100,7 +100,7 @@ internal class QuizStatisticsProviderTest {
         StepVerifier.create(quizStatisticsProvider.generateStatistics(quiz.id))
                 .consumeNextWith { quiz ->
                     assertThat(quiz)
-                            .questionStatisticsSizeId(2)
+                            .questionStatisticsSizeIs(2)
                             .hasQuestionStatistics(0) { questionStatistics ->
                                 questionStatistics
                                         .hasQuestionId(buzzerQuestion.id)
@@ -112,7 +112,7 @@ internal class QuizStatisticsProviderTest {
                                 questionStatistics
                                         .hasQuestionId(freetextQuestion.id)
                                         .answerStatisticsSizeIs(2)
-                                        .hasAnswerStatistics(0) { it.isEqualTo(AnswerStatistics(participant1.id, 1L, "Sergej Prokofjew", AnswerCommand.Answer.CORRECT)) }
+                                        .hasAnswerStatistics(0) { it.isEqualTo(AnswerStatistics(participant1.id, 1L, "Sergej Prokofjew", rating = AnswerCommand.Answer.CORRECT)) }
                                         .hasAnswerStatistics(1) { it.isEqualTo(AnswerStatistics(participant2.id, 2L, "Max Mustermann")) }
                             }
                 }

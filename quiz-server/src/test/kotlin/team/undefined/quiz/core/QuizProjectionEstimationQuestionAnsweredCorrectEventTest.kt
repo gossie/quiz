@@ -43,7 +43,7 @@ internal class QuizProjectionEstimationQuestionAnsweredCorrectEventTest {
                     && observedQuiz.get().questions.size == 1
                     && observedQuiz.get().questions[0].pending
                     && !observedQuiz.get().questions[0].alreadyPlayed
-                    && observedQuiz.get().isUndoPossible()
+                    && observedQuiz.get().undoPossible
                     && !observedQuiz.get().finished
         }
     }
@@ -87,7 +87,7 @@ internal class QuizProjectionEstimationQuestionAnsweredCorrectEventTest {
                     && observedQuiz.get().questions.size == 1
                     && observedQuiz.get().questions[0].pending
                     && !observedQuiz.get().questions[0].alreadyPlayed
-                    && observedQuiz.get().isUndoPossible()
+                    && observedQuiz.get().undoPossible
                     && !observedQuiz.get().finished
         }
     }
@@ -128,7 +128,7 @@ internal class QuizProjectionEstimationQuestionAnsweredCorrectEventTest {
                     && observedQuiz.get().questions.size == 1
                     && observedQuiz.get().questions[0].pending
                     && !observedQuiz.get().questions[0].alreadyPlayed
-                    && observedQuiz.get().isUndoPossible()
+                    && observedQuiz.get().undoPossible
                     && !observedQuiz.get().finished
         }
     }

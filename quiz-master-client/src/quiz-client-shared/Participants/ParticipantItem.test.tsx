@@ -1,10 +1,21 @@
 import React from 'react';
-import { render, cleanup } from '@testing-library/react';
+import { render, cleanup } from '../../test-utils';
 import Quiz from '../quiz';
 import ParticipantItem from './ParticipantItem';
 
 beforeEach(() => () => cleanup()); 
 afterEach(() => cleanup());
+
+jest.mock('react-i18next', () => ({
+    useTranslation: () => {
+        return {
+            t: (str: string, keys: object) => str,
+            i18n: {
+                changeLanguage: () => new Promise(() => {}),
+            },
+        };
+    },
+}));
 
 test('displays participant after a correct answer', () => {
     const quiz: Quiz = {
@@ -30,6 +41,7 @@ test('displays participant after a correct answer', () => {
         ],
         openQuestions: [],
         playedQuestions: [],
+        expirationDate: 1234,
         timestamp: 1234,
         links: []
     }
@@ -71,6 +83,7 @@ test('displays participant after an incorrect answer', () => {
         openQuestions: [],
         playedQuestions: [],
         timestamp: 1234,
+        expirationDate: 1234,
         links: []
     }
 
@@ -110,6 +123,7 @@ test('displays participant that did not answer', () => {
         ],
         openQuestions: [],
         playedQuestions: [],
+        expirationDate: 1234,
         timestamp: 1234,
         links: []
     }
@@ -142,6 +156,7 @@ test('displays icon to indicate that answer will not be revealed', () => {
         ],
         openQuestions: [],
         playedQuestions: [],
+        expirationDate: 1234,
         timestamp: 1234,
         links: []
     }
@@ -167,6 +182,7 @@ test('displays no icon because reveal is allowed', () => {
         ],
         openQuestions: [],
         playedQuestions: [],
+        expirationDate: 1234,
         timestamp: 1234,
         links: []
     }
@@ -182,7 +198,7 @@ test('deletes participant', () => {
         expect(request).toEqual({
             method: 'DELETE'
         });
-        Promise.resolve();
+        return Promise.resolve({ status: 200 });
     });
 
     const quiz: Quiz = {
@@ -205,6 +221,7 @@ test('deletes participant', () => {
         ],
         openQuestions: [],
         playedQuestions: [],
+        expirationDate: 1234,
         timestamp: 1234,
         links: []
     }

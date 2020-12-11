@@ -8,15 +8,15 @@ data class Quiz(
         val name: String,
         val participants: List<Participant> = ArrayList(),
         val questions: List<Question> = ArrayList(),
-        var finished: Boolean = false,
-        var quizStatistics: QuizStatistics? = null) {
-
-    private var timestamp: Long = Date().time
-    private var undoPossible: Boolean = false
-    private var redoPossible: Boolean = false
+        val finished: Boolean = false,
+        val quizStatistics: QuizStatistics? = null,
+        val timestamp: Long = Date().time,
+        val undoPossible: Boolean = false,
+        val redoPossible: Boolean = false
+) {
 
     val pendingQuestion: Question?
-        get() = questions.filter { it.pending }.firstOrNull()
+        get() = questions.firstOrNull { it.pending }
 
     fun nobodyHasBuzzered(): Boolean {
         return participants
@@ -24,16 +24,27 @@ data class Quiz(
     }
 
     fun decreaseTimeToAnswer(questionId: UUID): Quiz {
-        val question = questions.find { it.id == questionId }!!
-        question.secondsLeft = question.secondsLeft!! - 1
-        return this
+        val newQuestions = questions.map {
+            if (it.id == questionId) {
+                it.decreaseSecondsLeft()
+            } else {
+                it
+            }
+        }
+
+        return Quiz(id, name, participants, newQuestions, finished, quizStatistics, timestamp, undoPossible)
     }
 
     fun select(participantId: UUID): Quiz {
-        participants
-                .find { it.id == participantId }
-                ?.turn = true
-        return this
+        val newParticipants = participants
+            .map {
+                if (it.id == participantId) {
+                    Participant(it.id, it.name, true, it.points, it.revealAllowed)
+                } else {
+                    it
+                }
+            }
+        return Quiz(id, name, newParticipants, questions, finished, quizStatistics, timestamp, undoPossible, redoPossible)
     }
 
     fun estimate(participantId: UUID, estimatedValue: String): Quiz {
@@ -43,10 +54,21 @@ data class Quiz(
         return this
     }
 
+    fun selectChoice(participantId: UUID, choiceId: UUID): Quiz {
+        val choice = questions.find { it.pending }?.choices?.find { it.id == choiceId }
+        return estimate(participantId, choice?.choice ?: "")
+    }
+
     fun toggleAnswerRevealAllowed(participantId: UUID): Quiz {
-        val participant = participants.find { it.id == participantId }
-        participant?.revealAllowed = participant?.revealAllowed?.not() ?: false
-        return this
+        val newParticipants = participants
+            .map {
+                if (it.id == participantId) {
+                    Participant(it.id, it.name, it.turn, it.points, !it.revealAllowed)
+                } else {
+                    it
+                }
+            }
+        return Quiz(id, name, newParticipants, questions, finished, quizStatistics, timestamp, undoPossible, redoPossible)
     }
 
     fun hasNoParticipantWithName(name: String): Boolean {
@@ -58,70 +80,103 @@ data class Quiz(
     }
 
     fun addParticipantIfNecessary(participant: Participant): Quiz {
-        if (hasNoParticipantWithName(participant.name)) {
-            (participants as MutableList).add(participant)
+        val newParticipants = if (hasNoParticipantWithName(participant.name)) {
+            val tmp = ArrayList(participants)
+            tmp.add(participant)
+            tmp
+        } else {
+            participants
         }
-        return this
+        return Quiz(id, name, newParticipants, questions, finished, quizStatistics, timestamp, undoPossible, redoPossible)
     }
 
     fun deleteParticipant(participantId: UUID): Quiz {
-        (participants as MutableList).removeIf { it.id == participantId }
+        val newParticipants = participants.filter { it.id != participantId }
         questions
                 .filter { it.estimates?.containsKey(participantId) ?: false }
                 .forEach { (it.estimates as MutableMap).remove(participantId) }
-        return this
+        return Quiz(id, name, newParticipants, questions, finished, quizStatistics, timestamp, undoPossible, redoPossible)
     }
 
     fun addQuestion(question: Question): Quiz {
-        (questions as MutableList).add(question)
-        return this
+        val prevId = if (questions.isNotEmpty()) {
+            questions.last().id
+        } else {
+            null
+        }
+
+        val newQuestions = ArrayList(questions)
+        newQuestions.add(question.setPreviousQuestionId(prevId))
+
+        return Quiz(id, name, participants, newQuestions, finished, quizStatistics, timestamp, undoPossible)
     }
 
     fun editQuestion(question: Question): Quiz {
-        (questions as MutableList).replaceAll {
-            if (it.id == question.id) {
-                question
+        val questionsWithoutEdited = ArrayList(questions.filter { it.id != question.id })
+        val indexOfPrevious = questionsWithoutEdited.indexOfFirst { it.id == question.previousQuestionId }
+        questionsWithoutEdited.add(indexOfPrevious + 1, question)
+
+        val newQuestions = questionsWithoutEdited.mapIndexed { index, it ->
+            val p = if (index == 0) {
+                null
             } else {
-                it
+                questionsWithoutEdited[index - 1].id
             }
+
+            it.setPreviousQuestionId(p)
         }
-        return this
+
+        return Quiz(id, name, participants, newQuestions, finished, quizStatistics, timestamp, undoPossible, redoPossible)
     }
 
     fun deleteQuestion(questionId: UUID): Quiz {
-        (questions as MutableList).removeIf { it.id == questionId }
-        return this
+        val newQuestions = questions.filter { it.id != questionId }
+        return Quiz(id, name, participants, newQuestions, finished, quizStatistics, timestamp, undoPossible, redoPossible)
     }
 
     fun startQuestion(questionId: UUID): Quiz {
-        participants.forEach { it.turn = false }
-        questions
-                .filter { it.pending && it.id != questionId }
-                .forEach {
-                    it.pending = false
-                    it.alreadyPlayed = true
+        val newParticipants = participants.map { Participant(it.id, it.name, false, it.points, it.revealAllowed) }
+        val newQuestions = questions
+                .map {
+                    if (it.pending && it.id != questionId) {
+                        it.finish()
+                    } else if (it.id == questionId) {
+                        it.start()
+                    } else {
+                        it
+                    }
                 }
 
-        val question = questions.filter { it.id == questionId }[0]
-        question.pending = !question.pending
-        question.secondsLeft = question.initialTimeToAnswer
-
-        return this
+        return Quiz(id, name, newParticipants, newQuestions, finished, quizStatistics, timestamp, undoPossible, redoPossible)
     }
 
     fun currentQuestionIsBuzzerQuestion(): Boolean {
-        return questions.find { it.pending }
-                ?.estimates == null
+        val currentQuestion = questions.find { it.pending }
+        return currentQuestion?.estimates == null
     }
 
     fun currentQuestionIsFreetextQuestion(): Boolean {
-        return !currentQuestionIsBuzzerQuestion()
+        val currentQuestion = questions.find { it.pending }
+        return currentQuestion?.choices == null
+                && currentQuestion?.estimates != null
+    }
+
+    fun currentQuestionIsMultipleChoiceQuestion(): Boolean {
+        val currentQuestion = questions.find { it.pending }
+        return currentQuestion?.choices?.isNotEmpty() ?: false
+                && currentQuestion?.estimates != null
     }
 
     fun currentAnswerIsDifferent(participantId: UUID, value: String): Boolean {
         return questions.find { it.pending }
                 ?.estimates
                 ?.get(participantId) != value
+    }
+
+    fun currentChoiceIsDifferent(participantId: UUID, choiceId: UUID): Boolean {
+        val currentQuestion = questions.find { it.pending }
+        val choice = currentQuestion?.choices?.find { it.id == choiceId }
+        return currentAnswerIsDifferent(participantId, choice?.choice ?: "")
     }
 
     private fun checkParticipant(participant: Participant, participantId: UUID?): Boolean {
@@ -133,67 +188,72 @@ data class Quiz(
     }
 
     fun answeredCorrect(participantId: UUID?): Quiz {
-        participants
-                .filter { checkParticipant(it, participantId) }
-                .forEach { it.points = it.points + 2 }
-        return this
+        val newParticipants = participants
+            .map {
+                if (checkParticipant(it, participantId)) {
+                    Participant(it.id, it.name, it.turn, it.points + 2, it.revealAllowed)
+                } else {
+                    it
+                }
+            }
+        return Quiz(id, name, newParticipants, questions, finished, quizStatistics, timestamp, undoPossible, redoPossible)
     }
 
     fun answeredIncorrect(participantId: UUID?): Quiz {
-        participants
-                .filter { checkParticipant(it, participantId) }
-                .forEach { it.points = (it.points - 1).coerceAtLeast(0) }
-        return this
+        val newParticipants = participants
+            .map {
+                if (checkParticipant(it, participantId)) {
+                    Participant(it.id, it.name, it.turn, (it.points - 1).coerceAtLeast(0), it.revealAllowed)
+                } else {
+                    it
+                }
+            }
+        return Quiz(id, name, newParticipants, questions, finished, quizStatistics, timestamp, undoPossible, redoPossible)
     }
 
     fun reopenQuestion(): Quiz {
-        participants.forEach { it.turn = false }
-        questions
-                .filter { it.pending }
-                .forEach { it.secondsLeft = it.initialTimeToAnswer }
-        return this
+        val newParticipants = participants.map { Participant(it.id, it.name, false, it.points, it.revealAllowed) }
+        val newQuestions = questions
+                .map {
+                    if (it.pending) {
+                        it.reopen()
+                    } else {
+                        it
+                    }
+                }
+        return Quiz(id, name, newParticipants, newQuestions, finished, quizStatistics, timestamp, undoPossible, redoPossible)
     }
 
     fun revealAnswersOfCurrentQuestion(): Quiz {
-        questions
-                .filter { it.pending }
-                .forEach {
-                    it.revealed = true
-                    it.secondsLeft = 0
+        val newQuestions = questions
+                .map {
+                    if (it.pending) {
+                        it.reveal()
+                    } else {
+                        it
+                    }
                 }
-        return this
+        return Quiz(id, name, participants, newQuestions, finished, quizStatistics, timestamp, undoPossible, redoPossible)
     }
 
     fun finishQuiz(): Quiz {
-        finished = true
-        return this
+        return Quiz(id, name, participants, questions, true, quizStatistics, timestamp, undoPossible, redoPossible)
+    }
+
+    fun setQuizStatistics(quizStatistics: QuizStatistics): Quiz {
+        return Quiz(id, name, participants, questions, finished, quizStatistics, timestamp, undoPossible, redoPossible)
     }
 
     fun setTimestamp(timestamp: Long): Quiz {
-        this.timestamp = timestamp
-        return this
-    }
-
-    fun getTimestamp(): Long {
-        return timestamp
-    }
-
-    fun isUndoPossible(): Boolean {
-        return undoPossible
+        return Quiz(id, name, participants, questions, finished, quizStatistics, timestamp, undoPossible, redoPossible)
     }
 
     fun setUndoPossible(): Quiz {
-        this.undoPossible = true
-        return this
-    }
-
-    fun isRedoPossible(): Boolean {
-        return redoPossible
+        return Quiz(id, name, participants, questions, finished, quizStatistics, timestamp, true, redoPossible)
     }
 
     fun setRedoPossible(redoPossible: Boolean): Quiz {
-        this.redoPossible = redoPossible
-        return this
+        return Quiz(id, name, participants, questions, finished, quizStatistics, timestamp, undoPossible, redoPossible)
     }
 
 }

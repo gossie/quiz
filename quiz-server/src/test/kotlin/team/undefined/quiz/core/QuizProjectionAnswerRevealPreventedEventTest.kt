@@ -6,7 +6,6 @@ import org.awaitility.kotlin.await
 import org.awaitility.kotlin.untilAsserted
 import org.junit.jupiter.api.Test
 import org.mockito.Mockito
-import reactor.core.publisher.Flux
 import java.util.concurrent.atomic.AtomicReference
 
 internal class QuizProjectionAnswerRevealPreventedEventTest {
@@ -51,7 +50,7 @@ internal class QuizProjectionAnswerRevealPreventedEventTest {
             assertThat(q.questions[0].revealed).isTrue()
             assertThat(q.questions[0].secondsLeft).isEqualTo(0)
             assertThat(q.questions[0].alreadyPlayed).isFalse()
-            assertThat(q.isUndoPossible()).isTrue()
+            assertThat(q.undoPossible).isTrue()
             assertThat(q.finished).isFalse()
         }
     }

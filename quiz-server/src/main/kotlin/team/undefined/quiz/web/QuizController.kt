@@ -40,22 +40,26 @@ class QuizController(private val quizService: QuizService,
     @ResponseStatus(HttpStatus.OK)
     fun answer(@PathVariable quizId: UUID, @PathVariable participantId: UUID, @RequestBody correct: String): Mono<Unit> {
         return if (correct == "true") {
-            quizService.answer(AnswerCommand(quizId, participantId, AnswerCommand.Answer.CORRECT))
+            quizService.rate(AnswerCommand(quizId, participantId, AnswerCommand.Answer.CORRECT))
+                    .onErrorResume { Mono.error(WebException(HttpStatus.CONFLICT, it.message)) }
         } else {
-            quizService.answer(AnswerCommand(quizId, participantId, AnswerCommand.Answer.INCORRECT))
+            quizService.rate(AnswerCommand(quizId, participantId, AnswerCommand.Answer.INCORRECT))
+                    .onErrorResume { Mono.error(WebException(HttpStatus.CONFLICT, it.message)) }
         }
     }
 
     @PutMapping("/{quizId}")
     @ResponseStatus(HttpStatus.OK)
     fun reopenCurrentQuestion(@PathVariable quizId: UUID): Mono<Unit> {
-        return quizService.reopenQuestion(ReopenCurrentQuestionCommand(quizId));
+        return quizService.reopenQuestion(ReopenCurrentQuestionCommand(quizId))
+                .onErrorResume { Mono.error(WebException(HttpStatus.CONFLICT, it.message)) }
     }
 
     @PatchMapping("/{quizId}")
     @ResponseStatus(HttpStatus.OK)
     fun revealAnswers(@PathVariable quizId: UUID): Mono<Unit> {
-        return quizService.revealAnswers(RevealAnswersCommand(quizId));
+        return quizService.revealAnswers(RevealAnswersCommand(quizId))
+                .onErrorResume { Mono.error(WebException(HttpStatus.CONFLICT, it.message)) }
     }
 
     @GetMapping(path = ["/{quizId}/quiz-master"], produces = [MediaType.TEXT_EVENT_STREAM_VALUE])
@@ -71,10 +75,12 @@ class QuizController(private val quizService: QuizService,
         eventBus.post(ForceEmitCommand(quizId))
         return Flux.merge(observer, getHeartbeat(quizId))
                 .map {
+                    it.data()?.playedQuestions?.forEach { it.correctAnswer = null }
                     it.data()?.openQuestions
                         ?.forEach { question ->
+                            question.correctAnswer = null
                             question.estimates?.keys?.forEach { id ->
-                                (question.estimates as MutableMap)[id] = determineAnswerToDisplay(it.data()!!, question, id);
+                                (question.estimates as MutableMap)[id] = determineAnswerToDisplay(it.data()!!, question, id)
                             }
                     }
                     it
@@ -111,7 +117,7 @@ class QuizController(private val quizService: QuizService,
         return quizProjection.observeQuiz(quizId)
                 .flatMap { it.map() }
                 .map {
-                    logger.info("Sending quiz {} to the client", it.id)
+                    logger.trace("Sending quiz {} to the client", it.id)
                     ServerSentEvent.builder<QuizDTO>()
                             .event("quiz")
                             .data(it)
@@ -125,7 +131,7 @@ class QuizController(private val quizService: QuizService,
                 .map { quizProjection.determineQuiz(quizId) }
                 .flatMap { it!!.map() }
                 .map {
-                    logger.info("Sending quiz {} to the client as heartbeat", it)
+                    logger.trace("Sending quiz {} to the client as heartbeat", it.id)
                     ServerSentEvent.builder<QuizDTO>()
                             .event("quiz")
                             .data(it)

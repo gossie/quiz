@@ -5,7 +5,7 @@ import java.util.UUID
 data class Participant(
         val id: UUID = UUID.randomUUID(),
         val name: String,
-        var turn: Boolean = false,
-        var points: Long = 0,
-        var revealAllowed: Boolean = true
+        val turn: Boolean = false,
+        val points: Long = 0,
+        val revealAllowed: Boolean = true
 )

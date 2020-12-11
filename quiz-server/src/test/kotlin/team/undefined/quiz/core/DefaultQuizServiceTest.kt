@@ -111,7 +111,7 @@ internal class DefaultQuizServiceTest {
 
         val participant = Participant(name = "Sandra")
         StepVerifier.create(quizService.createParticipant(CreateParticipantCommand(quizId, participant)))
-                .verifyError()
+                .verifyError(QuizNotFoundException::class.java)
 
         verify(eventBus).post(ForceEmitCommand(quizId))
         verifyNoMoreInteractions(eventBus)
@@ -209,6 +209,29 @@ internal class DefaultQuizServiceTest {
     }
 
     @Test
+    fun shouldNotAllowBuzzerBecauseItIsAnMultipleChoiceQuestion() {
+        val quizId = UUID.randomUUID()
+        val lenasId = UUID.randomUUID()
+        val questionId = UUID.randomUUID()
+
+        `when`(quizRepository.determineEvents(quizId))
+                .thenReturn(Flux.just(
+                        QuizCreatedEvent(quizId, Quiz(quizId, "Quiz")),
+                        QuestionCreatedEvent(quizId, question = Question(questionId, "Warum ist die Banane krum?", choices = listOf(Choice(choice = "a")))),
+                        ParticipantCreatedEvent(quizId, Participant(lenasId, "Lena")),
+                        QuestionAskedEvent(quizId, questionId)
+                ))
+
+        val quizService = DefaultQuizService(quizRepository, UndoneEventsCache(), eventBus)
+
+        val buzzer = quizService.buzzer(BuzzerCommand(quizId, lenasId))
+        StepVerifier.create(buzzer)
+                .verifyComplete()
+
+        verifyNoInteractions(eventBus)
+    }
+
+    @Test
     fun shouldNotAllowEstimationCommandForBuzzerQuestion() {
         // The Beuke Bug
         val quizId = UUID.randomUUID()
@@ -227,6 +250,28 @@ internal class DefaultQuizServiceTest {
 
         val buzzer = quizService.estimate(EstimationCommand(quizId, beukesId, "32"))
         StepVerifier.create(buzzer)
+                .verifyComplete()
+
+        verifyNoInteractions(eventBus)
+    }
+
+    @Test
+    fun shouldNotAllowEstimationCommandForMultipleChoiceQuestion() {
+        val quizId = UUID.randomUUID()
+        val lenasId = UUID.randomUUID()
+        val questionId = UUID.randomUUID()
+
+        `when`(quizRepository.determineEvents(quizId))
+                .thenReturn(Flux.just(
+                        QuizCreatedEvent(quizId, Quiz(quizId, "Quiz")),
+                        QuestionCreatedEvent(quizId, question = Question(questionId, "Warum ist die Banane krum?", choices = listOf(Choice(choice = "a")))),
+                        ParticipantCreatedEvent(quizId, Participant(lenasId, "Lena")),
+                        QuestionAskedEvent(quizId, questionId)
+                ))
+
+        val quizService = DefaultQuizService(quizRepository, UndoneEventsCache(), eventBus)
+
+        StepVerifier.create(quizService.estimate(EstimationCommand(quizId, lenasId, "Mein Antwort")))
                 .verifyComplete()
 
         verifyNoInteractions(eventBus)
@@ -333,7 +378,7 @@ internal class DefaultQuizServiceTest {
 
         val quizService = DefaultQuizService(quizRepository, UndoneEventsCache(), eventBus)
 
-        StepVerifier.create(quizService.editQuestion(EditQuestionCommand(quizId, questionId, Question(questionId,"Wer ist das?", imageUrl = "urlToImage", visibility = Question.QuestionVisibility.PUBLIC))))
+        StepVerifier.create(quizService.editQuestion(EditQuestionCommand(quizId, questionId, Question(questionId, "Wer ist das?", imageUrl = "urlToImage", visibility = Question.QuestionVisibility.PUBLIC))))
                 .consumeNextWith {
                     verify(eventBus).post(argThat { (it as QuestionEditedEvent).quizId == quizId && it.question == Question(questionId, "Wer ist das?", false, "urlToImage", visibility = Question.QuestionVisibility.PUBLIC, alreadyPlayed = false) })
                 }
@@ -383,6 +428,10 @@ internal class DefaultQuizServiceTest {
                 .thenReturn(Flux.just(
                         QuizCreatedEvent(quizId, Quiz(quizId, "Quiz")),
                         QuestionCreatedEvent(quizId, Question(questionId, "Warum ist die Banane krum?", initialTimeToAnswer = 3, secondsLeft = 3)),
+                ))
+                .thenReturn(Flux.just(
+                        QuizCreatedEvent(quizId, Quiz(quizId, "Quiz")),
+                        QuestionCreatedEvent(quizId, Question(questionId, "Warum ist die Banane krum?", initialTimeToAnswer = 3, secondsLeft = 3)),
                         QuestionAskedEvent(quizId, questionId)
                 ))
 
@@ -401,6 +450,130 @@ internal class DefaultQuizServiceTest {
                         && it.questionId == questionId
             })
         }
+    }
+
+    @Test
+    fun shouldSelectChoice() {
+        val quizId = UUID.randomUUID()
+        val questionId = UUID.randomUUID()
+        val choice1Id = UUID.randomUUID()
+        val choice2Id = UUID.randomUUID()
+        val participantId = UUID.randomUUID()
+
+        `when`(quizRepository.determineEvents(quizId))
+                .thenReturn(Flux.just(
+                        QuizCreatedEvent(quizId, Quiz(quizId, "Quiz")),
+                        QuestionCreatedEvent(quizId, question = Question(questionId, "Wo befindet sich das Kahnbein?", choices = listOf(Choice(choice1Id, "im Fuß"), Choice(choice2Id, "In der Hand")))),
+                        ParticipantCreatedEvent(quizId, Participant(participantId, "Lena")),
+                        QuestionAskedEvent(quizId, questionId)
+                ))
+
+        val quizService = DefaultQuizService(quizRepository, UndoneEventsCache(), eventBus)
+
+        StepVerifier.create(quizService.selectChoice(SelectChoiceCommand(quizId, participantId, choice2Id)))
+                .consumeNextWith {
+                    verify(eventBus).post(argThat { (it as ChoiceSelectedEvent).quizId == quizId && it.participantId == participantId && it.choiceId == choice2Id })
+                }
+                .verifyComplete()
+    }
+
+    @Test
+    fun shouldPreventDuplicateSelections() {
+        val quizId = UUID.randomUUID()
+        val questionId = UUID.randomUUID()
+        val choice1Id = UUID.randomUUID()
+        val choice2Id = UUID.randomUUID()
+        val participantId = UUID.randomUUID()
+
+        `when`(quizRepository.determineEvents(quizId))
+            .thenReturn(Flux.just(
+                QuizCreatedEvent(quizId, Quiz(quizId, "Quiz")),
+                QuestionCreatedEvent(quizId, question = Question(questionId, "Wo befindet sich das Kahnbein?", choices = listOf(Choice(choice1Id, "im Fuß"), Choice(choice2Id, "In der Hand")))),
+                ParticipantCreatedEvent(quizId, Participant(participantId, "Lena")),
+                QuestionAskedEvent(quizId, questionId),
+                ChoiceSelectedEvent(quizId, participantId, choice1Id),
+                ChoiceSelectedEvent(quizId, participantId, choice2Id)
+            ))
+
+        val quizService = DefaultQuizService(quizRepository, UndoneEventsCache(), eventBus)
+
+        StepVerifier.create(quizService.selectChoice(SelectChoiceCommand(quizId, participantId, choice2Id)))
+            .verifyComplete()
+
+        verifyNoInteractions(eventBus);
+    }
+
+    @Test
+    fun shouldAllowMultipleSelectionsThatDiffer() {
+        val quizId = UUID.randomUUID()
+        val questionId = UUID.randomUUID()
+        val choice1Id = UUID.randomUUID()
+        val choice2Id = UUID.randomUUID()
+        val participantId = UUID.randomUUID()
+
+        `when`(quizRepository.determineEvents(quizId))
+            .thenReturn(Flux.just(
+                QuizCreatedEvent(quizId, Quiz(quizId, "Quiz")),
+                QuestionCreatedEvent(quizId, question = Question(questionId, "Wo befindet sich das Kahnbein?", choices = listOf(Choice(choice1Id, "im Fuß"), Choice(choice2Id, "In der Hand")))),
+                ParticipantCreatedEvent(quizId, Participant(participantId, "Lena")),
+                QuestionAskedEvent(quizId, questionId),
+                ChoiceSelectedEvent(quizId, participantId, choice1Id)
+            ))
+
+        val quizService = DefaultQuizService(quizRepository, UndoneEventsCache(), eventBus)
+
+        StepVerifier.create(quizService.selectChoice(SelectChoiceCommand(quizId, participantId, choice2Id)))
+            .consumeNextWith {
+                verify(eventBus).post(argThat { (it as ChoiceSelectedEvent).quizId == quizId && it.participantId == participantId && it.choiceId == choice2Id })
+            }
+            .verifyComplete()
+    }
+
+    @Test
+    fun shouldNotSelectChoiceBecauseItIsNoMultipleChoiceQuestion() {
+        val quizId = UUID.randomUUID()
+        val questionId = UUID.randomUUID()
+        val participantId = UUID.randomUUID()
+
+        `when`(quizRepository.determineEvents(quizId))
+                .thenReturn(Flux.just(
+                        QuizCreatedEvent(quizId, Quiz(quizId, "Quiz")),
+                        QuestionCreatedEvent(quizId, question = Question(questionId, "Wo befindet sich das Kahnbein?")),
+                        ParticipantCreatedEvent(quizId, Participant(participantId, "Lena")),
+                        QuestionAskedEvent(quizId, questionId)
+                ))
+
+        val quizService = DefaultQuizService(quizRepository, UndoneEventsCache(), eventBus)
+
+        StepVerifier.create(quizService.selectChoice(SelectChoiceCommand(quizId, participantId, UUID.randomUUID())))
+                .verifyComplete()
+
+        verifyNoInteractions(eventBus);
+    }
+
+    @Test
+    fun shouldPreventDuplicateChoiceSelection() {
+        val quizId = UUID.randomUUID()
+        val questionId = UUID.randomUUID()
+        val choice1Id = UUID.randomUUID()
+        val choice2Id = UUID.randomUUID()
+        val participantId = UUID.randomUUID()
+
+        `when`(quizRepository.determineEvents(quizId))
+                .thenReturn(Flux.just(
+                        QuizCreatedEvent(quizId, Quiz(quizId, "Quiz")),
+                        QuestionCreatedEvent(quizId, question = Question(questionId, "Wo befindet sich das Kahnbein?", choices = listOf(Choice(choice1Id, "im Fuß"), Choice(choice2Id, "In der Hand")))),
+                        ParticipantCreatedEvent(quizId, Participant(participantId, "Lena")),
+                        QuestionAskedEvent(quizId, questionId),
+                        ChoiceSelectedEvent(quizId, participantId, choice2Id)
+                ))
+
+        val quizService = DefaultQuizService(quizRepository, UndoneEventsCache(), eventBus)
+
+        StepVerifier.create(quizService.selectChoice(SelectChoiceCommand(quizId, participantId, choice2Id)))
+                .verifyComplete()
+
+        verifyNoInteractions(eventBus);
     }
 
     @Test
@@ -450,7 +623,7 @@ internal class DefaultQuizServiceTest {
     }
 
     @Test
-    fun shouldPreventAllowMultipleAnswersThatDiffer() {
+    fun shouldAllowMultipleAnswersThatDiffer() {
         val quizId = UUID.randomUUID()
         val questionId = UUID.randomUUID()
         val participantId = UUID.randomUUID()
@@ -552,6 +725,21 @@ internal class DefaultQuizServiceTest {
     }
 
     @Test
+    fun shouldCreateNewQuestionWithChoices() {
+        val quizService = DefaultQuizService(quizRepository, UndoneEventsCache(), eventBus)
+
+        val quizId = UUID.randomUUID()
+        val questionId = UUID.randomUUID()
+        val choice1Id = UUID.randomUUID()
+        val choice2Id = UUID.randomUUID()
+        StepVerifier.create(quizService.createQuestion(CreateQuestionCommand(quizId, Question(questionId, "Wer ist das?", imageUrl = "pathToImage", choices = listOf(Choice(choice1Id, "a"), Choice(choice2Id, "b"))))))
+                .consumeNextWith {
+                    verify(eventBus).post(argThat { (it as QuestionCreatedEvent).quizId == quizId && it.question == Question(questionId, "Wer ist das?", imageUrl = "pathToImage", choices = listOf(Choice(choice1Id, "a"), Choice(choice2Id, "b"))) })
+                }
+                .verifyComplete()
+    }
+
+    @Test
     fun shouldCreateNewQuestionWithCategory() {
         val quizService = DefaultQuizService(quizRepository, UndoneEventsCache(), eventBus)
 
@@ -565,12 +753,25 @@ internal class DefaultQuizServiceTest {
     }
 
     @Test
+    fun shouldCreateNewQuestionWithAnswer() {
+        val quizService = DefaultQuizService(quizRepository, UndoneEventsCache(), eventBus)
+
+        val quizId = UUID.randomUUID()
+        val questionId = UUID.randomUUID()
+        StepVerifier.create(quizService.createQuestion(CreateQuestionCommand(quizId, Question(questionId, "Wer ist das?", correctAnswer = "Hein Blöd", category = QuestionCategory("Geschichte")))))
+                .consumeNextWith {
+                    verify(eventBus).post(argThat { (it as QuestionCreatedEvent).quizId == quizId && it.question == Question(questionId, "Wer ist das?", correctAnswer = "Hein Blöd", category = QuestionCategory("Geschichte")) })
+                }
+                .verifyComplete()
+    }
+
+    @Test
     fun shouldAnswerQuestionCorrect() {
         val quizService = DefaultQuizService(quizRepository, UndoneEventsCache(), eventBus)
 
         val quizId = UUID.randomUUID()
         val participantId = UUID.randomUUID()
-        StepVerifier.create(quizService.answer(AnswerCommand(quizId, participantId, AnswerCommand.Answer.CORRECT)))
+        StepVerifier.create(quizService.rate(AnswerCommand(quizId, participantId, AnswerCommand.Answer.CORRECT)))
                 .consumeNextWith {
                     verify(eventBus).post(argThat { (it as AnsweredEvent).quizId == quizId && it.participantId == participantId && it.answer == AnswerCommand.Answer.CORRECT })
                 }
@@ -584,7 +785,7 @@ internal class DefaultQuizServiceTest {
 
         val quizId = UUID.randomUUID()
         val participantId = UUID.randomUUID()
-        StepVerifier.create(quizService.answer(AnswerCommand(quizId, participantId, AnswerCommand.Answer.INCORRECT)))
+        StepVerifier.create(quizService.rate(AnswerCommand(quizId, participantId, AnswerCommand.Answer.INCORRECT)))
                 .consumeNextWith {
                     verify(eventBus).post(argThat { (it as AnsweredEvent).quizId == quizId && it.participantId == participantId && it.answer == AnswerCommand.Answer.INCORRECT })
                 }
@@ -609,6 +810,11 @@ internal class DefaultQuizServiceTest {
         val questionId = UUID.randomUUID()
 
         `when`(quizRepository.determineEvents(quizId))
+                .thenReturn(Flux.just(
+                        QuizCreatedEvent(quizId, Quiz(quizId, "Quiz")),
+                        QuestionCreatedEvent(quizId, Question(questionId, "Warum ist die Banane krum?", initialTimeToAnswer = 3, secondsLeft = 3)),
+                        QuestionAskedEvent(quizId, questionId),
+                ))
                 .thenReturn(Flux.just(
                         QuizCreatedEvent(quizId, Quiz(quizId, "Quiz")),
                         QuestionCreatedEvent(quizId, Question(questionId, "Warum ist die Banane krum?", initialTimeToAnswer = 3, secondsLeft = 3)),

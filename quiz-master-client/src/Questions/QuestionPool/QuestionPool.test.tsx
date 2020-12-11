@@ -1,21 +1,22 @@
 import React from 'react';
-import { render, unmountComponentAtNode } from "react-dom";
-// import { render, wait } from '@testing-library/react';
+import { cleanup, render, waitFor } from '../../test-utils';
 import Quiz from '../../quiz-client-shared/quiz';
 import QuestionPool from './QuestionPool';
-import { act } from 'react-dom/test-utils';
 
-let container: HTMLDivElement | null;
-beforeEach(() => {
-  container = document.createElement("div");
-  document.body.appendChild(container);
-});
+beforeEach(() => cleanup());
+afterEach(() => cleanup());
 
-afterEach(() => {
-  unmountComponentAtNode(container!);
-  container!.remove();
-  container = null;
-});
+jest.mock('react-i18next', () => ({
+    useTranslation: () => {
+        return {
+            t: (str: string, keys: object) => str,
+            i18n: {
+                changeLanguage: () => new Promise(() => {}),
+            },
+        };
+        
+    },
+}));
 
 test('should determine question pool', async () => {
     jest.spyOn(global, 'fetch').mockImplementation((url: string, request: object) => {
@@ -51,7 +52,7 @@ test('should determine question pool', async () => {
                     Accept: 'application/json'
                 }
             });
-            return Promise.resolve();
+            return Promise.resolve({ status: 201 });
         } else {
             return Promise.reject();
         }
@@ -64,14 +65,22 @@ test('should determine question pool', async () => {
         participants: [],
         playedQuestions: [],
         openQuestions: [],
+        expirationDate: 1234,
         timestamp: 1234,
         links: [{href: '/api/createQuestion', rel: 'createQuestion'}]
     }
 
-    await act(async () => {
-        render(<QuestionPool quiz={quiz} setImageToDisplay={(path) => {}} />, container);
-    });
+    const { getByTestId } = render(<QuestionPool quiz={quiz} setImageToDisplay={(path) => {}} />);
 
-    const addQuestionButton = container!.querySelector('span[data-testid="add-question-0"]') as HTMLButtonElement;
+    await waitFor(() => {
+        try {
+            getByTestId('add-question-0')
+            return true;
+        } catch (e) {
+            return false;
+        }
+    });
+    const addQuestionButton = getByTestId('add-question-0') as HTMLButtonElement;
+
     addQuestionButton!.click();
 });

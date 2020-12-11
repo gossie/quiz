@@ -19,7 +19,7 @@ internal class QuizProjectionQuizReloadCommandTest {
         val quizId = UUID.randomUUID()
 
         val buzzerQuestion = Question(question = "Wofür steht die Abkürzung a.D.?")
-        val freetextQuestion = Question(question = "Wer schrieb Peter und der Wolf?", estimates = HashMap(), initialTimeToAnswer = 45)
+        val freetextQuestion = Question(question = "Wer schrieb Peter und der Wolf?", initialTimeToAnswer = 45, estimates = HashMap())
         val participant1 = Participant(name = "Lena")
         val participant2 = Participant(name = "Erik")
 
@@ -67,7 +67,7 @@ internal class QuizProjectionQuizReloadCommandTest {
                     .isFinished
                     .hasQuizStatistics { quizStatistics ->
                         quizStatistics
-                                .questionStatisticsSizeId(2)
+                                .questionStatisticsSizeIs(2)
                                 .hasQuestionStatistics(0) { questionStatistics ->
                                     questionStatistics
                                             .hasQuestionId(buzzerQuestion.id)

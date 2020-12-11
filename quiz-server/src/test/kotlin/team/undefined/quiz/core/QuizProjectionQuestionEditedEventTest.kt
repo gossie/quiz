@@ -1,7 +1,6 @@
 package team.undefined.quiz.core
 
 import com.google.common.eventbus.EventBus
-import org.assertj.core.api.Assertions
 import org.assertj.core.api.Assertions.assertThat
 import org.awaitility.kotlin.await
 import org.awaitility.kotlin.untilAsserted
@@ -36,7 +35,7 @@ internal class QuizProjectionQuestionEditedEventTest {
             assertThat(q.id).isEqualTo(quiz.id)
             assertThat(q.participants).isEmpty()
             assertThat(q.questions).containsExactly(changedQuestion)
-            assertThat(q.isUndoPossible()).isTrue()
+            assertThat(q.undoPossible).isTrue()
             assertThat(q.finished).isFalse()
         }
     }
@@ -67,7 +66,7 @@ internal class QuizProjectionQuestionEditedEventTest {
             assertThat(q.id).isEqualTo(quiz.id)
             assertThat(q.participants).isEmpty()
             assertThat(q.questions).containsExactly(changedQuestion)
-            assertThat(q.isUndoPossible()).isTrue()
+            assertThat(q.undoPossible).isTrue()
             assertThat(q.finished).isFalse()
         }
     }
@@ -98,7 +97,7 @@ internal class QuizProjectionQuestionEditedEventTest {
             assertThat(q.id).isEqualTo(quiz.id)
             assertThat(q.participants).isEmpty()
             assertThat(q.questions).containsExactly(changedQuestion)
-            assertThat(q.isUndoPossible()).isTrue()
+            assertThat(q.undoPossible).isTrue()
             assertThat(q.finished).isFalse()
         }
     }

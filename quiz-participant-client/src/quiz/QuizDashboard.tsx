@@ -1,11 +1,10 @@
 import React, { useEffect, useRef, useState } from 'react';
 import Participants from '../quiz-client-shared/Participants/Participants';
 import Quiz from '../quiz-client-shared/quiz';
-import Buzzer from './buzzer/Buzzer';
 import Question from './Question';
 import './QuizDashboard.css';
 import QuizStatistics from '../quiz-client-shared/QuizStatistics/QuizStatistics';
-import Estimation from './estimation/Estimation';
+import { useTranslation } from 'react-i18next';
 
 interface QuizDashboardProps {
     quizId: string;
@@ -19,6 +18,8 @@ const QuizDashboard: React.FC<QuizDashboardProps> = (props: QuizDashboardProps) 
     const [participantId, setParticipantId] = useState('');
     const [revealAllowed, setRevealAllowed] = useState(false);
     const evtSource = useRef(undefined as EventSource);
+
+    const { t } = useTranslation();
 
     useEffect(() => {
         console.debug('register for server sent events');
@@ -62,21 +63,16 @@ const QuizDashboard: React.FC<QuizDashboardProps> = (props: QuizDashboardProps) 
                     if (evtSource.current) {
                         evtSource.current.close();
                     }
-                    props.errorHandler(`Sorry ${props.participantName}, no quiz for id '${props.quizId}' found`);
+                    props.errorHandler(t('errorQuizNotFound', { participantName: props.participantName, quizId: props.quizId }));
                 } else if (response.status === 400) {
                     if (evtSource.current) {
                         evtSource.current.close();
                     }
-                    props.errorHandler(`Sorry ${props.participantName}, '${props.quizId}' is not a valid quiz id`);
+                    props.errorHandler(t('errorQuizIdNotValid', { participantName: props.participantName, quizId: props.quizId }));
                 }
             });
         }
     });
-
-    const isEstimationQuestion = (quiz: Quiz) => {
-        const pendingQuestion = quiz.openQuestions.find(q => q.pending);
-        return pendingQuestion !== undefined && pendingQuestion.estimates !== null;
-    }
 
     const toggleRevealAllowed = (allowed: boolean) => {
         setRevealAllowed(allowed);
@@ -103,7 +99,7 @@ const QuizDashboard: React.FC<QuizDashboardProps> = (props: QuizDashboardProps) 
                                 <div className="control">
                                     <label className="checkbox">
                                         <input type="checkbox" checked={revealAllowed} onChange={ev => toggleRevealAllowed(ev.target.checked)} />
-                                        If checked, other participants can see your answer when the quiz master reveals them
+                                        {t('hintRevealNotAllowed')}
                                     </label>
                                 </div>
                             </div>
@@ -111,14 +107,8 @@ const QuizDashboard: React.FC<QuizDashboardProps> = (props: QuizDashboardProps) 
                             <QuizStatistics quiz={quiz} closeable={false}></QuizStatistics>
                         </div>
                         <div className="column question box">
-                            <h5 className="title is-5">Current question</h5>
-                            { isEstimationQuestion(quiz)
-                            ?
-                                <Estimation quiz={quiz} participantId={participantId}></Estimation>
-                            :
-                                <Buzzer quiz={quiz} participantId={participantId}></Buzzer>
-                            }
-                            {<Question quiz={quiz}></Question>}
+                            <h5 className="title is-5">{t('headlineCurrentQuestion')}</h5>
+                            {<Question quiz={quiz} participantId={participantId}></Question>}
                         </div>
                     </div>
                 </div>

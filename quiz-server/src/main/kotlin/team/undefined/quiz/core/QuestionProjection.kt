@@ -85,11 +85,15 @@ class QuestionProjection(eventBus: EventBus,
             lock.writeLock().lock()
             val question = questions.get(event.quizId).find { it.id == event.questionId }
             if (question != null) {
-                question.alreadyPlayed = !question.alreadyPlayed
-                question.pending = question.alreadyPlayed
+                questions.get(event.quizId).replaceAll {
+                    if (it.id == event.questionId) {
+                        it.toBeNamed()
+                    } else {
+                        it
+                    }
+                }
             } else {
                 logger.warn("tried to work with question '{}' in quiz '{}', but the question does not exist", event.questionId, event.quizId)
-
             }
         } finally {
             lock.writeLock().unlock()

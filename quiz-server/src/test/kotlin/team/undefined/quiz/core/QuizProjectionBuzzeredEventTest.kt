@@ -36,7 +36,7 @@ internal class QuizProjectionBuzzeredEventTest {
                     && observedQuiz.get().participants[0].turn
                     && observedQuiz.get().questions.size == 1
                     && observedQuiz.get().questions[0].pending
-                    && observedQuiz.get().isUndoPossible()
+                    && observedQuiz.get().undoPossible
                     && !observedQuiz.get().finished
         }
     }
@@ -74,7 +74,7 @@ internal class QuizProjectionBuzzeredEventTest {
                     && observedQuiz.get().participants[0].turn
                     && observedQuiz.get().questions.size == 1
                     && observedQuiz.get().questions[0].pending
-                    && observedQuiz.get().isUndoPossible()
+                    && observedQuiz.get().undoPossible
                     && !observedQuiz.get().finished
         }
     }
@@ -109,7 +109,7 @@ internal class QuizProjectionBuzzeredEventTest {
                     && observedQuiz.get().participants[0].turn
                     && observedQuiz.get().questions.size == 1
                     && observedQuiz.get().questions[0].pending
-                    && observedQuiz.get().isUndoPossible()
+                    && observedQuiz.get().undoPossible
                     && !observedQuiz.get().finished
         }
     }

@@ -6,6 +6,7 @@ import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Component
 import reactor.core.publisher.EmitterProcessor
 import reactor.core.publisher.Flux
+import reactor.core.publisher.Sinks
 import java.util.*
 import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.Semaphore
@@ -19,7 +20,7 @@ class QuizProjection(eventBus: EventBus,
     private val logger = LoggerFactory.getLogger(QuizProjection::class.java)
 
     private val quizCache = ConcurrentHashMap<UUID, Quiz>()
-    private val observables = ConcurrentHashMap<UUID, EmitterProcessor<Quiz>>()
+    private val observables = ConcurrentHashMap<UUID, Sinks.Many<Quiz>>()
     private val locks = ConcurrentHashMap<UUID, Semaphore>()
 
     init {
@@ -61,6 +62,9 @@ class QuizProjection(eventBus: EventBus,
     fun handleEstimation(event: EstimatedEvent) = handleEvent(event)
 
     @Subscribe
+    fun handleChoiceSelection(event: ChoiceSelectedEvent) = handleEvent(event)
+
+    @Subscribe
     fun handleAnswerRevealToggle(event: ToggleAnswerRevealAllowedEvent) = handleEvent(event)
 
     @Subscribe
@@ -79,22 +83,22 @@ class QuizProjection(eventBus: EventBus,
             eventRepository.determineEvents(event.quizId)
                     .reduce(Quiz(name = "")) { q: Quiz, e: Event -> e.process(q)}
                     .subscribe {
-                        if (it.getTimestamp() < event.timestamp) {
+                        if (it.timestamp < event.timestamp) {
                             quizCache[event.quizId] = event.process(it)
                         } else {
                             quizCache[event.quizId] = it
                         }
                         quizStatisticsProvider.generateStatistics(event.quizId)
                                 .subscribe {
-                                    quizCache[event.quizId]!!.quizStatistics = it
+                                    quizCache[event.quizId] = quizCache[event.quizId]!!.setQuizStatistics(it)
                                     emitQuiz(quizCache[event.quizId]!!)
                                 }
                     }
-        } else if (quiz.getTimestamp() < event.timestamp) {
+        } else if (quiz.timestamp < event.timestamp) {
             quizCache[event.quizId] = event.process(quiz)
             quizStatisticsProvider.generateStatistics(event.quizId)
                     .subscribe {
-                        quizCache[event.quizId]!!.quizStatistics = it
+                        quizCache[event.quizId] = quizCache[event.quizId]!!.setQuizStatistics(it)
                         emitQuiz(quizCache[event.quizId]!!)
                     }
         }
@@ -130,7 +134,7 @@ class QuizProjection(eventBus: EventBus,
     }
 
     private fun handleEvent(event: Event) {
-        logger.info("handling event {}", event)
+        logger.trace("handling event {}", event)
         try {
             locks.computeIfAbsent(event.quizId) { Semaphore(1) }.acquire()
             val quiz = quizCache[event.quizId]
@@ -138,7 +142,7 @@ class QuizProjection(eventBus: EventBus,
                 eventRepository.determineEvents(event.quizId)
                         .reduce(Quiz(name = "")) { q: Quiz, e: Event -> e.process(q) }
                         .subscribe {
-                            if (it.getTimestamp() < event.timestamp) {
+                            if (it.timestamp < event.timestamp) {
                                 quizCache[event.quizId] = event.process(it)
                             } else {
                                 quizCache[event.quizId] = it
@@ -156,13 +160,15 @@ class QuizProjection(eventBus: EventBus,
     }
 
     fun observeQuiz(quizId: UUID): Flux<Quiz> {
-        return observables.computeIfAbsent(quizId) { EmitterProcessor.create(false) }
+        return observables
+            .computeIfAbsent(quizId) { Sinks.many().multicast().onBackpressureBuffer() }
+            .asFlux()
     }
 
     private fun emitQuiz(quiz: Quiz) {
-        quiz.setRedoPossible(undoneEventsCache.isNotEmpty(quiz.id))
-        observables.computeIfAbsent(quiz.id) { EmitterProcessor.create(false) }
-                .onNext(quiz)
+        observables
+            .computeIfAbsent(quiz.id) { Sinks.many().multicast().onBackpressureBuffer() }
+            .tryEmitNext(quiz.setRedoPossible(undoneEventsCache.isNotEmpty(quiz.id)))
     }
 
     fun removeObserver(quizId: UUID) {

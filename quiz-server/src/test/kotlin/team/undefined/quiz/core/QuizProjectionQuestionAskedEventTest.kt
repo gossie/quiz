@@ -1,7 +1,6 @@
 package team.undefined.quiz.core
 
 import com.google.common.eventbus.EventBus
-import org.assertj.core.api.Assertions
 import org.assertj.core.api.Assertions.assertThat
 import org.awaitility.kotlin.await
 import org.awaitility.kotlin.until
@@ -36,7 +35,7 @@ internal class QuizProjectionQuestionAskedEventTest {
                     && observedQuiz.get().participants.size == 1
                     && observedQuiz.get().questions.size == 1
                     && observedQuiz.get().questions[0].pending
-                    && observedQuiz.get().isUndoPossible()
+                    && observedQuiz.get().undoPossible
                     && !observedQuiz.get().finished
         }
     }
@@ -71,7 +70,7 @@ internal class QuizProjectionQuestionAskedEventTest {
                     && observedQuiz.get().participants.size == 1
                     && observedQuiz.get().questions.size == 1
                     && observedQuiz.get().questions[0].pending
-                    && observedQuiz.get().isUndoPossible()
+                    && observedQuiz.get().undoPossible
                     && !observedQuiz.get().finished
         }
     }
@@ -103,7 +102,7 @@ internal class QuizProjectionQuestionAskedEventTest {
                     && observedQuiz.get().participants.size == 1
                     && observedQuiz.get().questions.size == 1
                     && observedQuiz.get().questions[0].pending
-                    && observedQuiz.get().isUndoPossible()
+                    && observedQuiz.get().undoPossible
                     && !observedQuiz.get().finished
         }
     }
@@ -131,7 +130,7 @@ internal class QuizProjectionQuestionAskedEventTest {
                     && observedQuiz.get().participants.size == 1
                     && observedQuiz.get().questions.size == 1
                     && !observedQuiz.get().questions[0].pending
-                    && observedQuiz.get().isUndoPossible()
+                    && observedQuiz.get().undoPossible
                     && !observedQuiz.get().finished
         }
     }
@@ -167,7 +166,7 @@ internal class QuizProjectionQuestionAskedEventTest {
                     && observedQuiz.get().participants.size == 1
                     && observedQuiz.get().questions.size == 1
                     && !observedQuiz.get().questions[0].pending
-                    && observedQuiz.get().isUndoPossible()
+                    && observedQuiz.get().undoPossible
                     && !observedQuiz.get().finished
         }
     }
@@ -200,7 +199,7 @@ internal class QuizProjectionQuestionAskedEventTest {
                     && observedQuiz.get().participants.size == 1
                     && observedQuiz.get().questions.size == 1
                     && !observedQuiz.get().questions[0].pending
-                    && observedQuiz.get().isUndoPossible()
+                    && observedQuiz.get().undoPossible
                     && !observedQuiz.get().finished
         }
     }
@@ -234,7 +233,7 @@ internal class QuizProjectionQuestionAskedEventTest {
             assertThat(q.questions[0].alreadyPlayed).isTrue()
             assertThat(q.questions[1].pending).isTrue()
             assertThat(q.questions[1].alreadyPlayed).isFalse()
-            assertThat(q.isUndoPossible()).isTrue()
+            assertThat(q.undoPossible).isTrue()
             assertThat(q.finished).isFalse()
         }
     }

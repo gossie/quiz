@@ -3,13 +3,15 @@ import './App.scss';
 import QuizMaster from './QuizMaster';
 import LoginPageWidget from './quiz-client-shared/LoginPageWidget/LoginPageWidget' 
 import AppHeader from './quiz-client-shared/AppHeader/AppHeader';
+import { useTranslation } from "react-i18next";
 
 
 function App() {
     const [quizId, setQuizId] = useState('');
+    const { t } = useTranslation();
 
-    const quizNameLabel = 'Quiz Name';
-    const quizIdLabel = 'Quiz Id';
+    const quizNameLabel = t('quizNameLabel');
+    const quizIdLabel = t('quizIdLabel');
 
     const getQuizIdFromUrl = () => {
         const query = new URLSearchParams(window.location.search);
@@ -52,15 +54,15 @@ function App() {
 
     return (
         <div className="App">
-            <AppHeader quizId={quizId} title="Quiz Master"></AppHeader>
+            <AppHeader quizId={quizId} title={t('title')}></AppHeader>
             <div className="App-content">
                 { quizId.length > 0
                     ?
                     <QuizMaster quizId={quizId}></QuizMaster>
                     :
                         <div className="container Login-page">
-                            <LoginPageWidget title="Create a Quiz" inputLabels={[quizNameLabel]} buttonLabel="Start!" onSubmit={startQuiz}></LoginPageWidget>
-                            <LoginPageWidget title="Open Quiz" inputValues={{[quizIdLabel]: getQuizIdFromUrl()}} inputLabels={[quizIdLabel]} buttonLabel="Join!" onSubmit={joinQuiz}></LoginPageWidget>
+                            <LoginPageWidget title={t('headlineCreate')} inputLabels={[quizNameLabel]} buttonLabel={t('buttonStart')} onSubmit={startQuiz}></LoginPageWidget>
+                            <LoginPageWidget title={t('headlineOpen')} inputValues={{[quizIdLabel]: getQuizIdFromUrl()}} inputLabels={[quizIdLabel]} buttonLabel={t('buttonJoin')} onSubmit={joinQuiz}></LoginPageWidget>
                         </div>
                 }
             </div>

@@ -57,7 +57,7 @@ internal class QuizParticipantIT {
                 .post()
                 .uri(quizParticipantReference.get().getLink("createQuestion").map { it.href }.orElseThrow())
                 .contentType(MediaType.APPLICATION_JSON)
-                .body(BodyInserters.fromValue(QuestionDTO(question = "Wer schrieb das Buch Animal Farm?")))
+                .body(BodyInserters.fromValue(QuestionDTO(question = "Wer schrieb das Buch Animal Farm?", correctAnswer = "George Orwell")))
                 .exchange()
                 .expectStatus().isCreated
 
@@ -66,6 +66,7 @@ internal class QuizParticipantIT {
                 .hasOpenQuestion(0) { openQuestion ->
                     openQuestion
                             .hasQuestion("Wer schrieb das Buch Animal Farm?")
+                            .hasNoAnswerNote()
                             .isNotPending
                 }
                 .playedQuestionSizeIs(0)
@@ -87,11 +88,13 @@ internal class QuizParticipantIT {
                 .hasOpenQuestion(0) { openQuestion ->
                     openQuestion
                             .hasQuestion("Wer schrieb das Buch Animal Farm?")
+                            .hasNoAnswerNote()
                             .isNotPending
                 }
                 .hasOpenQuestion(1) { openQuestion ->
                     openQuestion
                             .hasQuestion("Wo befindet sich das Kahnbein?")
+                            .hasNoAnswerNote()
                             .isNotPending
                 }
                 .playedQuestionSizeIs(0)
@@ -113,18 +116,21 @@ internal class QuizParticipantIT {
                 .hasOpenQuestion(0) { openQuestion ->
                     openQuestion
                             .hasQuestion("Wer schrieb das Buch Animal Farm?")
+                            .hasNoAnswerNote()
                             .isNotPending
                             .isBuzzerQuestion
                 }
                 .hasOpenQuestion(1) { openQuestion ->
                     openQuestion
                             .hasQuestion("Wo befindet sich das Kahnbein?")
+                            .hasNoAnswerNote()
                             .isNotPending
                             .isBuzzerQuestion
                 }
                 .hasOpenQuestion(2) { openQuestion ->
                     openQuestion
                             .hasQuestion("Was ist ein Robo-Advisor?")
+                            .hasNoAnswerNote()
                             .isNotPending
                             .isEstimationQuestion
                 }
@@ -147,18 +153,21 @@ internal class QuizParticipantIT {
                 .hasOpenQuestion(0) { openQuestion ->
                     openQuestion
                             .hasQuestion("Wer schrieb das Buch Animal Farm?")
+                            .hasNoAnswerNote()
                             .isNotPending
                             .isBuzzerQuestion
                 }
                 .hasOpenQuestion(1) { openQuestion ->
                     openQuestion
                             .hasQuestion("Wo befindet sich das Kahnbein?")
+                            .hasNoAnswerNote()
                             .isNotPending
                             .isBuzzerQuestion
                 }
                 .hasOpenQuestion(2) { openQuestion ->
                     openQuestion
                             .hasQuestion("Was ist ein Robo-Advisor?")
+                            .hasNoAnswerNote()
                             .isNotPending
                             .isEstimationQuestion
                 }
@@ -182,18 +191,21 @@ internal class QuizParticipantIT {
                 .hasOpenQuestion(0) { openQuestion ->
                     openQuestion
                             .hasQuestion("Wer schrieb das Buch Animal Farm?")
+                            .hasNoAnswerNote()
                             .isNotPending
                             .isBuzzerQuestion
                 }
                 .hasOpenQuestion(1) { openQuestion ->
                     openQuestion
                             .hasQuestion("Wo befindet sich das Kahnbein?")
+                            .hasNoAnswerNote()
                             .isNotPending
                             .isBuzzerQuestion
                 }
                 .hasOpenQuestion(2) { openQuestion ->
                     openQuestion
                             .hasQuestion("Was ist ein Robo-Advisor?")
+                            .hasNoAnswerNote()
                             .isNotPending
                             .isEstimationQuestion
                 }
@@ -216,18 +228,21 @@ internal class QuizParticipantIT {
                 .hasOpenQuestion(0) { openQuestion ->
                     openQuestion
                             .hasQuestion("Wer schrieb das Buch Animal Farm?")
+                            .hasNoAnswerNote()
                             .isPending
                             .isBuzzerQuestion
                 }
                 .hasOpenQuestion(1) { openQuestion ->
                     openQuestion
                             .hasQuestion("Wo befindet sich das Kahnbein?")
+                            .hasNoAnswerNote()
                             .isNotPending
                             .isBuzzerQuestion
                 }
                 .hasOpenQuestion(2) { openQuestion ->
                     openQuestion
                             .hasQuestion("Was ist ein Robo-Advisor?")
+                            .hasNoAnswerNote()
                             .isNotPending
                             .isEstimationQuestion
                 }
@@ -250,18 +265,21 @@ internal class QuizParticipantIT {
                 .hasOpenQuestion(0) { openQuestion ->
                     openQuestion
                             .hasQuestion("Wer schrieb das Buch Animal Farm?")
+                            .hasNoAnswerNote()
                             .isPending
                             .isBuzzerQuestion
                 }
                 .hasOpenQuestion(1) { openQuestion ->
                     openQuestion
                             .hasQuestion("Wo befindet sich das Kahnbein?")
+                            .hasNoAnswerNote()
                             .isNotPending
                             .isBuzzerQuestion
                 }
                 .hasOpenQuestion(2) { openQuestion ->
                     openQuestion
                             .hasQuestion("Was ist ein Robo-Advisor?")
+                            .hasNoAnswerNote()
                             .isNotPending
                             .isEstimationQuestion
                 }
@@ -286,18 +304,21 @@ internal class QuizParticipantIT {
                 .hasOpenQuestion(0) { openQuestion ->
                     openQuestion
                             .hasQuestion("Wer schrieb das Buch Animal Farm?")
+                            .hasNoAnswerNote()
                             .isPending
                             .isBuzzerQuestion
                 }
                 .hasOpenQuestion(1) { openQuestion ->
                     openQuestion
                             .hasQuestion("Wo befindet sich das Kahnbein?")
+                            .hasNoAnswerNote()
                             .isNotPending
                             .isBuzzerQuestion
                 }
                 .hasOpenQuestion(2) { openQuestion ->
                     openQuestion
                             .hasQuestion("Was ist ein Robo-Advisor?")
+                            .hasNoAnswerNote()
                             .isNotPending
                             .isEstimationQuestion
                 }
@@ -320,12 +341,14 @@ internal class QuizParticipantIT {
                 .hasOpenQuestion(0) { openQuestion ->
                     openQuestion
                             .hasQuestion("Wo befindet sich das Kahnbein?")
+                            .hasNoAnswerNote()
                             .isPending
                             .isBuzzerQuestion
                 }
                 .hasOpenQuestion(1) { openQuestion ->
                     openQuestion
                             .hasQuestion("Was ist ein Robo-Advisor?")
+                            .hasNoAnswerNote()
                             .isNotPending
                             .isEstimationQuestion
                 }
@@ -333,6 +356,7 @@ internal class QuizParticipantIT {
                 .hasPlayedQuestion(0) { playedQuestion ->
                     playedQuestion
                             .hasQuestion("Wer schrieb das Buch Animal Farm?")
+                            .hasNoAnswerNote()
                             .isNotPending
                             .isBuzzerQuestion
                 }
@@ -354,12 +378,14 @@ internal class QuizParticipantIT {
                 .hasOpenQuestion(0) { openQuestion ->
                     openQuestion
                             .hasQuestion("Wo befindet sich das Kahnbein?")
+                            .hasNoAnswerNote()
                             .isPending
                             .isBuzzerQuestion
                 }
                 .hasOpenQuestion(1) { openQuestion ->
                     openQuestion
                             .hasQuestion("Was ist ein Robo-Advisor?")
+                            .hasNoAnswerNote()
                             .isNotPending
                             .isEstimationQuestion
                 }
@@ -367,6 +393,7 @@ internal class QuizParticipantIT {
                 .hasPlayedQuestion(0) { playedQuestion ->
                     playedQuestion
                             .hasQuestion("Wer schrieb das Buch Animal Farm?")
+                            .hasNoAnswerNote()
                             .isNotPending
                 }
                 .particpantSizeIs(2)
@@ -389,12 +416,14 @@ internal class QuizParticipantIT {
                 .hasOpenQuestion(0) { openQuestion ->
                     openQuestion
                             .hasQuestion("Wo befindet sich das Kahnbein?")
+                            .hasNoAnswerNote()
                             .isPending
                             .isBuzzerQuestion
                 }
                 .hasOpenQuestion(1) { openQuestion ->
                     openQuestion
                             .hasQuestion("Was ist ein Robo-Advisor?")
+                            .hasNoAnswerNote()
                             .isNotPending
                             .isEstimationQuestion
                 }
@@ -402,6 +431,7 @@ internal class QuizParticipantIT {
                 .hasPlayedQuestion(0) { playedQuestion ->
                     playedQuestion
                             .hasQuestion("Wer schrieb das Buch Animal Farm?")
+                            .hasNoAnswerNote()
                             .isNotPending
                 }
                 .particpantSizeIs(2)
@@ -424,12 +454,14 @@ internal class QuizParticipantIT {
                 .hasOpenQuestion(0) { openQuestion ->
                     openQuestion
                             .hasQuestion("Wo befindet sich das Kahnbein?")
+                            .hasNoAnswerNote()
                             .isPending
                             .isBuzzerQuestion
                 }
                 .hasOpenQuestion(1) { openQuestion ->
                     openQuestion
                             .hasQuestion("Was ist ein Robo-Advisor?")
+                            .hasNoAnswerNote()
                             .isNotPending
                             .isEstimationQuestion
                 }
@@ -437,6 +469,7 @@ internal class QuizParticipantIT {
                 .hasPlayedQuestion(0) { playedQuestion ->
                     playedQuestion
                             .hasQuestion("Wer schrieb das Buch Animal Farm?")
+                            .hasNoAnswerNote()
                             .isNotPending
                 }
                 .particpantSizeIs(2)
@@ -457,6 +490,7 @@ internal class QuizParticipantIT {
                 .hasOpenQuestion(0) { openQuestion ->
                     openQuestion
                             .hasQuestion("Was ist ein Robo-Advisor?")
+                            .hasNoAnswerNote()
                             .isPending
                             .isEstimationQuestion
                 }
@@ -464,11 +498,13 @@ internal class QuizParticipantIT {
                 .hasPlayedQuestion(0) { playedQuestion ->
                     playedQuestion
                             .hasQuestion("Wer schrieb das Buch Animal Farm?")
+                            .hasNoAnswerNote()
                             .isNotPending
                 }
                 .hasPlayedQuestion(1) { playedQuestion ->
                     playedQuestion
                             .hasQuestion("Wo befindet sich das Kahnbein?")
+                            .hasNoAnswerNote()
                             .isNotPending
                             .isBuzzerQuestion
                 }
@@ -492,6 +528,7 @@ internal class QuizParticipantIT {
                 .hasOpenQuestion(0) { openQuestion ->
                     openQuestion
                             .hasQuestion("Was ist ein Robo-Advisor?")
+                            .hasNoAnswerNote()
                             .isPending
                             .isEstimationQuestion
                             .hasEstimates(java.util.Map.of(quizParticipantReference.get().participants[0].id, "*****"))
@@ -500,11 +537,13 @@ internal class QuizParticipantIT {
                 .hasPlayedQuestion(0) { playedQuestion ->
                     playedQuestion
                             .hasQuestion("Wer schrieb das Buch Animal Farm?")
+                            .hasNoAnswerNote()
                             .isNotPending
                 }
                 .hasPlayedQuestion(1) { playedQuestion ->
                     playedQuestion
                             .hasQuestion("Wo befindet sich das Kahnbein?")
+                            .hasNoAnswerNote()
                             .isNotPending
                             .isBuzzerQuestion
                 }
@@ -526,6 +565,7 @@ internal class QuizParticipantIT {
                 .hasOpenQuestion(0) { openQuestion ->
                     openQuestion
                             .hasQuestion("Was ist ein Robo-Advisor?")
+                            .hasNoAnswerNote()
                             .isPending
                             .isEstimationQuestion
                             .hasEstimates(java.util.Map.of(quizParticipantReference.get().participants[0].id, "*****"))
@@ -534,11 +574,13 @@ internal class QuizParticipantIT {
                 .hasPlayedQuestion(0) { playedQuestion ->
                     playedQuestion
                             .hasQuestion("Wer schrieb das Buch Animal Farm?")
+                            .hasNoAnswerNote()
                             .isNotPending
                 }
                 .hasPlayedQuestion(1) { playedQuestion ->
                     playedQuestion
                             .hasQuestion("Wo befindet sich das Kahnbein?")
+                            .hasNoAnswerNote()
                             .isNotPending
                             .isBuzzerQuestion
                 }
@@ -562,6 +604,7 @@ internal class QuizParticipantIT {
                 .hasOpenQuestion(0) { openQuestion ->
                     openQuestion
                             .hasQuestion("Was ist ein Robo-Advisor?")
+                            .hasNoAnswerNote()
                             .isPending
                             .isEstimationQuestion
                             .hasEstimates(java.util.Map.of(
@@ -573,11 +616,13 @@ internal class QuizParticipantIT {
                 .hasPlayedQuestion(0) { playedQuestion ->
                     playedQuestion
                             .hasQuestion("Wer schrieb das Buch Animal Farm?")
+                            .hasNoAnswerNote()
                             .isNotPending
                 }
                 .hasPlayedQuestion(1) { playedQuestion ->
                     playedQuestion
                             .hasQuestion("Wo befindet sich das Kahnbein?")
+                            .hasNoAnswerNote()
                             .isNotPending
                             .isBuzzerQuestion
                 }
@@ -599,6 +644,7 @@ internal class QuizParticipantIT {
                 .hasOpenQuestion(0) { openQuestion ->
                     openQuestion
                             .hasQuestion("Was ist ein Robo-Advisor?")
+                            .hasNoAnswerNote()
                             .isPending
                             .isEstimationQuestion
                             .hasEstimates(java.util.Map.of(
@@ -610,11 +656,13 @@ internal class QuizParticipantIT {
                 .hasPlayedQuestion(0) { playedQuestion ->
                     playedQuestion
                             .hasQuestion("Wer schrieb das Buch Animal Farm?")
+                            .hasNoAnswerNote()
                             .isNotPending
                 }
                 .hasPlayedQuestion(1) { playedQuestion ->
                     playedQuestion
                             .hasQuestion("Wo befindet sich das Kahnbein?")
+                            .hasNoAnswerNote()
                             .isNotPending
                             .isBuzzerQuestion
                 }
@@ -638,6 +686,7 @@ internal class QuizParticipantIT {
                 .hasOpenQuestion(0) { openQuestion ->
                     openQuestion
                             .hasQuestion("Was ist ein Robo-Advisor?")
+                            .hasNoAnswerNote()
                             .isPending
                             .isEstimationQuestion
                             .hasEstimates(java.util.Map.of(
@@ -649,11 +698,13 @@ internal class QuizParticipantIT {
                 .hasPlayedQuestion(0) { playedQuestion ->
                     playedQuestion
                             .hasQuestion("Wer schrieb das Buch Animal Farm?")
+                            .hasNoAnswerNote()
                             .isNotPending
                 }
                 .hasPlayedQuestion(1) { playedQuestion ->
                     playedQuestion
                             .hasQuestion("Wo befindet sich das Kahnbein?")
+                            .hasNoAnswerNote()
                             .isNotPending
                             .isBuzzerQuestion
                 }

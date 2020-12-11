@@ -17,6 +17,8 @@ interface QuizService {
 
     fun estimate(command: EstimationCommand): Mono<Unit>
 
+    fun selectChoice(command: SelectChoiceCommand): Mono<Unit>
+
     fun toggleAnswerRevealAllowed(command: ToggleAnswerRevealAllowedCommand): Mono<Unit>
 
     fun startNewQuestion(command: AskQuestionCommand): Mono<Unit>
@@ -25,7 +27,7 @@ interface QuizService {
 
     fun editQuestion(command: EditQuestionCommand): Mono<Unit>
 
-    fun answer(command: AnswerCommand): Mono<Unit>
+    fun rate(command: AnswerCommand): Mono<Unit>
 
     fun reopenQuestion(command: ReopenCurrentQuestionCommand): Mono<Unit>
 

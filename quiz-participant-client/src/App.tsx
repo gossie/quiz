@@ -3,10 +3,14 @@ import './App.scss';
 import QuizDashboard from './quiz/QuizDashboard';
 import LoginPageWidget, { InputInformation } from './quiz-client-shared/LoginPageWidget/LoginPageWidget';
 import AppHeader from './quiz-client-shared/AppHeader/AppHeader';
+import { useTranslation } from 'react-i18next';
+import AppFooter from './quiz-client-shared/AppFooter/AppFooter';
 
 function App() {
-    const quizIdLabel: string = 'Quiz ID';
-    const playerNameLabel: string = 'Player Name';
+    const { t } = useTranslation();
+
+    const quizIdLabel: string = t('quizIdLabel');
+    const playerNameLabel: string = t('playerNameLabel');
 
     const getQuizIdFromUrl = () => {
         const query = new URLSearchParams(window.location.search);
@@ -50,13 +54,13 @@ function App() {
 
     return (
         <div className="App">
-            <AppHeader title="Quiz"></AppHeader>
+            <AppHeader title={t('title')}></AppHeader>
             <div className="App-content">
             {quizId.length > 0 && participantName.length > 0 ? 
                 <QuizDashboard quizId={quizId} participantName={participantName} errorHandler={onError}></QuizDashboard> :
                 <div className="container Login-page">
                     <div>
-                        <LoginPageWidget title="Join a Quiz" inputInformation={inputInformation} buttonLabel="Join!" onSubmit={joinQuiz}></LoginPageWidget> 
+                        <LoginPageWidget title={t('headlineJoinQuiz')} inputInformation={inputInformation} buttonLabel={t('buttonJoin')} onSubmit={joinQuiz}></LoginPageWidget> 
                     </div>
                     <div className="error-container has-text-danger">
                         { errorMessage.length > 0 && <div>{errorMessage}</div> }
@@ -64,6 +68,7 @@ function App() {
                 </div>
             }
             </div>
+            <AppFooter />
         </div>
     );
 }
