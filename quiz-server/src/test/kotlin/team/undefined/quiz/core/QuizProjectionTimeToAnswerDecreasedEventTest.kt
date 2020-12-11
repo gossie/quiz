@@ -51,7 +51,7 @@ internal class QuizProjectionTimeToAnswerDecreasedEventTest {
 
         val question = Question(question = "Wofür steht die Abkürzung a.D.?", initialTimeToAnswer = 30, secondsLeft = 30)
         val participant = Participant(name = "Lena")
-        val timeToAnswerDecreasedEvent = TimeToAnswerDecreasedEvent(quiz.id, question.id, sequenceNumber = 5)
+        val timeToAnswerDecreasedEvent = TimeToAnswerDecreasedEvent(quiz.id, question.id, sequenceNumber = Long.MAX_VALUE)
 
         val eventRepository = mock(EventRepository::class.java)
         `when`(eventRepository.determineEvents(quiz.id))
@@ -81,7 +81,7 @@ internal class QuizProjectionTimeToAnswerDecreasedEventTest {
             assertThat(q.questions).hasSize(1)
             assertThat(q.questions[0].pending).isTrue()
             assertThat(q.questions[0].initialTimeToAnswer).isEqualTo(30)
-            assertThat(q.questions[0].secondsLeft).isEqualTo(29)
+            assertThat(q.questions[0].secondsLeft).isEqualTo(28)
             assertThat(q.finished).isFalse()
         }
     }

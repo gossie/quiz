@@ -16,7 +16,7 @@ data class QuizCreatedEvent(
     @JsonProperty("quizId") override val quizId: UUID,
     @JsonProperty("quiz") val quiz: Quiz,
     @JsonProperty("timestamp") override val timestamp: Long = Date().time,
-    @JsonProperty("sequenceNumber") override val sequenceNumber: Long = timestamp
+    @JsonProperty("sequenceNumber") override val sequenceNumber: Long = 0
 ) : Event {
     override fun process(quiz: Quiz): Quiz {
         return this.quiz.setTimestamp(timestamp)
@@ -117,7 +117,6 @@ data class TimeToAnswerDecreasedEvent(
     override fun process(quiz: Quiz): Quiz {
         return quiz.decreaseTimeToAnswer(questionId)
             .setTimestamp(timestamp)
-            .setSequenceNumber(sequenceNumber)
     }
 }
 
