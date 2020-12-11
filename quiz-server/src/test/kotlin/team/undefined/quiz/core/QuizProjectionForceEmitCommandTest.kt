@@ -2,7 +2,6 @@ package team.undefined.quiz.core
 
 import com.google.common.eventbus.EventBus
 import org.awaitility.kotlin.await
-import org.awaitility.kotlin.until
 import org.awaitility.kotlin.untilAsserted
 import org.junit.jupiter.api.Test
 import org.mockito.Mockito.`when`
@@ -19,7 +18,7 @@ internal class QuizProjectionForceEmitCommandTest {
 
         val eventRepository = mock(EventRepository::class.java)
         `when`(eventRepository.determineEvents(quiz.id))
-                .thenReturn(Flux.just(QuizCreatedEvent(quiz.id, quiz, 0, 1)))
+                .thenReturn(Flux.just(QuizCreatedEvent(quiz.id, quiz, 1, 0)))
 
         val eventBus = EventBus()
         val quizProjection = DefaultQuizProjection(eventBus, eventRepository, UndoneEventsCache())

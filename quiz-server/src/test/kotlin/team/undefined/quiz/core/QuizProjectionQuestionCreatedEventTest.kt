@@ -26,9 +26,9 @@ internal class QuizProjectionQuestionCreatedEventTest {
 
         val question1 = Question(question = "Wofür steht die Abkürzung a.D.?", category = QuestionCategory("Erdkunde"))
         val question2 = Question(question = "Wer schrieb Peter und der Wolf?", category = QuestionCategory("Literatur"))
-        eventBus.post(QuizCreatedEvent(quiz.id, quiz, 1))
-        eventBus.post(QuestionCreatedEvent(quiz.id, question1, 2))
-        eventBus.post(QuestionCreatedEvent(quiz.id, question2, 3))
+        eventBus.post(QuizCreatedEvent(quiz.id, quiz, sequenceNumber = 1))
+        eventBus.post(QuestionCreatedEvent(quiz.id, question1, sequenceNumber = 2))
+        eventBus.post(QuestionCreatedEvent(quiz.id, question2, sequenceNumber = 3))
 
         await untilAsserted {
             assertThat(observedQuiz.get())
@@ -54,13 +54,13 @@ internal class QuizProjectionQuestionCreatedEventTest {
 
         val question1 = Question(question = "Wofür steht die Abkürzung a.D.?")
         val question2 = Question(question = "Wer schrieb Peter und der Wolf?", category = QuestionCategory("Literatur"))
-        val question2CreatedEvent = QuestionCreatedEvent(quiz.id, question1, 3)
+        val question2CreatedEvent = QuestionCreatedEvent(quiz.id, question1, sequenceNumber = 3)
 
         val eventRepository = mock(EventRepository::class.java)
         `when`(eventRepository.determineEvents(quiz.id))
                 .thenReturn(Flux.just(
-                        QuizCreatedEvent(quiz.id, quiz, 1),
-                        QuestionCreatedEvent(quiz.id, question1, 2),
+                        QuizCreatedEvent(quiz.id, quiz, sequenceNumber = 1),
+                        QuestionCreatedEvent(quiz.id, question1, sequenceNumber = 2),
                         question2CreatedEvent
                 ))
 
@@ -99,8 +99,8 @@ internal class QuizProjectionQuestionCreatedEventTest {
         val eventRepository = mock(EventRepository::class.java)
         `when`(eventRepository.determineEvents(quiz.id))
                 .thenReturn(Flux.just(
-                        QuizCreatedEvent(quiz.id, quiz, 1),
-                        QuestionCreatedEvent(quiz.id, question1, 2)
+                        QuizCreatedEvent(quiz.id, quiz, sequenceNumber = 1),
+                        QuestionCreatedEvent(quiz.id, question1, sequenceNumber = 2)
                 ))
 
         val eventBus = EventBus()
@@ -112,7 +112,7 @@ internal class QuizProjectionQuestionCreatedEventTest {
 
 
         val question2 = Question(question = "Wer schrieb Peter und der Wolf?", category = QuestionCategory("Literatur"))
-        eventBus.post(QuestionCreatedEvent(quiz.id, question2, 3))
+        eventBus.post(QuestionCreatedEvent(quiz.id, question2, sequenceNumber = 3))
 
         await untilAsserted {
             assertThat(observedQuiz.get())

@@ -33,7 +33,11 @@ class DefaultQuizService(private val eventRepository: EventRepository,
                 .reduce(Quiz(name = "")) { quiz: Quiz, event: Event -> event.process(quiz)}
                 .filter { !it.finished }
                 .switchIfEmpty(Mono.error(QuizFinishedException()))
-                .flatMap { eventRepository.storeEvent(QuestionCreatedEvent(command.quizId, command.question, it.sequenceNumber + 1)) }
+                .flatMap { eventRepository.storeEvent(QuestionCreatedEvent(
+                    command.quizId,
+                    command.question,
+                    sequenceNumber = it.sequenceNumber + 1
+                )) }
                 .map {
                     undoneEventsCache.remove(it.quizId)
                     eventBus.post(it)
@@ -47,7 +51,11 @@ class DefaultQuizService(private val eventRepository: EventRepository,
                 .reduce(Quiz(name = "")) { quiz: Quiz, event: Event -> event.process(quiz)}
                 .filter { !it.finished }
                 .switchIfEmpty(Mono.error(QuizFinishedException()))
-                .flatMap { eventRepository.storeEvent(QuestionEditedEvent(command.quizId, command.question, it.sequenceNumber + 1)) }
+                .flatMap { eventRepository.storeEvent(QuestionEditedEvent(
+                    command.quizId,
+                    command.question,
+                    sequenceNumber = it.sequenceNumber + 1
+                )) }
                 .map {
                     undoneEventsCache.remove(it.quizId)
                     eventBus.post(it)
@@ -64,7 +72,11 @@ class DefaultQuizService(private val eventRepository: EventRepository,
                 .filter { !it.finished }
                 .switchIfEmpty(Mono.error(QuizFinishedException()))
                 .filter { it.hasNoParticipantWithName(command.participant.name) }
-                .flatMap { eventRepository.storeEvent(ParticipantCreatedEvent(command.quizId, command.participant, it.sequenceNumber + 1)) }
+                .flatMap { eventRepository.storeEvent(ParticipantCreatedEvent(
+                    command.quizId,
+                    command.participant,
+                    sequenceNumber = it.sequenceNumber + 1
+                )) }
                 .map {
                     undoneEventsCache.remove(it.quizId)
                     eventBus.post(it)
@@ -79,7 +91,11 @@ class DefaultQuizService(private val eventRepository: EventRepository,
                 .filter { !it.finished }
                 .switchIfEmpty(Mono.error(QuizFinishedException()))
                 .filter { it.hasParticipantWithId(command.participantId) }
-                .flatMap { eventRepository.storeEvent(ParticipantDeletedEvent(command.quizId, command.participantId, it.sequenceNumber + 1)) }
+                .flatMap { eventRepository.storeEvent(ParticipantDeletedEvent(
+                    command.quizId,
+                    command.participantId,
+                    sequenceNumber = it.sequenceNumber + 1
+                )) }
                 .map {
                     undoneEventsCache.remove(it.quizId)
                     eventBus.post(it)
@@ -93,7 +109,11 @@ class DefaultQuizService(private val eventRepository: EventRepository,
                 .reduce(Quiz(name = "")) { quiz: Quiz, event: Event -> event.process(quiz)}
                 .filter { !it.finished }
                 .switchIfEmpty(Mono.error(QuizFinishedException()))
-                .flatMap { eventRepository.storeEvent(QuestionDeletedEvent(command.quizId, command.questionId, it.sequenceNumber + 1)) }
+                .flatMap { eventRepository.storeEvent(QuestionDeletedEvent(
+                    command.quizId,
+                    command.questionId,
+                    sequenceNumber = it.sequenceNumber + 1
+                )) }
                 .map {
                     undoneEventsCache.remove(it.quizId)
                     eventBus.post(it)
@@ -110,7 +130,11 @@ class DefaultQuizService(private val eventRepository: EventRepository,
                 .filter { it.hasParticipantWithId(command.participantId) }
                 .filter { it.currentQuestionIsBuzzerQuestion() }
                 .filter { it.nobodyHasBuzzered() }
-                .flatMap { eventRepository.storeEvent(BuzzeredEvent(command.quizId, command.participantId, it.sequenceNumber + 1)) }
+                .flatMap { eventRepository.storeEvent(BuzzeredEvent(
+                    command.quizId,
+                    command.participantId,
+                    sequenceNumber = it.sequenceNumber + 1
+                )) }
                 .map {
                     undoneEventsCache.remove(it.quizId)
                     eventBus.post(it)
@@ -127,7 +151,12 @@ class DefaultQuizService(private val eventRepository: EventRepository,
                 .filter { it.hasParticipantWithId(command.participantId) }
                 .filter { it.currentQuestionIsFreetextQuestion() }
                 .filter { it.currentAnswerIsDifferent(command.participantId, command.estimatedValue) }
-                .flatMap { eventRepository.storeEvent(EstimatedEvent(command.quizId, command.participantId, command.estimatedValue, it.sequenceNumber + 1)) }
+                .flatMap { eventRepository.storeEvent(EstimatedEvent(
+                    command.quizId,
+                    command.participantId,
+                    command.estimatedValue,
+                    sequenceNumber = it.sequenceNumber + 1
+                )) }
                 .map {
                     undoneEventsCache.remove(it.quizId)
                     eventBus.post(it)
@@ -143,7 +172,12 @@ class DefaultQuizService(private val eventRepository: EventRepository,
                 .switchIfEmpty(Mono.error(QuizFinishedException()))
                 .filter { it.currentQuestionIsMultipleChoiceQuestion() }
                 .filter { it.currentChoiceIsDifferent(command.participantId, command.choiceId) }
-                .flatMap { eventRepository.storeEvent(ChoiceSelectedEvent(command.quizId, command.participantId, command.choiceId, it.sequenceNumber + 1)) }
+                .flatMap { eventRepository.storeEvent(ChoiceSelectedEvent(
+                    command.quizId,
+                    command.participantId,
+                    command.choiceId,
+                    sequenceNumber = it.sequenceNumber + 1
+                )) }
                 .map {
                     undoneEventsCache.remove(it.quizId)
                     eventBus.post(it)
@@ -158,7 +192,11 @@ class DefaultQuizService(private val eventRepository: EventRepository,
                 .filter { !it.finished }
                 .switchIfEmpty(Mono.error(QuizFinishedException()))
                 .filter { it.hasParticipantWithId(command.participantId) }
-                .flatMap { eventRepository.storeEvent(ToggleAnswerRevealAllowedEvent(command.quizId, command.participantId, it.sequenceNumber + 1)) }
+                .flatMap { eventRepository.storeEvent(ToggleAnswerRevealAllowedEvent(
+                    command.quizId,
+                    command.participantId,
+                    sequenceNumber = it.sequenceNumber + 1
+                )) }
                 .map {
                     undoneEventsCache.remove(it.quizId)
                     eventBus.post(it)
@@ -172,7 +210,11 @@ class DefaultQuizService(private val eventRepository: EventRepository,
                 .reduce(Quiz(name = "")) { quiz: Quiz, event: Event -> event.process(quiz)}
                 .filter { !it.finished }
                 .switchIfEmpty(Mono.error(QuizFinishedException()))
-                .flatMap { eventRepository.storeEvent(QuestionAskedEvent(command.quizId, command.questionId, it.sequenceNumber + 1)) }
+                .flatMap { eventRepository.storeEvent(QuestionAskedEvent(
+                    command.quizId,
+                    command.questionId,
+                    sequenceNumber = it.sequenceNumber + 1
+                )) }
                 .map { eventBus.post(it) }
                 .flatMapMany { eventRepository.determineEvents(command.quizId) }
                 .reduce(Quiz(name = "")) { quiz: Quiz, event: Event -> event.process(quiz) }
@@ -197,7 +239,12 @@ class DefaultQuizService(private val eventRepository: EventRepository,
                 .reduce(Quiz(name = "")) { quiz: Quiz, event: Event -> event.process(quiz)}
                 .filter { !it.finished }
                 .switchIfEmpty(Mono.error(QuizFinishedException()))
-                .flatMap { eventRepository.storeEvent(AnsweredEvent(command.quizId, command.participantId, command.answer, it.sequenceNumber + 1)) }
+                .flatMap { eventRepository.storeEvent(AnsweredEvent(
+                    command.quizId,
+                    command.participantId,
+                    command.answer,
+                    sequenceNumber = it.sequenceNumber + 1
+                )) }
                 .map {
                     undoneEventsCache.remove(it.quizId)
                     eventBus.post(it)
@@ -211,7 +258,10 @@ class DefaultQuizService(private val eventRepository: EventRepository,
                 .reduce(Quiz(name = "")) { quiz: Quiz, event: Event -> event.process(quiz)}
                 .filter { !it.finished }
                 .switchIfEmpty(Mono.error(QuizFinishedException()))
-                .flatMap { eventRepository.storeEvent(CurrentQuestionReopenedEvent(command.quizId, it.sequenceNumber + 1)) }
+                .flatMap { eventRepository.storeEvent(CurrentQuestionReopenedEvent(
+                    command.quizId,
+                    sequenceNumber = it.sequenceNumber + 1
+                )) }
                 .map { eventBus.post(it) }
                 .flatMapMany { eventRepository.determineEvents(command.quizId) }
                 .reduce(Quiz(name = "")) { quiz: Quiz, event: Event -> event.process(quiz) }
@@ -232,7 +282,7 @@ class DefaultQuizService(private val eventRepository: EventRepository,
     private fun timeDecreased(quizId: UUID, questionId: UUID): Mono<Unit> {
         return eventRepository.determineEvents(quizId)
             .reduce(Quiz(name = "")) { quiz: Quiz, event: Event -> event.process(quiz)}
-            .map { eventBus.post(TimeToAnswerDecreasedEvent(quizId, questionId, it.sequenceNumber + 1)) }
+            .map { eventBus.post(TimeToAnswerDecreasedEvent(quizId, questionId, sequenceNumber = it.sequenceNumber + 1)) }
     }
 
     @WriteLock
@@ -242,7 +292,10 @@ class DefaultQuizService(private val eventRepository: EventRepository,
                 .reduce(Quiz(name = "")) { quiz: Quiz, event: Event -> event.process(quiz)}
                 .filter { !it.finished }
                 .switchIfEmpty(Mono.error(QuizFinishedException()))
-                .flatMap { eventRepository.storeEvent(AnswersRevealedEvent(command.quizId, it.sequenceNumber + 1)) }
+                .flatMap { eventRepository.storeEvent(AnswersRevealedEvent(
+                    command.quizId,
+                    sequenceNumber = it.sequenceNumber + 1
+                )) }
                 .map {
                     stopCounter(it.quizId)
                     it
@@ -260,7 +313,10 @@ class DefaultQuizService(private val eventRepository: EventRepository,
             .reduce(Quiz(name = "")) { quiz: Quiz, event: Event -> event.process(quiz)}
             .filter { !it.finished }
             .switchIfEmpty(Mono.error(QuizFinishedException()))
-            .flatMap { eventRepository.storeEvent(QuizFinishedEvent(command.quizId, it.sequenceNumber + 1)) }
+            .flatMap { eventRepository.storeEvent(QuizFinishedEvent(
+                command.quizId,
+                sequenceNumber = it.sequenceNumber + 1
+            )) }
             .map {
                 undoneEventsCache.remove(it.quizId)
                 eventBus.post(it)
@@ -274,7 +330,7 @@ class DefaultQuizService(private val eventRepository: EventRepository,
                 .map {
                     subscriptions.remove(command.quizId)
                     undoneEventsCache.remove(command.quizId)
-                    eventBus.post(QuizDeletedEvent(command.quizId, -1))
+                    eventBus.post(QuizDeletedEvent(command.quizId, sequenceNumber = -1))
                 }
     }
 

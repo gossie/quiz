@@ -26,12 +26,12 @@ internal class QuizProjectionQuestionAnsweredIncorrectEventTest {
         val question = Question(question = "Wofür steht die Abkürzung a.D.?")
         val participant = Participant(name = "Lena")
 
-        eventBus.post(QuizCreatedEvent(quiz.id, quiz, 1))
-        eventBus.post(QuestionCreatedEvent(quiz.id, question, 2))
-        eventBus.post(ParticipantCreatedEvent(quiz.id, participant, 3))
-        eventBus.post(QuestionAskedEvent(quiz.id, question.id, 4))
-        eventBus.post(BuzzeredEvent(quiz.id, participant.id, 5))
-        eventBus.post(AnsweredEvent(quiz.id, participant.id, AnswerCommand.Answer.INCORRECT, 6))
+        eventBus.post(QuizCreatedEvent(quiz.id, quiz, sequenceNumber = 1))
+        eventBus.post(QuestionCreatedEvent(quiz.id, question, sequenceNumber = 2))
+        eventBus.post(ParticipantCreatedEvent(quiz.id, participant, sequenceNumber = 3))
+        eventBus.post(QuestionAskedEvent(quiz.id, question.id, sequenceNumber = 4))
+        eventBus.post(BuzzeredEvent(quiz.id, participant.id, sequenceNumber = 5))
+        eventBus.post(AnsweredEvent(quiz.id, participant.id, AnswerCommand.Answer.INCORRECT, sequenceNumber = 6))
 
         await untilAsserted  {
             val q = observedQuiz.get()
@@ -54,16 +54,16 @@ internal class QuizProjectionQuestionAnsweredIncorrectEventTest {
 
         val question = Question(question = "Wofür steht die Abkürzung a.D.?")
         val participant = Participant(name = "Lena")
-        val answeredEvent = AnsweredEvent(quiz.id, participant.id, AnswerCommand.Answer.INCORRECT, 6)
+        val answeredEvent = AnsweredEvent(quiz.id, participant.id, AnswerCommand.Answer.INCORRECT, sequenceNumber = 6)
 
         val eventRepository = mock(EventRepository::class.java)
         `when`(eventRepository.determineEvents(quiz.id))
                 .thenReturn(Flux.just(
-                        QuizCreatedEvent(quiz.id, quiz, 1),
-                        QuestionCreatedEvent(quiz.id, question, 2),
-                        ParticipantCreatedEvent(quiz.id, participant, 3),
-                        QuestionAskedEvent(quiz.id, question.id, 4),
-                        BuzzeredEvent(quiz.id, participant.id, 5),
+                        QuizCreatedEvent(quiz.id, quiz, sequenceNumber = 1),
+                        QuestionCreatedEvent(quiz.id, question, sequenceNumber = 2),
+                        ParticipantCreatedEvent(quiz.id, participant, sequenceNumber = 3),
+                        QuestionAskedEvent(quiz.id, question.id, sequenceNumber = 4),
+                        BuzzeredEvent(quiz.id, participant.id, sequenceNumber = 5),
                         answeredEvent
                 ))
 
@@ -100,11 +100,11 @@ internal class QuizProjectionQuestionAnsweredIncorrectEventTest {
         val eventRepository = mock(EventRepository::class.java)
         `when`(eventRepository.determineEvents(quiz.id))
                 .thenReturn(Flux.just(
-                        QuizCreatedEvent(quiz.id, quiz, 1),
-                        QuestionCreatedEvent(quiz.id, question, 2),
-                        ParticipantCreatedEvent(quiz.id, participant, 3),
-                        QuestionAskedEvent(quiz.id, question.id, 4),
-                        BuzzeredEvent(quiz.id, participant.id, 5)
+                        QuizCreatedEvent(quiz.id, quiz, sequenceNumber = 1),
+                        QuestionCreatedEvent(quiz.id, question, sequenceNumber = 2),
+                        ParticipantCreatedEvent(quiz.id, participant, sequenceNumber = 3),
+                        QuestionAskedEvent(quiz.id, question.id, sequenceNumber = 4),
+                        BuzzeredEvent(quiz.id, participant.id, sequenceNumber = 5)
                 ))
 
         val eventBus = EventBus()
@@ -114,7 +114,7 @@ internal class QuizProjectionQuestionAnsweredIncorrectEventTest {
         quizProjection.observeQuiz(quiz.id)
                 .subscribe { observedQuiz.set(it) }
 
-        eventBus.post(AnsweredEvent(quiz.id, participant.id, AnswerCommand.Answer.INCORRECT, 6))
+        eventBus.post(AnsweredEvent(quiz.id, participant.id, AnswerCommand.Answer.INCORRECT, sequenceNumber = 6))
 
         await untilAsserted  {
             val q = observedQuiz.get()

@@ -43,8 +43,8 @@ internal class QuizStatisticsProjectionTest {
         val quizStatisticsProvider = QuizStatisticsProjection(eventRepository, mock(EventBus::class.java))
 
         StepVerifier.create(quizStatisticsProvider.generateStatistics(quiz.id))
-                .consumeNextWith { quiz ->
-                    assertThat(quiz)
+                .consumeNextWith { quizStatistics ->
+                    assertThat(quizStatistics)
                             .questionStatisticsSizeIs(2)
                             .hasQuestionStatistics(0) { questionStatistics ->
                                 questionStatistics
@@ -80,7 +80,7 @@ internal class QuizStatisticsProjectionTest {
                         QuizCreatedEvent(quiz.id, quiz, 1, 1),
                         QuestionCreatedEvent(quiz.id, buzzerQuestion, 2, 2),
                         QuestionCreatedEvent(quiz.id, freetextQuestion, 3, 3),
-                        QuestionCreatedEvent(quiz.id, questionToBeDeleted, 4 ,4),
+                        QuestionCreatedEvent(quiz.id, questionToBeDeleted, 4, 4),
                         ParticipantCreatedEvent(quiz.id, participant1, 5, 5),
                         ParticipantCreatedEvent(quiz.id, participant2, 6, 6),
                         BuzzeredEvent(quiz.id, participant1.id, 7, 7),
@@ -100,8 +100,8 @@ internal class QuizStatisticsProjectionTest {
         val quizStatisticsProvider = QuizStatisticsProjection(eventRepository, mock(EventBus::class.java))
 
         StepVerifier.create(quizStatisticsProvider.generateStatistics(quiz.id))
-                .consumeNextWith { quiz ->
-                    assertThat(quiz)
+                .consumeNextWith { quizStatistics ->
+                    assertThat(quizStatistics)
                             .questionStatisticsSizeIs(2)
                             .hasQuestionStatistics(0) { questionStatistics ->
                                 questionStatistics

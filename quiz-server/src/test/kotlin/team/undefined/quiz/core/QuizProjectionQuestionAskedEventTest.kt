@@ -25,10 +25,10 @@ internal class QuizProjectionQuestionAskedEventTest {
                 .subscribe { observedQuiz.set(it) }
 
         val question = Question(question = "Wofür steht die Abkürzung a.D.?")
-        eventBus.post(QuizCreatedEvent(quiz.id, quiz, 1))
-        eventBus.post(QuestionCreatedEvent(quiz.id, question, 2))
-        eventBus.post(ParticipantCreatedEvent(quiz.id, Participant(name = "Lena"), 3))
-        eventBus.post(QuestionAskedEvent(quiz.id, question.id, 4))
+        eventBus.post(QuizCreatedEvent(quiz.id, quiz, sequenceNumber = 1))
+        eventBus.post(QuestionCreatedEvent(quiz.id, question, sequenceNumber = 2))
+        eventBus.post(ParticipantCreatedEvent(quiz.id, Participant(name = "Lena"), sequenceNumber = 3))
+        eventBus.post(QuestionAskedEvent(quiz.id, question.id, sequenceNumber = 4))
 
         await until {
             observedQuiz.get().id == quiz.id
@@ -45,14 +45,14 @@ internal class QuizProjectionQuestionAskedEventTest {
         val quiz = Quiz(name = "Awesome Quiz")
 
         val question = Question(question = "Wofür steht die Abkürzung a.D.?")
-        val questionAskedEvent = QuestionAskedEvent(quiz.id, question.id, 4)
+        val questionAskedEvent = QuestionAskedEvent(quiz.id, question.id, sequenceNumber = 4)
 
         val eventRepository = mock(EventRepository::class.java)
         `when`(eventRepository.determineEvents(quiz.id))
                 .thenReturn(Flux.just(
-                        QuizCreatedEvent(quiz.id, quiz, 1),
-                        QuestionCreatedEvent(quiz.id, question, 2),
-                        ParticipantCreatedEvent(quiz.id, Participant(name = "Lena"), 3),
+                        QuizCreatedEvent(quiz.id, quiz, sequenceNumber = 1),
+                        QuestionCreatedEvent(quiz.id, question, sequenceNumber = 2),
+                        ParticipantCreatedEvent(quiz.id, Participant(name = "Lena"), sequenceNumber = 3),
                         questionAskedEvent
                 ))
 
@@ -83,9 +83,9 @@ internal class QuizProjectionQuestionAskedEventTest {
         val eventRepository = mock(EventRepository::class.java)
         `when`(eventRepository.determineEvents(quiz.id))
                 .thenReturn(Flux.just(
-                        QuizCreatedEvent(quiz.id, quiz, 1),
-                        QuestionCreatedEvent(quiz.id, question, 2),
-                        ParticipantCreatedEvent(quiz.id, Participant(name = "Lena"), 3)
+                        QuizCreatedEvent(quiz.id, quiz, sequenceNumber = 1),
+                        QuestionCreatedEvent(quiz.id, question, sequenceNumber = 2),
+                        ParticipantCreatedEvent(quiz.id, Participant(name = "Lena"), sequenceNumber = 3)
                 ))
 
         val eventBus = EventBus()
@@ -95,7 +95,7 @@ internal class QuizProjectionQuestionAskedEventTest {
         quizProjection.observeQuiz(quiz.id)
                 .subscribe { observedQuiz.set(it) }
 
-        eventBus.post(QuestionAskedEvent(quiz.id, question.id, 4))
+        eventBus.post(QuestionAskedEvent(quiz.id, question.id, sequenceNumber = 4))
 
         await until {
             observedQuiz.get().id == quiz.id
@@ -119,11 +119,11 @@ internal class QuizProjectionQuestionAskedEventTest {
                 .subscribe { observedQuiz.set(it) }
 
         val question = Question(question = "Wofür steht die Abkürzung a.D.?")
-        eventBus.post(QuizCreatedEvent(quiz.id, quiz, 1))
-        eventBus.post(QuestionCreatedEvent(quiz.id, question, 2))
-        eventBus.post(ParticipantCreatedEvent(quiz.id, Participant(name = "Lena"), 3))
-        eventBus.post(QuestionAskedEvent(quiz.id, question.id, 4))
-        eventBus.post(QuestionAskedEvent(quiz.id, question.id, 5))
+        eventBus.post(QuizCreatedEvent(quiz.id, quiz, sequenceNumber = 1))
+        eventBus.post(QuestionCreatedEvent(quiz.id, question, sequenceNumber = 2))
+        eventBus.post(ParticipantCreatedEvent(quiz.id, Participant(name = "Lena"), sequenceNumber = 3))
+        eventBus.post(QuestionAskedEvent(quiz.id, question.id, sequenceNumber = 4))
+        eventBus.post(QuestionAskedEvent(quiz.id, question.id, sequenceNumber = 5))
 
         await until {
             observedQuiz.get().id == quiz.id
@@ -140,15 +140,15 @@ internal class QuizProjectionQuestionAskedEventTest {
         val quiz = Quiz(name = "Awesome Quiz")
 
         val question = Question(question = "Wofür steht die Abkürzung a.D.?")
-        val questionAskedEvent = QuestionAskedEvent(quiz.id, question.id, 5)
+        val questionAskedEvent = QuestionAskedEvent(quiz.id, question.id, sequenceNumber = 5)
 
         val eventRepository = mock(EventRepository::class.java)
         `when`(eventRepository.determineEvents(quiz.id))
                 .thenReturn(Flux.just(
-                        QuizCreatedEvent(quiz.id, quiz, 1),
-                        QuestionCreatedEvent(quiz.id, question, 2),
-                        ParticipantCreatedEvent(quiz.id, Participant(name = "Lena"), 3),
-                        QuestionAskedEvent(quiz.id, question.id, 4),
+                        QuizCreatedEvent(quiz.id, quiz, sequenceNumber = 1),
+                        QuestionCreatedEvent(quiz.id, question, sequenceNumber = 2),
+                        ParticipantCreatedEvent(quiz.id, Participant(name = "Lena"), sequenceNumber = 3),
+                        QuestionAskedEvent(quiz.id, question.id, sequenceNumber = 4),
                         questionAskedEvent
                 ))
 
@@ -180,10 +180,10 @@ internal class QuizProjectionQuestionAskedEventTest {
         val eventRepository = mock(EventRepository::class.java)
         `when`(eventRepository.determineEvents(quiz.id))
                 .thenReturn(Flux.just(
-                        QuizCreatedEvent(quiz.id, quiz, 1),
-                        QuestionCreatedEvent(quiz.id, question, 2),
-                        ParticipantCreatedEvent(quiz.id, Participant(name = "Lena"), 3),
-                        QuestionAskedEvent(quiz.id, question.id, 4)
+                        QuizCreatedEvent(quiz.id, quiz, sequenceNumber = 1),
+                        QuestionCreatedEvent(quiz.id, question, sequenceNumber = 2),
+                        ParticipantCreatedEvent(quiz.id, Participant(name = "Lena"), sequenceNumber = 3),
+                        QuestionAskedEvent(quiz.id, question.id, sequenceNumber = 4)
                 ))
 
         val eventBus = EventBus()
@@ -193,7 +193,7 @@ internal class QuizProjectionQuestionAskedEventTest {
         quizProjection.observeQuiz(quiz.id)
                 .subscribe { observedQuiz.set(it) }
 
-        eventBus.post(QuestionAskedEvent(quiz.id, question.id, 5))
+        eventBus.post(QuestionAskedEvent(quiz.id, question.id, sequenceNumber = 5))
 
         await until {
             observedQuiz.get().id == quiz.id
@@ -218,12 +218,12 @@ internal class QuizProjectionQuestionAskedEventTest {
 
         val question1 = Question(question = "Wofür steht die Abkürzung a.D.?")
         val question2 = Question(question = "Was ist die Wurzel aus 1/4?")
-        eventBus.post(QuizCreatedEvent(quiz.id, quiz, 1))
-        eventBus.post(QuestionCreatedEvent(quiz.id, question1, 2))
-        eventBus.post(QuestionCreatedEvent(quiz.id, question2, 3))
-        eventBus.post(ParticipantCreatedEvent(quiz.id, Participant(name = "Lena"), 4))
-        eventBus.post(QuestionAskedEvent(quiz.id, question1.id, 5))
-        eventBus.post(QuestionAskedEvent(quiz.id, question2.id, 6))
+        eventBus.post(QuizCreatedEvent(quiz.id, quiz, sequenceNumber = 1))
+        eventBus.post(QuestionCreatedEvent(quiz.id, question1, sequenceNumber = 2))
+        eventBus.post(QuestionCreatedEvent(quiz.id, question2, sequenceNumber = 3))
+        eventBus.post(ParticipantCreatedEvent(quiz.id, Participant(name = "Lena"), sequenceNumber = 4))
+        eventBus.post(QuestionAskedEvent(quiz.id, question1.id, sequenceNumber = 5))
+        eventBus.post(QuestionAskedEvent(quiz.id, question2.id, sequenceNumber = 6))
 
         await untilAsserted {
             val q = observedQuiz.get()

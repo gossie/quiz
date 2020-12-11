@@ -23,13 +23,13 @@ internal class QuizProjectionQuizDeletedEventTest {
         val eventRepository = mock(EventRepository::class.java)
         `when`(eventRepository.determineEvents(quiz.id))
                 .thenReturn(Flux.just(
-                        QuizCreatedEvent(quiz.id, quiz, 1),
-                        QuestionCreatedEvent(quiz.id, question, 2),
-                        ParticipantCreatedEvent(quiz.id, participant, 3),
-                        QuestionAskedEvent(quiz.id, question.id, 4),
-                        BuzzeredEvent(quiz.id, participant.id, 5),
-                        AnsweredEvent(quiz.id, participant.id, AnswerCommand.Answer.CORRECT, 6),
-                        QuizFinishedEvent(quiz.id, 7)
+                        QuizCreatedEvent(quiz.id, quiz, sequenceNumber = 1),
+                        QuestionCreatedEvent(quiz.id, question, sequenceNumber = 2),
+                        ParticipantCreatedEvent(quiz.id, participant, sequenceNumber = 3),
+                        QuestionAskedEvent(quiz.id, question.id, sequenceNumber = 4),
+                        BuzzeredEvent(quiz.id, participant.id, sequenceNumber = 5),
+                        AnsweredEvent(quiz.id, participant.id, AnswerCommand.Answer.CORRECT, sequenceNumber = 6),
+                        QuizFinishedEvent(quiz.id, sequenceNumber = 7)
                 ))
         val quizProjection = DefaultQuizProjection(eventBus, eventRepository, UndoneEventsCache())
 
@@ -37,13 +37,13 @@ internal class QuizProjectionQuizDeletedEventTest {
         quizProjection.observeQuiz(quiz.id)
                 .subscribe { observedQuiz.set(it) }
 
-        eventBus.post(QuizCreatedEvent(quiz.id, quiz, 1))
-        eventBus.post(QuestionCreatedEvent(quiz.id, question, 2))
-        eventBus.post(ParticipantCreatedEvent(quiz.id, participant, 3))
-        eventBus.post(QuestionAskedEvent(quiz.id, question.id, 4))
-        eventBus.post(BuzzeredEvent(quiz.id, participant.id, 5))
-        eventBus.post(AnsweredEvent(quiz.id, participant.id, AnswerCommand.Answer.CORRECT, 6))
-        eventBus.post(QuizFinishedEvent(quiz.id, 7))
+        eventBus.post(QuizCreatedEvent(quiz.id, quiz, sequenceNumber = 1))
+        eventBus.post(QuestionCreatedEvent(quiz.id, question, sequenceNumber = 2))
+        eventBus.post(ParticipantCreatedEvent(quiz.id, participant, sequenceNumber = 3))
+        eventBus.post(QuestionAskedEvent(quiz.id, question.id, sequenceNumber = 4))
+        eventBus.post(BuzzeredEvent(quiz.id, participant.id, sequenceNumber = 5))
+        eventBus.post(AnsweredEvent(quiz.id, participant.id, AnswerCommand.Answer.CORRECT, sequenceNumber = 6))
+        eventBus.post(QuizFinishedEvent(quiz.id, sequenceNumber = 7))
 
         await untilAsserted  {
             val q = observedQuiz.get()
@@ -52,7 +52,7 @@ internal class QuizProjectionQuizDeletedEventTest {
             assertThat(q.finished).isTrue()
         }
 
-        eventBus.post(QuizDeletedEvent(quiz.id, 8))
+        eventBus.post(QuizDeletedEvent(quiz.id, sequenceNumber = 8))
 
         // TODO: await untilAsserted  { assertThat(observedQuiz.get()).isNull() }
     }

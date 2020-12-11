@@ -25,11 +25,11 @@ internal class QuizProjectionTimeToAnswerDecreasedEventTest {
 
         val question = Question(question = "Wofür steht die Abkürzung a.D.?", initialTimeToAnswer = 30, secondsLeft = 30)
         val participant = Participant(name = "Lena")
-        eventBus.post(QuizCreatedEvent(quiz.id, quiz, 1))
-        eventBus.post(QuestionCreatedEvent(quiz.id, question, 2))
-        eventBus.post(ParticipantCreatedEvent(quiz.id, participant, 3))
-        eventBus.post(QuestionAskedEvent(quiz.id, question.id, 4))
-        eventBus.post(TimeToAnswerDecreasedEvent(quiz.id, question.id, 5))
+        eventBus.post(QuizCreatedEvent(quiz.id, quiz, sequenceNumber = 1))
+        eventBus.post(QuestionCreatedEvent(quiz.id, question, sequenceNumber = 2))
+        eventBus.post(ParticipantCreatedEvent(quiz.id, participant, sequenceNumber = 3))
+        eventBus.post(QuestionAskedEvent(quiz.id, question.id, sequenceNumber = 4))
+        eventBus.post(TimeToAnswerDecreasedEvent(quiz.id, question.id, sequenceNumber = 5))
 
         await untilAsserted {
             val q = observedQuiz.get()
@@ -51,15 +51,15 @@ internal class QuizProjectionTimeToAnswerDecreasedEventTest {
 
         val question = Question(question = "Wofür steht die Abkürzung a.D.?", initialTimeToAnswer = 30, secondsLeft = 30)
         val participant = Participant(name = "Lena")
-        val timeToAnswerDecreasedEvent = TimeToAnswerDecreasedEvent(quiz.id, question.id, 5)
+        val timeToAnswerDecreasedEvent = TimeToAnswerDecreasedEvent(quiz.id, question.id, sequenceNumber = 5)
 
         val eventRepository = mock(EventRepository::class.java)
         `when`(eventRepository.determineEvents(quiz.id))
                 .thenReturn(Flux.just(
-                        QuizCreatedEvent(quiz.id, quiz, 1),
-                        QuestionCreatedEvent(quiz.id, question, 2),
-                        ParticipantCreatedEvent(quiz.id, participant, 3),
-                        QuestionAskedEvent(quiz.id, question.id, 4),
+                        QuizCreatedEvent(quiz.id, quiz, sequenceNumber = 1),
+                        QuestionCreatedEvent(quiz.id, question, sequenceNumber = 2),
+                        ParticipantCreatedEvent(quiz.id, participant, sequenceNumber = 3),
+                        QuestionAskedEvent(quiz.id, question.id, sequenceNumber = 4),
                         timeToAnswerDecreasedEvent
                 ))
 
@@ -95,10 +95,10 @@ internal class QuizProjectionTimeToAnswerDecreasedEventTest {
         val eventRepository = mock(EventRepository::class.java)
         `when`(eventRepository.determineEvents(quiz.id))
                 .thenReturn(Flux.just(
-                        QuizCreatedEvent(quiz.id, quiz, 1),
-                        QuestionCreatedEvent(quiz.id, question, 2),
-                        ParticipantCreatedEvent(quiz.id, participant, 3),
-                        QuestionAskedEvent(quiz.id, question.id, 4)
+                        QuizCreatedEvent(quiz.id, quiz, sequenceNumber = 1),
+                        QuestionCreatedEvent(quiz.id, question, sequenceNumber = 2),
+                        ParticipantCreatedEvent(quiz.id, participant, sequenceNumber = 3),
+                        QuestionAskedEvent(quiz.id, question.id, sequenceNumber = 4)
                 ))
 
         val eventBus = EventBus()
@@ -108,7 +108,7 @@ internal class QuizProjectionTimeToAnswerDecreasedEventTest {
         quizProjection.observeQuiz(quiz.id)
                 .subscribe { observedQuiz.set(it) }
 
-        eventBus.post(TimeToAnswerDecreasedEvent(quiz.id, question.id, 5))
+        eventBus.post(TimeToAnswerDecreasedEvent(quiz.id, question.id, sequenceNumber = 5))
 
         await untilAsserted {
             val q = observedQuiz.get()

@@ -33,20 +33,20 @@ internal class QuizProjectionConcurrencyTest {
 
             val question = Question(question = "Wofür steht die Abkürzung a.D.?", initialTimeToAnswer = 45, estimates = HashMap())
             val participant = Participant(name = "Lena")
-            eventBus.post(QuizCreatedEvent(quiz.id, quiz, 1))
-            eventBus.post(QuestionCreatedEvent(quiz.id, question, 2))
-            eventBus.post(ParticipantCreatedEvent(quiz.id, participant, 3))
-            eventBus.post(QuestionAskedEvent(quiz.id, question.id, 4))
+            eventBus.post(QuizCreatedEvent(quiz.id, quiz, sequenceNumber = 1))
+            eventBus.post(QuestionCreatedEvent(quiz.id, question, sequenceNumber = 2))
+            eventBus.post(ParticipantCreatedEvent(quiz.id, participant, sequenceNumber = 3))
+            eventBus.post(QuestionAskedEvent(quiz.id, question.id, sequenceNumber = 4))
 
             val service = Executors.newFixedThreadPool(2)
 
             val latch = CountDownLatch(2)
             service.execute {
-                eventBus.post(TimeToAnswerDecreasedEvent(quiz.id, question.id, 5))
+                eventBus.post(TimeToAnswerDecreasedEvent(quiz.id, question.id, sequenceNumber = 5))
                 latch.countDown()
             }
             service.execute {
-                eventBus.post(EstimatedEvent(quiz.id, participant.id, "My answer", 6))
+                eventBus.post(EstimatedEvent(quiz.id, participant.id, "My answer", sequenceNumber = 6))
                 latch.countDown()
             }
 

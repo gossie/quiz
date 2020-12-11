@@ -23,8 +23,8 @@ internal class QuizProjectionParticipantCreatedEventTest {
                 .subscribe { observedQuiz.set(it) }
 
         val participant = Participant(name = "Lena")
-        eventBus.post(QuizCreatedEvent(quiz.id, quiz, 1))
-        eventBus.post(ParticipantCreatedEvent(quiz.id, participant, 2))
+        eventBus.post(QuizCreatedEvent(quiz.id, quiz, sequenceNumber = 1))
+        eventBus.post(ParticipantCreatedEvent(quiz.id, participant, sequenceNumber = 2))
 
         await untilAsserted {
             QuizAssert.assertThat(observedQuiz.get())
@@ -42,11 +42,11 @@ internal class QuizProjectionParticipantCreatedEventTest {
         val quiz = Quiz(name = "Awesome Quiz")
 
         val participant = Participant(name = "Lena")
-        val participantCreatedEvent = ParticipantCreatedEvent(quiz.id, participant, 2)
+        val participantCreatedEvent = ParticipantCreatedEvent(quiz.id, participant, sequenceNumber = 2)
 
         val eventRepository = mock(EventRepository::class.java)
         `when`(eventRepository.determineEvents(quiz.id))
-                .thenReturn(Flux.just(QuizCreatedEvent(quiz.id, quiz, 1), participantCreatedEvent))
+                .thenReturn(Flux.just(QuizCreatedEvent(quiz.id, quiz, sequenceNumber = 1), participantCreatedEvent))
 
         val eventBus = EventBus()
         val quizProjection = DefaultQuizProjection(eventBus, eventRepository, UndoneEventsCache())
@@ -74,7 +74,7 @@ internal class QuizProjectionParticipantCreatedEventTest {
 
         val eventRepository = mock(EventRepository::class.java)
         `when`(eventRepository.determineEvents(quiz.id))
-                .thenReturn(Flux.just(QuizCreatedEvent(quiz.id, quiz, 1)))
+                .thenReturn(Flux.just(QuizCreatedEvent(quiz.id, quiz, sequenceNumber = 1)))
 
         val eventBus = EventBus()
         val quizProjection = DefaultQuizProjection(eventBus, eventRepository, UndoneEventsCache())
@@ -84,7 +84,7 @@ internal class QuizProjectionParticipantCreatedEventTest {
                 .subscribe { observedQuiz.set(it) }
 
         val participant = Participant(name = "Lena")
-        eventBus.post(ParticipantCreatedEvent(quiz.id, participant, 2))
+        eventBus.post(ParticipantCreatedEvent(quiz.id, participant, sequenceNumber = 2))
 
         await untilAsserted {
             QuizAssert.assertThat(observedQuiz.get())

@@ -27,11 +27,11 @@ internal class QuizProjectionChoiceSelectedEventTest {
         val choice2 = Choice(choice = "b")
         val question = Question(question = "Wofür steht die Abkürzung a.D.?", choices = listOf(choice1, choice2))
         val participant = Participant(name = "Lena")
-        eventBus.post(QuizCreatedEvent(quiz.id, quiz, 1))
-        eventBus.post(QuestionCreatedEvent(quiz.id, question, 2))
-        eventBus.post(ParticipantCreatedEvent(quiz.id, participant, 3))
-        eventBus.post(QuestionAskedEvent(quiz.id, question.id, 4))
-        eventBus.post(ChoiceSelectedEvent(quiz.id, participant.id, choice1.id, 5))
+        eventBus.post(QuizCreatedEvent(quiz.id, quiz, sequenceNumber = 1))
+        eventBus.post(QuestionCreatedEvent(quiz.id, question, sequenceNumber = 2))
+        eventBus.post(ParticipantCreatedEvent(quiz.id, participant, sequenceNumber = 3))
+        eventBus.post(QuestionAskedEvent(quiz.id, question.id, sequenceNumber = 4))
+        eventBus.post(ChoiceSelectedEvent(quiz.id, participant.id, choice1.id, sequenceNumber = 5))
 
         await untilAsserted {
             val q = observedQuiz.get()
@@ -55,15 +55,15 @@ internal class QuizProjectionChoiceSelectedEventTest {
         val choice2 = Choice(choice = "b")
         val question = Question(question = "Wofür steht die Abkürzung a.D.?", choices = listOf(choice1, choice2))
         val participant = Participant(name = "Lena")
-        val choiceSelectedEvent = ChoiceSelectedEvent(quiz.id, participant.id, choice1.id, 5)
+        val choiceSelectedEvent = ChoiceSelectedEvent(quiz.id, participant.id, choice1.id, sequenceNumber = 5)
 
         val eventRepository = mock(EventRepository::class.java)
         `when`(eventRepository.determineEvents(quiz.id))
                 .thenReturn(Flux.just(
-                        QuizCreatedEvent(quiz.id, quiz, 1),
-                        QuestionCreatedEvent(quiz.id, question, 2),
-                        ParticipantCreatedEvent(quiz.id, participant, 3),
-                        QuestionAskedEvent(quiz.id, question.id, 4),
+                        QuizCreatedEvent(quiz.id, quiz, sequenceNumber = 1),
+                        QuestionCreatedEvent(quiz.id, question, sequenceNumber = 2),
+                        ParticipantCreatedEvent(quiz.id, participant, sequenceNumber = 3),
+                        QuestionAskedEvent(quiz.id, question.id, sequenceNumber = 4),
                         choiceSelectedEvent
                 ))
 
@@ -101,10 +101,10 @@ internal class QuizProjectionChoiceSelectedEventTest {
         val eventRepository = mock(EventRepository::class.java)
         `when`(eventRepository.determineEvents(quiz.id))
                 .thenReturn(Flux.just(
-                        QuizCreatedEvent(quiz.id, quiz, 1),
-                        QuestionCreatedEvent(quiz.id, question, 2),
-                        ParticipantCreatedEvent(quiz.id, participant, 3),
-                        QuestionAskedEvent(quiz.id, question.id, 4)
+                        QuizCreatedEvent(quiz.id, quiz, sequenceNumber = 1),
+                        QuestionCreatedEvent(quiz.id, question, sequenceNumber = 2),
+                        ParticipantCreatedEvent(quiz.id, participant, sequenceNumber = 3),
+                        QuestionAskedEvent(quiz.id, question.id, sequenceNumber = 4)
                 ))
 
         val eventBus = EventBus()
@@ -114,7 +114,7 @@ internal class QuizProjectionChoiceSelectedEventTest {
         quizProjection.observeQuiz(quiz.id)
                 .subscribe { observedQuiz.set(it) }
 
-        eventBus.post(ChoiceSelectedEvent(quiz.id, participant.id, choice1.id, 5))
+        eventBus.post(ChoiceSelectedEvent(quiz.id, participant.id, choice1.id, sequenceNumber = 5))
 
         await untilAsserted {
             val q = observedQuiz.get()

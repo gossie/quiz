@@ -10,7 +10,7 @@ data class Quiz(
     val questions: List<Question> = ArrayList(),
     val finished: Boolean = false,
     val timestamp: Long = Date().time,
-    val sequenceNumber: Int = 0,
+    val sequenceNumber: Long = 0,
     val undoPossible: Boolean = false,
     val redoPossible: Boolean = false
 ) {
@@ -358,7 +358,7 @@ data class Quiz(
         return Quiz(id, name, participants, questions, finished, timestamp, sequenceNumber, undoPossible, redoPossible)
     }
 
-    fun setSequenceNumber(sequenceNumber: Int): Quiz {
+    fun setSequenceNumber(sequenceNumber: Long): Quiz {
         return Quiz(id, name, participants, questions, finished, timestamp, sequenceNumber, undoPossible, redoPossible)
     }
 

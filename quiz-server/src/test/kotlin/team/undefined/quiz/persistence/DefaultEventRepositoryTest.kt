@@ -12,7 +12,7 @@ import reactor.test.StepVerifier
 import team.undefined.quiz.core.*
 import java.util.*
 
-data class TestEvent(@JsonProperty("quizId") override val quizId: UUID, @JsonProperty("sequenceNumber") override val sequenceNumber: Int, @JsonProperty("timestamp") override val timestamp: Long, @JsonProperty("payload") val payload: Map<String, String>) : Event {
+data class TestEvent(@JsonProperty("quizId") override val quizId: UUID, @JsonProperty("sequenceNumber") override val sequenceNumber: Long, @JsonProperty("timestamp") override val timestamp: Long, @JsonProperty("payload") val payload: Map<String, String>) : Event {
     override fun process(quiz: Quiz): Quiz {
         return quiz.setTimestamp(Date().time)
     }
