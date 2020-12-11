@@ -48,19 +48,18 @@ internal class QuizProjectionQuestionCreatedEventTest {
     }
 
     @Test
-    @Disabled
     fun shouldHandleQuestionCreationWhenQuizIsNotInCacheAndLastEventWasAlreadyPersisted() {
         val quiz = Quiz(name = "Awesome Quiz")
 
         val question1 = Question(question = "Wofür steht die Abkürzung a.D.?")
         val question2 = Question(question = "Wer schrieb Peter und der Wolf?", category = QuestionCategory("Literatur"))
-        val question2CreatedEvent = QuestionCreatedEvent(quiz.id, question1, sequenceNumber = 3)
+        val question2CreatedEvent = QuestionCreatedEvent(quiz.id, question2, sequenceNumber = 2)
 
         val eventRepository = mock(EventRepository::class.java)
         `when`(eventRepository.determineEvents(quiz.id))
                 .thenReturn(Flux.just(
-                        QuizCreatedEvent(quiz.id, quiz, sequenceNumber = 1),
-                        QuestionCreatedEvent(quiz.id, question1, sequenceNumber = 2),
+                        QuizCreatedEvent(quiz.id, quiz, sequenceNumber = 0),
+                        QuestionCreatedEvent(quiz.id, question1, sequenceNumber = 1),
                         question2CreatedEvent
                 ))
 
