@@ -342,4 +342,32 @@ internal class DefaultQuizServiceForbidChangesOnFinishedQuizTest {
         verifyNoInteractions(eventBus)
     }
 
+    @Test
+    fun shouldPreventFinishOfQuizIfQuizIsAlreadyFinished() {
+        val quizId = UUID.randomUUID()
+        val questionId = UUID.randomUUID()
+        val participantId = UUID.randomUUID()
+
+        val eventRepository = mock(EventRepository::class.java)
+        `when`(eventRepository.determineEvents(quizId)).thenReturn(
+            Flux.just(
+                QuizCreatedEvent(quizId, Quiz(quizId, "Ein Quiz")),
+                QuestionCreatedEvent(quizId, Question(questionId, "Eine Frage"), 1),
+                ParticipantCreatedEvent(quizId, Participant(participantId, "Landry"), 2),
+                QuestionAskedEvent(quizId, questionId, 3),
+                EstimatedEvent(quizId, participantId, "Eine Antwort", 4),
+                QuizFinishedEvent(quizId, 5)
+            )
+        )
+
+        val eventBus = mock(EventBus::class.java)
+
+        val quizService = DefaultQuizService(eventRepository, UndoneEventsCache(), eventBus)
+
+        StepVerifier.create(quizService.finishQuiz(FinishQuizCommand(quizId)))
+            .verifyError(QuizFinishedException::class.java)
+
+        verifyNoInteractions(eventBus)
+    }
+
 }

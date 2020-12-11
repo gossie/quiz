@@ -258,6 +258,8 @@ class DefaultQuizService(private val eventRepository: EventRepository,
         logger.info("finishing quiz '{}'", command.quizId)
         return eventRepository.determineEvents(command.quizId)
             .reduce(Quiz(name = "")) { quiz: Quiz, event: Event -> event.process(quiz)}
+            .filter { !it.finished }
+            .switchIfEmpty(Mono.error(QuizFinishedException()))
             .flatMap { eventRepository.storeEvent(QuizFinishedEvent(command.quizId, it.sequenceNumber + 1)) }
             .map {
                 undoneEventsCache.remove(it.quizId)
