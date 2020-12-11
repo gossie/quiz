@@ -26,7 +26,10 @@ internal class QuizProjectionQuizReloadCommandTest {
         val eventRepository = mock(EventRepository::class.java)
         `when`(eventRepository.determineEvents(quizId))
                 .thenReturn(Flux.just(
-                        QuizCreatedEvent(quizId, Quiz(id = quizId, name = "Awesome Quiz"), 1),
+                        QuizCreatedEvent(quizId, Quiz(
+                            id = quizId,
+                            name = "Awesome Quiz",
+                        ), 1),
                         QuestionCreatedEvent(quizId, buzzerQuestion, 2),
                         QuestionCreatedEvent(quizId, freetextQuestion, 3),
                         ParticipantCreatedEvent(quizId, participant1, 4),

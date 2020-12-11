@@ -88,7 +88,7 @@ internal class DefaultQuizServiceTest {
         `when`(quizRepository.determineEvents(quizId))
                 .thenReturn(Flux.just(
                         QuizCreatedEvent(quizId, Quiz(quizId, "Quiz")),
-                        ParticipantCreatedEvent(quizId, Participant(participantId, "Sandra"))
+                        ParticipantCreatedEvent(quizId, Participant(participantId, "Sandra"), 1)
                 ))
 
         val quizService = DefaultQuizService(quizRepository, UndoneEventsCache(), eventBus)
@@ -125,7 +125,7 @@ internal class DefaultQuizServiceTest {
         `when`(quizRepository.determineEvents(quizId))
                 .thenReturn(Flux.just(
                         QuizCreatedEvent(quizId, Quiz(quizId, "Quiz")),
-                        ParticipantCreatedEvent(quizId, Participant(participantId, "Lena"))
+                        ParticipantCreatedEvent(quizId, Participant(participantId, "Lena"), 1)
                 ))
 
         val quizService = DefaultQuizService(quizRepository, UndoneEventsCache(), eventBus)
@@ -167,10 +167,10 @@ internal class DefaultQuizServiceTest {
         `when`(quizRepository.determineEvents(quizId))
                 .thenReturn(Flux.just(
                         QuizCreatedEvent(quizId, Quiz(quizId, "Quiz")),
-                        QuestionCreatedEvent(quizId, question = Question(questionId, "Warum ist die Banane krum?")),
-                        ParticipantCreatedEvent(quizId, Participant(andresId, "André")),
-                        ParticipantCreatedEvent(quizId, Participant(lenasId, "Lena")),
-                        QuestionAskedEvent(quizId, questionId)
+                        QuestionCreatedEvent(quizId, question = Question(questionId, "Warum ist die Banane krum?"), 1),
+                        ParticipantCreatedEvent(quizId, Participant(andresId, "André"), 2),
+                        ParticipantCreatedEvent(quizId, Participant(lenasId, "Lena"), 3),
+                        QuestionAskedEvent(quizId, questionId, 4)
                 ))
 
         val quizService = DefaultQuizService(quizRepository, UndoneEventsCache(), eventBus)
@@ -193,10 +193,10 @@ internal class DefaultQuizServiceTest {
         `when`(quizRepository.determineEvents(quizId))
                 .thenReturn(Flux.just(
                         QuizCreatedEvent(quizId, Quiz(quizId, "Quiz")),
-                        QuestionCreatedEvent(quizId, question = Question(questionId, "Warum ist die Banane krum?", estimates = HashMap())),
-                        ParticipantCreatedEvent(quizId, Participant(andresId, "André")),
-                        ParticipantCreatedEvent(quizId, Participant(lenasId, "Lena")),
-                        QuestionAskedEvent(quizId, questionId)
+                        QuestionCreatedEvent(quizId, question = Question(questionId, "Warum ist die Banane krum?", estimates = HashMap()), 1),
+                        ParticipantCreatedEvent(quizId, Participant(andresId, "André"), 2),
+                        ParticipantCreatedEvent(quizId, Participant(lenasId, "Lena"), 3),
+                        QuestionAskedEvent(quizId, questionId, 4)
                 ))
 
         val quizService = DefaultQuizService(quizRepository, UndoneEventsCache(), eventBus)
@@ -217,9 +217,9 @@ internal class DefaultQuizServiceTest {
         `when`(quizRepository.determineEvents(quizId))
                 .thenReturn(Flux.just(
                         QuizCreatedEvent(quizId, Quiz(quizId, "Quiz")),
-                        QuestionCreatedEvent(quizId, question = Question(questionId, "Warum ist die Banane krum?", choices = listOf(Choice(choice = "a")))),
-                        ParticipantCreatedEvent(quizId, Participant(lenasId, "Lena")),
-                        QuestionAskedEvent(quizId, questionId)
+                        QuestionCreatedEvent(quizId, question = Question(questionId, "Warum ist die Banane krum?", choices = listOf(Choice(choice = "a"))), 1),
+                        ParticipantCreatedEvent(quizId, Participant(lenasId, "Lena"), 2),
+                        QuestionAskedEvent(quizId, questionId, 3)
                 ))
 
         val quizService = DefaultQuizService(quizRepository, UndoneEventsCache(), eventBus)
@@ -241,9 +241,9 @@ internal class DefaultQuizServiceTest {
         `when`(quizRepository.determineEvents(quizId))
                 .thenReturn(Flux.just(
                         QuizCreatedEvent(quizId, Quiz(quizId, "Quiz")),
-                        QuestionCreatedEvent(quizId, question = Question(questionId, "Warum ist die Banane krum?")),
-                        ParticipantCreatedEvent(quizId, Participant(beukesId, "Beuke")),
-                        QuestionAskedEvent(quizId, questionId)
+                        QuestionCreatedEvent(quizId, question = Question(questionId, "Warum ist die Banane krum?"), 1),
+                        ParticipantCreatedEvent(quizId, Participant(beukesId, "Beuke"), 2),
+                        QuestionAskedEvent(quizId, questionId, 3)
                 ))
 
         val quizService = DefaultQuizService(quizRepository, UndoneEventsCache(), eventBus)
@@ -264,9 +264,9 @@ internal class DefaultQuizServiceTest {
         `when`(quizRepository.determineEvents(quizId))
                 .thenReturn(Flux.just(
                         QuizCreatedEvent(quizId, Quiz(quizId, "Quiz")),
-                        QuestionCreatedEvent(quizId, question = Question(questionId, "Warum ist die Banane krum?", choices = listOf(Choice(choice = "a")))),
-                        ParticipantCreatedEvent(quizId, Participant(lenasId, "Lena")),
-                        QuestionAskedEvent(quizId, questionId)
+                        QuestionCreatedEvent(quizId, question = Question(questionId, "Warum ist die Banane krum?", choices = listOf(Choice(choice = "a"))), 1),
+                        ParticipantCreatedEvent(quizId, Participant(lenasId, "Lena"), 2),
+                        QuestionAskedEvent(quizId, questionId, 3)
                 ))
 
         val quizService = DefaultQuizService(quizRepository, UndoneEventsCache(), eventBus)
@@ -287,11 +287,11 @@ internal class DefaultQuizServiceTest {
         `when`(quizRepository.determineEvents(quizId))
                 .thenReturn(Flux.just(
                         QuizCreatedEvent(quizId, Quiz(quizId, "Quiz")),
-                        QuestionCreatedEvent(quizId, question = Question(questionId, "Warum ist die Banane krum?")),
-                        ParticipantCreatedEvent(quizId, Participant(andresId, "André")),
-                        ParticipantCreatedEvent(quizId, Participant(lenasId, "Lena")),
-                        QuestionAskedEvent(quizId, questionId),
-                        BuzzeredEvent(quizId, lenasId)
+                        QuestionCreatedEvent(quizId, question = Question(questionId, "Warum ist die Banane krum?"), 1),
+                        ParticipantCreatedEvent(quizId, Participant(andresId, "André"), 2),
+                        ParticipantCreatedEvent(quizId, Participant(lenasId, "Lena"), 3),
+                        QuestionAskedEvent(quizId, questionId, 4),
+                        BuzzeredEvent(quizId, lenasId, 5)
                 ))
 
         val quizService = DefaultQuizService(quizRepository, UndoneEventsCache(), eventBus)
@@ -313,9 +313,9 @@ internal class DefaultQuizServiceTest {
         `when`(quizRepository.determineEvents(quizId))
                 .thenReturn(Flux.just(
                         QuizCreatedEvent(quizId, Quiz(quizId, "Quiz")),
-                        QuestionCreatedEvent(quizId, question = Question(questionId, "Warum ist die Banane krum?")),
-                        ParticipantCreatedEvent(quizId, Participant(lenasId, "Lena")),
-                        QuestionAskedEvent(quizId, questionId)
+                        QuestionCreatedEvent(quizId, question = Question(questionId, "Warum ist die Banane krum?"), 1),
+                        ParticipantCreatedEvent(quizId, Participant(lenasId, "Lena"), 2),
+                        QuestionAskedEvent(quizId, questionId, 3)
                 ))
 
         val quizService = DefaultQuizService(quizRepository, UndoneEventsCache(), eventBus)
@@ -373,7 +373,7 @@ internal class DefaultQuizServiceTest {
         `when`(quizRepository.determineEvents(quizId))
                 .thenReturn(Flux.just(
                         QuizCreatedEvent(quizId, Quiz(quizId, "Quiz")),
-                        QuestionCreatedEvent(quizId, Question(questionId, question = "Wer ist das", visibility = Question.QuestionVisibility.PRIVATE))
+                        QuestionCreatedEvent(quizId, Question(questionId, question = "Wer ist das", visibility = Question.QuestionVisibility.PRIVATE), 1)
                 ))
 
         val quizService = DefaultQuizService(quizRepository, UndoneEventsCache(), eventBus)
@@ -393,7 +393,7 @@ internal class DefaultQuizServiceTest {
         `when`(quizRepository.determineEvents(quizId))
                 .thenReturn(Flux.just(
                         QuizCreatedEvent(quizId, Quiz(quizId, "Quiz")),
-                        QuestionCreatedEvent(quizId, Question(questionId, "Warum ist die Banane krum?"))
+                        QuestionCreatedEvent(quizId, Question(questionId, "Warum ist die Banane krum?"), 1)
                 ))
 
         val quizService = DefaultQuizService(quizRepository, UndoneEventsCache(), eventBus)
@@ -427,12 +427,12 @@ internal class DefaultQuizServiceTest {
         `when`(quizRepository.determineEvents(quizId))
                 .thenReturn(Flux.just(
                         QuizCreatedEvent(quizId, Quiz(quizId, "Quiz")),
-                        QuestionCreatedEvent(quizId, Question(questionId, "Warum ist die Banane krum?", initialTimeToAnswer = 3, secondsLeft = 3)),
+                        QuestionCreatedEvent(quizId, Question(questionId, "Warum ist die Banane krum?", initialTimeToAnswer = 3, secondsLeft = 3), 1),
                 ))
                 .thenReturn(Flux.just(
                         QuizCreatedEvent(quizId, Quiz(quizId, "Quiz")),
-                        QuestionCreatedEvent(quizId, Question(questionId, "Warum ist die Banane krum?", initialTimeToAnswer = 3, secondsLeft = 3)),
-                        QuestionAskedEvent(quizId, questionId)
+                        QuestionCreatedEvent(quizId, Question(questionId, "Warum ist die Banane krum?", initialTimeToAnswer = 3, secondsLeft = 3), 1),
+                        QuestionAskedEvent(quizId, questionId, 2)
                 ))
 
         val quizService = DefaultQuizService(quizRepository, UndoneEventsCache(), eventBus)
@@ -463,9 +463,9 @@ internal class DefaultQuizServiceTest {
         `when`(quizRepository.determineEvents(quizId))
                 .thenReturn(Flux.just(
                         QuizCreatedEvent(quizId, Quiz(quizId, "Quiz")),
-                        QuestionCreatedEvent(quizId, question = Question(questionId, "Wo befindet sich das Kahnbein?", choices = listOf(Choice(choice1Id, "im Fuß"), Choice(choice2Id, "In der Hand")))),
-                        ParticipantCreatedEvent(quizId, Participant(participantId, "Lena")),
-                        QuestionAskedEvent(quizId, questionId)
+                        QuestionCreatedEvent(quizId, question = Question(questionId, "Wo befindet sich das Kahnbein?", choices = listOf(Choice(choice1Id, "im Fuß"), Choice(choice2Id, "In der Hand"))), 1),
+                        ParticipantCreatedEvent(quizId, Participant(participantId, "Lena"), 2),
+                        QuestionAskedEvent(quizId, questionId, 3)
                 ))
 
         val quizService = DefaultQuizService(quizRepository, UndoneEventsCache(), eventBus)
@@ -488,11 +488,11 @@ internal class DefaultQuizServiceTest {
         `when`(quizRepository.determineEvents(quizId))
             .thenReturn(Flux.just(
                 QuizCreatedEvent(quizId, Quiz(quizId, "Quiz")),
-                QuestionCreatedEvent(quizId, question = Question(questionId, "Wo befindet sich das Kahnbein?", choices = listOf(Choice(choice1Id, "im Fuß"), Choice(choice2Id, "In der Hand")))),
-                ParticipantCreatedEvent(quizId, Participant(participantId, "Lena")),
-                QuestionAskedEvent(quizId, questionId),
-                ChoiceSelectedEvent(quizId, participantId, choice1Id),
-                ChoiceSelectedEvent(quizId, participantId, choice2Id)
+                QuestionCreatedEvent(quizId, question = Question(questionId, "Wo befindet sich das Kahnbein?", choices = listOf(Choice(choice1Id, "im Fuß"), Choice(choice2Id, "In der Hand"))), 1),
+                ParticipantCreatedEvent(quizId, Participant(participantId, "Lena"), 2),
+                QuestionAskedEvent(quizId, questionId, 3),
+                ChoiceSelectedEvent(quizId, participantId, choice1Id, 4),
+                ChoiceSelectedEvent(quizId, participantId, choice2Id, 5)
             ))
 
         val quizService = DefaultQuizService(quizRepository, UndoneEventsCache(), eventBus)
@@ -514,10 +514,10 @@ internal class DefaultQuizServiceTest {
         `when`(quizRepository.determineEvents(quizId))
             .thenReturn(Flux.just(
                 QuizCreatedEvent(quizId, Quiz(quizId, "Quiz")),
-                QuestionCreatedEvent(quizId, question = Question(questionId, "Wo befindet sich das Kahnbein?", choices = listOf(Choice(choice1Id, "im Fuß"), Choice(choice2Id, "In der Hand")))),
-                ParticipantCreatedEvent(quizId, Participant(participantId, "Lena")),
-                QuestionAskedEvent(quizId, questionId),
-                ChoiceSelectedEvent(quizId, participantId, choice1Id)
+                QuestionCreatedEvent(quizId, question = Question(questionId, "Wo befindet sich das Kahnbein?", choices = listOf(Choice(choice1Id, "im Fuß"), Choice(choice2Id, "In der Hand"))), 1),
+                ParticipantCreatedEvent(quizId, Participant(participantId, "Lena"), 2),
+                QuestionAskedEvent(quizId, questionId, 3),
+                ChoiceSelectedEvent(quizId, participantId, choice1Id, 4)
             ))
 
         val quizService = DefaultQuizService(quizRepository, UndoneEventsCache(), eventBus)
@@ -538,9 +538,9 @@ internal class DefaultQuizServiceTest {
         `when`(quizRepository.determineEvents(quizId))
                 .thenReturn(Flux.just(
                         QuizCreatedEvent(quizId, Quiz(quizId, "Quiz")),
-                        QuestionCreatedEvent(quizId, question = Question(questionId, "Wo befindet sich das Kahnbein?")),
-                        ParticipantCreatedEvent(quizId, Participant(participantId, "Lena")),
-                        QuestionAskedEvent(quizId, questionId)
+                        QuestionCreatedEvent(quizId, question = Question(questionId, "Wo befindet sich das Kahnbein?"), 1),
+                        ParticipantCreatedEvent(quizId, Participant(participantId, "Lena"), 2),
+                        QuestionAskedEvent(quizId, questionId, 3)
                 ))
 
         val quizService = DefaultQuizService(quizRepository, UndoneEventsCache(), eventBus)
@@ -562,10 +562,10 @@ internal class DefaultQuizServiceTest {
         `when`(quizRepository.determineEvents(quizId))
                 .thenReturn(Flux.just(
                         QuizCreatedEvent(quizId, Quiz(quizId, "Quiz")),
-                        QuestionCreatedEvent(quizId, question = Question(questionId, "Wo befindet sich das Kahnbein?", choices = listOf(Choice(choice1Id, "im Fuß"), Choice(choice2Id, "In der Hand")))),
-                        ParticipantCreatedEvent(quizId, Participant(participantId, "Lena")),
-                        QuestionAskedEvent(quizId, questionId),
-                        ChoiceSelectedEvent(quizId, participantId, choice2Id)
+                        QuestionCreatedEvent(quizId, question = Question(questionId, "Wo befindet sich das Kahnbein?", choices = listOf(Choice(choice1Id, "im Fuß"), Choice(choice2Id, "In der Hand"))), 1),
+                        ParticipantCreatedEvent(quizId, Participant(participantId, "Lena"), 2),
+                        QuestionAskedEvent(quizId, questionId, 3),
+                        ChoiceSelectedEvent(quizId, participantId, choice2Id ,4)
                 ))
 
         val quizService = DefaultQuizService(quizRepository, UndoneEventsCache(), eventBus)
@@ -585,9 +585,9 @@ internal class DefaultQuizServiceTest {
         `when`(quizRepository.determineEvents(quizId))
                 .thenReturn(Flux.just(
                         QuizCreatedEvent(quizId, Quiz(quizId, "Quiz")),
-                        QuestionCreatedEvent(quizId, question = Question(questionId, "Warum ist die Banane krum?", estimates = HashMap())),
-                        ParticipantCreatedEvent(quizId, Participant(participantId, "Lena")),
-                        QuestionAskedEvent(quizId, questionId)
+                        QuestionCreatedEvent(quizId, question = Question(questionId, "Warum ist die Banane krum?", estimates = HashMap()), 1),
+                        ParticipantCreatedEvent(quizId, Participant(participantId, "Lena"), 2),
+                        QuestionAskedEvent(quizId, questionId, 3)
                 ))
 
         val quizService = DefaultQuizService(quizRepository, UndoneEventsCache(), eventBus)
@@ -608,10 +608,10 @@ internal class DefaultQuizServiceTest {
         `when`(quizRepository.determineEvents(quizId))
                 .thenReturn(Flux.just(
                         QuizCreatedEvent(quizId, Quiz(quizId, "Quiz")),
-                        QuestionCreatedEvent(quizId, question = Question(questionId, "Warum ist die Banane krum?", estimates = HashMap())),
-                        ParticipantCreatedEvent(quizId, Participant(participantId, "Lena")),
-                        QuestionAskedEvent(quizId, questionId),
-                        EstimatedEvent(quizId, participantId, "Darum")
+                        QuestionCreatedEvent(quizId, question = Question(questionId, "Warum ist die Banane krum?", estimates = HashMap()), 1),
+                        ParticipantCreatedEvent(quizId, Participant(participantId, "Lena"), 2),
+                        QuestionAskedEvent(quizId, questionId, 3),
+                        EstimatedEvent(quizId, participantId, "Darum", 4)
                 ))
 
         val quizService = DefaultQuizService(quizRepository, UndoneEventsCache(), eventBus)
@@ -631,10 +631,10 @@ internal class DefaultQuizServiceTest {
         `when`(quizRepository.determineEvents(quizId))
                 .thenReturn(Flux.just(
                         QuizCreatedEvent(quizId, Quiz(quizId, "Quiz")),
-                        QuestionCreatedEvent(quizId, question = Question(questionId, "Warum ist die Banane krum?", estimates = HashMap())),
-                        ParticipantCreatedEvent(quizId, Participant(participantId, "Lena")),
-                        QuestionAskedEvent(quizId, questionId),
-                        EstimatedEvent(quizId, participantId, "Darum")
+                        QuestionCreatedEvent(quizId, question = Question(questionId, "Warum ist die Banane krum?", estimates = HashMap()), 1),
+                        ParticipantCreatedEvent(quizId, Participant(participantId, "Lena"), 2),
+                        QuestionAskedEvent(quizId, questionId, 3),
+                        EstimatedEvent(quizId, participantId, "Darum", 4)
                 ))
 
         val quizService = DefaultQuizService(quizRepository, UndoneEventsCache(), eventBus)
@@ -655,8 +655,8 @@ internal class DefaultQuizServiceTest {
         `when`(quizRepository.determineEvents(quizId))
                 .thenReturn(Flux.just(
                         QuizCreatedEvent(quizId, Quiz(quizId, "Quiz")),
-                        QuestionCreatedEvent(quizId, question = Question(questionId, "Warum ist die Banane krum?")),
-                        QuestionAskedEvent(quizId, questionId)
+                        QuestionCreatedEvent(quizId, question = Question(questionId, "Warum ist die Banane krum?"), 1),
+                        QuestionAskedEvent(quizId, questionId, 2)
                 ))
 
         val quizService = DefaultQuizService(quizRepository, UndoneEventsCache(), eventBus)
@@ -676,9 +676,9 @@ internal class DefaultQuizServiceTest {
         `when`(quizRepository.determineEvents(quizId))
                 .thenReturn(Flux.just(
                         QuizCreatedEvent(quizId, Quiz(quizId, "Quiz")),
-                        QuestionCreatedEvent(quizId, question = Question(questionId, "Warum ist die Banane krum?")),
-                        ParticipantCreatedEvent(quizId, Participant(participantId, "Lena")),
-                        QuestionAskedEvent(quizId, questionId)
+                        QuestionCreatedEvent(quizId, question = Question(questionId, "Warum ist die Banane krum?"), 1),
+                        ParticipantCreatedEvent(quizId, Participant(participantId, "Lena"), 2),
+                        QuestionAskedEvent(quizId, questionId, 3)
                 ))
 
         val quizService = DefaultQuizService(quizRepository, UndoneEventsCache(), eventBus)
@@ -699,8 +699,8 @@ internal class DefaultQuizServiceTest {
         `when`(quizRepository.determineEvents(quizId))
                 .thenReturn(Flux.just(
                         QuizCreatedEvent(quizId, Quiz(quizId, "Quiz")),
-                        QuestionCreatedEvent(quizId, question = Question(questionId, "Warum ist die Banane krum?")),
-                        QuestionAskedEvent(quizId, questionId)
+                        QuestionCreatedEvent(quizId, question = Question(questionId, "Warum ist die Banane krum?"), 1),
+                        QuestionAskedEvent(quizId, questionId, 2)
                 ))
 
         val quizService = DefaultQuizService(quizRepository, UndoneEventsCache(), eventBus)
@@ -812,14 +812,14 @@ internal class DefaultQuizServiceTest {
         `when`(quizRepository.determineEvents(quizId))
                 .thenReturn(Flux.just(
                         QuizCreatedEvent(quizId, Quiz(quizId, "Quiz")),
-                        QuestionCreatedEvent(quizId, Question(questionId, "Warum ist die Banane krum?", initialTimeToAnswer = 3, secondsLeft = 3)),
-                        QuestionAskedEvent(quizId, questionId),
+                        QuestionCreatedEvent(quizId, Question(questionId, "Warum ist die Banane krum?", initialTimeToAnswer = 3, secondsLeft = 3), 1),
+                        QuestionAskedEvent(quizId, questionId, 2),
                 ))
                 .thenReturn(Flux.just(
                         QuizCreatedEvent(quizId, Quiz(quizId, "Quiz")),
-                        QuestionCreatedEvent(quizId, Question(questionId, "Warum ist die Banane krum?", initialTimeToAnswer = 3, secondsLeft = 3)),
-                        QuestionAskedEvent(quizId, questionId),
-                        CurrentQuestionReopenedEvent(quizId)
+                        QuestionCreatedEvent(quizId, Question(questionId, "Warum ist die Banane krum?", initialTimeToAnswer = 3, secondsLeft = 3), 1),
+                        QuestionAskedEvent(quizId, questionId, 2),
+                        CurrentQuestionReopenedEvent(quizId, 3)
                 ))
 
         val quizService = DefaultQuizService(quizRepository, UndoneEventsCache(), eventBus)
@@ -887,17 +887,17 @@ internal class DefaultQuizServiceTest {
         `when`(quizRepository.determineEvents(quiz1Id))
                 .thenReturn(Flux.just(
                         QuizCreatedEvent(quiz1Id, Quiz(quiz1Id, "Quiz")),
-                        QuestionCreatedEvent(quiz1Id, question = Question(question = "Warum ist die Banane krum?")),
-                        ParticipantCreatedEvent(quiz1Id, Participant(name = "André")),
-                        ParticipantCreatedEvent(quiz1Id, Participant(name = "Lena"))
+                        QuestionCreatedEvent(quiz1Id, question = Question(question = "Warum ist die Banane krum?"), 1),
+                        ParticipantCreatedEvent(quiz1Id, Participant(name = "André"), 2),
+                        ParticipantCreatedEvent(quiz1Id, Participant(name = "Lena"), 3)
                 ))
 
         `when`(quizRepository.determineEvents(quiz2Id))
                 .thenReturn(Flux.just(
                         QuizCreatedEvent(quiz2Id, Quiz(quiz2Id, "Quiz")),
-                        QuestionCreatedEvent(quiz2Id, question = Question(question = "Warum ist die Banane krum?")),
-                        ParticipantCreatedEvent(quiz2Id, Participant(name = "André")),
-                        ParticipantCreatedEvent(quiz2Id, Participant(name = "Lena"))
+                        QuestionCreatedEvent(quiz2Id, question = Question(question = "Warum ist die Banane krum?"), 1),
+                        ParticipantCreatedEvent(quiz2Id, Participant(name = "André"), 2),
+                        ParticipantCreatedEvent(quiz2Id, Participant(name = "Lena"), 3)
                 ))
 
         val quizService = DefaultQuizService(quizRepository, UndoneEventsCache(), eventBus)
@@ -912,7 +912,7 @@ internal class DefaultQuizServiceTest {
     fun shouldUndoAndRedoEvent() {
         val quizId = UUID.randomUUID()
 
-        val lastEvent = QuizFinishedEvent(quizId)
+        val lastEvent = QuizFinishedEvent(quizId, 17)
 
         `when`(quizRepository.undoLastAction(quizId))
                 .thenReturn(Mono.just(lastEvent))

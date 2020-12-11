@@ -94,9 +94,13 @@ class DefaultQuizProjection(
     @Subscribe
     fun handleQuizFinish(event: QuizFinishedEvent) {
         val quiz = quizCache[event.quizId]
-        if (quiz.timestamp < event.timestamp) {
-            quizCache.put(event.quizId, event.process(quiz))
+        println("1: ${quiz.finished}")
+        if (event.sequenceNumber > quiz.sequenceNumber) {
+            val process = event.process(quiz)
+            println("2: ${process.finished}")
+            quizCache.put(event.quizId, process)
         }
+        println("3: ${quizCache[event.quizId]!!.finished}")
         emitQuiz(quizCache[event.quizId]!!)
     }
 
@@ -133,7 +137,10 @@ class DefaultQuizProjection(
         logger.trace("handling event {}", event)
         try {
             locks.computeIfAbsent(event.quizId) { Semaphore(1) }.acquire()
-            quizCache.put(event.quizId, event.process(quizCache[event.quizId]))
+            val quiz = quizCache[event.quizId]
+            if (event.sequenceNumber > quiz.sequenceNumber) {
+                quizCache.put(event.quizId, event.process(quiz))
+            }
             emitQuiz(quizCache[event.quizId])
         } finally {
             locks[event.quizId]!!.release()

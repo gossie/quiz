@@ -4,7 +4,6 @@ import com.google.common.eventbus.EventBus
 import org.assertj.core.api.Assertions.assertThat
 import org.awaitility.kotlin.await
 import org.awaitility.kotlin.untilAsserted
-import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test
 import org.mockito.Mockito.`when`
 import org.mockito.Mockito.mock
@@ -85,7 +84,6 @@ internal class QuizProjectionQuestionAnsweredCorrectEventTest {
     }
 
     @Test
-    @Disabled("angucken")
     fun shouldHandleQuestionAnsweredCorrectEventWhenQuizIsNotInCacheAndLastEventWasAlreadyPersisted() {
         val quiz = Quiz(name = "Awesome Quiz")
 

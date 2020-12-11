@@ -3,7 +3,6 @@ package team.undefined.quiz.core
 import com.google.common.eventbus.EventBus
 import org.awaitility.kotlin.await
 import org.awaitility.kotlin.until
-import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test
 import org.mockito.Mockito.`when`
 import org.mockito.Mockito.mock
@@ -50,7 +49,6 @@ internal class QuizProjectionEstimationQuestionAnsweredCorrectEventTest {
     }
 
     @Test
-    @Disabled("angucken")
     fun shouldHandleQuestionAnsweredCorrectEventWhenQuizIsNotInCacheAndLastEventWasAlreadyPersisted() {
         val quiz = Quiz(name = "Awesome Quiz")
 

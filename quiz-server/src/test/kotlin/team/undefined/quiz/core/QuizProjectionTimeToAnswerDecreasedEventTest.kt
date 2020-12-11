@@ -81,7 +81,7 @@ internal class QuizProjectionTimeToAnswerDecreasedEventTest {
             assertThat(q.questions).hasSize(1)
             assertThat(q.questions[0].pending).isTrue()
             assertThat(q.questions[0].initialTimeToAnswer).isEqualTo(30)
-            assertThat(q.questions[0].secondsLeft).isEqualTo(28)
+            assertThat(q.questions[0].secondsLeft).isEqualTo(29)
             assertThat(q.finished).isFalse()
         }
     }

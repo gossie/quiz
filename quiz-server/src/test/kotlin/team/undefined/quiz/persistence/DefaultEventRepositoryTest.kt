@@ -12,7 +12,7 @@ import reactor.test.StepVerifier
 import team.undefined.quiz.core.*
 import java.util.*
 
-data class TestEvent(@JsonProperty("quizId") override val quizId: UUID, @JsonProperty("timestamp") override val timestamp: Long, @JsonProperty("payload") val payload: Map<String, String>) : Event {
+data class TestEvent(@JsonProperty("quizId") override val quizId: UUID, @JsonProperty("sequenceNumber") override val sequenceNumber: Int, @JsonProperty("timestamp") override val timestamp: Long, @JsonProperty("payload") val payload: Map<String, String>) : Event {
     override fun process(quiz: Quiz): Quiz {
         return quiz.setTimestamp(Date().time)
     }
@@ -38,7 +38,7 @@ internal class DefaultEventRepositoryTest {
         val firstQuizId = UUID.randomUUID()
         val secondQuizId = UUID.randomUUID()
 
-        StepVerifier.create(defaultEventRepository.storeEvent(TestEvent(firstQuizId, Date().time, mapOf(Pair("key1", "value1")))))
+        StepVerifier.create(defaultEventRepository.storeEvent(TestEvent(firstQuizId, 0, Date().time, mapOf(Pair("key1", "value1")))))
                 .consumeNextWith {
                     assertThat(it.quizId).isEqualTo(firstQuizId)
                     assertThat((it as TestEvent).payload).isEqualTo(mapOf(Pair("key1", "value1")))
@@ -47,7 +47,7 @@ internal class DefaultEventRepositoryTest {
 
         Thread.sleep(1)
 
-        StepVerifier.create(defaultEventRepository.storeEvent(TestEvent(firstQuizId, Date().time, mapOf(Pair("key2", "value2")))))
+        StepVerifier.create(defaultEventRepository.storeEvent(TestEvent(firstQuizId, 1, Date().time, mapOf(Pair("key2", "value2")))))
                 .consumeNextWith {
                     assertThat(it.quizId).isEqualTo(firstQuizId)
                     assertThat((it as TestEvent).payload).isEqualTo(mapOf(Pair("key2", "value2")))
@@ -56,7 +56,7 @@ internal class DefaultEventRepositoryTest {
 
         Thread.sleep(1)
 
-        StepVerifier.create(defaultEventRepository.storeEvent(TestEvent(secondQuizId, Date().time, mapOf(Pair("key1", "value1")))))
+        StepVerifier.create(defaultEventRepository.storeEvent(TestEvent(secondQuizId, 0, Date().time, mapOf(Pair("key1", "value1")))))
                 .consumeNextWith {
                     assertThat(it.quizId).isEqualTo(secondQuizId)
                     assertThat((it as TestEvent).payload).isEqualTo(mapOf(Pair("key1", "value1")))
@@ -116,7 +116,7 @@ internal class DefaultEventRepositoryTest {
     fun shouldUndoLastAction() {
         val firstQuizId = UUID.randomUUID()
 
-        StepVerifier.create(defaultEventRepository.storeEvent(TestEvent(firstQuizId, Date().time, mapOf(Pair("key1", "value1")))))
+        StepVerifier.create(defaultEventRepository.storeEvent(TestEvent(firstQuizId, 0, Date().time, mapOf(Pair("key1", "value1")))))
                 .consumeNextWith {
                     assertThat(it.quizId).isEqualTo(firstQuizId)
                     assertThat((it as TestEvent).payload).isEqualTo(mapOf(Pair("key1", "value1")))
@@ -124,7 +124,7 @@ internal class DefaultEventRepositoryTest {
                 .verifyComplete()
         Thread.sleep(1)
 
-        StepVerifier.create(defaultEventRepository.storeEvent(TestEvent(firstQuizId, Date().time, mapOf(Pair("key2", "value2")))))
+        StepVerifier.create(defaultEventRepository.storeEvent(TestEvent(firstQuizId, 1, Date().time, mapOf(Pair("key2", "value2")))))
                 .consumeNextWith {
                     assertThat(it.quizId).isEqualTo(firstQuizId)
                     assertThat((it as TestEvent).payload).isEqualTo(mapOf(Pair("key2", "value2")))

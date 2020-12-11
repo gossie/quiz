@@ -22,22 +22,22 @@ internal class QuizStatisticsProjectionTest {
         val eventRepository = mock(EventRepository::class.java)
         Mockito.`when`(eventRepository.determineEvents(quiz.id))
                 .thenReturn(Flux.just(
-                        QuizCreatedEvent(quiz.id, quiz, 1),
-                        QuestionCreatedEvent(quiz.id, buzzerQuestion, 2),
-                        QuestionCreatedEvent(quiz.id, freetextQuestion, 3),
-                        ParticipantCreatedEvent(quiz.id, participant1, 4),
-                        ParticipantCreatedEvent(quiz.id, participant2, 5),
-                        BuzzeredEvent(quiz.id, participant1.id, 7),
-                        QuestionAskedEvent(quiz.id, buzzerQuestion.id, 8),
-                        BuzzeredEvent(quiz.id, participant1.id, 9),
-                        AnsweredEvent(quiz.id, participant1.id, AnswerCommand.Answer.INCORRECT, 10),
-                        BuzzeredEvent(quiz.id, participant1.id, 11),
-                        AnsweredEvent(quiz.id, participant1.id, AnswerCommand.Answer.CORRECT, 12),
-                        QuestionAskedEvent(quiz.id, freetextQuestion.id, 13),
-                        EstimatedEvent(quiz.id, participant1.id, "Sergej Prokofjew", 14),
-                        EstimatedEvent(quiz.id, participant2.id, "Max Mustermann", 15),
-                        AnsweredEvent(quiz.id, participant1.id, AnswerCommand.Answer.CORRECT, 16),
-                        QuizFinishedEvent(quiz.id, 17)
+                        QuizCreatedEvent(quiz.id, quiz, 1, 1),
+                        QuestionCreatedEvent(quiz.id, buzzerQuestion, 2, 2),
+                        QuestionCreatedEvent(quiz.id, freetextQuestion, 3, 3),
+                        ParticipantCreatedEvent(quiz.id, participant1, 4, 4),
+                        ParticipantCreatedEvent(quiz.id, participant2, 5, 5),
+                        BuzzeredEvent(quiz.id, participant1.id, 7, 7),
+                        QuestionAskedEvent(quiz.id, buzzerQuestion.id, 8, 8),
+                        BuzzeredEvent(quiz.id, participant1.id, 9, 9),
+                        AnsweredEvent(quiz.id, participant1.id, AnswerCommand.Answer.INCORRECT, 10, 10),
+                        BuzzeredEvent(quiz.id, participant1.id, 11, 11),
+                        AnsweredEvent(quiz.id, participant1.id, AnswerCommand.Answer.CORRECT, 12, 12),
+                        QuestionAskedEvent(quiz.id, freetextQuestion.id, 13, 13),
+                        EstimatedEvent(quiz.id, participant1.id, "Sergej Prokofjew", 14, 14),
+                        EstimatedEvent(quiz.id, participant2.id, "Max Mustermann", 15, 15),
+                        AnsweredEvent(quiz.id, participant1.id, AnswerCommand.Answer.CORRECT, 16, 16),
+                        QuizFinishedEvent(quiz.id, 17, 17)
                 ))
 
         val quizStatisticsProvider = QuizStatisticsProjection(eventRepository, mock(EventBus::class.java))
@@ -77,24 +77,24 @@ internal class QuizStatisticsProjectionTest {
         val eventRepository = mock(EventRepository::class.java)
         Mockito.`when`(eventRepository.determineEvents(quiz.id))
                 .thenReturn(Flux.just(
-                        QuizCreatedEvent(quiz.id, quiz, 1),
-                        QuestionCreatedEvent(quiz.id, buzzerQuestion, 2),
-                        QuestionCreatedEvent(quiz.id, freetextQuestion, 3),
-                        QuestionCreatedEvent(quiz.id, questionToBeDeleted, 4),
-                        ParticipantCreatedEvent(quiz.id, participant1, 5),
-                        ParticipantCreatedEvent(quiz.id, participant2, 6),
-                        BuzzeredEvent(quiz.id, participant1.id, 7),
-                        QuestionAskedEvent(quiz.id, buzzerQuestion.id, 8),
-                        BuzzeredEvent(quiz.id, participant1.id, 9),
-                        AnsweredEvent(quiz.id, participant1.id, AnswerCommand.Answer.INCORRECT, 10),
-                        BuzzeredEvent(quiz.id, participant1.id, 11),
-                        AnsweredEvent(quiz.id, participant1.id, AnswerCommand.Answer.CORRECT, 12),
-                        QuestionAskedEvent(quiz.id, freetextQuestion.id, 13),
-                        EstimatedEvent(quiz.id, participant1.id, "Sergej Prokofjew", 14),
-                        EstimatedEvent(quiz.id, participant2.id, "Max Mustermann", 15),
-                        AnsweredEvent(quiz.id, participant1.id, AnswerCommand.Answer.CORRECT, 16),
-                        QuestionDeletedEvent(quiz.id, questionToBeDeleted.id, 17),
-                        QuizFinishedEvent(quiz.id, 18)
+                        QuizCreatedEvent(quiz.id, quiz, 1, 1),
+                        QuestionCreatedEvent(quiz.id, buzzerQuestion, 2, 2),
+                        QuestionCreatedEvent(quiz.id, freetextQuestion, 3, 3),
+                        QuestionCreatedEvent(quiz.id, questionToBeDeleted, 4 ,4),
+                        ParticipantCreatedEvent(quiz.id, participant1, 5, 5),
+                        ParticipantCreatedEvent(quiz.id, participant2, 6, 6),
+                        BuzzeredEvent(quiz.id, participant1.id, 7, 7),
+                        QuestionAskedEvent(quiz.id, buzzerQuestion.id, 8, 8),
+                        BuzzeredEvent(quiz.id, participant1.id, 9, 9),
+                        AnsweredEvent(quiz.id, participant1.id, AnswerCommand.Answer.INCORRECT, 10, 10),
+                        BuzzeredEvent(quiz.id, participant1.id, 11, 11),
+                        AnsweredEvent(quiz.id, participant1.id, AnswerCommand.Answer.CORRECT, 12, 12),
+                        QuestionAskedEvent(quiz.id, freetextQuestion.id, 13, 13),
+                        EstimatedEvent(quiz.id, participant1.id, "Sergej Prokofjew", 14, 14),
+                        EstimatedEvent(quiz.id, participant2.id, "Max Mustermann", 15, 15),
+                        AnsweredEvent(quiz.id, participant1.id, AnswerCommand.Answer.CORRECT, 16, 16),
+                        QuestionDeletedEvent(quiz.id, questionToBeDeleted.id, 17, 17),
+                        QuizFinishedEvent(quiz.id, 18, 18)
                 ))
 
         val quizStatisticsProvider = QuizStatisticsProjection(eventRepository, mock(EventBus::class.java))
@@ -138,25 +138,25 @@ internal class QuizStatisticsProjectionTest {
 
         val quizStatisticsProjection = QuizStatisticsProjection(eventRepository, eventBus)
 
-        eventBus.post(QuizCreatedEvent(quiz.id, quiz, 1))
-        eventBus.post(QuestionCreatedEvent(quiz.id, buzzerQuestion, 2))
-        eventBus.post(QuestionCreatedEvent(quiz.id, freetextQuestion, 3))
-        eventBus.post(QuestionCreatedEvent(quiz.id, multipleChoiceQuestion, 4))
-        eventBus.post(ParticipantCreatedEvent(quiz.id, participant1, 5))
-        eventBus.post(ParticipantCreatedEvent(quiz.id, participant2, 6))
-        eventBus.post(QuestionAskedEvent(quiz.id, buzzerQuestion.id, 7))
-        eventBus.post(BuzzeredEvent(quiz.id, participant1.id, 8))
-        eventBus.post(AnsweredEvent(quiz.id, participant1.id, AnswerCommand.Answer.CORRECT, 9))
-        eventBus.post(QuestionAskedEvent(quiz.id, freetextQuestion.id, 10))
-        eventBus.post(EstimatedEvent(quiz.id, participant1.id, "Sergej Prokofjew", 11))
-        eventBus.post(EstimatedEvent(quiz.id, participant2.id, "Max Mustermann", 12))
-        eventBus.post(AnsweredEvent(quiz.id, participant1.id, AnswerCommand.Answer.CORRECT, 13))
-        eventBus.post(QuestionAskedEvent(quiz.id, multipleChoiceQuestion.id, 14))
-        eventBus.post(ChoiceSelectedEvent(quiz.id, participant1.id, choice1.id, 15))
-        eventBus.post(ChoiceSelectedEvent(quiz.id, participant2.id, choice1.id, 16))
-        eventBus.post(AnsweredEvent(quiz.id, participant1.id, AnswerCommand.Answer.CORRECT, 17))
-        eventBus.post(AnsweredEvent(quiz.id, participant2.id, AnswerCommand.Answer.CORRECT, 18))
-        eventBus.post(QuizFinishedEvent(quiz.id, 19))
+        eventBus.post(QuizCreatedEvent(quiz.id, quiz, 1, 1))
+        eventBus.post(QuestionCreatedEvent(quiz.id, buzzerQuestion, 2, 2))
+        eventBus.post(QuestionCreatedEvent(quiz.id, freetextQuestion, 3, 3))
+        eventBus.post(QuestionCreatedEvent(quiz.id, multipleChoiceQuestion, 4, 4))
+        eventBus.post(ParticipantCreatedEvent(quiz.id, participant1, 5, 5))
+        eventBus.post(ParticipantCreatedEvent(quiz.id, participant2, 6, 6))
+        eventBus.post(QuestionAskedEvent(quiz.id, buzzerQuestion.id, 7, 7))
+        eventBus.post(BuzzeredEvent(quiz.id, participant1.id, 8, 8))
+        eventBus.post(AnsweredEvent(quiz.id, participant1.id, AnswerCommand.Answer.CORRECT, 9, 9))
+        eventBus.post(QuestionAskedEvent(quiz.id, freetextQuestion.id, 10, 10))
+        eventBus.post(EstimatedEvent(quiz.id, participant1.id, "Sergej Prokofjew", 11, 11))
+        eventBus.post(EstimatedEvent(quiz.id, participant2.id, "Max Mustermann", 12, 12))
+        eventBus.post(AnsweredEvent(quiz.id, participant1.id, AnswerCommand.Answer.CORRECT, 13, 13))
+        eventBus.post(QuestionAskedEvent(quiz.id, multipleChoiceQuestion.id, 14, 14))
+        eventBus.post(ChoiceSelectedEvent(quiz.id, participant1.id, choice1.id, 15, 15))
+        eventBus.post(ChoiceSelectedEvent(quiz.id, participant2.id, choice1.id, 16, 16))
+        eventBus.post(AnsweredEvent(quiz.id, participant1.id, AnswerCommand.Answer.CORRECT, 17, 17))
+        eventBus.post(AnsweredEvent(quiz.id, participant2.id, AnswerCommand.Answer.CORRECT, 18, 18))
+        eventBus.post(QuizFinishedEvent(quiz.id, 19, 19))
 
         assertThat(quizStatisticsProjection.determineQuizStatistics(quiz.id))
             .questionStatisticsSizeIs(3)

@@ -28,25 +28,25 @@ internal class QuestionProjectionTest {
         val eventRepository = mock(EventRepository::class.java)
         `when`(eventRepository.determineEvents()).thenReturn(Flux.just(
                 QuizCreatedEvent(quiz1Id, Quiz(name = "Awesome Quiz1")),
-                QuestionCreatedEvent(quiz1Id, question1),
-                QuestionAskedEvent(quiz1Id, question1.id),
-                QuestionCreatedEvent(quiz1Id, question2),
-                QuestionAskedEvent(quiz1Id, question2.id),
-                QuestionCreatedEvent(quiz1Id, question3),
-                QuestionAskedEvent(quiz1Id, question3.id),
-                QuestionCreatedEvent(quiz1Id, privateQuestion),
-                QuestionAskedEvent(quiz1Id, privateQuestion.id),
-                QuestionCreatedEvent(quiz1Id, question4),
-                QuestionDeletedEvent(quiz1Id, question4.id),
-                QuizCreatedEvent(quiz2Id, Quiz(name = "Awesome Quiz2")),
-                QuestionCreatedEvent(quiz2Id, question1),
-                QuestionAskedEvent(quiz2Id, question1.id),
-                QuestionCreatedEvent(quiz2Id, question2),
-                QuestionAskedEvent(quiz2Id, question2.id),
-                QuestionCreatedEvent(quiz2Id, question3),
-                QuestionAskedEvent(quiz2Id, question3.id),
-                QuestionCreatedEvent(quiz2Id, question4),
-                QuestionDeletedEvent(quiz2Id, question4.id)
+                QuestionCreatedEvent(quiz1Id, question1, 1),
+                QuestionAskedEvent(quiz1Id, question1.id, 2),
+                QuestionCreatedEvent(quiz1Id, question2, 3),
+                QuestionAskedEvent(quiz1Id, question2.id, 4),
+                QuestionCreatedEvent(quiz1Id, question3, 5),
+                QuestionAskedEvent(quiz1Id, question3.id, 6),
+                QuestionCreatedEvent(quiz1Id, privateQuestion, 7),
+                QuestionAskedEvent(quiz1Id, privateQuestion.id, 8),
+                QuestionCreatedEvent(quiz1Id, question4, 9),
+                QuestionDeletedEvent(quiz1Id, question4.id, 10),
+                QuizCreatedEvent(quiz2Id, Quiz(name = "Awesome Quiz2"), 11),
+                QuestionCreatedEvent(quiz2Id, question1, 12),
+                QuestionAskedEvent(quiz2Id, question1.id, 13),
+                QuestionCreatedEvent(quiz2Id, question2, 14),
+                QuestionAskedEvent(quiz2Id, question2.id, 15),
+                QuestionCreatedEvent(quiz2Id, question3, 16),
+                QuestionAskedEvent(quiz2Id, question3.id, 17),
+                QuestionCreatedEvent(quiz2Id, question4, 18),
+                QuestionDeletedEvent(quiz2Id, question4.id, 19)
         ))
 
         val questionProjection = QuestionProjection(eventBus, eventRepository)
@@ -69,7 +69,7 @@ internal class QuestionProjectionTest {
             assertThat(questions[quizId]!![1].pending).isTrue()
         }
 
-        eventBus.post(QuestionCreatedEvent(quiz1Id, question5))
+        eventBus.post(QuestionCreatedEvent(quiz1Id, question5, 20))
 
         await untilAsserted {
             val questions = questionProjection.determineQuestions(QuestionCategory("category1"))
@@ -89,7 +89,7 @@ internal class QuestionProjectionTest {
             assertThat(questions[quizId]!![1].pending).isTrue()
         }
 
-        eventBus.post(QuestionDeletedEvent(quiz1Id, question5.id))
+        eventBus.post(QuestionDeletedEvent(quiz1Id, question5.id, 21))
 
         await untilAsserted {
             val questions = questionProjection.determineQuestions(QuestionCategory("category1"))
@@ -122,15 +122,15 @@ internal class QuestionProjectionTest {
         val eventRepository = mock(EventRepository::class.java)
         `when`(eventRepository.determineEvents()).thenReturn(Flux.just(
                 QuizCreatedEvent(quizId, Quiz(name = "Awesome Quiz1")),
-                QuestionCreatedEvent(quizId, question1),
-                QuestionEditedEvent(quizId, Question(question1.id, question = "Warum ist das so?", visibility = Question.QuestionVisibility.PRIVATE, category = QuestionCategory("category1"))),
-                QuestionAskedEvent(quizId, question1.id),
-                QuestionCreatedEvent(quizId, question2),
-                QuestionEditedEvent(quizId, Question(question2.id, question = "Wo ist das?", imageUrl = "pathToImage", visibility = Question.QuestionVisibility.PUBLIC, category = QuestionCategory("category1"))),
-                QuestionAskedEvent(quizId, question2.id),
-                QuestionCreatedEvent(quizId, question3),
-                QuestionEditedEvent(quizId, Question(question3.id, question = "Wie wurde das gemacht?", visibility = Question.QuestionVisibility.PUBLIC, category = QuestionCategory("category1"))),
-                QuestionAskedEvent(quizId, question3.id)
+                QuestionCreatedEvent(quizId, question1, 1),
+                QuestionEditedEvent(quizId, Question(question1.id, question = "Warum ist das so?", visibility = Question.QuestionVisibility.PRIVATE, category = QuestionCategory("category1")), 2),
+                QuestionAskedEvent(quizId, question1.id, 3),
+                QuestionCreatedEvent(quizId, question2, 4),
+                QuestionEditedEvent(quizId, Question(question2.id, question = "Wo ist das?", imageUrl = "pathToImage", visibility = Question.QuestionVisibility.PUBLIC, category = QuestionCategory("category1")), 5),
+                QuestionAskedEvent(quizId, question2.id, 6),
+                QuestionCreatedEvent(quizId, question3, 7),
+                QuestionEditedEvent(quizId, Question(question3.id, question = "Wie wurde das gemacht?", visibility = Question.QuestionVisibility.PUBLIC, category = QuestionCategory("category1")), 8),
+                QuestionAskedEvent(quizId, question3.id, 9)
         ))
 
         val questionProjection = QuestionProjection(eventBus, eventRepository)
@@ -159,10 +159,10 @@ internal class QuestionProjectionTest {
         `when`(eventRepository.determineEvents()).thenReturn(Flux.just(
                 QuizCreatedEvent(quiz1Id, Quiz(name = "Awesome Quiz1")),
                 QuizCreatedEvent(quiz2Id, Quiz(name = "Awesome Quiz2")),
-                QuestionCreatedEvent(quiz1Id, question1),
-                QuestionAskedEvent(quiz1Id, question1.id),
-                QuestionCreatedEvent(quiz2Id, question2),
-                QuestionAskedEvent(quiz2Id, question2.id)
+                QuestionCreatedEvent(quiz1Id, question1, 1),
+                QuestionAskedEvent(quiz1Id, question1.id, 2),
+                QuestionCreatedEvent(quiz2Id, question2, 1),
+                QuestionAskedEvent(quiz2Id, question2.id, 2)
         ))
 
         val questionProjection = QuestionProjection(eventBus, eventRepository)
@@ -181,7 +181,7 @@ internal class QuestionProjectionTest {
             assertThat(questions[quiz2Id]!![0].pending).isTrue()
         }
 
-        eventBus.post(QuizDeletedEvent(quiz2Id))
+        eventBus.post(QuizDeletedEvent(quiz2Id, 3))
 
         await untilAsserted {
             val questions = questionProjection.determineQuestions(QuestionCategory("category1"))
@@ -207,10 +207,10 @@ internal class QuestionProjectionTest {
         `when`(eventRepository.determineEvents()).thenReturn(Flux.just(
                 QuizCreatedEvent(quiz1Id, Quiz(name = "Awesome Quiz1")),
                 QuizCreatedEvent(quiz2Id, Quiz(name = "Awesome Quiz2")),
-                QuestionCreatedEvent(quiz1Id, question1),
-                QuestionAskedEvent(quiz1Id, question1.id),
-                QuestionCreatedEvent(quiz2Id, question2),
-                QuestionAskedEvent(quiz2Id, question2.id)
+                QuestionCreatedEvent(quiz1Id, question1, 1),
+                QuestionAskedEvent(quiz1Id, question1.id, 2),
+                QuestionCreatedEvent(quiz2Id, question2, 1),
+                QuestionAskedEvent(quiz2Id, question2.id, 2)
         ))
 
         val questionProjection = QuestionProjection(eventBus, eventRepository)
@@ -247,11 +247,11 @@ internal class QuestionProjectionTest {
         val eventRepository = mock(EventRepository::class.java)
         `when`(eventRepository.determineEvents()).thenReturn(Flux.just(
                 QuizCreatedEvent(quiz1Id, Quiz(name = "Awesome Quiz1")),
-                QuestionCreatedEvent(quiz1Id, question1),
-                QuestionCreatedEvent(quiz1Id, question2),
-                QuestionAskedEvent(quiz1Id, question1.id),
-                QuestionAskedEvent(quiz1Id, question2.id),
-                QuestionAskedEvent(quiz1Id, question2.id)
+                QuestionCreatedEvent(quiz1Id, question1, 1),
+                QuestionCreatedEvent(quiz1Id, question2, 2),
+                QuestionAskedEvent(quiz1Id, question1.id, 3),
+                QuestionAskedEvent(quiz1Id, question2.id, 4),
+                QuestionAskedEvent(quiz1Id, question2.id, 5)
         ))
 
         val questionProjection = QuestionProjection(eventBus, eventRepository)
