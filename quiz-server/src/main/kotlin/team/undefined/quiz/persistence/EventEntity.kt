@@ -7,6 +7,7 @@ data class EventEntity(
         @Id var id: Long? = null,
         var aggregateId: String,
         var type: String,
+        var sequenceNumber: Long,
         var createdAt: LocalDateTime = LocalDateTime.now(),
         var domainEvent: String
 )
