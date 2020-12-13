@@ -1019,17 +1019,29 @@ internal class DefaultQuizServiceTest {
         val lastEvent = QuizFinishedEvent(quizId, sequenceNumber = 17)
 
         `when`(quizRepository.undoLastAction(quizId))
-                .thenReturn(Mono.just(lastEvent))
+            .thenReturn(Mono.just(lastEvent))
 
         val quizService = DefaultQuizService(quizRepository, UndoneEventsCache(), eventBus)
 
         StepVerifier.create(quizService.undo(UndoCommand(quizId)))
-                .consumeNextWith { verify(eventBus).post(ReloadQuizCommand(quizId)) }
-                .verifyComplete()
+            .consumeNextWith { verify(eventBus).post(ReloadQuizCommand(quizId)) }
+            .verifyComplete()
 
         StepVerifier.create(quizService.redo(RedoCommand(quizId)))
-                .consumeNextWith { verify(eventBus).post(lastEvent) }
-                .verifyComplete()
+            .consumeNextWith { verify(eventBus).post(lastEvent) }
+            .verifyComplete()
+    }
+
+    @Test
+    fun shouldNotAllowRedoBecauseNoUndoWasPerformed() {
+        val quizId = UUID.randomUUID()
+
+        val quizService = DefaultQuizService(quizRepository, UndoneEventsCache(), eventBus)
+
+        StepVerifier.create(quizService.redo(RedoCommand(quizId)))
+            .verifyComplete()
+
+        verifyNoInteractions(eventBus)
     }
 
 }
