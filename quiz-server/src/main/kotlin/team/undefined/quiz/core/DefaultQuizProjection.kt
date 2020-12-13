@@ -1,13 +1,14 @@
 package team.undefined.quiz.core
 
 import com.google.common.cache.CacheBuilder
-import com.google.common.cache.CacheLoader
 import com.google.common.eventbus.EventBus
 import com.google.common.eventbus.Subscribe
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Component
 import reactor.core.publisher.Flux
+import reactor.core.publisher.Mono
 import reactor.core.publisher.Sinks
+import reactor.kotlin.core.publisher.switchIfEmpty
 import java.time.Duration
 import java.util.*
 import java.util.concurrent.ConcurrentHashMap
@@ -23,17 +24,10 @@ class DefaultQuizProjection(
     private val logger = LoggerFactory.getLogger(QuizProjection::class.java)
 
     private val quizCache = CacheBuilder.newBuilder()
-        .maximumSize(250)
+        .maximumSize(25)
         .expireAfterAccess(Duration.ofHours(1))
-        .build(
-            object : CacheLoader<UUID, Quiz>() {
-                override fun load(key: UUID): Quiz {
-                    return eventRepository.determineEvents(key)
-                        .reduce(Quiz(name = "")) { q: Quiz, e: Event -> e.process(q) }
-                        .block()!!
-                }
-            }
-        )
+        .recordStats()
+        .build<UUID, Quiz>()
 
     private val observables = ConcurrentHashMap<UUID, Sinks.Many<Quiz>>()
     private val locks = ConcurrentHashMap<UUID, Semaphore>()
@@ -42,11 +36,25 @@ class DefaultQuizProjection(
         eventBus.register(this)
     }
 
+    private fun determineQuizFromCacheOrDB(quizId: UUID): Mono<Quiz> {
+        return Mono.justOrEmpty(quizCache.getIfPresent(quizId))
+            .switchIfEmpty {
+                logger.debug("Quiz $quizId not found in cache and is read from the database")
+                eventRepository
+                    .determineEvents(quizId)
+                    .reduce(Quiz(name = "")) { q: Quiz, e: Event -> e.process(q) }
+            }
+    }
+
     @Subscribe
     fun handleQuizCreation(event: QuizCreatedEvent) {
         quizCache.put(event.quizId, event.process(event.quiz))
-        emitQuiz(quizCache[event.quizId]!!)
-        locks.computeIfAbsent(event.quizId) { Semaphore(1) }
+        determineQuizFromCacheOrDB(event.quizId)
+            .subscribe {
+                locks.computeIfAbsent(event.quizId) { Semaphore(1) }
+                emitQuiz(it)
+            }
+
     }
 
     @Subscribe
@@ -93,15 +101,17 @@ class DefaultQuizProjection(
 
     @Subscribe
     fun handleQuizFinish(event: QuizFinishedEvent) {
-        val quiz = quizCache[event.quizId]
-        println("1: ${quiz.finished}")
-        if (event.sequenceNumber > quiz.sequenceNumber) {
-            val process = event.process(quiz)
-            println("2: ${process.finished}")
-            quizCache.put(event.quizId, process)
-        }
-        println("3: ${quizCache[event.quizId]!!.finished}")
-        emitQuiz(quizCache[event.quizId]!!)
+        locks.computeIfAbsent(event.quizId) { Semaphore(1) }.acquire()
+        determineQuizFromCacheOrDB(event.quizId)
+            .doFinally { locks[event.quizId]!!.release() }
+            .subscribe {
+                var processedQuiz = it
+                if (event.sequenceNumber > it.sequenceNumber) {
+                    processedQuiz = event.process(it)
+                    quizCache.put(event.quizId, processedQuiz)
+                }
+                emitQuiz(processedQuiz)
+            }
     }
 
     @Subscribe
@@ -121,31 +131,31 @@ class DefaultQuizProjection(
     @Subscribe
     fun handleReloadQuizCommand(command: ReloadQuizCommand) {
         locks.computeIfAbsent(command.quizId) { Semaphore(1) }.acquire()
-        try {
-            eventRepository.determineEvents(command.quizId)
-                .reduce(Quiz(name = "")) { q: Quiz, e: Event -> e.process(q) }
-                .subscribe {
-                    quizCache.put(command.quizId, it)
-                    emitQuiz(it)
-                }
-        } finally {
-            locks[command.quizId]!!.release()
-        }
+        eventRepository.determineEvents(command.quizId)
+            .reduce(Quiz(name = "")) { q: Quiz, e: Event -> e.process(q) }
+            .doFinally { locks[command.quizId]!!.release() }
+            .subscribe {
+                quizCache.put(command.quizId, it)
+                emitQuiz(it)
+            }
     }
 
     private fun handleEvent(event: Event) {
         logger.trace("handling event {}", event)
-        try {
-            locks.computeIfAbsent(event.quizId) { Semaphore(1) }.acquire()
-            val quiz = quizCache[event.quizId]
-            if (event.sequenceNumber > quiz.sequenceNumber) {
-                quizCache.put(event.quizId, event.process(quiz))
+        locks.computeIfAbsent(event.quizId) { Semaphore(1) }.acquire()
+        determineQuizFromCacheOrDB(event.quizId)
+            .doFinally {
+                locks[event.quizId]!!.release()
+                logger.info("handled event {}", event)
             }
-            emitQuiz(quizCache[event.quizId])
-        } finally {
-            locks[event.quizId]!!.release()
-        }
-        logger.info("handled event {}", event)
+            .subscribe {
+                var processedQuiz = it
+                if (event.sequenceNumber > it.sequenceNumber) {
+                    processedQuiz = event.process(it)
+                    quizCache.put(event.quizId, processedQuiz)
+                }
+                emitQuiz(processedQuiz)
+            }
     }
 
     override fun observeQuiz(quizId: UUID): Flux<Quiz> {
@@ -164,8 +174,8 @@ class DefaultQuizProjection(
         observables.remove(quizId)
     }
 
-    override fun determineQuiz(quizId: UUID): Quiz? {
-        return quizCache[quizId]
+    override fun determineQuiz(quizId: UUID): Mono<Quiz> {
+        return determineQuizFromCacheOrDB(quizId)
     }
 
 }
