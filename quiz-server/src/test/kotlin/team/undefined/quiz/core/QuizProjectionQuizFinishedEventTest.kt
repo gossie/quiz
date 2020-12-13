@@ -54,7 +54,7 @@ internal class QuizProjectionQuizFinishedEventTest {
             eventBus,
             eventRepository,
             UndoneEventsCache(),
-            QuizProjectionConfiguration(25)
+            QuizProjectionConfiguration(25, 1)
         )
 
         val observedQuiz = AtomicReference<Quiz>()
@@ -111,7 +111,7 @@ internal class QuizProjectionQuizFinishedEventTest {
             eventBus,
             eventRepository,
             UndoneEventsCache(),
-            QuizProjectionConfiguration(25)
+            QuizProjectionConfiguration(25, 1)
         )
 
         val observedQuiz = AtomicReference<Quiz>()

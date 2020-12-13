@@ -9,7 +9,7 @@ import team.undefined.quiz.core.*
 import java.util.*
 import java.util.stream.Collectors
 
-fun Quiz.map(quizStatistics: QuizStatistics?): Mono<QuizDTO> {
+fun Quiz.map(quizStatistics: QuizStatistics? = null): Mono<QuizDTO> {
     return Flux.fromIterable(this.participants)
             .flatMap { it.map(this.id) }
             .collect(Collectors.toList())

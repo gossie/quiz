@@ -26,7 +26,7 @@ class DefaultQuizProjection(
 
     private val quizCache = CacheBuilder.newBuilder()
         .maximumSize(quizProjectionConfiguration.quizCacheMaxSize)
-        .expireAfterAccess(Duration.ofHours(1))
+        .expireAfterAccess(Duration.ofHours(quizProjectionConfiguration.quizCacheDuration))
         .recordStats()
         .build<UUID, Quiz>()
 
@@ -43,7 +43,7 @@ class DefaultQuizProjection(
                 logger.debug("Quiz $quizId not found in cache and is read from the database")
                 eventRepository
                     .determineEvents(quizId)
-                    .reduce(Quiz(name = "")) { q: Quiz, e: Event -> e.process(q) }
+                    .reduce(Quiz(name = "")) { quiz, event -> event.process(quiz) }
             }
     }
 

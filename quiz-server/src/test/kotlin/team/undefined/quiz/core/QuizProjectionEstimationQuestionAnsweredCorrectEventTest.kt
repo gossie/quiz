@@ -20,7 +20,7 @@ internal class QuizProjectionEstimationQuestionAnsweredCorrectEventTest {
             eventBus,
             mock(EventRepository::class.java),
             UndoneEventsCache(),
-            QuizProjectionConfiguration(25)
+            QuizProjectionConfiguration(25, 1)
         )
 
         val observedQuiz = AtomicReference<Quiz>()
@@ -80,7 +80,7 @@ internal class QuizProjectionEstimationQuestionAnsweredCorrectEventTest {
             eventBus,
             eventRepository,
             UndoneEventsCache(),
-            QuizProjectionConfiguration(25)
+            QuizProjectionConfiguration(25, 1)
         )
 
         val observedQuiz = AtomicReference<Quiz>()
@@ -126,7 +126,7 @@ internal class QuizProjectionEstimationQuestionAnsweredCorrectEventTest {
             eventBus,
             eventRepository,
             UndoneEventsCache(),
-            QuizProjectionConfiguration(25)
+            QuizProjectionConfiguration(25, 1)
         )
 
         val observedQuiz = AtomicReference<Quiz>()

@@ -116,13 +116,13 @@ class QuizController(private val quizService: QuizService,
 
     private fun getObserver(quizId: UUID): Flux<ServerSentEvent<QuizDTO>> {
         return quizProjection.observeQuiz(quizId)
-            .flatMap {
-                val quizStatistics = if (it?.finished == true) {
+            .flatMap { quiz ->
+                if (quiz.finished) {
                     quizStatisticsProjection.determineQuizStatistics(quizId)
+                        .flatMap { quiz.map(it) }
                 } else {
-                    null
+                    quiz.map()
                 }
-                it!!.map(quizStatistics)
             }
             .map {
                 logger.trace("Sending quiz {} to the client", it.id)
@@ -136,13 +136,13 @@ class QuizController(private val quizService: QuizService,
     private fun getHeartbeat(quizId: UUID): Flux<ServerSentEvent<QuizDTO>> {
         return Flux.interval(Duration.ofSeconds(10))
                 .flatMap { quizProjection.determineQuiz(quizId) }
-                .flatMap {
-                    val quizStatistics = if (it?.finished == true) {
+                .flatMap { quiz ->
+                    if (quiz.finished) {
                         quizStatisticsProjection.determineQuizStatistics(quizId)
+                            .flatMap { quiz.map(it) }
                     } else {
-                        null
+                        quiz.map()
                     }
-                    it!!.map(quizStatistics)
                 }
                 .map {
                     logger.trace("Sending quiz {} to the client as heartbeat", it.id)
