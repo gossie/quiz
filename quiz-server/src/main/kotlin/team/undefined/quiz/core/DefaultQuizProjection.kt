@@ -171,10 +171,6 @@ class DefaultQuizProjection(
             .tryEmitNext(quiz.setRedoPossible(undoneEventsCache.isNotEmpty(quiz.id)))
     }
 
-    fun removeObserver(quizId: UUID) {
-        observables.remove(quizId)
-    }
-
     override fun determineQuiz(quizId: UUID): Mono<Quiz> {
         return determineQuizFromCacheOrDB(quizId)
     }
