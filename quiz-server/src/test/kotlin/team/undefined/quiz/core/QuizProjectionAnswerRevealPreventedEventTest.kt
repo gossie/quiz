@@ -18,7 +18,8 @@ internal class QuizProjectionAnswerRevealPreventedEventTest {
         val quizProjection = DefaultQuizProjection(
             eventBus,
             Mockito.mock(EventRepository::class.java),
-            UndoneEventsCache()
+            UndoneEventsCache(),
+            QuizProjectionConfiguration(25)
         )
 
         val observedQuiz = AtomicReference<Quiz>()

@@ -19,7 +19,12 @@ internal class QuizProjectionQuestionEditedEventTest {
         val questionId = UUID.randomUUID()
 
         val eventBus = EventBus()
-        val quizProjection = DefaultQuizProjection(eventBus, mock(EventRepository::class.java), UndoneEventsCache())
+        val quizProjection = DefaultQuizProjection(
+            eventBus,
+            mock(EventRepository::class.java),
+            UndoneEventsCache(),
+            QuizProjectionConfiguration(25)
+        )
 
         val observedQuiz = AtomicReference<Quiz>()
         quizProjection.observeQuiz(quiz.id)
@@ -61,7 +66,12 @@ internal class QuizProjectionQuestionEditedEventTest {
                 ), questionEditedEvent))
 
         val eventBus = EventBus()
-        val quizProjection = DefaultQuizProjection(eventBus, eventRepository, UndoneEventsCache())
+        val quizProjection = DefaultQuizProjection(
+            eventBus,
+            eventRepository,
+            UndoneEventsCache(),
+            QuizProjectionConfiguration(25)
+        )
 
         val observedQuiz = AtomicReference<Quiz>()
         quizProjection.observeQuiz(quiz.id)
@@ -96,7 +106,12 @@ internal class QuizProjectionQuestionEditedEventTest {
                 )))
 
         val eventBus = EventBus()
-        val quizProjection = DefaultQuizProjection(eventBus, eventRepository, UndoneEventsCache())
+        val quizProjection = DefaultQuizProjection(
+            eventBus,
+            eventRepository,
+            UndoneEventsCache(),
+            QuizProjectionConfiguration(25)
+        )
 
         val observedQuiz = AtomicReference<Quiz>()
         quizProjection.observeQuiz(quiz.id)

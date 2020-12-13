@@ -18,13 +18,14 @@ import java.util.concurrent.Semaphore
 class DefaultQuizProjection(
     eventBus: EventBus,
     private val eventRepository: EventRepository,
-    private val undoneEventsCache: UndoneEventsCache
+    private val undoneEventsCache: UndoneEventsCache,
+    quizProjectionConfiguration: QuizProjectionConfiguration
 ) : QuizProjection {
 
     private val logger = LoggerFactory.getLogger(QuizProjection::class.java)
 
     private val quizCache = CacheBuilder.newBuilder()
-        .maximumSize(25)
+        .maximumSize(quizProjectionConfiguration.quizCacheMaxSize)
         .expireAfterAccess(Duration.ofHours(1))
         .recordStats()
         .build<UUID, Quiz>()

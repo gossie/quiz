@@ -19,7 +19,8 @@ internal class QuizProjectionAnswersRevealedEventTest {
         val quizProjection = DefaultQuizProjection(
             eventBus,
             Mockito.mock(EventRepository::class.java),
-            UndoneEventsCache()
+            UndoneEventsCache(),
+            QuizProjectionConfiguration(25)
         )
 
         val observedQuiz = AtomicReference<Quiz>()
@@ -74,7 +75,12 @@ internal class QuizProjectionAnswersRevealedEventTest {
                 ))
 
         val eventBus = EventBus()
-        val quizProjection = DefaultQuizProjection(eventBus, eventRepository, UndoneEventsCache())
+        val quizProjection = DefaultQuizProjection(
+            eventBus,
+            eventRepository,
+            UndoneEventsCache(),
+            QuizProjectionConfiguration(25)
+        )
 
         val observedQuiz = AtomicReference<Quiz>()
         quizProjection.observeQuiz(quiz.id)
@@ -116,7 +122,12 @@ internal class QuizProjectionAnswersRevealedEventTest {
                 ))
 
         val eventBus = EventBus()
-        val quizProjection = DefaultQuizProjection(eventBus, eventRepository, UndoneEventsCache())
+        val quizProjection = DefaultQuizProjection(
+            eventBus,
+            eventRepository,
+            UndoneEventsCache(),
+            QuizProjectionConfiguration(25)
+        )
 
         val observedQuiz = AtomicReference<Quiz>()
         quizProjection.observeQuiz(quiz.id)

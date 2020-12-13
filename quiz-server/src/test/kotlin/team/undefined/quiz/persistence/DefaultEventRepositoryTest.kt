@@ -19,7 +19,7 @@ data class TestEvent(@JsonProperty("quizId") override val quizId: UUID, @JsonPro
 }
 
 @DataR2dbcTest
-@Import(DefaultEventRepository::class, PersistenceConfiguration::class, UndoneEventsCache::class, DefaultQuizService::class, DefaultQuizProjection::class, ObjectMapper::class, QuizStatisticsProjection::class)
+@Import(DefaultEventRepository::class, PersistenceConfiguration::class, UndoneEventsCache::class, DefaultQuizService::class, QuizProjectionConfiguration::class, DefaultQuizProjection::class, ObjectMapper::class, QuizStatisticsProjection::class)
 internal class DefaultEventRepositoryTest {
 
     @Autowired
