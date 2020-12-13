@@ -100,7 +100,7 @@ class ConcurrencyIT {
 
                 StepVerifier.create(quizService.deleteQuiz(DeleteQuizCommand(quiz.id)))
                     .expectNext(Unit)
-                    .expectComplete()
+                    .verifyComplete()
             }
     }
 
