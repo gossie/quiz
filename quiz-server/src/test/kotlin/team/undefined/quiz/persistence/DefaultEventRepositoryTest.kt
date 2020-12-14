@@ -2,6 +2,7 @@ package team.undefined.quiz.persistence
 
 import com.fasterxml.jackson.annotation.JsonProperty
 import com.fasterxml.jackson.databind.ObjectMapper
+import org.assertj.core.api.Assertions
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -93,8 +94,8 @@ internal class DefaultEventRepositoryTest {
 
 
         StepVerifier.create(defaultEventRepository.determineQuizIds())
-                .consumeNextWith { it == firstQuizId }
-                .consumeNextWith { it == secondQuizId }
+                .consumeNextWith { assertThat(it).isEqualTo(firstQuizId) }
+                .consumeNextWith { assertThat(it).isEqualTo(secondQuizId) }
                 .verifyComplete()
 
         StepVerifier.create(defaultEventRepository.deleteEvents(firstQuizId))
