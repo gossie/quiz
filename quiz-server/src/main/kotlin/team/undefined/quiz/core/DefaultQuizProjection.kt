@@ -39,6 +39,7 @@ class DefaultQuizProjection(
 
     private fun determineQuizFromCacheOrDB(quizId: UUID): Mono<Quiz> {
         return Mono.justOrEmpty(quizCache.getIfPresent(quizId))
+            .doOnNext { logger.debug("Quiz $quizId found in cache") }
             .switchIfEmpty {
                 logger.debug("Quiz $quizId not found in cache and is read from the database")
                 eventRepository

@@ -3,6 +3,7 @@ package team.undefined.quiz.core
 import com.google.common.cache.CacheBuilder
 import com.google.common.eventbus.EventBus
 import com.google.common.eventbus.Subscribe
+import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Component
 import reactor.core.publisher.Mono
 import reactor.kotlin.core.publisher.switchIfEmpty
@@ -16,6 +17,8 @@ class QuizStatisticsProjection(
     quizStatisticsProjectionConfiguration: QuizStatisticsProjectionConfiguration
 ) {
 
+    private val logger = LoggerFactory.getLogger(QuizProjection::class.java)
+
     private val statistics = CacheBuilder.newBuilder()
         .maximumSize(quizStatisticsProjectionConfiguration.quizStatisticsCacheMaxSize)
         .expireAfterAccess(Duration.ofHours(quizStatisticsProjectionConfiguration.quizStatisticsCacheDuration))
@@ -28,7 +31,9 @@ class QuizStatisticsProjection(
 
     private fun determineQuizStatisticsFromCacheOrDB(quizId: UUID): Mono<QuizStatistics> {
         return Mono.justOrEmpty(statistics.getIfPresent(quizId))
+            .doOnNext { logger.debug("${javaClass.name} - QuizStatistics for quiz $quizId found in cache") }
             .switchIfEmpty {
+                logger.debug("${javaClass.name} - QuizStatistics for quiz $quizId not found in cache and is read from the database")
                 eventRepository.determineEvents(quizId)
                     .reduce(QuizStatistics()) { quizStatistics, event ->
                         when (event) {
@@ -60,6 +65,7 @@ class QuizStatisticsProjection(
     @Subscribe
     fun onQuizCreation(event: QuizCreatedEvent) {
         statistics.put(event.quizId, QuizStatistics())
+        logger.info("${javaClass.name} - handled QuizCreatedEvent")
     }
 
     @Subscribe
@@ -67,6 +73,7 @@ class QuizStatisticsProjection(
         determineQuizStatisticsFromCacheOrDB(event.quizId)
             .subscribe {
                 statistics.put(event.quizId, it.addQuestionStatistic(QuestionStatistics(event.questionId, event.timestamp)))
+                logger.info("${javaClass.name} - handled QuestionAskedEvent")
             }
     }
 
@@ -74,28 +81,40 @@ class QuizStatisticsProjection(
     fun onBuzzer(event: BuzzeredEvent) {
         determineQuizStatisticsFromCacheOrDB(event.quizId)
             .map { addAnswerStatistics(it, event.participantId, event.timestamp) }
-            .subscribe { statistics.put(event.quizId, it) }
+            .subscribe {
+                statistics.put(event.quizId, it)
+                logger.info("${javaClass.name} - handled BuzzeredEvent")
+            }
     }
 
     @Subscribe
     fun onEstimation(event: EstimatedEvent) {
         determineQuizStatisticsFromCacheOrDB(event.quizId)
             .map { addAnswerStatistics(it, event.participantId, event.timestamp, event.estimatedValue) }
-            .subscribe { statistics.put(event.quizId, it) }
+            .subscribe {
+                statistics.put(event.quizId, it)
+                logger.info("${javaClass.name} - handled EstimatedEvent")
+            }
     }
 
     @Subscribe
     fun onChoiceSelection(event: ChoiceSelectedEvent) {
         determineQuizStatisticsFromCacheOrDB(event.quizId)
             .map { addAnswerStatistics(it, event.participantId, event.timestamp, choiceId = event.choiceId) }
-            .subscribe { statistics.put(event.quizId, it) }
+            .subscribe {
+                statistics.put(event.quizId, it)
+                logger.info("${javaClass.name} - handled ChoiceSelectedEvent")
+            }
     }
 
     @Subscribe
     fun onAnswer(event: AnsweredEvent) {
         determineQuizStatisticsFromCacheOrDB(event.quizId)
             .map { handleAnswer(it, event.participantId, event.answer) }
-            .subscribe { statistics.put(event.quizId, it) }
+            .subscribe {
+                statistics.put(event.quizId, it)
+                logger.info("${javaClass.name} - handled AnsweredEvent")
+            }
     }
 
     fun determineQuizStatistics(quizId: UUID): Mono<QuizStatistics> {
