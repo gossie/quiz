@@ -17,7 +17,7 @@ class QuizStatisticsProjection(
     quizStatisticsProjectionConfiguration: QuizStatisticsProjectionConfiguration
 ) {
 
-    private val logger = LoggerFactory.getLogger(QuizProjection::class.java)
+    private val logger = LoggerFactory.getLogger(QuizStatisticsProjection::class.java)
 
     private val statistics = CacheBuilder.newBuilder()
         .maximumSize(quizStatisticsProjectionConfiguration.quizStatisticsCacheMaxSize)
@@ -33,7 +33,7 @@ class QuizStatisticsProjection(
         return Mono.justOrEmpty(statistics.getIfPresent(quizId))
             .doOnNext { logger.debug("${javaClass.name} - QuizStatistics for quiz $quizId found in cache") }
             .switchIfEmpty {
-                logger.debug("${javaClass.name} - QuizStatistics for quiz $quizId not found in cache and is read from the database")
+                logger.debug("QuizStatistics for quiz $quizId not found in cache and is read from the database")
                 eventRepository.determineEvents(quizId)
                     .reduce(QuizStatistics()) { quizStatistics, event ->
                         when (event) {
@@ -65,7 +65,7 @@ class QuizStatisticsProjection(
     @Subscribe
     fun onQuizCreation(event: QuizCreatedEvent) {
         statistics.put(event.quizId, QuizStatistics())
-        logger.info("${javaClass.name} - handled QuizCreatedEvent")
+        logger.info("handled QuizCreatedEvent")
     }
 
     @Subscribe
@@ -73,7 +73,7 @@ class QuizStatisticsProjection(
         determineQuizStatisticsFromCacheOrDB(event.quizId)
             .subscribe {
                 statistics.put(event.quizId, it.addQuestionStatistic(QuestionStatistics(event.questionId, event.timestamp)))
-                logger.info("${javaClass.name} - handled QuestionAskedEvent")
+                logger.info("handled QuestionAskedEvent")
             }
     }
 
@@ -83,7 +83,7 @@ class QuizStatisticsProjection(
             .map { addAnswerStatistics(it, event.participantId, event.timestamp) }
             .subscribe {
                 statistics.put(event.quizId, it)
-                logger.info("${javaClass.name} - handled BuzzeredEvent")
+                logger.info("handled BuzzeredEvent")
             }
     }
 
@@ -93,7 +93,7 @@ class QuizStatisticsProjection(
             .map { addAnswerStatistics(it, event.participantId, event.timestamp, event.estimatedValue) }
             .subscribe {
                 statistics.put(event.quizId, it)
-                logger.info("${javaClass.name} - handled EstimatedEvent")
+                logger.info("handled EstimatedEvent")
             }
     }
 
@@ -103,7 +103,7 @@ class QuizStatisticsProjection(
             .map { addAnswerStatistics(it, event.participantId, event.timestamp, choiceId = event.choiceId) }
             .subscribe {
                 statistics.put(event.quizId, it)
-                logger.info("${javaClass.name} - handled ChoiceSelectedEvent")
+                logger.info("handled ChoiceSelectedEvent")
             }
     }
 
@@ -113,7 +113,7 @@ class QuizStatisticsProjection(
             .map { handleAnswer(it, event.participantId, event.answer) }
             .subscribe {
                 statistics.put(event.quizId, it)
-                logger.info("${javaClass.name} - handled AnsweredEvent")
+                logger.info("handled AnsweredEvent")
             }
     }
 
