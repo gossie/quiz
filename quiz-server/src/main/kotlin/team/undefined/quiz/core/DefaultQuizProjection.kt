@@ -109,8 +109,8 @@ class DefaultQuizProjection(
                 var processedQuiz = it
                 if (event.sequenceNumber > it.sequenceNumber) {
                     processedQuiz = event.process(it)
-                    quizCache.put(event.quizId, processedQuiz)
                 }
+                quizCache.put(event.quizId, processedQuiz)
                 emitQuiz(processedQuiz)
             }
     }
@@ -153,8 +153,8 @@ class DefaultQuizProjection(
                 var processedQuiz = it
                 if (event.sequenceNumber > it.sequenceNumber) {
                     processedQuiz = event.process(it)
-                    quizCache.put(event.quizId, processedQuiz)
                 }
+                quizCache.put(event.quizId, processedQuiz)
                 emitQuiz(processedQuiz)
             }
     }
