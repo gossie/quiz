@@ -57,7 +57,7 @@ internal class DefaultEventRepositoryTest {
 
         Thread.sleep(1)
 
-        StepVerifier.create(defaultEventRepository.storeEvent(TestEvent(secondQuizId, 0, Date().time, mapOf(Pair("key1", "value1")))))
+        StepVerifier.create(defaultEventRepository.storeEvent(TestEvent(secondQuizId, 2, Date().time, mapOf(Pair("key1", "value1")))))
                 .consumeNextWith {
                     assertThat(it.quizId).isEqualTo(secondQuizId)
                     assertThat((it as TestEvent).payload).isEqualTo(mapOf(Pair("key1", "value1")))
@@ -92,14 +92,15 @@ internal class DefaultEventRepositoryTest {
                 }
                 .verifyComplete()
 
-
+        val allQuizIds = mutableSetOf(firstQuizId, secondQuizId)
         StepVerifier.create(defaultEventRepository.determineQuizIds())
-                .consumeNextWith { assertThat(it).isEqualTo(firstQuizId) }
-                .consumeNextWith { assertThat(it).isEqualTo(secondQuizId) }
+                .consumeNextWith { allQuizIds.remove(it) }
+                .consumeNextWith { allQuizIds.remove(it) }
                 .verifyComplete()
 
+        assertThat(allQuizIds).isEmpty()
+
         StepVerifier.create(defaultEventRepository.deleteEvents(firstQuizId))
-                .consumeNextWith { it is Unit }
                 .verifyComplete()
 
         StepVerifier.create(defaultEventRepository.determineEvents(firstQuizId))

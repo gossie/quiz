@@ -28,8 +28,8 @@ internal class DefaultQuizServiceTest {
             return Flux.empty()
         }
 
-        override fun deleteEvents(quizId: UUID): Mono<Unit> {
-            return Mono.just(Unit)
+        override fun deleteEvents(quizId: UUID): Mono<Void> {
+            return Mono.empty()
         }
 
         override fun determineQuizIds(): Flux<UUID> {

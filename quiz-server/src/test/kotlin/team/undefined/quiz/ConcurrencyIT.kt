@@ -100,9 +100,7 @@ class ConcurrencyIT {
                 }
 
                 StepVerifier.create(quizService.deleteQuiz(DeleteQuizCommand(quiz.id)))
-                    .consumeNextWith {
-                        assertThat(it).isNotNull()
-                    }
+                    .consumeNextWith { assertThat(it).isNotNull() }
                     .verifyComplete()
             }
     }

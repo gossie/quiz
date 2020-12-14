@@ -32,18 +32,19 @@ internal class QuizProjectionTimeToAnswerDecreasedEventTest {
         val participant = Participant(name = "Lena")
         eventBus.post(QuizCreatedEvent(quiz.id, quiz, sequenceNumber = 1))
         eventBus.post(QuestionCreatedEvent(quiz.id, question, sequenceNumber = 2))
-        eventBus.post(ParticipantCreatedEvent(quiz.id, participant, sequenceNumber = 3))
-        eventBus.post(QuestionAskedEvent(quiz.id, question.id, sequenceNumber = 4))
-        eventBus.post(TimeToAnswerDecreasedEvent(quiz.id, question.id, sequenceNumber = 5))
+        eventBus.post(QuestionCreatedEvent(quiz.id, Question(question = "Unused question"), sequenceNumber = 3))
+        eventBus.post(ParticipantCreatedEvent(quiz.id, participant, sequenceNumber = 4))
+        eventBus.post(QuestionAskedEvent(quiz.id, question.id, sequenceNumber = 5))
+        eventBus.post(TimeToAnswerDecreasedEvent(quiz.id, question.id, sequenceNumber = 6))
 
         await untilAsserted {
             val q = observedQuiz.get()
 
             assertThat(q.id).isEqualTo(quiz.id)
             assertThat(q.participants).hasSize(1)
-            assertThat(q.participants[0].turn).isFalse()
-            assertThat(q.questions).hasSize(1)
-            assertThat(q.questions[0].pending).isTrue()
+            assertThat(q.participants[0].turn).isFalse
+            assertThat(q.questions).hasSize(2)
+            assertThat(q.questions[0].pending).isTrue
             assertThat(q.questions[0].initialTimeToAnswer).isEqualTo(30)
             assertThat(q.questions[0].secondsLeft).isEqualTo(29)
             assertThat(q.finished).isFalse()
@@ -87,9 +88,9 @@ internal class QuizProjectionTimeToAnswerDecreasedEventTest {
 
             assertThat(q.id).isEqualTo(quiz.id)
             assertThat(q.participants).hasSize(1)
-            assertThat(q.participants[0].turn).isFalse()
+            assertThat(q.participants[0].turn).isFalse
             assertThat(q.questions).hasSize(1)
-            assertThat(q.questions[0].pending).isTrue()
+            assertThat(q.questions[0].pending).isTrue
             assertThat(q.questions[0].initialTimeToAnswer).isEqualTo(30)
             assertThat(q.questions[0].secondsLeft).isEqualTo(28)
             assertThat(q.finished).isFalse()
@@ -130,9 +131,9 @@ internal class QuizProjectionTimeToAnswerDecreasedEventTest {
 
             assertThat(q.id).isEqualTo(quiz.id)
             assertThat(q.participants).hasSize(1)
-            assertThat(q.participants[0].turn).isFalse()
+            assertThat(q.participants[0].turn).isFalse
             assertThat(q.questions).hasSize(1)
-            assertThat(q.questions[0].pending).isTrue()
+            assertThat(q.questions[0].pending).isTrue
             assertThat(q.questions[0].initialTimeToAnswer).isEqualTo(30)
             assertThat(q.questions[0].secondsLeft).isEqualTo(29)
             assertThat(q.finished).isFalse()

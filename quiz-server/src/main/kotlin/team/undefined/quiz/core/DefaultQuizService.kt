@@ -271,10 +271,13 @@ class DefaultQuizService(private val eventRepository: EventRepository,
         logger.info("deleting quiz '{}'", command.quizId)
         stopCounter(command.quizId)
         return eventRepository.deleteEvents(command.quizId)
+            .then(
+                Mono.just(Unit)
                 .map {
                     undoneEventsCache.remove(command.quizId)
                     eventBus.post(QuizDeletedEvent(command.quizId, sequenceNumber = -1))
                 }
+            )
     }
 
     @ReadLock
