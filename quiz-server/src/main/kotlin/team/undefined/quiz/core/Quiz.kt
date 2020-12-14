@@ -350,10 +350,6 @@ data class Quiz(
         return Quiz(id, name, participants, questions, true, timestamp, sequenceNumber, undoPossible, redoPossible)
     }
 
-    fun setQuizStatistics(quizStatistics: QuizStatistics): Quiz {
-        return Quiz(id, name, participants, questions, finished, timestamp, sequenceNumber, undoPossible, redoPossible)
-    }
-
     fun setTimestamp(timestamp: Long): Quiz {
         return Quiz(id, name, participants, questions, finished, timestamp, sequenceNumber, undoPossible, redoPossible)
     }
