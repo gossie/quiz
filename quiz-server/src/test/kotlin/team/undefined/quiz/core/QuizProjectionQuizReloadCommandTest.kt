@@ -26,77 +26,55 @@ internal class QuizProjectionQuizReloadCommandTest {
         val eventRepository = mock(EventRepository::class.java)
         `when`(eventRepository.determineEvents(quizId))
                 .thenReturn(Flux.just(
-                        QuizCreatedEvent(quizId, Quiz(id = quizId, name = "Awesome Quiz"), 1),
-                        QuestionCreatedEvent(quizId, buzzerQuestion, 2),
-                        QuestionCreatedEvent(quizId, freetextQuestion, 3),
-                        ParticipantCreatedEvent(quizId, participant1, 4),
-                        ParticipantCreatedEvent(quizId, participant2, 5),
-                        QuestionAskedEvent(quizId, buzzerQuestion.id, 6),
-                        BuzzeredEvent(quizId, participant1.id, 7),
-                        AnsweredEvent(quizId, participant1.id, AnswerCommand.Answer.CORRECT, 8),
-                        QuestionAskedEvent(quizId, freetextQuestion.id, 9),
-                        EstimatedEvent(quizId, participant1.id, "Sergej Prokofjew", 10),
-                        EstimatedEvent(quizId, participant2.id, "Max Mustermann", 11),
-                        AnsweredEvent(quizId, participant1.id, AnswerCommand.Answer.CORRECT, 12)
+                        QuizCreatedEvent(
+                            quizId, Quiz(
+                                id = quizId,
+                                name = "Awesome Quiz",
+                            ), sequenceNumber = 1
+                        ),
+                        QuestionCreatedEvent(quizId, buzzerQuestion, sequenceNumber = 2),
+                        QuestionCreatedEvent(quizId, freetextQuestion, sequenceNumber = 3),
+                        ParticipantCreatedEvent(quizId, participant1, sequenceNumber = 4),
+                        ParticipantCreatedEvent(quizId, participant2, sequenceNumber = 5),
+                        QuestionAskedEvent(quizId, buzzerQuestion.id, sequenceNumber = 6),
+                        BuzzeredEvent(quizId, participant1.id, sequenceNumber = 7),
+                        AnsweredEvent(quizId, participant1.id, AnswerCommand.Answer.CORRECT, sequenceNumber = 8),
+                        QuestionAskedEvent(quizId, freetextQuestion.id, sequenceNumber = 9),
+                        EstimatedEvent(quizId, participant1.id, "Sergej Prokofjew", sequenceNumber = 10),
+                        EstimatedEvent(quizId, participant2.id, "Max Mustermann", sequenceNumber = 11),
+                        AnsweredEvent(quizId, participant1.id, AnswerCommand.Answer.CORRECT, sequenceNumber = 12)
                 ))
 
         val eventBus = EventBus()
-        val quizProjection = QuizProjection(eventBus, QuizStatisticsProvider(eventRepository), eventRepository, UndoneEventsCache())
+        val quizProjection = DefaultQuizProjection(
+            eventBus,
+            eventRepository,
+            UndoneEventsCache(),
+            QuizProjectionConfiguration(25, 1)
+        )
 
         val observedQuiz = AtomicReference<Quiz>()
         quizProjection.observeQuiz(quizId)
                 .subscribe { observedQuiz.set(it) }
 
-        eventBus.post(QuizCreatedEvent(quizId, Quiz(id = quizId, name = "Awesome Quiz"), 1))
-        eventBus.post(QuestionCreatedEvent(quizId, buzzerQuestion, 2))
-        eventBus.post(QuestionCreatedEvent(quizId, freetextQuestion, 3))
-        eventBus.post(ParticipantCreatedEvent(quizId, participant1, 4))
-        eventBus.post(ParticipantCreatedEvent(quizId, participant2, 5))
-        eventBus.post(QuestionAskedEvent(quizId, buzzerQuestion.id, 6))
-        eventBus.post(BuzzeredEvent(quizId, participant1.id, 7))
-        eventBus.post(AnsweredEvent(quizId, participant1.id, AnswerCommand.Answer.CORRECT, 8))
-        eventBus.post(QuestionAskedEvent(quizId, freetextQuestion.id, 9))
-        eventBus.post(EstimatedEvent(quizId, participant1.id, "Sergej Prokofjew", 10))
-        eventBus.post(EstimatedEvent(quizId, participant2.id, "Max Mustermann", 11))
-        eventBus.post(AnsweredEvent(quizId, participant1.id, AnswerCommand.Answer.CORRECT, 12))
-        eventBus.post(QuizFinishedEvent(quizId, 13))
+        eventBus.post(QuizCreatedEvent(quizId, Quiz(id = quizId, name = "Awesome Quiz"), sequenceNumber = 1))
+        eventBus.post(QuestionCreatedEvent(quizId, buzzerQuestion, sequenceNumber = 2))
+        eventBus.post(QuestionCreatedEvent(quizId, freetextQuestion, sequenceNumber = 3))
+        eventBus.post(ParticipantCreatedEvent(quizId, participant1, sequenceNumber = 4))
+        eventBus.post(ParticipantCreatedEvent(quizId, participant2, sequenceNumber = 5))
+        eventBus.post(QuestionAskedEvent(quizId, buzzerQuestion.id, sequenceNumber = 6))
+        eventBus.post(BuzzeredEvent(quizId, participant1.id, sequenceNumber = 7))
+        eventBus.post(AnsweredEvent(quizId, participant1.id, AnswerCommand.Answer.CORRECT, sequenceNumber = 8))
+        eventBus.post(QuestionAskedEvent(quizId, freetextQuestion.id, sequenceNumber = 9))
+        eventBus.post(EstimatedEvent(quizId, participant1.id, "Sergej Prokofjew", sequenceNumber = 10))
+        eventBus.post(EstimatedEvent(quizId, participant2.id, "Max Mustermann", sequenceNumber = 11))
+        eventBus.post(AnsweredEvent(quizId, participant1.id, AnswerCommand.Answer.CORRECT, sequenceNumber = 12))
+        eventBus.post(QuizFinishedEvent(quizId, sequenceNumber = 13))
 
         await untilAsserted {
             assertThat(observedQuiz.get())
                     .hasId(quizId)
                     .isFinished
-                    .hasQuizStatistics { quizStatistics ->
-                        quizStatistics
-                                .questionStatisticsSizeIs(2)
-                                .hasQuestionStatistics(0) { questionStatistics ->
-                                    questionStatistics
-                                            .hasQuestionId(buzzerQuestion.id)
-                                            .answerStatisticsSizeIs(1)
-                                            .hasAnswerStatistics(0) { buzzerStatistics ->
-                                                buzzerStatistics
-                                                        .hasDuration(1L)
-                                                        .hasParticipantId(participant1.id)
-                                                        .isCorrect
-                                            }
-                                }
-                                .hasQuestionStatistics(1) { questionStatistics ->
-                                    questionStatistics
-                                            .hasQuestionId(freetextQuestion.id)
-                                            .answerStatisticsSizeIs(2)
-                                            .hasAnswerStatistics(0) { buzzerStatistics ->
-                                                buzzerStatistics
-                                                        .hasDuration(1L)
-                                                        .hasParticipantId(participant1.id)
-                                                        .isCorrect
-                                            }
-                                            .hasAnswerStatistics(1) { buzzerStatistics ->
-                                                buzzerStatistics
-                                                        .hasDuration(2L)
-                                                        .hasParticipantId(participant2.id)
-                                                        .isIncorrect
-                                            }
-                                }
-                    }
         }
 
         eventBus.post(ReloadQuizCommand(quizId))
@@ -105,7 +83,6 @@ internal class QuizProjectionQuizReloadCommandTest {
             assertThat(observedQuiz.get())
                     .hasId(quizId)
                     .isNotFinished
-                    .hasNoQuizStatistics()
         }
     }
 }

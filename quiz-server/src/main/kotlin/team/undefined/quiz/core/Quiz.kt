@@ -4,15 +4,15 @@ import java.util.*
 import kotlin.collections.ArrayList
 
 data class Quiz(
-        val id: UUID = UUID.randomUUID(),
-        val name: String,
-        val participants: List<Participant> = ArrayList(),
-        val questions: List<Question> = ArrayList(),
-        val finished: Boolean = false,
-        val quizStatistics: QuizStatistics? = null,
-        val timestamp: Long = Date().time,
-        val undoPossible: Boolean = false,
-        val redoPossible: Boolean = false
+    val id: UUID = UUID.randomUUID(),
+    val name: String,
+    val participants: List<Participant> = ArrayList(),
+    val questions: List<Question> = ArrayList(),
+    val finished: Boolean = false,
+    val timestamp: Long = Date().time,
+    val sequenceNumber: Long = 0,
+    val undoPossible: Boolean = false,
+    val redoPossible: Boolean = false
 ) {
 
     val pendingQuestion: Question?
@@ -32,7 +32,7 @@ data class Quiz(
             }
         }
 
-        return Quiz(id, name, participants, newQuestions, finished, quizStatistics, timestamp, undoPossible)
+        return Quiz(id, name, participants, newQuestions, finished, timestamp, sequenceNumber, undoPossible)
     }
 
     fun select(participantId: UUID): Quiz {
@@ -44,7 +44,17 @@ data class Quiz(
                     it
                 }
             }
-        return Quiz(id, name, newParticipants, questions, finished, quizStatistics, timestamp, undoPossible, redoPossible)
+        return Quiz(
+            id,
+            name,
+            newParticipants,
+            questions,
+            finished,
+            timestamp,
+            sequenceNumber,
+            undoPossible,
+            redoPossible
+        )
     }
 
     fun estimate(participantId: UUID, estimatedValue: String): Quiz {
@@ -68,7 +78,17 @@ data class Quiz(
                     it
                 }
             }
-        return Quiz(id, name, newParticipants, questions, finished, quizStatistics, timestamp, undoPossible, redoPossible)
+        return Quiz(
+            id,
+            name,
+            newParticipants,
+            questions,
+            finished,
+            timestamp,
+            sequenceNumber,
+            undoPossible,
+            redoPossible
+        )
     }
 
     fun hasNoParticipantWithName(name: String): Boolean {
@@ -87,7 +107,17 @@ data class Quiz(
         } else {
             participants
         }
-        return Quiz(id, name, newParticipants, questions, finished, quizStatistics, timestamp, undoPossible, redoPossible)
+        return Quiz(
+            id,
+            name,
+            newParticipants,
+            questions,
+            finished,
+            timestamp,
+            sequenceNumber,
+            undoPossible,
+            redoPossible
+        )
     }
 
     fun deleteParticipant(participantId: UUID): Quiz {
@@ -95,7 +125,17 @@ data class Quiz(
         questions
                 .filter { it.estimates?.containsKey(participantId) ?: false }
                 .forEach { (it.estimates as MutableMap).remove(participantId) }
-        return Quiz(id, name, newParticipants, questions, finished, quizStatistics, timestamp, undoPossible, redoPossible)
+        return Quiz(
+            id,
+            name,
+            newParticipants,
+            questions,
+            finished,
+            timestamp,
+            sequenceNumber,
+            undoPossible,
+            redoPossible
+        )
     }
 
     fun addQuestion(question: Question): Quiz {
@@ -108,7 +148,7 @@ data class Quiz(
         val newQuestions = ArrayList(questions)
         newQuestions.add(question.setPreviousQuestionId(prevId))
 
-        return Quiz(id, name, participants, newQuestions, finished, quizStatistics, timestamp, undoPossible)
+        return Quiz(id, name, participants, newQuestions, finished, timestamp, sequenceNumber, undoPossible)
     }
 
     fun editQuestion(question: Question): Quiz {
@@ -126,12 +166,32 @@ data class Quiz(
             it.setPreviousQuestionId(p)
         }
 
-        return Quiz(id, name, participants, newQuestions, finished, quizStatistics, timestamp, undoPossible, redoPossible)
+        return Quiz(
+            id,
+            name,
+            participants,
+            newQuestions,
+            finished,
+            timestamp,
+            sequenceNumber,
+            undoPossible,
+            redoPossible
+        )
     }
 
     fun deleteQuestion(questionId: UUID): Quiz {
         val newQuestions = questions.filter { it.id != questionId }
-        return Quiz(id, name, participants, newQuestions, finished, quizStatistics, timestamp, undoPossible, redoPossible)
+        return Quiz(
+            id,
+            name,
+            participants,
+            newQuestions,
+            finished,
+            timestamp,
+            sequenceNumber,
+            undoPossible,
+            redoPossible
+        )
     }
 
     fun startQuestion(questionId: UUID): Quiz {
@@ -147,7 +207,17 @@ data class Quiz(
                     }
                 }
 
-        return Quiz(id, name, newParticipants, newQuestions, finished, quizStatistics, timestamp, undoPossible, redoPossible)
+        return Quiz(
+            id,
+            name,
+            newParticipants,
+            newQuestions,
+            finished,
+            timestamp,
+            sequenceNumber,
+            undoPossible,
+            redoPossible
+        )
     }
 
     fun currentQuestionIsBuzzerQuestion(): Boolean {
@@ -196,7 +266,17 @@ data class Quiz(
                     it
                 }
             }
-        return Quiz(id, name, newParticipants, questions, finished, quizStatistics, timestamp, undoPossible, redoPossible)
+        return Quiz(
+            id,
+            name,
+            newParticipants,
+            questions,
+            finished,
+            timestamp,
+            sequenceNumber,
+            undoPossible,
+            redoPossible
+        )
     }
 
     fun answeredIncorrect(participantId: UUID?): Quiz {
@@ -208,7 +288,17 @@ data class Quiz(
                     it
                 }
             }
-        return Quiz(id, name, newParticipants, questions, finished, quizStatistics, timestamp, undoPossible, redoPossible)
+        return Quiz(
+            id,
+            name,
+            newParticipants,
+            questions,
+            finished,
+            timestamp,
+            sequenceNumber,
+            undoPossible,
+            redoPossible
+        )
     }
 
     fun reopenQuestion(): Quiz {
@@ -221,7 +311,17 @@ data class Quiz(
                         it
                     }
                 }
-        return Quiz(id, name, newParticipants, newQuestions, finished, quizStatistics, timestamp, undoPossible, redoPossible)
+        return Quiz(
+            id,
+            name,
+            newParticipants,
+            newQuestions,
+            finished,
+            timestamp,
+            sequenceNumber,
+            undoPossible,
+            redoPossible
+        )
     }
 
     fun revealAnswersOfCurrentQuestion(): Quiz {
@@ -233,27 +333,37 @@ data class Quiz(
                         it
                     }
                 }
-        return Quiz(id, name, participants, newQuestions, finished, quizStatistics, timestamp, undoPossible, redoPossible)
+        return Quiz(
+            id,
+            name,
+            participants,
+            newQuestions,
+            finished,
+            timestamp,
+            sequenceNumber,
+            undoPossible,
+            redoPossible
+        )
     }
 
     fun finishQuiz(): Quiz {
-        return Quiz(id, name, participants, questions, true, quizStatistics, timestamp, undoPossible, redoPossible)
-    }
-
-    fun setQuizStatistics(quizStatistics: QuizStatistics): Quiz {
-        return Quiz(id, name, participants, questions, finished, quizStatistics, timestamp, undoPossible, redoPossible)
+        return Quiz(id, name, participants, questions, true, timestamp, sequenceNumber, undoPossible, redoPossible)
     }
 
     fun setTimestamp(timestamp: Long): Quiz {
-        return Quiz(id, name, participants, questions, finished, quizStatistics, timestamp, undoPossible, redoPossible)
+        return Quiz(id, name, participants, questions, finished, timestamp, sequenceNumber, undoPossible, redoPossible)
+    }
+
+    fun setSequenceNumber(sequenceNumber: Long): Quiz {
+        return Quiz(id, name, participants, questions, finished, timestamp, sequenceNumber, undoPossible, redoPossible)
     }
 
     fun setUndoPossible(): Quiz {
-        return Quiz(id, name, participants, questions, finished, quizStatistics, timestamp, true, redoPossible)
+        return Quiz(id, name, participants, questions, finished, timestamp, sequenceNumber, true, redoPossible)
     }
 
     fun setRedoPossible(redoPossible: Boolean): Quiz {
-        return Quiz(id, name, participants, questions, finished, quizStatistics, timestamp, undoPossible, redoPossible)
+        return Quiz(id, name, participants, questions, finished, timestamp, sequenceNumber, undoPossible, redoPossible)
     }
 
 }

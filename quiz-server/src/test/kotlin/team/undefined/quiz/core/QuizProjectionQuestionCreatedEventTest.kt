@@ -3,7 +3,6 @@ package team.undefined.quiz.core
 import com.google.common.eventbus.EventBus
 import org.awaitility.kotlin.await
 import org.awaitility.kotlin.untilAsserted
-import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test
 import org.mockito.Mockito.`when`
 import org.mockito.Mockito.mock
@@ -18,7 +17,12 @@ internal class QuizProjectionQuestionCreatedEventTest {
         val quiz = Quiz(name = "Awesome Quiz")
 
         val eventBus = EventBus()
-        val quizProjection = QuizProjection(eventBus, mock(QuizStatisticsProvider::class.java), mock(EventRepository::class.java), UndoneEventsCache())
+        val quizProjection = DefaultQuizProjection(
+            eventBus,
+            mock(EventRepository::class.java),
+            UndoneEventsCache(),
+            QuizProjectionConfiguration(25, 1)
+        )
 
         val observedQuiz = AtomicReference<Quiz>()
         quizProjection.observeQuiz(quiz.id)
@@ -26,9 +30,9 @@ internal class QuizProjectionQuestionCreatedEventTest {
 
         val question1 = Question(question = "Wofür steht die Abkürzung a.D.?", category = QuestionCategory("Erdkunde"))
         val question2 = Question(question = "Wer schrieb Peter und der Wolf?", category = QuestionCategory("Literatur"))
-        eventBus.post(QuizCreatedEvent(quiz.id, quiz, 1))
-        eventBus.post(QuestionCreatedEvent(quiz.id, question1, 2))
-        eventBus.post(QuestionCreatedEvent(quiz.id, question2, 3))
+        eventBus.post(QuizCreatedEvent(quiz.id, quiz, sequenceNumber = 1))
+        eventBus.post(QuestionCreatedEvent(quiz.id, question1, sequenceNumber = 2))
+        eventBus.post(QuestionCreatedEvent(quiz.id, question2, sequenceNumber = 3))
 
         await untilAsserted {
             assertThat(observedQuiz.get())
@@ -48,24 +52,28 @@ internal class QuizProjectionQuestionCreatedEventTest {
     }
 
     @Test
-    @Disabled
     fun shouldHandleQuestionCreationWhenQuizIsNotInCacheAndLastEventWasAlreadyPersisted() {
         val quiz = Quiz(name = "Awesome Quiz")
 
         val question1 = Question(question = "Wofür steht die Abkürzung a.D.?")
         val question2 = Question(question = "Wer schrieb Peter und der Wolf?", category = QuestionCategory("Literatur"))
-        val question2CreatedEvent = QuestionCreatedEvent(quiz.id, question1, 3)
+        val question2CreatedEvent = QuestionCreatedEvent(quiz.id, question2, sequenceNumber = 2)
 
         val eventRepository = mock(EventRepository::class.java)
         `when`(eventRepository.determineEvents(quiz.id))
                 .thenReturn(Flux.just(
-                        QuizCreatedEvent(quiz.id, quiz, 1),
-                        QuestionCreatedEvent(quiz.id, question1, 2),
+                        QuizCreatedEvent(quiz.id, quiz, sequenceNumber = 0),
+                        QuestionCreatedEvent(quiz.id, question1, sequenceNumber = 1),
                         question2CreatedEvent
                 ))
 
         val eventBus = EventBus()
-        val quizProjection = QuizProjection(eventBus, mock(QuizStatisticsProvider::class.java), eventRepository, UndoneEventsCache())
+        val quizProjection = DefaultQuizProjection(
+            eventBus,
+            eventRepository,
+            UndoneEventsCache(),
+            QuizProjectionConfiguration(25, 1)
+        )
 
         val observedQuiz = AtomicReference<Quiz>()
         quizProjection.observeQuiz(quiz.id)
@@ -99,12 +107,17 @@ internal class QuizProjectionQuestionCreatedEventTest {
         val eventRepository = mock(EventRepository::class.java)
         `when`(eventRepository.determineEvents(quiz.id))
                 .thenReturn(Flux.just(
-                        QuizCreatedEvent(quiz.id, quiz, 1),
-                        QuestionCreatedEvent(quiz.id, question1, 2)
+                        QuizCreatedEvent(quiz.id, quiz, sequenceNumber = 1),
+                        QuestionCreatedEvent(quiz.id, question1, sequenceNumber = 2)
                 ))
 
         val eventBus = EventBus()
-        val quizProjection = QuizProjection(eventBus, mock(QuizStatisticsProvider::class.java), eventRepository, UndoneEventsCache())
+        val quizProjection = DefaultQuizProjection(
+            eventBus,
+            eventRepository,
+            UndoneEventsCache(),
+            QuizProjectionConfiguration(25, 1)
+        )
 
         val observedQuiz = AtomicReference<Quiz>()
         quizProjection.observeQuiz(quiz.id)
@@ -112,7 +125,7 @@ internal class QuizProjectionQuestionCreatedEventTest {
 
 
         val question2 = Question(question = "Wer schrieb Peter und der Wolf?", category = QuestionCategory("Literatur"))
-        eventBus.post(QuestionCreatedEvent(quiz.id, question2, 3))
+        eventBus.post(QuestionCreatedEvent(quiz.id, question2, sequenceNumber = 3))
 
         await untilAsserted {
             assertThat(observedQuiz.get())

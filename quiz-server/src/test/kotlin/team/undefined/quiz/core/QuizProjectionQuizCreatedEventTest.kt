@@ -15,13 +15,18 @@ internal class QuizProjectionQuizCreatedEventTest {
         val quiz = Quiz(name = "Awesome Quiz")
 
         val eventBus = EventBus()
-        val quizProjection = QuizProjection(eventBus, mock(QuizStatisticsProvider::class.java), mock(EventRepository::class.java), UndoneEventsCache())
+        val quizProjection = DefaultQuizProjection(
+            eventBus,
+            mock(EventRepository::class.java),
+            UndoneEventsCache(),
+            QuizProjectionConfiguration(25, 1)
+        )
 
         val observedQuiz = AtomicReference<Quiz>()
         quizProjection.observeQuiz(quiz.id)
                 .subscribe { observedQuiz.set(it) }
 
-        eventBus.post(QuizCreatedEvent(quiz.id, quiz, 1))
+        eventBus.post(QuizCreatedEvent(quiz.id, quiz, sequenceNumber = 1))
 
         await untilAsserted {
             assertThat(observedQuiz.get())

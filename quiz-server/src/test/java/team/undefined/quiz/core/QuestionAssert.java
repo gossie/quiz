@@ -65,4 +65,14 @@ public class QuestionAssert extends AbstractAssert<QuestionAssert, Question> {
         Assertions.assertThat(actual.getPreviousQuestionId()).isEqualTo(previousQuestionId);
         return this;
     }
+
+    public QuestionAssert isRevealed() {
+        Assertions.assertThat(actual.getRevealed()).isTrue();
+        return this;
+    }
+
+    public QuestionAssert isNotRevealed() {
+        Assertions.assertThat(actual.getRevealed()).isFalse();
+        return this;
+    }
 }

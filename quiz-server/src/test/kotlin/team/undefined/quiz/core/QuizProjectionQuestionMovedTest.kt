@@ -14,7 +14,12 @@ internal class QuizProjectionQuestionMovedTest {
         val quiz = Quiz(name = "Awesome Quiz")
 
         val eventBus = EventBus()
-        val quizProjection = QuizProjection(eventBus, mock(QuizStatisticsProvider::class.java), mock(EventRepository::class.java), UndoneEventsCache())
+        val quizProjection = DefaultQuizProjection(
+            eventBus,
+            mock(EventRepository::class.java),
+            UndoneEventsCache(),
+            QuizProjectionConfiguration(25, 1)
+        )
 
         val observedQuiz = AtomicReference<Quiz>()
         quizProjection.observeQuiz(quiz.id)
@@ -24,10 +29,10 @@ internal class QuizProjectionQuestionMovedTest {
         val question2 = Question(question = "Was ist das?")
         val question3 = Question(question = "Wo ist das?")
 
-        eventBus.post(QuizCreatedEvent(quiz.id, quiz, 1))
-        eventBus.post(QuestionCreatedEvent(quiz.id, question1, 2))
-        eventBus.post(QuestionCreatedEvent(quiz.id, question2, 3))
-        eventBus.post(QuestionCreatedEvent(quiz.id, question3, 4))
+        eventBus.post(QuizCreatedEvent(quiz.id, quiz, sequenceNumber = 1))
+        eventBus.post(QuestionCreatedEvent(quiz.id, question1, sequenceNumber = 2))
+        eventBus.post(QuestionCreatedEvent(quiz.id, question2, sequenceNumber = 3))
+        eventBus.post(QuestionCreatedEvent(quiz.id, question3, sequenceNumber = 4))
 
         await untilAsserted {
             QuizAssert.assertThat(observedQuiz.get())
@@ -39,7 +44,11 @@ internal class QuizProjectionQuestionMovedTest {
                     .hasQuestion(2) { it.hasId(question3.id).hasPreviousQuestionId(question2.id) }
         }
 
-        eventBus.post(QuestionEditedEvent(quiz.id, Question(id=question3.id, question = "Wo ist das?", previousQuestionId = question1.id), 5))
+        eventBus.post(QuestionEditedEvent(
+            quiz.id,
+            Question(id=question3.id, question = "Wo ist das?", previousQuestionId = question1.id),
+            sequenceNumber = 5
+        ))
 
         await untilAsserted {
             QuizAssert.assertThat(observedQuiz.get())
@@ -57,7 +66,12 @@ internal class QuizProjectionQuestionMovedTest {
         val quiz = Quiz(name = "Awesome Quiz")
 
         val eventBus = EventBus()
-        val quizProjection = QuizProjection(eventBus, mock(QuizStatisticsProvider::class.java), mock(EventRepository::class.java), UndoneEventsCache())
+        val quizProjection = DefaultQuizProjection(
+            eventBus,
+            mock(EventRepository::class.java),
+            UndoneEventsCache(),
+            QuizProjectionConfiguration(25, 1)
+        )
 
         val observedQuiz = AtomicReference<Quiz>()
         quizProjection.observeQuiz(quiz.id)
@@ -67,10 +81,10 @@ internal class QuizProjectionQuestionMovedTest {
         val question2 = Question(question = "Was ist das?")
         val question3 = Question(question = "Wo ist das?")
 
-        eventBus.post(QuizCreatedEvent(quiz.id, quiz, 1))
-        eventBus.post(QuestionCreatedEvent(quiz.id, question1, 2))
-        eventBus.post(QuestionCreatedEvent(quiz.id, question2, 3))
-        eventBus.post(QuestionCreatedEvent(quiz.id, question3, 4))
+        eventBus.post(QuizCreatedEvent(quiz.id, quiz, sequenceNumber = 1))
+        eventBus.post(QuestionCreatedEvent(quiz.id, question1, sequenceNumber = 2))
+        eventBus.post(QuestionCreatedEvent(quiz.id, question2, sequenceNumber = 3))
+        eventBus.post(QuestionCreatedEvent(quiz.id, question3, sequenceNumber = 4))
 
         await untilAsserted {
             QuizAssert.assertThat(observedQuiz.get())
@@ -82,7 +96,11 @@ internal class QuizProjectionQuestionMovedTest {
                     .hasQuestion(2) { it.hasId(question3.id).hasPreviousQuestionId(question2.id) }
         }
 
-        eventBus.post(QuestionEditedEvent(quiz.id, Question(id=question3.id, question = "Wo ist das?"), 5))
+        eventBus.post(QuestionEditedEvent(
+            quiz.id,
+            Question(id=question3.id, question = "Wo ist das?"),
+            sequenceNumber = 5
+        ))
 
         await untilAsserted {
             QuizAssert.assertThat(observedQuiz.get())
@@ -100,7 +118,12 @@ internal class QuizProjectionQuestionMovedTest {
         val quiz = Quiz(name = "Awesome Quiz")
 
         val eventBus = EventBus()
-        val quizProjection = QuizProjection(eventBus, mock(QuizStatisticsProvider::class.java), mock(EventRepository::class.java), UndoneEventsCache())
+        val quizProjection = DefaultQuizProjection(
+            eventBus,
+            mock(EventRepository::class.java),
+            UndoneEventsCache(),
+            QuizProjectionConfiguration(25, 1)
+        )
 
         val observedQuiz = AtomicReference<Quiz>()
         quizProjection.observeQuiz(quiz.id)
@@ -110,10 +133,10 @@ internal class QuizProjectionQuestionMovedTest {
         val question2 = Question(question = "Was ist das?")
         val question3 = Question(question = "Wo ist das?")
 
-        eventBus.post(QuizCreatedEvent(quiz.id, quiz, 1))
-        eventBus.post(QuestionCreatedEvent(quiz.id, question1, 2))
-        eventBus.post(QuestionCreatedEvent(quiz.id, question2, 3))
-        eventBus.post(QuestionCreatedEvent(quiz.id, question3, 4))
+        eventBus.post(QuizCreatedEvent(quiz.id, quiz, sequenceNumber = 1))
+        eventBus.post(QuestionCreatedEvent(quiz.id, question1, sequenceNumber = 2))
+        eventBus.post(QuestionCreatedEvent(quiz.id, question2, sequenceNumber = 3))
+        eventBus.post(QuestionCreatedEvent(quiz.id, question3, sequenceNumber = 4))
 
         await untilAsserted {
             QuizAssert.assertThat(observedQuiz.get())
@@ -125,7 +148,11 @@ internal class QuizProjectionQuestionMovedTest {
                     .hasQuestion(2) { it.hasId(question3.id).hasPreviousQuestionId(question2.id) }
         }
 
-        eventBus.post(QuestionEditedEvent(quiz.id, Question(id=question1.id, question = "Wer ist das?", previousQuestionId = question3.id), 5))
+        eventBus.post(QuestionEditedEvent(
+            quiz.id,
+            Question(id=question1.id, question = "Wer ist das?", previousQuestionId = question3.id),
+            sequenceNumber = 5
+        ))
 
         await untilAsserted {
             QuizAssert.assertThat(observedQuiz.get())

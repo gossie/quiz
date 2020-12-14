@@ -13,7 +13,7 @@ class DefaultEventRepository(private val eventEntityRepository: EventEntityRepos
                              private val objectMapper: ObjectMapper) : EventRepository {
 
     override fun storeEvent(event: Event): Mono<Event> {
-        return eventEntityRepository.save(EventEntity(aggregateId = event.quizId.toString(), type = event.javaClass.name, domainEvent = objectMapper.writeValueAsString(event)))
+        return eventEntityRepository.save(EventEntity(aggregateId = event.quizId.toString(), type = event.javaClass.name, sequenceNumber = event.sequenceNumber, domainEvent = objectMapper.writeValueAsString(event)))
                 .map { objectMapper.readValue(it.domainEvent, Class.forName(it.type)) }
                 .map { Event::class.java.cast(it) }
     }
@@ -30,9 +30,8 @@ class DefaultEventRepository(private val eventEntityRepository: EventEntityRepos
                 .map { Event::class.java.cast(it) }
     }
 
-    override fun deleteEvents(quizId: UUID): Mono<Unit> {
+    override fun deleteEvents(quizId: UUID): Mono<Void> {
         return eventEntityRepository.deleteAllByAggregateId(quizId.toString())
-                .then(Mono.just(Unit))
     }
 
     override fun determineQuizIds(): Flux<UUID> {

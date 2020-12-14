@@ -12,7 +12,7 @@ interface EventRepository {
 
     fun determineEvents(): Flux<Event>
 
-    fun deleteEvents(quizId: UUID): Mono<Unit>
+    fun deleteEvents(quizId: UUID): Mono<Void>
 
     fun determineQuizIds(): Flux<UUID>
 

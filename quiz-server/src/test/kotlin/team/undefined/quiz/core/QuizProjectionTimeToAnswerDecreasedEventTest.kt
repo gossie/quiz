@@ -17,7 +17,12 @@ internal class QuizProjectionTimeToAnswerDecreasedEventTest {
         val quiz = Quiz(name = "Awesome Quiz")
 
         val eventBus = EventBus()
-        val quizProjection = QuizProjection(eventBus, mock(QuizStatisticsProvider::class.java), mock(EventRepository::class.java), UndoneEventsCache())
+        val quizProjection = DefaultQuizProjection(
+            eventBus,
+            mock(EventRepository::class.java),
+            UndoneEventsCache(),
+            QuizProjectionConfiguration(25, 1)
+        )
 
         val observedQuiz = AtomicReference<Quiz>()
         quizProjection.observeQuiz(quiz.id)
@@ -25,20 +30,21 @@ internal class QuizProjectionTimeToAnswerDecreasedEventTest {
 
         val question = Question(question = "Wofür steht die Abkürzung a.D.?", initialTimeToAnswer = 30, secondsLeft = 30)
         val participant = Participant(name = "Lena")
-        eventBus.post(QuizCreatedEvent(quiz.id, quiz, 1))
-        eventBus.post(QuestionCreatedEvent(quiz.id, question, 2))
-        eventBus.post(ParticipantCreatedEvent(quiz.id, participant, 3))
-        eventBus.post(QuestionAskedEvent(quiz.id, question.id, 4))
-        eventBus.post(TimeToAnswerDecreasedEvent(quiz.id, question.id, 5))
+        eventBus.post(QuizCreatedEvent(quiz.id, quiz, sequenceNumber = 1))
+        eventBus.post(QuestionCreatedEvent(quiz.id, question, sequenceNumber = 2))
+        eventBus.post(QuestionCreatedEvent(quiz.id, Question(question = "Unused question"), sequenceNumber = 3))
+        eventBus.post(ParticipantCreatedEvent(quiz.id, participant, sequenceNumber = 4))
+        eventBus.post(QuestionAskedEvent(quiz.id, question.id, sequenceNumber = 5))
+        eventBus.post(TimeToAnswerDecreasedEvent(quiz.id, question.id, sequenceNumber = 6))
 
         await untilAsserted {
             val q = observedQuiz.get()
 
             assertThat(q.id).isEqualTo(quiz.id)
             assertThat(q.participants).hasSize(1)
-            assertThat(q.participants[0].turn).isFalse()
-            assertThat(q.questions).hasSize(1)
-            assertThat(q.questions[0].pending).isTrue()
+            assertThat(q.participants[0].turn).isFalse
+            assertThat(q.questions).hasSize(2)
+            assertThat(q.questions[0].pending).isTrue
             assertThat(q.questions[0].initialTimeToAnswer).isEqualTo(30)
             assertThat(q.questions[0].secondsLeft).isEqualTo(29)
             assertThat(q.finished).isFalse()
@@ -51,20 +57,25 @@ internal class QuizProjectionTimeToAnswerDecreasedEventTest {
 
         val question = Question(question = "Wofür steht die Abkürzung a.D.?", initialTimeToAnswer = 30, secondsLeft = 30)
         val participant = Participant(name = "Lena")
-        val timeToAnswerDecreasedEvent = TimeToAnswerDecreasedEvent(quiz.id, question.id, 5)
+        val timeToAnswerDecreasedEvent = TimeToAnswerDecreasedEvent(quiz.id, question.id, sequenceNumber = Long.MAX_VALUE)
 
         val eventRepository = mock(EventRepository::class.java)
         `when`(eventRepository.determineEvents(quiz.id))
                 .thenReturn(Flux.just(
-                        QuizCreatedEvent(quiz.id, quiz, 1),
-                        QuestionCreatedEvent(quiz.id, question, 2),
-                        ParticipantCreatedEvent(quiz.id, participant, 3),
-                        QuestionAskedEvent(quiz.id, question.id, 4),
+                        QuizCreatedEvent(quiz.id, quiz, sequenceNumber = 1),
+                        QuestionCreatedEvent(quiz.id, question, sequenceNumber = 2),
+                        ParticipantCreatedEvent(quiz.id, participant, sequenceNumber = 3),
+                        QuestionAskedEvent(quiz.id, question.id, sequenceNumber = 4),
                         timeToAnswerDecreasedEvent
                 ))
 
         val eventBus = EventBus()
-        val quizProjection = QuizProjection(eventBus, mock(QuizStatisticsProvider::class.java), eventRepository, UndoneEventsCache())
+        val quizProjection = DefaultQuizProjection(
+            eventBus,
+            eventRepository,
+            UndoneEventsCache(),
+            QuizProjectionConfiguration(25, 1)
+        )
 
         val observedQuiz = AtomicReference<Quiz>()
         quizProjection.observeQuiz(quiz.id)
@@ -77,11 +88,11 @@ internal class QuizProjectionTimeToAnswerDecreasedEventTest {
 
             assertThat(q.id).isEqualTo(quiz.id)
             assertThat(q.participants).hasSize(1)
-            assertThat(q.participants[0].turn).isFalse()
+            assertThat(q.participants[0].turn).isFalse
             assertThat(q.questions).hasSize(1)
-            assertThat(q.questions[0].pending).isTrue()
+            assertThat(q.questions[0].pending).isTrue
             assertThat(q.questions[0].initialTimeToAnswer).isEqualTo(30)
-            assertThat(q.questions[0].secondsLeft).isEqualTo(29)
+            assertThat(q.questions[0].secondsLeft).isEqualTo(28)
             assertThat(q.finished).isFalse()
         }
     }
@@ -95,29 +106,34 @@ internal class QuizProjectionTimeToAnswerDecreasedEventTest {
         val eventRepository = mock(EventRepository::class.java)
         `when`(eventRepository.determineEvents(quiz.id))
                 .thenReturn(Flux.just(
-                        QuizCreatedEvent(quiz.id, quiz, 1),
-                        QuestionCreatedEvent(quiz.id, question, 2),
-                        ParticipantCreatedEvent(quiz.id, participant, 3),
-                        QuestionAskedEvent(quiz.id, question.id, 4)
+                        QuizCreatedEvent(quiz.id, quiz, sequenceNumber = 1),
+                        QuestionCreatedEvent(quiz.id, question, sequenceNumber = 2),
+                        ParticipantCreatedEvent(quiz.id, participant, sequenceNumber = 3),
+                        QuestionAskedEvent(quiz.id, question.id, sequenceNumber = 4)
                 ))
 
         val eventBus = EventBus()
-        val quizProjection = QuizProjection(eventBus, mock(QuizStatisticsProvider::class.java), eventRepository, UndoneEventsCache())
+        val quizProjection = DefaultQuizProjection(
+            eventBus,
+            eventRepository,
+            UndoneEventsCache(),
+            QuizProjectionConfiguration(25, 1)
+        )
 
         val observedQuiz = AtomicReference<Quiz>()
         quizProjection.observeQuiz(quiz.id)
                 .subscribe { observedQuiz.set(it) }
 
-        eventBus.post(TimeToAnswerDecreasedEvent(quiz.id, question.id, 5))
+        eventBus.post(TimeToAnswerDecreasedEvent(quiz.id, question.id, sequenceNumber = 5))
 
         await untilAsserted {
             val q = observedQuiz.get()
 
             assertThat(q.id).isEqualTo(quiz.id)
             assertThat(q.participants).hasSize(1)
-            assertThat(q.participants[0].turn).isFalse()
+            assertThat(q.participants[0].turn).isFalse
             assertThat(q.questions).hasSize(1)
-            assertThat(q.questions[0].pending).isTrue()
+            assertThat(q.questions[0].pending).isTrue
             assertThat(q.questions[0].initialTimeToAnswer).isEqualTo(30)
             assertThat(q.questions[0].secondsLeft).isEqualTo(29)
             assertThat(q.finished).isFalse()

@@ -9,22 +9,16 @@ import team.undefined.quiz.core.*
 import java.util.*
 import java.util.stream.Collectors
 
-fun Quiz.map(): Mono<QuizDTO> {
+fun Quiz.map(quizStatistics: QuizStatistics? = null): Mono<QuizDTO> {
     return Flux.fromIterable(this.participants)
             .flatMap { it.map(this.id) }
             .collect(Collectors.toList())
             .flatMap { participants ->
                 val quizDTO = QuizDTO(this.id, this.name, participants, this.questions.filter { it.alreadyPlayed }.map { it.map(this) }, this.questions.filter { !it.alreadyPlayed }.map { it.map(this) }, this.undoPossible, this.redoPossible, this.finished, timestamp = this.timestamp, expirationDate = this.timestamp + 2_419_200_000)
-                if (this.quizStatistics == null) {
-                     Mono.just(quizDTO)
-                } else {
-                    this.quizStatistics
-                            .map(this)
-                            .map {
-                                quizDTO.quizStatistics = it
-                                quizDTO
-                            }
-                }
+                quizStatistics?.map(this)?.map {
+                    quizDTO.quizStatistics = it
+                    quizDTO
+                } ?: Mono.just(quizDTO)
             }
             .flatMap { it.addLinks() }
 }
@@ -94,7 +88,7 @@ fun Question.map(quiz: Quiz): QuestionDTO {
             this.secondsLeft,
             this.revealed,
             this.previousQuestionId,
-            if (this.choices != null) { this.choices?.map { it.map(quiz) } } else { null },
+            if (this.choices != null) { this.choices.map { it.map(quiz) } } else { null },
             this.correctAnswer
     )
     questionDTO.add(Link.of("/api/quiz/" + quiz.id + "/questions/" + this.id, "self"))
@@ -114,7 +108,7 @@ fun Question.map(quizId: UUID): QuestionDTO {
             this.secondsLeft,
             this.revealed,
             this.previousQuestionId,
-            if (this.choices != null) { this.choices?.map { it.map() } } else { null },
+            if (this.choices != null) { this.choices.map { it.map() } } else { null },
             this.correctAnswer
     )
     questionDTO.add(Link.of("/api/quiz/" + quizId + "/questions/" + this.id, "self"))

@@ -23,34 +23,39 @@ internal class QuizProjectionQuizFinishedEventTest {
         val multipleChoiceQuestion = Question(question = "Was ist der höchste Berg Deutschlands?", choices = listOf(choice1, choice2))
         val participant1 = Participant(name = "Lena")
         val participant2 = Participant(name = "Erik")
-        val finishedEvent = QuizFinishedEvent(quiz.id, 19)
+        val finishedEvent = QuizFinishedEvent(quiz.id, sequenceNumber = 19)
 
         val eventRepository = mock(EventRepository::class.java)
         `when`(eventRepository.determineEvents(quiz.id))
                 .thenReturn(Flux.just(
-                        QuizCreatedEvent(quiz.id, quiz, 1),
-                        QuestionCreatedEvent(quiz.id, buzzerQuestion, 2),
-                        QuestionCreatedEvent(quiz.id, freetextQuestion, 3),
-                        QuestionCreatedEvent(quiz.id, multipleChoiceQuestion, 4),
-                        ParticipantCreatedEvent(quiz.id, participant1, 5),
-                        ParticipantCreatedEvent(quiz.id, participant2, 6),
-                        QuestionAskedEvent(quiz.id, buzzerQuestion.id, 7),
-                        BuzzeredEvent(quiz.id, participant1.id, 8),
-                        AnsweredEvent(quiz.id, participant1.id, AnswerCommand.Answer.CORRECT, 9),
-                        QuestionAskedEvent(quiz.id, freetextQuestion.id, 10),
-                        EstimatedEvent(quiz.id, participant1.id, "Sergej Prokofjew", 11),
-                        EstimatedEvent(quiz.id, participant2.id, "Max Mustermann", 12),
-                        AnsweredEvent(quiz.id, participant1.id, AnswerCommand.Answer.CORRECT, 13),
-                        QuestionAskedEvent(quiz.id, multipleChoiceQuestion.id, 14),
-                        ChoiceSelectedEvent(quiz.id, participant1.id, choice1.id, 15),
-                        ChoiceSelectedEvent(quiz.id, participant2.id, choice1.id, 16),
-                        AnsweredEvent(quiz.id, participant1.id, AnswerCommand.Answer.CORRECT, 17),
-                        AnsweredEvent(quiz.id, participant2.id, AnswerCommand.Answer.CORRECT, 18),
+                        QuizCreatedEvent(quiz.id, quiz, sequenceNumber = 1),
+                        QuestionCreatedEvent(quiz.id, buzzerQuestion, sequenceNumber = 2),
+                        QuestionCreatedEvent(quiz.id, freetextQuestion, sequenceNumber = 3),
+                        QuestionCreatedEvent(quiz.id, multipleChoiceQuestion, sequenceNumber = 4),
+                        ParticipantCreatedEvent(quiz.id, participant1, sequenceNumber = 5),
+                        ParticipantCreatedEvent(quiz.id, participant2, sequenceNumber = 6),
+                        QuestionAskedEvent(quiz.id, buzzerQuestion.id, sequenceNumber = 7),
+                        BuzzeredEvent(quiz.id, participant1.id, sequenceNumber = 8),
+                        AnsweredEvent(quiz.id, participant1.id, AnswerCommand.Answer.CORRECT, sequenceNumber = 9),
+                        QuestionAskedEvent(quiz.id, freetextQuestion.id, sequenceNumber = 10),
+                        EstimatedEvent(quiz.id, participant1.id, "Sergej Prokofjew", sequenceNumber = 11),
+                        EstimatedEvent(quiz.id, participant2.id, "Max Mustermann", sequenceNumber = 12),
+                        AnsweredEvent(quiz.id, participant1.id, AnswerCommand.Answer.CORRECT, sequenceNumber = 13),
+                        QuestionAskedEvent(quiz.id, multipleChoiceQuestion.id, sequenceNumber = 14),
+                        ChoiceSelectedEvent(quiz.id, participant1.id, choice1.id, sequenceNumber = 15),
+                        ChoiceSelectedEvent(quiz.id, participant2.id, choice1.id, sequenceNumber = 16),
+                        AnsweredEvent(quiz.id, participant1.id, AnswerCommand.Answer.CORRECT, sequenceNumber = 17),
+                        AnsweredEvent(quiz.id, participant2.id, AnswerCommand.Answer.CORRECT, sequenceNumber = 18),
                         finishedEvent
                 ))
 
         val eventBus = EventBus()
-        val quizProjection = QuizProjection(eventBus, QuizStatisticsProvider(eventRepository), eventRepository, UndoneEventsCache())
+        val quizProjection = DefaultQuizProjection(
+            eventBus,
+            eventRepository,
+            UndoneEventsCache(),
+            QuizProjectionConfiguration(25, 1)
+        )
 
         val observedQuiz = AtomicReference<Quiz>()
         quizProjection.observeQuiz(quiz.id)
@@ -63,59 +68,6 @@ internal class QuizProjectionQuizFinishedEventTest {
                     .hasId(quiz.id)
                     .undoIsPossible()
                     .isFinished
-                    .hasQuizStatistics { quizStatistics ->
-                        quizStatistics
-                                .questionStatisticsSizeIs(3)
-                                .hasQuestionStatistics(0) { questionStatistics ->
-                                    questionStatistics
-                                            .hasQuestionId(buzzerQuestion.id)
-                                            .answerStatisticsSizeIs(1)
-                                            .hasAnswerStatistics(0) { answerStatistics ->
-                                                answerStatistics
-                                                        .hasDuration(1L)
-                                                        .hasParticipantId(participant1.id)
-                                                        .isCorrect
-                                            }
-                                }
-                                .hasQuestionStatistics(1) { questionStatistics ->
-                                    questionStatistics
-                                            .hasQuestionId(freetextQuestion.id)
-                                            .answerStatisticsSizeIs(2)
-                                            .hasAnswerStatistics(0) { answerStatistics ->
-                                                answerStatistics
-                                                        .hasDuration(1L)
-                                                        .hasParticipantId(participant1.id)
-                                                        .hasAnswer("Sergej Prokofjew")
-                                                        .isCorrect
-                                            }
-                                            .hasAnswerStatistics(1) { answerStatistics ->
-                                                answerStatistics
-                                                        .hasDuration(2L)
-                                                        .hasParticipantId(participant2.id)
-                                                        .hasAnswer("Max Mustermann")
-                                                        .isIncorrect
-                                            }
-                                }
-                                .hasQuestionStatistics(2) { questionStatistics ->
-                                    questionStatistics
-                                            .hasQuestionId(multipleChoiceQuestion.id)
-                                            .answerStatisticsSizeIs(2)
-                                            .hasAnswerStatistics(0) { answerStatistics ->
-                                                answerStatistics
-                                                        .hasDuration(1L)
-                                                        .hasParticipantId(participant1.id)
-                                                        .hasChoiceId(choice1.id)
-                                                        .isCorrect
-                                            }
-                                            .hasAnswerStatistics(1) { answerStatistics ->
-                                                answerStatistics
-                                                        .hasDuration(2L)
-                                                        .hasParticipantId(participant2.id)
-                                                        .hasChoiceId(choice1.id)
-                                                        .isCorrect
-                                            }
-                                }
-                    }
         }
     }
 
@@ -134,93 +86,45 @@ internal class QuizProjectionQuizFinishedEventTest {
         val eventRepository = mock(EventRepository::class.java)
         `when`(eventRepository.determineEvents(quiz.id))
                 .thenReturn(Flux.just(
-                        QuizCreatedEvent(quiz.id, quiz, 1),
-                        QuestionCreatedEvent(quiz.id, buzzerQuestion, 2),
-                        QuestionCreatedEvent(quiz.id, freetextQuestion, 3),
-                        QuestionCreatedEvent(quiz.id, multipleChoiceQuestion, 4),
-                        ParticipantCreatedEvent(quiz.id, participant1, 5),
-                        ParticipantCreatedEvent(quiz.id, participant2, 6),
-                        QuestionAskedEvent(quiz.id, buzzerQuestion.id, 7),
-                        BuzzeredEvent(quiz.id, participant1.id, 8),
-                        AnsweredEvent(quiz.id, participant1.id, AnswerCommand.Answer.CORRECT, 9),
-                        QuestionAskedEvent(quiz.id, freetextQuestion.id, 10),
-                        EstimatedEvent(quiz.id, participant1.id, "Sergej Prokofjew", 11),
-                        EstimatedEvent(quiz.id, participant2.id, "Max Mustermann", 12),
-                        AnsweredEvent(quiz.id, participant1.id, AnswerCommand.Answer.CORRECT, 13),
-                        QuestionAskedEvent(quiz.id, multipleChoiceQuestion.id, 14),
-                        ChoiceSelectedEvent(quiz.id, participant1.id, choice1.id, 15),
-                        ChoiceSelectedEvent(quiz.id, participant2.id, choice1.id, 16),
-                        AnsweredEvent(quiz.id, participant1.id, AnswerCommand.Answer.CORRECT, 17),
-                        AnsweredEvent(quiz.id, participant2.id, AnswerCommand.Answer.CORRECT, 18),
+                        QuizCreatedEvent(quiz.id, quiz, sequenceNumber = 1),
+                        QuestionCreatedEvent(quiz.id, buzzerQuestion, sequenceNumber = 2),
+                        QuestionCreatedEvent(quiz.id, freetextQuestion, sequenceNumber = 3),
+                        QuestionCreatedEvent(quiz.id, multipleChoiceQuestion, sequenceNumber = 4),
+                        ParticipantCreatedEvent(quiz.id, participant1, sequenceNumber = 5),
+                        ParticipantCreatedEvent(quiz.id, participant2, sequenceNumber = 6),
+                        QuestionAskedEvent(quiz.id, buzzerQuestion.id, sequenceNumber = 7),
+                        BuzzeredEvent(quiz.id, participant1.id, sequenceNumber = 8),
+                        AnsweredEvent(quiz.id, participant1.id, AnswerCommand.Answer.CORRECT, sequenceNumber = 9),
+                        QuestionAskedEvent(quiz.id, freetextQuestion.id, sequenceNumber = 10),
+                        EstimatedEvent(quiz.id, participant1.id, "Sergej Prokofjew", sequenceNumber = 11),
+                        EstimatedEvent(quiz.id, participant2.id, "Max Mustermann", sequenceNumber = 12),
+                        AnsweredEvent(quiz.id, participant1.id, AnswerCommand.Answer.CORRECT, sequenceNumber = 13),
+                        QuestionAskedEvent(quiz.id, multipleChoiceQuestion.id, sequenceNumber = 14),
+                        ChoiceSelectedEvent(quiz.id, participant1.id, choice1.id, sequenceNumber = 15),
+                        ChoiceSelectedEvent(quiz.id, participant2.id, choice1.id, sequenceNumber = 16),
+                        AnsweredEvent(quiz.id, participant1.id, AnswerCommand.Answer.CORRECT, sequenceNumber = 17),
+                        AnsweredEvent(quiz.id, participant2.id, AnswerCommand.Answer.CORRECT, sequenceNumber = 18),
                 ))
 
         val eventBus = EventBus()
-        val quizProjection = QuizProjection(eventBus, QuizStatisticsProvider(eventRepository), eventRepository, UndoneEventsCache())
+        val quizProjection = DefaultQuizProjection(
+            eventBus,
+            eventRepository,
+            UndoneEventsCache(),
+            QuizProjectionConfiguration(25, 1)
+        )
 
         val observedQuiz = AtomicReference<Quiz>()
         quizProjection.observeQuiz(quiz.id)
                 .subscribe { observedQuiz.set(it) }
 
-        eventBus.post(QuizFinishedEvent(quiz.id, 19))
+        eventBus.post(QuizFinishedEvent(quiz.id, sequenceNumber = 19))
 
         await untilAsserted {
             assertThat(observedQuiz.get())
                     .hasId(quiz.id)
                     .undoIsPossible()
                     .isFinished
-                    .hasQuizStatistics { quizStatistics ->
-                        quizStatistics
-                                .questionStatisticsSizeIs(3)
-                                .hasQuestionStatistics(0) { questionStatistics ->
-                                    questionStatistics
-                                            .hasQuestionId(buzzerQuestion.id)
-                                            .answerStatisticsSizeIs(1)
-                                            .hasAnswerStatistics(0) { answerStatistics ->
-                                                answerStatistics
-                                                        .hasDuration(1L)
-                                                        .hasParticipantId(participant1.id)
-                                                        .isCorrect
-                                            }
-                                }
-                                .hasQuestionStatistics(1) { questionStatistics ->
-                                    questionStatistics
-                                            .hasQuestionId(freetextQuestion.id)
-                                            .answerStatisticsSizeIs(2)
-                                            .hasAnswerStatistics(0) { answerStatistics ->
-                                                answerStatistics
-                                                        .hasDuration(1L)
-                                                        .hasParticipantId(participant1.id)
-                                                        .hasAnswer("Sergej Prokofjew")
-                                                        .isCorrect
-                                            }
-                                            .hasAnswerStatistics(1) { answerStatistics ->
-                                                answerStatistics
-                                                        .hasDuration(2L)
-                                                        .hasParticipantId(participant2.id)
-                                                        .hasAnswer("Max Mustermann")
-                                                        .isIncorrect
-                                            }
-                                }
-                                .hasQuestionStatistics(2) { questionStatistics ->
-                                    questionStatistics
-                                            .hasQuestionId(multipleChoiceQuestion.id)
-                                            .answerStatisticsSizeIs(2)
-                                            .hasAnswerStatistics(0) { answerStatistics ->
-                                                answerStatistics
-                                                        .hasDuration(1L)
-                                                        .hasParticipantId(participant1.id)
-                                                        .hasChoiceId(choice1.id)
-                                                        .isCorrect
-                                            }
-                                            .hasAnswerStatistics(1) { answerStatistics ->
-                                                answerStatistics
-                                                        .hasDuration(2L)
-                                                        .hasParticipantId(participant2.id)
-                                                        .hasChoiceId(choice1.id)
-                                                        .isCorrect
-                                            }
-                                }
-                    }
         }
     }
 }

@@ -17,7 +17,12 @@ internal class QuizProjectionQuestionWithTimeConstraintReopenedEventTest {
         val quiz = Quiz(name = "Awesome Quiz")
 
         val eventBus = EventBus()
-        val quizProjection = QuizProjection(eventBus, mock(QuizStatisticsProvider::class.java), mock(EventRepository::class.java), UndoneEventsCache())
+        val quizProjection = DefaultQuizProjection(
+            eventBus,
+            mock(EventRepository::class.java),
+            UndoneEventsCache(),
+            QuizProjectionConfiguration(25, 1)
+        )
 
         val observedQuiz = AtomicReference<Quiz>()
         quizProjection.observeQuiz(quiz.id)
@@ -26,16 +31,16 @@ internal class QuizProjectionQuestionWithTimeConstraintReopenedEventTest {
         val question = Question(question = "Wofür steht die Abkürzung a.D.?", initialTimeToAnswer = 5)
         val participant = Participant(name = "Lena")
 
-        eventBus.post(QuizCreatedEvent(quiz.id, quiz, 1))
-        eventBus.post(QuestionCreatedEvent(quiz.id, question, 2))
-        eventBus.post(ParticipantCreatedEvent(quiz.id, participant, 3))
-        eventBus.post(QuestionAskedEvent(quiz.id, question.id, 4))
-        eventBus.post(TimeToAnswerDecreasedEvent(quiz.id, question.id, 5))
-        eventBus.post(TimeToAnswerDecreasedEvent(quiz.id, question.id, 6))
-        eventBus.post(TimeToAnswerDecreasedEvent(quiz.id, question.id, 7))
-        eventBus.post(TimeToAnswerDecreasedEvent(quiz.id, question.id, 8))
-        eventBus.post(TimeToAnswerDecreasedEvent(quiz.id, question.id, 9))
-        eventBus.post(CurrentQuestionReopenedEvent(quiz.id, 10))
+        eventBus.post(QuizCreatedEvent(quiz.id, quiz, sequenceNumber = 1))
+        eventBus.post(QuestionCreatedEvent(quiz.id, question, sequenceNumber = 2))
+        eventBus.post(ParticipantCreatedEvent(quiz.id, participant, sequenceNumber = 3))
+        eventBus.post(QuestionAskedEvent(quiz.id, question.id, sequenceNumber = 4))
+        eventBus.post(TimeToAnswerDecreasedEvent(quiz.id, question.id, sequenceNumber = 5))
+        eventBus.post(TimeToAnswerDecreasedEvent(quiz.id, question.id, sequenceNumber = 6))
+        eventBus.post(TimeToAnswerDecreasedEvent(quiz.id, question.id, sequenceNumber = 7))
+        eventBus.post(TimeToAnswerDecreasedEvent(quiz.id, question.id, sequenceNumber = 8))
+        eventBus.post(TimeToAnswerDecreasedEvent(quiz.id, question.id, sequenceNumber = 9))
+        eventBus.post(CurrentQuestionReopenedEvent(quiz.id, sequenceNumber = 10))
 
         await untilAsserted {
             val q = observedQuiz.get()
@@ -59,25 +64,30 @@ internal class QuizProjectionQuestionWithTimeConstraintReopenedEventTest {
         val quiz = Quiz(name = "Awesome Quiz")
 
         val question = Question(question = "Wofür steht die Abkürzung a.D.?", initialTimeToAnswer = 5)
-        val reopenedEvent = CurrentQuestionReopenedEvent(quiz.id, 10)
+        val reopenedEvent = CurrentQuestionReopenedEvent(quiz.id, sequenceNumber = 10)
 
         val eventRepository = mock(EventRepository::class.java)
         `when`(eventRepository.determineEvents(quiz.id))
                 .thenReturn(Flux.just(
-                        QuizCreatedEvent(quiz.id, quiz, 1),
-                        QuestionCreatedEvent(quiz.id, question, 2),
-                        ParticipantCreatedEvent(quiz.id, Participant(name = "Lena"), 3),
-                        QuestionAskedEvent(quiz.id, question.id, 4),
-                        TimeToAnswerDecreasedEvent(quiz.id, question.id, 5),
-                        TimeToAnswerDecreasedEvent(quiz.id, question.id, 6),
-                        TimeToAnswerDecreasedEvent(quiz.id, question.id, 7),
-                        TimeToAnswerDecreasedEvent(quiz.id, question.id, 8),
-                        TimeToAnswerDecreasedEvent(quiz.id, question.id, 9),
+                        QuizCreatedEvent(quiz.id, quiz, sequenceNumber = 1),
+                        QuestionCreatedEvent(quiz.id, question, sequenceNumber = 2),
+                        ParticipantCreatedEvent(quiz.id, Participant(name = "Lena"), sequenceNumber = 3),
+                        QuestionAskedEvent(quiz.id, question.id, sequenceNumber = 4),
+                        TimeToAnswerDecreasedEvent(quiz.id, question.id, sequenceNumber = 5),
+                        TimeToAnswerDecreasedEvent(quiz.id, question.id, sequenceNumber = 6),
+                        TimeToAnswerDecreasedEvent(quiz.id, question.id, sequenceNumber = 7),
+                        TimeToAnswerDecreasedEvent(quiz.id, question.id, sequenceNumber = 8),
+                        TimeToAnswerDecreasedEvent(quiz.id, question.id, sequenceNumber = 9),
                         reopenedEvent
                 ))
 
         val eventBus = EventBus()
-        val quizProjection = QuizProjection(eventBus, mock(QuizStatisticsProvider::class.java), eventRepository, UndoneEventsCache())
+        val quizProjection = DefaultQuizProjection(
+            eventBus,
+            eventRepository,
+            UndoneEventsCache(),
+            QuizProjectionConfiguration(25, 1)
+        )
 
         val observedQuiz = AtomicReference<Quiz>()
         quizProjection.observeQuiz(quiz.id)
@@ -110,25 +120,30 @@ internal class QuizProjectionQuestionWithTimeConstraintReopenedEventTest {
         val eventRepository = mock(EventRepository::class.java)
         `when`(eventRepository.determineEvents(quiz.id))
                 .thenReturn(Flux.just(
-                        QuizCreatedEvent(quiz.id, quiz, 1),
-                        QuestionCreatedEvent(quiz.id, question, 2),
-                        ParticipantCreatedEvent(quiz.id, Participant(name = "Lena"), 3),
-                        QuestionAskedEvent(quiz.id, question.id, 4),
-                        TimeToAnswerDecreasedEvent(quiz.id, question.id, 5),
-                        TimeToAnswerDecreasedEvent(quiz.id, question.id, 6),
-                        TimeToAnswerDecreasedEvent(quiz.id, question.id, 7),
-                        TimeToAnswerDecreasedEvent(quiz.id, question.id, 8),
-                        TimeToAnswerDecreasedEvent(quiz.id, question.id, 9)
+                        QuizCreatedEvent(quiz.id, quiz, sequenceNumber = 1),
+                        QuestionCreatedEvent(quiz.id, question, sequenceNumber = 2),
+                        ParticipantCreatedEvent(quiz.id, Participant(name = "Lena"), sequenceNumber = 3),
+                        QuestionAskedEvent(quiz.id, question.id, sequenceNumber = 4),
+                        TimeToAnswerDecreasedEvent(quiz.id, question.id, sequenceNumber = 5),
+                        TimeToAnswerDecreasedEvent(quiz.id, question.id, sequenceNumber = 6),
+                        TimeToAnswerDecreasedEvent(quiz.id, question.id, sequenceNumber = 7),
+                        TimeToAnswerDecreasedEvent(quiz.id, question.id, sequenceNumber = 8),
+                        TimeToAnswerDecreasedEvent(quiz.id, question.id, sequenceNumber = 9)
                 ))
 
         val eventBus = EventBus()
-        val quizProjection = QuizProjection(eventBus, mock(QuizStatisticsProvider::class.java), eventRepository, UndoneEventsCache())
+        val quizProjection = DefaultQuizProjection(
+            eventBus,
+            eventRepository,
+            UndoneEventsCache(),
+            QuizProjectionConfiguration(25, 1)
+        )
 
         val observedQuiz = AtomicReference<Quiz>()
         quizProjection.observeQuiz(quiz.id)
                 .subscribe { observedQuiz.set(it) }
 
-        eventBus.post(CurrentQuestionReopenedEvent(quiz.id, 10))
+        eventBus.post(CurrentQuestionReopenedEvent(quiz.id, sequenceNumber = 10))
 
         await untilAsserted {
             val q = observedQuiz.get()

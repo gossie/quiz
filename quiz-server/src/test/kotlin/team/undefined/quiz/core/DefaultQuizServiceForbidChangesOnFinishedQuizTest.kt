@@ -17,7 +17,7 @@ internal class DefaultQuizServiceForbidChangesOnFinishedQuizTest {
         `when`(eventRepository.determineEvents(quizId)).thenReturn(
                 Flux.just(
                         QuizCreatedEvent(quizId, Quiz(quizId, "Ein Quiz")),
-                        QuizFinishedEvent(quizId)
+                        QuizFinishedEvent(quizId, sequenceNumber = 1)
                 )
         )
 
@@ -40,8 +40,8 @@ internal class DefaultQuizServiceForbidChangesOnFinishedQuizTest {
         `when`(eventRepository.determineEvents(quizId)).thenReturn(
                 Flux.just(
                         QuizCreatedEvent(quizId, Quiz(quizId, "Ein Quiz")),
-                        QuestionCreatedEvent(quizId, Question(questionId, "Eine Frage")),
-                        QuizFinishedEvent(quizId)
+                        QuestionCreatedEvent(quizId, Question(questionId, "Eine Frage"), sequenceNumber = 1),
+                        QuizFinishedEvent(quizId, sequenceNumber = 2)
                 )
         )
 
@@ -64,8 +64,8 @@ internal class DefaultQuizServiceForbidChangesOnFinishedQuizTest {
         `when`(eventRepository.determineEvents(quizId)).thenReturn(
                 Flux.just(
                         QuizCreatedEvent(quizId, Quiz(quizId, "Ein Quiz")),
-                        QuestionCreatedEvent(quizId, Question(questionId, "Eine Frage")),
-                        QuizFinishedEvent(quizId)
+                        QuestionCreatedEvent(quizId, Question(questionId, "Eine Frage"), sequenceNumber = 1),
+                        QuizFinishedEvent(quizId, sequenceNumber = 2)
                 )
         )
 
@@ -88,7 +88,7 @@ internal class DefaultQuizServiceForbidChangesOnFinishedQuizTest {
         `when`(eventRepository.determineEvents(quizId)).thenReturn(
                 Flux.just(
                         QuizCreatedEvent(quizId, Quiz(quizId, "Ein Quiz")),
-                        QuizFinishedEvent(quizId)
+                        QuizFinishedEvent(quizId, sequenceNumber = 1)
                 )
         )
 
@@ -112,8 +112,8 @@ internal class DefaultQuizServiceForbidChangesOnFinishedQuizTest {
         `when`(eventRepository.determineEvents(quizId)).thenReturn(
                 Flux.just(
                         QuizCreatedEvent(quizId, Quiz(quizId, "Ein Quiz")),
-                        ParticipantCreatedEvent(quizId, Participant(participantId, "Karo")),
-                        QuizFinishedEvent(quizId)
+                        ParticipantCreatedEvent(quizId, Participant(participantId, "Karo"), sequenceNumber = 1),
+                        QuizFinishedEvent(quizId, sequenceNumber = 2)
                 )
         )
 
@@ -136,8 +136,8 @@ internal class DefaultQuizServiceForbidChangesOnFinishedQuizTest {
         `when`(eventRepository.determineEvents(quizId)).thenReturn(
                 Flux.just(
                         QuizCreatedEvent(quizId, Quiz(quizId, "Ein Quiz")),
-                        QuestionCreatedEvent(quizId, Question(questionId, "Eine Frage")),
-                        QuizFinishedEvent(quizId)
+                        QuestionCreatedEvent(quizId, Question(questionId, "Eine Frage"), sequenceNumber = 1),
+                        QuizFinishedEvent(quizId, sequenceNumber = 2)
                 )
         )
 
@@ -161,10 +161,10 @@ internal class DefaultQuizServiceForbidChangesOnFinishedQuizTest {
         `when`(eventRepository.determineEvents(quizId)).thenReturn(
                 Flux.just(
                         QuizCreatedEvent(quizId, Quiz(quizId, "Ein Quiz")),
-                        QuestionCreatedEvent(quizId, Question(questionId, "Eine Frage")),
-                        ParticipantCreatedEvent(quizId, Participant(participantId, "Landry")),
-                        QuestionAskedEvent(quizId, questionId),
-                        QuizFinishedEvent(quizId)
+                        QuestionCreatedEvent(quizId, Question(questionId, "Eine Frage"), sequenceNumber = 1),
+                        ParticipantCreatedEvent(quizId, Participant(participantId, "Landry"), sequenceNumber = 2),
+                        QuestionAskedEvent(quizId, questionId, sequenceNumber = 3),
+                        QuizFinishedEvent(quizId, sequenceNumber = 4)
                 )
         )
 
@@ -188,10 +188,10 @@ internal class DefaultQuizServiceForbidChangesOnFinishedQuizTest {
         `when`(eventRepository.determineEvents(quizId)).thenReturn(
                 Flux.just(
                         QuizCreatedEvent(quizId, Quiz(quizId, "Ein Quiz")),
-                        QuestionCreatedEvent(quizId, Question(questionId, "Eine Frage")),
-                        ParticipantCreatedEvent(quizId, Participant(participantId, "Beuke")),
-                        QuestionAskedEvent(quizId, questionId),
-                        QuizFinishedEvent(quizId)
+                        QuestionCreatedEvent(quizId, Question(questionId, "Eine Frage"), sequenceNumber = 1),
+                        ParticipantCreatedEvent(quizId, Participant(participantId, "Beuke"), sequenceNumber = 2),
+                        QuestionAskedEvent(quizId, questionId, sequenceNumber = 3),
+                        QuizFinishedEvent(quizId, sequenceNumber = 4)
                 )
         )
 
@@ -217,10 +217,13 @@ internal class DefaultQuizServiceForbidChangesOnFinishedQuizTest {
         `when`(eventRepository.determineEvents(quizId)).thenReturn(
                 Flux.just(
                         QuizCreatedEvent(quizId, Quiz(quizId, "Ein Quiz")),
-                        QuestionCreatedEvent(quizId, Question(questionId, "Eine Frage", choices = listOf(Choice(choice1Id, "a"), Choice(choice2Id, "b")))),
-                        ParticipantCreatedEvent(quizId, Participant(participantId, "Volker")),
-                        QuestionAskedEvent(quizId, questionId),
-                        QuizFinishedEvent(quizId)
+                        QuestionCreatedEvent(quizId,
+                            Question(questionId, "Eine Frage", choices = listOf(Choice(choice1Id, "a"), Choice(choice2Id, "b"))),
+                            sequenceNumber = 1
+                        ),
+                        ParticipantCreatedEvent(quizId, Participant(participantId, "Volker"), sequenceNumber = 2),
+                        QuestionAskedEvent(quizId, questionId, sequenceNumber = 3),
+                        QuizFinishedEvent(quizId, sequenceNumber = 4)
                 )
         )
 
@@ -243,8 +246,8 @@ internal class DefaultQuizServiceForbidChangesOnFinishedQuizTest {
         `when`(eventRepository.determineEvents(quizId)).thenReturn(
                 Flux.just(
                         QuizCreatedEvent(quizId, Quiz(quizId, "Ein Quiz")),
-                        ParticipantCreatedEvent(quizId, Participant(participantId, "Karo")),
-                        QuizFinishedEvent(quizId)
+                        ParticipantCreatedEvent(quizId, Participant(participantId, "Karo"), sequenceNumber = 1),
+                        QuizFinishedEvent(quizId, sequenceNumber = 2)
                 )
         )
 
@@ -268,11 +271,11 @@ internal class DefaultQuizServiceForbidChangesOnFinishedQuizTest {
         `when`(eventRepository.determineEvents(quizId)).thenReturn(
                 Flux.just(
                         QuizCreatedEvent(quizId, Quiz(quizId, "Ein Quiz")),
-                        QuestionCreatedEvent(quizId, Question(questionId, "Eine Frage")),
-                        ParticipantCreatedEvent(quizId, Participant(participantId, "Landry")),
-                        QuestionAskedEvent(quizId, questionId),
-                        BuzzeredEvent(quizId, participantId),
-                        QuizFinishedEvent(quizId)
+                        QuestionCreatedEvent(quizId, Question(questionId, "Eine Frage"), sequenceNumber = 1),
+                        ParticipantCreatedEvent(quizId, Participant(participantId, "Landry"), sequenceNumber = 2),
+                        QuestionAskedEvent(quizId, questionId, sequenceNumber = 3),
+                        BuzzeredEvent(quizId, participantId, sequenceNumber = 4),
+                        QuizFinishedEvent(quizId, sequenceNumber = 5)
                 )
         )
 
@@ -296,11 +299,11 @@ internal class DefaultQuizServiceForbidChangesOnFinishedQuizTest {
         `when`(eventRepository.determineEvents(quizId)).thenReturn(
                 Flux.just(
                         QuizCreatedEvent(quizId, Quiz(quizId, "Ein Quiz")),
-                        QuestionCreatedEvent(quizId, Question(questionId, "Eine Frage")),
-                        ParticipantCreatedEvent(quizId, Participant(participantId, "Landry")),
-                        QuestionAskedEvent(quizId, questionId),
-                        BuzzeredEvent(quizId, participantId),
-                        QuizFinishedEvent(quizId)
+                        QuestionCreatedEvent(quizId, Question(questionId, "Eine Frage"), sequenceNumber = 1),
+                        ParticipantCreatedEvent(quizId, Participant(participantId, "Landry"), sequenceNumber = 2),
+                        QuestionAskedEvent(quizId, questionId, sequenceNumber = 3),
+                        BuzzeredEvent(quizId, participantId, sequenceNumber = 4),
+                        QuizFinishedEvent(quizId, sequenceNumber = 5)
                 )
         )
 
@@ -324,11 +327,11 @@ internal class DefaultQuizServiceForbidChangesOnFinishedQuizTest {
         `when`(eventRepository.determineEvents(quizId)).thenReturn(
                 Flux.just(
                         QuizCreatedEvent(quizId, Quiz(quizId, "Ein Quiz")),
-                        QuestionCreatedEvent(quizId, Question(questionId, "Eine Frage")),
-                        ParticipantCreatedEvent(quizId, Participant(participantId, "Landry")),
-                        QuestionAskedEvent(quizId, questionId),
-                        EstimatedEvent(quizId, participantId, "Eine Antwort"),
-                        QuizFinishedEvent(quizId)
+                        QuestionCreatedEvent(quizId, Question(questionId, "Eine Frage"), sequenceNumber = 1),
+                        ParticipantCreatedEvent(quizId, Participant(participantId, "Landry"), sequenceNumber = 2),
+                        QuestionAskedEvent(quizId, questionId, sequenceNumber = 3),
+                        EstimatedEvent(quizId, participantId, "Eine Antwort", sequenceNumber = 4),
+                        QuizFinishedEvent(quizId, sequenceNumber = 5)
                 )
         )
 
@@ -338,6 +341,34 @@ internal class DefaultQuizServiceForbidChangesOnFinishedQuizTest {
 
         StepVerifier.create(quizService.revealAnswers(RevealAnswersCommand(quizId)))
                 .verifyError(QuizFinishedException::class.java)
+
+        verifyNoInteractions(eventBus)
+    }
+
+    @Test
+    fun shouldPreventFinishOfQuizIfQuizIsAlreadyFinished() {
+        val quizId = UUID.randomUUID()
+        val questionId = UUID.randomUUID()
+        val participantId = UUID.randomUUID()
+
+        val eventRepository = mock(EventRepository::class.java)
+        `when`(eventRepository.determineEvents(quizId)).thenReturn(
+            Flux.just(
+                QuizCreatedEvent(quizId, Quiz(quizId, "Ein Quiz")),
+                QuestionCreatedEvent(quizId, Question(questionId, "Eine Frage"), sequenceNumber = 1),
+                ParticipantCreatedEvent(quizId, Participant(participantId, "Landry"), sequenceNumber = 2),
+                QuestionAskedEvent(quizId, questionId, sequenceNumber = 3),
+                EstimatedEvent(quizId, participantId, "Eine Antwort", sequenceNumber = 4),
+                QuizFinishedEvent(quizId, sequenceNumber = 5)
+            )
+        )
+
+        val eventBus = mock(EventBus::class.java)
+
+        val quizService = DefaultQuizService(eventRepository, UndoneEventsCache(), eventBus)
+
+        StepVerifier.create(quizService.finishQuiz(FinishQuizCommand(quizId)))
+            .verifyError(QuizFinishedException::class.java)
 
         verifyNoInteractions(eventBus)
     }

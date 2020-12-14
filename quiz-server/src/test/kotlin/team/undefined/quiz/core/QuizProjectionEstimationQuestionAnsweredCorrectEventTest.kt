@@ -16,7 +16,12 @@ internal class QuizProjectionEstimationQuestionAnsweredCorrectEventTest {
         val quiz = Quiz(name = "Awesome Quiz")
 
         val eventBus = EventBus()
-        val quizProjection = QuizProjection(eventBus, mock(QuizStatisticsProvider::class.java), mock(EventRepository::class.java), UndoneEventsCache())
+        val quizProjection = DefaultQuizProjection(
+            eventBus,
+            mock(EventRepository::class.java),
+            UndoneEventsCache(),
+            QuizProjectionConfiguration(25, 1)
+        )
 
         val observedQuiz = AtomicReference<Quiz>()
         quizProjection.observeQuiz(quiz.id)
@@ -26,14 +31,14 @@ internal class QuizProjectionEstimationQuestionAnsweredCorrectEventTest {
         val participant1 = Participant(name = "Lena")
         val participant2 = Participant(name = "André")
 
-        eventBus.post(QuizCreatedEvent(quiz.id, quiz, 1))
-        eventBus.post(QuestionCreatedEvent(quiz.id, question, 2))
-        eventBus.post(ParticipantCreatedEvent(quiz.id, participant1, 3))
-        eventBus.post(ParticipantCreatedEvent(quiz.id, participant2, 4))
-        eventBus.post(QuestionAskedEvent(quiz.id, question.id, 5))
-        eventBus.post(EstimatedEvent(quiz.id, participant1.id, "1000",6))
-        eventBus.post(EstimatedEvent(quiz.id, participant2.id, "1500",7))
-        eventBus.post(AnsweredEvent(quiz.id, participant1.id, AnswerCommand.Answer.CORRECT, 8))
+        eventBus.post(QuizCreatedEvent(quiz.id, quiz, sequenceNumber = 1))
+        eventBus.post(QuestionCreatedEvent(quiz.id, question, sequenceNumber = 2))
+        eventBus.post(ParticipantCreatedEvent(quiz.id, participant1, sequenceNumber = 3))
+        eventBus.post(ParticipantCreatedEvent(quiz.id, participant2, sequenceNumber = 4))
+        eventBus.post(QuestionAskedEvent(quiz.id, question.id, sequenceNumber = 5))
+        eventBus.post(EstimatedEvent(quiz.id, participant1.id, "1000", sequenceNumber = 6))
+        eventBus.post(EstimatedEvent(quiz.id, participant2.id, "1500", sequenceNumber = 7))
+        eventBus.post(AnsweredEvent(quiz.id, participant1.id, AnswerCommand.Answer.CORRECT, sequenceNumber = 8))
 
         await until {
             observedQuiz.get().id == quiz.id
@@ -55,23 +60,28 @@ internal class QuizProjectionEstimationQuestionAnsweredCorrectEventTest {
         val question = Question(question = "Wie hoch ist das?", estimates = HashMap())
         val participant1 = Participant(name = "Lena")
         val participant2 = Participant(name = "André")
-        val answeredEvent = AnsweredEvent(quiz.id, participant1.id, AnswerCommand.Answer.CORRECT, 8)
+        val answeredEvent = AnsweredEvent(quiz.id, participant1.id, AnswerCommand.Answer.CORRECT, sequenceNumber = 8)
 
         val eventRepository = mock(EventRepository::class.java)
         `when`(eventRepository.determineEvents(quiz.id))
                 .thenReturn(Flux.just(
-                        QuizCreatedEvent(quiz.id, quiz, 1),
-                        QuestionCreatedEvent(quiz.id, question, 2),
-                        ParticipantCreatedEvent(quiz.id, participant1, 3),
-                        ParticipantCreatedEvent(quiz.id, participant2, 4),
-                        QuestionAskedEvent(quiz.id, question.id, 5),
-                        EstimatedEvent(quiz.id, participant1.id, "1000",6),
-                        EstimatedEvent(quiz.id, participant2.id, "1000",7),
+                        QuizCreatedEvent(quiz.id, quiz, sequenceNumber = 1),
+                        QuestionCreatedEvent(quiz.id, question, sequenceNumber = 2),
+                        ParticipantCreatedEvent(quiz.id, participant1, sequenceNumber = 3),
+                        ParticipantCreatedEvent(quiz.id, participant2, sequenceNumber = 4),
+                        QuestionAskedEvent(quiz.id, question.id, sequenceNumber = 5),
+                        EstimatedEvent(quiz.id, participant1.id, "1000", sequenceNumber = 6),
+                        EstimatedEvent(quiz.id, participant2.id, "1000", sequenceNumber = 7),
                         answeredEvent
                 ))
 
         val eventBus = EventBus()
-        val quizProjection = QuizProjection(eventBus, mock(QuizStatisticsProvider::class.java), eventRepository, UndoneEventsCache())
+        val quizProjection = DefaultQuizProjection(
+            eventBus,
+            eventRepository,
+            UndoneEventsCache(),
+            QuizProjectionConfiguration(25, 1)
+        )
 
         val observedQuiz = AtomicReference<Quiz>()
         quizProjection.observeQuiz(quiz.id)
@@ -102,23 +112,28 @@ internal class QuizProjectionEstimationQuestionAnsweredCorrectEventTest {
         val eventRepository = mock(EventRepository::class.java)
         `when`(eventRepository.determineEvents(quiz.id))
                 .thenReturn(Flux.just(
-                        QuizCreatedEvent(quiz.id, quiz, 1),
-                        QuestionCreatedEvent(quiz.id, question, 2),
-                        ParticipantCreatedEvent(quiz.id, participant1, 3),
-                        ParticipantCreatedEvent(quiz.id, participant2, 4),
-                        QuestionAskedEvent(quiz.id, question.id, 5),
-                        EstimatedEvent(quiz.id, participant1.id, "1000",6),
-                        EstimatedEvent(quiz.id, participant2.id, "1000",7)
+                        QuizCreatedEvent(quiz.id, quiz, sequenceNumber = 1),
+                        QuestionCreatedEvent(quiz.id, question, sequenceNumber = 2),
+                        ParticipantCreatedEvent(quiz.id, participant1, sequenceNumber = 3),
+                        ParticipantCreatedEvent(quiz.id, participant2, sequenceNumber = 4),
+                        QuestionAskedEvent(quiz.id, question.id, sequenceNumber = 5),
+                        EstimatedEvent(quiz.id, participant1.id, "1000", sequenceNumber = 6),
+                        EstimatedEvent(quiz.id, participant2.id, "1000", sequenceNumber = 7)
                 ))
 
         val eventBus = EventBus()
-        val quizProjection = QuizProjection(eventBus, mock(QuizStatisticsProvider::class.java), eventRepository, UndoneEventsCache())
+        val quizProjection = DefaultQuizProjection(
+            eventBus,
+            eventRepository,
+            UndoneEventsCache(),
+            QuizProjectionConfiguration(25, 1)
+        )
 
         val observedQuiz = AtomicReference<Quiz>()
         quizProjection.observeQuiz(quiz.id)
                 .subscribe { observedQuiz.set(it) }
 
-        eventBus.post(AnsweredEvent(quiz.id, participant1.id, AnswerCommand.Answer.CORRECT, 8))
+        eventBus.post(AnsweredEvent(quiz.id, participant1.id, AnswerCommand.Answer.CORRECT, sequenceNumber = 8))
 
         await until {
             observedQuiz.get().id == quiz.id

@@ -27,6 +27,9 @@ internal class QuizControllerTest {
     private lateinit var quizProjection: QuizProjection
 
     @MockBean
+    private lateinit var quizStatisticsProjection: QuizStatisticsProjection
+
+    @MockBean
     private lateinit var eventBus: EventBus
 
     @Test
