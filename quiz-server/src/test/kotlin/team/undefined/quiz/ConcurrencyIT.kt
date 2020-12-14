@@ -2,6 +2,7 @@ package team.undefined.quiz
 
 import org.awaitility.kotlin.await
 import org.awaitility.kotlin.untilAsserted
+import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
@@ -99,8 +100,10 @@ class ConcurrencyIT {
                 }
 
                 StepVerifier.create(quizService.deleteQuiz(DeleteQuizCommand(quiz.id)))
-                    .expectNext(Unit)
-                    .expectComplete()
+                    .consumeNextWith {
+                        assertThat(it).isNotNull()
+                    }
+                    .verifyComplete()
             }
     }
 
