@@ -52,7 +52,7 @@ internal class DefaultQuizServiceTest {
         val quiz = Quiz(quizId, "Quiz")
         StepVerifier.create(quizService.createQuiz(CreateQuizCommand(quizId, quiz)))
                 .consumeNextWith {
-                    verify(eventBus).post(argThat { (it as QuizCreatedEvent).quizId == quizId && it.quiz == quiz })
+                    verify(eventBus).post(argThat { (it as QuizCreatedEvent).quizId == quizId && it.quiz == quiz && it.sequenceNumber == 0 })
                 }
                 .verifyComplete()
     }
@@ -74,7 +74,7 @@ internal class DefaultQuizServiceTest {
         StepVerifier.create(mono)
                 .consumeNextWith {
                     verify(eventBus).post( argThat {
-                        it is ParticipantCreatedEvent && it.quizId == quizId && it.participant == participant }
+                        it is ParticipantCreatedEvent && it.quizId == quizId && it.participant == participant && it.sequenceNumber == 1 }
                     )
                 }
                 .verifyComplete()
@@ -133,7 +133,7 @@ internal class DefaultQuizServiceTest {
         StepVerifier.create(quizService.deleteParticipant(DeleteParticipantCommand(quizId, participantId)))
                 .consumeNextWith {
                     verify(eventBus).post( argThat {
-                        it is ParticipantDeletedEvent && it.quizId == quizId && it.participantId == participantId }
+                        it is ParticipantDeletedEvent && it.quizId == quizId && it.participantId == participantId && it.sequenceNumber == 2 }
                     )
                 }
                 .verifyComplete()
