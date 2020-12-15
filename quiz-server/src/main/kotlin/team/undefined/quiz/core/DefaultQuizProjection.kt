@@ -45,6 +45,7 @@ class DefaultQuizProjection(
                 eventRepository
                     .determineEvents(quizId)
                     .reduce(Quiz(name = "")) { quiz, event -> event.process(quiz) }
+                    .doOnNext { quizCache.put(quizId, it) }
             }
     }
 
