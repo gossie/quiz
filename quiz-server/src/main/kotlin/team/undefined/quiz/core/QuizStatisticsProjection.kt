@@ -45,6 +45,7 @@ class QuizStatisticsProjection(
                             else -> quizStatistics
                         }
                     }
+                    .doOnNext { statistics.put(quizId, it) }
             }
     }
 
