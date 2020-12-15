@@ -292,6 +292,7 @@ class DefaultQuizService(private val eventRepository: EventRepository,
 
     @WriteLock
     override fun undo(command: UndoCommand): Mono<Unit> {
+        stopCounter(command.quizId)
         return eventRepository.undoLastAction(command.quizId)
                 .map { undoneEventsCache.push(it) }
                 .map { eventBus.post(ReloadQuizCommand(command.quizId)) }
@@ -302,6 +303,7 @@ class DefaultQuizService(private val eventRepository: EventRepository,
         return if (undoneEventsCache.isEmpty(command.quizId)) {
             Mono.empty()
         } else {
+            stopCounter(command.quizId)
             eventRepository.storeEvent(undoneEventsCache.pop(command.quizId))
                     .map { eventBus.post(it) }
         }
