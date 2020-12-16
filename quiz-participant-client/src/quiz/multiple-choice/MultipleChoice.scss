@@ -14,6 +14,10 @@
     background-color: $link;
 }
 
+.option:hover {
+    background-color: $link;
+}
+
 .option.disabled {
     border-color: #808080;
     cursor: not-allowed;
@@ -23,6 +27,6 @@
     background-color: #808080;
 }
 
-.option:hover {
-    background-color: $link;
+.option.option.disabled:hover {
+    background-color: #808080;
 }
