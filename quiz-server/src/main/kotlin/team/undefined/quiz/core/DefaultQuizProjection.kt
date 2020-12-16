@@ -168,9 +168,11 @@ class DefaultQuizProjection(
     }
 
     private fun emitQuiz(quiz: Quiz) {
+        val redoPossible = quiz.setRedoPossible(undoneEventsCache.isNotEmpty(quiz.id))
+        quizCache.put(quiz.id, redoPossible)
         observables
             .computeIfAbsent(quiz.id) { Sinks.many().multicast().onBackpressureBuffer() }
-            .tryEmitNext(quiz.setRedoPossible(undoneEventsCache.isNotEmpty(quiz.id)))
+            .emitNext(redoPossible, Sinks.EmitFailureHandler.FAIL_FAST)
     }
 
     override fun determineQuiz(quizId: UUID): Mono<Quiz> {
