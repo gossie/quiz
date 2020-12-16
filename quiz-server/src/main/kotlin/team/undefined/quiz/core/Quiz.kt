@@ -243,6 +243,11 @@ data class Quiz(
                 ?.get(participantId) != value
     }
 
+    fun currentQuestionIsFreeToAnswer(): Boolean {
+        val currentQuestion = questions.find { it.pending }
+        return currentQuestion?.secondsLeft ?: Int.MAX_VALUE > 0
+    }
+
     fun currentChoiceIsDifferent(participantId: UUID, choiceId: UUID): Boolean {
         val currentQuestion = questions.find { it.pending }
         val choice = currentQuestion?.choices?.find { it.id == choiceId }

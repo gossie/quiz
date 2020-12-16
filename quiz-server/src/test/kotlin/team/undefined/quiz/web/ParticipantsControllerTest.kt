@@ -104,12 +104,12 @@ internal class ParticipantsControllerTest {
         `when`(quizService.estimate(EstimationCommand(quizId, participantId, "Antwort"))).thenReturn(Mono.just(Unit))
 
         webClient
-                .put()
-                .uri("/api/quiz/$quizId/participants/$participantId/buzzer")
-                .contentType(MediaType.TEXT_PLAIN)
-                .bodyValue("Antwort")
-                .exchange()
-                .expectStatus().isOk
+            .put()
+            .uri("/api/quiz/$quizId/participants/$participantId/buzzer")
+            .contentType(MediaType.TEXT_PLAIN)
+            .bodyValue("Antwort")
+            .exchange()
+            .expectStatus().isOk
     }
 
     @Test
@@ -120,12 +120,73 @@ internal class ParticipantsControllerTest {
         `when`(quizService.estimate(EstimationCommand(quizId, participantId, "Antwort"))).thenReturn(Mono.error(QuizFinishedException()))
 
         webClient
-                .put()
-                .uri("/api/quiz/$quizId/participants/$participantId/buzzer")
-                .contentType(MediaType.TEXT_PLAIN)
-                .bodyValue("Antwort")
-                .exchange()
-                .expectStatus().value { assertThat(it).isEqualTo(409) }
+            .put()
+            .uri("/api/quiz/$quizId/participants/$participantId/buzzer")
+            .contentType(MediaType.TEXT_PLAIN)
+            .bodyValue("Antwort")
+            .exchange()
+            .expectStatus().value { assertThat(it).isEqualTo(409) }
+    }
+
+    @Test
+    fun shouldReturnStatusConflictWhenEstimatingBecauseTheQuestionIsClosed() {
+        val quizId = UUID.randomUUID()
+        val participantId = UUID.randomUUID()
+
+        `when`(quizService.estimate(EstimationCommand(quizId, participantId, "Antwort"))).thenReturn(Mono.error(QuestionClosedException()))
+
+        webClient
+            .put()
+            .uri("/api/quiz/$quizId/participants/$participantId/buzzer")
+            .contentType(MediaType.TEXT_PLAIN)
+            .bodyValue("Antwort")
+            .exchange()
+            .expectStatus().value { assertThat(it).isEqualTo(409) }
+    }
+
+    @Test
+    fun shouldSelectChoice() {
+        val quizId = UUID.randomUUID()
+        val participantId = UUID.randomUUID()
+        val choiceId = UUID.randomUUID()
+
+        `when`(quizService.selectChoice(SelectChoiceCommand(quizId, participantId, choiceId))).thenReturn(Mono.just(Unit))
+
+        webClient
+            .put()
+            .uri("/api/quiz/$quizId/participants/$participantId/choices/$choiceId")
+            .exchange()
+            .expectStatus().isOk
+    }
+
+    @Test
+    fun shouldReturnStatusConflictWhenSelectingChoiceBecauseTheQuizIsFinished() {
+        val quizId = UUID.randomUUID()
+        val participantId = UUID.randomUUID()
+        val choiceId = UUID.randomUUID()
+
+        `when`(quizService.selectChoice(SelectChoiceCommand(quizId, participantId, choiceId))).thenReturn(Mono.error(QuizFinishedException()))
+
+        webClient
+            .put()
+            .uri("/api/quiz/$quizId/participants/$participantId/choices/$choiceId")
+            .exchange()
+            .expectStatus().value { assertThat(it).isEqualTo(409) }
+    }
+
+    @Test
+    fun shouldReturnStatusConflictWhenSelectingChoiceBecauseTheQuestionIsClosed() {
+        val quizId = UUID.randomUUID()
+        val participantId = UUID.randomUUID()
+        val choiceId = UUID.randomUUID()
+
+        `when`(quizService.selectChoice(SelectChoiceCommand(quizId, participantId, choiceId))).thenReturn(Mono.error(QuestionClosedException()))
+
+        webClient
+            .put()
+            .uri("/api/quiz/$quizId/participants/$participantId/choices/$choiceId")
+            .exchange()
+            .expectStatus().value { assertThat(it).isEqualTo(409) }
     }
 
     @Test

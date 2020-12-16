@@ -121,33 +121,37 @@ class DefaultQuizService(private val eventRepository: EventRepository,
     override fun estimate(command: EstimationCommand): Mono<Unit> {
         logger.info("'{}' estimated value '{}' in quiz '{}'", command.participantId, command.estimatedValue, command.quizId)
         return eventRepository.determineEvents(command.quizId)
-                .reduce(Quiz(name = "")) { quiz: Quiz, event: Event -> event.process(quiz) }
-                .filter { !it.finished }
-                .switchIfEmpty(Mono.error(QuizFinishedException()))
-                .filter { it.hasParticipantWithId(command.participantId) }
-                .filter { it.currentQuestionIsFreetextQuestion() }
-                .filter { it.currentAnswerIsDifferent(command.participantId, command.estimatedValue) }
-                .flatMap { eventRepository.storeEvent(EstimatedEvent(command.quizId, command.participantId, command.estimatedValue, sequenceNumber = it.sequenceNumber + 1)) }
-                .map {
-                    undoneEventsCache.remove(it.quizId)
-                    eventBus.post(it)
-                }
+            .reduce(Quiz(name = "")) { quiz: Quiz, event: Event -> event.process(quiz) }
+            .filter { !it.finished }
+            .switchIfEmpty(Mono.error(QuizFinishedException()))
+            .filter { it.currentQuestionIsFreeToAnswer() }
+            .switchIfEmpty(Mono.error(QuestionClosedException()))
+            .filter { it.hasParticipantWithId(command.participantId) }
+            .filter { it.currentQuestionIsFreetextQuestion() }
+            .filter { it.currentAnswerIsDifferent(command.participantId, command.estimatedValue) }
+            .flatMap { eventRepository.storeEvent(EstimatedEvent(command.quizId, command.participantId, command.estimatedValue, sequenceNumber = it.sequenceNumber + 1)) }
+            .map {
+                undoneEventsCache.remove(it.quizId)
+                eventBus.post(it)
+            }
     }
 
     @WriteLock
     override fun selectChoice(command: SelectChoiceCommand): Mono<Unit> {
         logger.info("'{}' selected choice '{}' in quiz '{}'", command.participantId, command.choiceId, command.quizId)
         return eventRepository.determineEvents(command.quizId)
-                .reduce(Quiz(name = "")) { quiz: Quiz, event: Event -> event.process(quiz) }
-                .filter { !it.finished }
-                .switchIfEmpty(Mono.error(QuizFinishedException()))
-                .filter { it.currentQuestionIsMultipleChoiceQuestion() }
-                .filter { it.currentChoiceIsDifferent(command.participantId, command.choiceId) }
-                .flatMap { eventRepository.storeEvent(ChoiceSelectedEvent(command.quizId, command.participantId, command.choiceId, sequenceNumber = it.sequenceNumber + 1)) }
-                .map {
-                    undoneEventsCache.remove(it.quizId)
-                    eventBus.post(it)
-                }
+            .reduce(Quiz(name = "")) { quiz: Quiz, event: Event -> event.process(quiz) }
+            .filter { !it.finished }
+            .switchIfEmpty(Mono.error(QuizFinishedException()))
+            .filter { it.currentQuestionIsFreeToAnswer() }
+            .switchIfEmpty(Mono.error(QuestionClosedException()))
+            .filter { it.currentQuestionIsMultipleChoiceQuestion() }
+            .filter { it.currentChoiceIsDifferent(command.participantId, command.choiceId) }
+            .flatMap { eventRepository.storeEvent(ChoiceSelectedEvent(command.quizId, command.participantId, command.choiceId, sequenceNumber = it.sequenceNumber + 1)) }
+            .map {
+                undoneEventsCache.remove(it.quizId)
+                eventBus.post(it)
+            }
     }
 
     @WriteLock

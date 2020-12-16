@@ -41,6 +41,7 @@ class ParticipantsController(private val quizService: QuizService) {
     @ResponseStatus(HttpStatus.OK)
     fun selectChoice(@PathVariable quizId: UUID, @PathVariable participantId: UUID, @PathVariable choiceId: UUID): Mono<Unit> {
         return quizService.selectChoice(SelectChoiceCommand(quizId, participantId, choiceId))
+            .onErrorResume { Mono.error(WebException(HttpStatus.CONFLICT, it.message)) }
     }
 
     @PutMapping("/{participantId}/togglereveal")
