@@ -28,7 +28,7 @@ data class QuestionCreatedEvent(
     @JsonProperty("quizId") override val quizId: UUID,
     @JsonProperty("question") val question: Question,
     @JsonProperty("timestamp") override val timestamp: Long = Date().time,
-    @JsonProperty("sequenceNumber") override val sequenceNumber: Long = timestamp
+    @JsonProperty("sequenceNumber") override val sequenceNumber: Long
 ) : Event {
     override fun process(quiz: Quiz): Quiz {
         return quiz.addQuestion(question)
@@ -42,7 +42,7 @@ data class QuestionEditedEvent(
     @JsonProperty("quizId") override val quizId: UUID,
     @JsonProperty("question") val question: Question,
     @JsonProperty("timestamp") override val timestamp: Long = Date().time,
-    @JsonProperty("sequenceNumber") override val sequenceNumber: Long = timestamp
+    @JsonProperty("sequenceNumber") override val sequenceNumber: Long
 ) : Event {
     override fun process(quiz: Quiz): Quiz {
         return quiz.editQuestion(question)
@@ -56,7 +56,7 @@ data class QuestionDeletedEvent(
     @JsonProperty("quizId") override val quizId: UUID,
     @JsonProperty("questionId") val questionId: UUID,
     @JsonProperty("timestamp") override val timestamp: Long = Date().time,
-    @JsonProperty("sequenceNumber") override val sequenceNumber: Long = timestamp
+    @JsonProperty("sequenceNumber") override val sequenceNumber: Long
 ) : Event {
     override fun process(quiz: Quiz): Quiz {
         return quiz.deleteQuestion(questionId)
@@ -70,7 +70,7 @@ data class ParticipantCreatedEvent(
     @JsonProperty("quizId") override val quizId: UUID,
     @JsonProperty("participant") val participant: Participant,
     @JsonProperty("timestamp") override val timestamp: Long = Date().time,
-    @JsonProperty("sequenceNumber") override val sequenceNumber: Long = timestamp
+    @JsonProperty("sequenceNumber") override val sequenceNumber: Long
 ) : Event {
     override fun process(quiz: Quiz): Quiz {
         return quiz.addParticipantIfNecessary(participant)
@@ -84,7 +84,7 @@ data class ParticipantDeletedEvent(
     @JsonProperty("quizId") override val quizId: UUID,
     @JsonProperty("participantId") val participantId: UUID,
     @JsonProperty("timestamp") override val timestamp: Long = Date().time,
-    @JsonProperty("sequenceNumber") override val sequenceNumber: Long = timestamp
+    @JsonProperty("sequenceNumber") override val sequenceNumber: Long
 ) : Event {
     override fun process(quiz: Quiz): Quiz {
         return quiz.deleteParticipant(participantId)
@@ -98,7 +98,7 @@ data class QuestionAskedEvent(
     @JsonProperty("quizId") override val quizId: UUID,
     @JsonProperty("questionId") val questionId: UUID,
     @JsonProperty("timestamp") override val timestamp: Long = Date().time,
-    @JsonProperty("sequenceNumber") override val sequenceNumber: Long = timestamp
+    @JsonProperty("sequenceNumber") override val sequenceNumber: Long
 ) : Event {
     override fun process(quiz: Quiz): Quiz {
         return quiz.startQuestion(questionId)
@@ -112,7 +112,7 @@ data class TimeToAnswerDecreasedEvent(
     @JsonProperty("quizId") override val quizId: UUID,
     @JsonProperty("questionId") val questionId: UUID,
     @JsonProperty("timestamp") override val timestamp: Long = Date().time,
-    @JsonProperty("sequenceNumber") override val sequenceNumber: Long = timestamp
+    @JsonProperty("sequenceNumber") override val sequenceNumber: Long
 ) : Event {
     override fun process(quiz: Quiz): Quiz {
         return quiz.decreaseTimeToAnswer(questionId)
@@ -124,7 +124,7 @@ data class BuzzeredEvent(
     @JsonProperty("quizId") override val quizId: UUID,
     @JsonProperty("participantId") val participantId: UUID,
     @JsonProperty("timestamp") override val timestamp: Long = Date().time,
-    @JsonProperty("sequenceNumber") override val sequenceNumber: Long = timestamp
+    @JsonProperty("sequenceNumber") override val sequenceNumber: Long
 ) : Event {
     override fun process(quiz: Quiz): Quiz {
         return quiz.select(participantId)
@@ -139,7 +139,7 @@ data class EstimatedEvent(
     @JsonProperty("participantId") val participantId: UUID,
     @JsonProperty("estimatedValue") val estimatedValue: String,
     @JsonProperty("timestamp") override val timestamp: Long = Date().time,
-    @JsonProperty("sequenceNumber") override val sequenceNumber: Long = timestamp
+    @JsonProperty("sequenceNumber") override val sequenceNumber: Long
 ) : Event {
     override fun process(quiz: Quiz): Quiz {
         return quiz.estimate(participantId, estimatedValue)
@@ -154,7 +154,7 @@ data class ChoiceSelectedEvent(
     @JsonProperty("participantId") val participantId: UUID,
     @JsonProperty("choiceId") val choiceId: UUID,
     @JsonProperty("timestamp") override val timestamp: Long = Date().time,
-    @JsonProperty("sequenceNumber") override val sequenceNumber: Long = timestamp
+    @JsonProperty("sequenceNumber") override val sequenceNumber: Long
 ) : Event {
     override fun process(quiz: Quiz): Quiz {
         return quiz.selectChoice(participantId, choiceId)
@@ -167,7 +167,7 @@ data class ToggleAnswerRevealAllowedEvent(
     @JsonProperty("quizId") override val quizId: UUID,
     @JsonProperty("participantId") val participantId: UUID,
     @JsonProperty("timestamp") override val timestamp: Long = Date().time,
-    @JsonProperty("sequenceNumber") override val sequenceNumber: Long = timestamp
+    @JsonProperty("sequenceNumber") override val sequenceNumber: Long
 ) : Event {
     override fun process(quiz: Quiz): Quiz {
         return quiz.toggleAnswerRevealAllowed(participantId)
@@ -182,7 +182,7 @@ data class AnsweredEvent(
     @JsonProperty("participantId") val participantId: UUID,
     @JsonProperty("answer") val answer: AnswerCommand.Answer,
     @JsonProperty("timestamp") override val timestamp: Long = Date().time,
-    @JsonProperty("sequenceNumber") override val sequenceNumber: Long = timestamp
+    @JsonProperty("sequenceNumber") override val sequenceNumber: Long
 ) : Event {
     override fun process(quiz: Quiz): Quiz {
         return answer.performAnswer(quiz, participantId)
@@ -195,7 +195,7 @@ data class AnsweredEvent(
 data class CurrentQuestionReopenedEvent(
     @JsonProperty("quizId") override val quizId: UUID,
     @JsonProperty("timestamp") override val timestamp: Long = Date().time,
-    @JsonProperty("sequenceNumber") override val sequenceNumber: Long = timestamp
+    @JsonProperty("sequenceNumber") override val sequenceNumber: Long
 ) : Event {
     override fun process(quiz: Quiz): Quiz {
         return quiz.reopenQuestion()
@@ -208,7 +208,7 @@ data class CurrentQuestionReopenedEvent(
 data class AnswersRevealedEvent(
     @JsonProperty("quizId") override val quizId: UUID,
     @JsonProperty("timestamp") override val timestamp: Long = Date().time,
-    @JsonProperty("sequenceNumber") override val sequenceNumber: Long = timestamp
+    @JsonProperty("sequenceNumber") override val sequenceNumber: Long
 ) : Event {
     override fun process(quiz: Quiz): Quiz {
         return quiz.revealAnswersOfCurrentQuestion()
@@ -221,7 +221,7 @@ data class AnswersRevealedEvent(
 data class QuizFinishedEvent(
     @JsonProperty("quizId") override val quizId: UUID,
     @JsonProperty("timestamp") override val timestamp: Long = Date().time,
-    @JsonProperty("sequenceNumber") override val sequenceNumber: Long = timestamp
+    @JsonProperty("sequenceNumber") override val sequenceNumber: Long
 ): Event {
     override fun process(quiz: Quiz): Quiz {
         return quiz.finishQuiz()
@@ -234,7 +234,7 @@ data class QuizFinishedEvent(
 data class QuizDeletedEvent(
     override val quizId: UUID,
     override val timestamp: Long = Date().time,
-    override val sequenceNumber: Long = timestamp
+    override val sequenceNumber: Long
 ): Event {
     override fun process(quiz: Quiz): Quiz {
         return quiz.setTimestamp(timestamp)
