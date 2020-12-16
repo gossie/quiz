@@ -17,7 +17,7 @@ const Estimation: React.FC<EstimationProps> = (props: EstimationProps) => {
 
     const pendingQuestion = props.quiz.openQuestions.find(q => q.pending);
 
-    const disabled = pendingQuestion && pendingQuestion.secondsLeft != null && pendingQuestion.secondsLeft <= 0;
+    const disabled = pendingQuestion && (pendingQuestion.revealed || (pendingQuestion.secondsLeft != null && pendingQuestion.secondsLeft <= 0));
 
     const sendEstimation = () => {
         setSendButtonCssClasses('button is-primary is-loading');

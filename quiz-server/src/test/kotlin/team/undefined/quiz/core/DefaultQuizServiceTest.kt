@@ -602,6 +602,54 @@ internal class DefaultQuizServiceTest {
                 .verifyComplete()
 
         verifyNoInteractions(eventBus);
+    }@Test
+    fun shouldPreventChoiceSelectionIfTimeIsUp() {
+        val quizId = UUID.randomUUID()
+        val questionId = UUID.randomUUID()
+        val choice1Id = UUID.randomUUID()
+        val choice2Id = UUID.randomUUID()
+        val participantId = UUID.randomUUID()
+
+        `when`(quizRepository.determineEvents(quizId))
+            .thenReturn(Flux.just(
+                QuizCreatedEvent(quizId, Quiz(quizId, "Quiz")),
+                QuestionCreatedEvent(quizId, question = Question(questionId, "Wo befindet sich das Kahnbein?", choices = listOf(Choice(choice1Id, "im Fuß"), Choice(choice2Id, "In der Hand")), initialTimeToAnswer = 5), sequenceNumber = 1),
+                ParticipantCreatedEvent(quizId, Participant(participantId, "Lena"), sequenceNumber = 2),
+                QuestionAskedEvent(quizId, questionId, sequenceNumber = 3),
+                TimeToAnswerDecreasedEvent(quizId, questionId, sequenceNumber = 25),
+                TimeToAnswerDecreasedEvent(quizId, questionId, sequenceNumber = 25),
+                TimeToAnswerDecreasedEvent(quizId, questionId, sequenceNumber = 25),
+                TimeToAnswerDecreasedEvent(quizId, questionId, sequenceNumber = 25),
+                TimeToAnswerDecreasedEvent(quizId, questionId, sequenceNumber = 25)
+            ))
+
+        val quizService = DefaultQuizService(quizRepository, UndoneEventsCache(), eventBus)
+
+        StepVerifier.create(quizService.selectChoice(SelectChoiceCommand(quizId, participantId, choice2Id)))
+            .verifyError(QuestionClosedException::class.java)
+    }
+
+    @Test
+    fun shouldPreventChoiceSelectionIfAnswersWereRevealed() {
+        val quizId = UUID.randomUUID()
+        val questionId = UUID.randomUUID()
+        val choice1Id = UUID.randomUUID()
+        val choice2Id = UUID.randomUUID()
+        val participantId = UUID.randomUUID()
+
+        `when`(quizRepository.determineEvents(quizId))
+            .thenReturn(Flux.just(
+                QuizCreatedEvent(quizId, Quiz(quizId, "Quiz")),
+                QuestionCreatedEvent(quizId, question = Question(questionId, "Wo befindet sich das Kahnbein?", choices = listOf(Choice(choice1Id, "im Fuß"), Choice(choice2Id, "In der Hand")), initialTimeToAnswer = 5), sequenceNumber = 1),
+                ParticipantCreatedEvent(quizId, Participant(participantId, "Lena"), sequenceNumber = 2),
+                QuestionAskedEvent(quizId, questionId, sequenceNumber = 3),
+                AnswersRevealedEvent(quizId, sequenceNumber = 4)
+            ))
+
+        val quizService = DefaultQuizService(quizRepository, UndoneEventsCache(), eventBus)
+
+        StepVerifier.create(quizService.selectChoice(SelectChoiceCommand(quizId, participantId, choice2Id)))
+            .verifyError(QuestionClosedException::class.java)
     }
 
     @Test
@@ -693,6 +741,52 @@ internal class DefaultQuizServiceTest {
                 .verifyComplete()
 
         verifyNoInteractions(eventBus)
+    }
+
+    @Test
+    fun shouldPreventEstimateIfTimeIsUp() {
+        val quizId = UUID.randomUUID()
+        val questionId = UUID.randomUUID()
+        val participantId = UUID.randomUUID()
+
+        `when`(quizRepository.determineEvents(quizId))
+            .thenReturn(Flux.just(
+                QuizCreatedEvent(quizId, Quiz(quizId, "Quiz")),
+                QuestionCreatedEvent(quizId, question = Question(questionId, "Warum ist die Banane krum?", estimates = HashMap(), initialTimeToAnswer = 5), sequenceNumber = 1),
+                ParticipantCreatedEvent(quizId, Participant(participantId, "Lena"), sequenceNumber = 2),
+                QuestionAskedEvent(quizId, questionId, sequenceNumber = 3),
+                TimeToAnswerDecreasedEvent(quizId, questionId, sequenceNumber = 25),
+                TimeToAnswerDecreasedEvent(quizId, questionId, sequenceNumber = 25),
+                TimeToAnswerDecreasedEvent(quizId, questionId, sequenceNumber = 25),
+                TimeToAnswerDecreasedEvent(quizId, questionId, sequenceNumber = 25),
+                TimeToAnswerDecreasedEvent(quizId, questionId, sequenceNumber = 25)
+            ))
+
+        val quizService = DefaultQuizService(quizRepository, UndoneEventsCache(), eventBus)
+
+        StepVerifier.create(quizService.estimate(EstimationCommand(quizId, participantId, "myEstimatedValue")))
+            .verifyError(QuestionClosedException::class.java)
+    }
+
+    @Test
+    fun shouldPreventEstimateIfAnswersWereRevealed() {
+        val quizId = UUID.randomUUID()
+        val questionId = UUID.randomUUID()
+        val participantId = UUID.randomUUID()
+
+        `when`(quizRepository.determineEvents(quizId))
+            .thenReturn(Flux.just(
+                QuizCreatedEvent(quizId, Quiz(quizId, "Quiz")),
+                QuestionCreatedEvent(quizId, question = Question(questionId, "Warum ist die Banane krum?", estimates = HashMap()), sequenceNumber = 1),
+                ParticipantCreatedEvent(quizId, Participant(participantId, "Lena"), sequenceNumber = 2),
+                QuestionAskedEvent(quizId, questionId, sequenceNumber = 3),
+                AnswersRevealedEvent(quizId, sequenceNumber = 4)
+            ))
+
+        val quizService = DefaultQuizService(quizRepository, UndoneEventsCache(), eventBus)
+
+        StepVerifier.create(quizService.estimate(EstimationCommand(quizId, participantId, "myEstimatedValue")))
+            .verifyError(QuestionClosedException::class.java)
     }
 
     @Test

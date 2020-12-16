@@ -213,3 +213,94 @@ test('should receive error when sending value', async () => {
     await waitFor(() => expect(() => getByTestId('error-message')).not.toThrowError());
     await waitFor(() => expect(getByTestId('error-message').textContent).toEqual('Something went wrong. Please send the data again.'));
 });
+
+test('should disable button and field because time is up', async () => {
+    const quiz: Quiz = {
+        id: '5',
+        name: "Awesome Quiz",
+        participants: [{
+            id: '4711',
+            name: 'Erik',
+            turn: false,
+            points: 12,
+            revealAllowed: true,
+            links: [
+                {
+                    rel: 'buzzer',
+                    href: '/api/participants/4711/buzzer'
+                }
+            ]
+        }],
+        openQuestions: [
+            {
+                id: '1',
+                question: 'Frage 1',
+                pending: false,
+                revealed: false,
+                links: []
+            },
+            {
+                id: '2',
+                question: 'Frage 2',
+                estimates: {},
+                pending: true,
+                revealed: false,
+                secondsLeft: 0,
+                links: []
+            }
+        ],
+        links: [{href: '/api/createQuestion', rel: 'createQuestion'}]
+    }
+    const { getByTestId } = render(<Estimation quiz={quiz} participantId="4711" />);
+
+    const estimationField = getByTestId('estimation') as HTMLInputElement;
+    const sendButton = getByTestId('send') as HTMLButtonElement;
+
+    expect(estimationField.disabled).toBeTruthy();
+    expect(sendButton.disabled).toBeTruthy();
+});
+
+test('should disable button and field because answers were revealed', async () => {
+    const quiz: Quiz = {
+        id: '5',
+        name: "Awesome Quiz",
+        participants: [{
+            id: '4711',
+            name: 'Erik',
+            turn: false,
+            points: 12,
+            revealAllowed: true,
+            links: [
+                {
+                    rel: 'buzzer',
+                    href: '/api/participants/4711/buzzer'
+                }
+            ]
+        }],
+        openQuestions: [
+            {
+                id: '1',
+                question: 'Frage 1',
+                pending: false,
+                revealed: false,
+                links: []
+            },
+            {
+                id: '2',
+                question: 'Frage 2',
+                estimates: {},
+                pending: true,
+                revealed: true,
+                links: []
+            }
+        ],
+        links: [{href: '/api/createQuestion', rel: 'createQuestion'}]
+    }
+    const { getByTestId } = render(<Estimation quiz={quiz} participantId="4711" />);
+
+    const estimationField = getByTestId('estimation') as HTMLInputElement;
+    const sendButton = getByTestId('send') as HTMLButtonElement;
+
+    expect(estimationField.disabled).toBeTruthy();
+    expect(sendButton.disabled).toBeTruthy();
+});

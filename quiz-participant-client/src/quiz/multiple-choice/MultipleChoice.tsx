@@ -12,20 +12,24 @@ const MultipleChoice: React.FC<MultipleChoiceProps> = (props: MultipleChoiceProp
 
     const [selectedIndex, setSelectedIndex] = useState(-1);
 
+    const disabled = props.question.revealed || (props.question.secondsLeft != null && props.question.secondsLeft <= 0);
+
     useEffect(() => {
         setSelectedIndex(-1);
     }, [props.question.question]);
     
     const selectChoice = (choice: Choice, index: number) => {
-        const selectHref = choice.links.find(link => link.rel === `${props.participantId}-selects-choice`).href;
-        fetch(`${process.env.REACT_APP_BASE_URL}${selectHref}`, {
-            method: 'PUT'
-        })
-        .then(() => setSelectedIndex(index));
+        if (!disabled) {
+            const selectHref = choice.links.find(link => link.rel === `${props.participantId}-selects-choice`).href;
+            fetch(`${process.env.REACT_APP_BASE_URL}${selectHref}`, {
+                method: 'PUT'
+            })
+            .then(() => setSelectedIndex(index));
+        }
     };
 
     const choices = props.question.choices.map((choice, index) => (
-        <div key={`option-${index}`} data-testid={`multiple-choice-option-${index}`} className={`clickable option ${selectedIndex === index ? 'selected' : ''}`} onClick={() => selectChoice(choice, index)}>
+        <div key={`option-${index}`} data-testid={`multiple-choice-option-${index}`} className={`clickable option ${selectedIndex === index ? 'selected' : ''} ${disabled ? 'disabled' : ''}`} onClick={() => selectChoice(choice, index)}>
             {choice.choice}
         </div>
     ));
