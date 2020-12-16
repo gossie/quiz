@@ -11,13 +11,16 @@
 }
 
 .option.selected {
-    border-radius: 0.4em;
-    border: 2px solid $link;
-    text-align: center;
-    width: 400px;
-    margin-bottom: 15px;
-    padding: 0.75em;
     background-color: $link;
+}
+
+.option.disabled {
+    border-color: #808080;
+    cursor: not-allowed;
+}
+
+.option.selected.disabled {
+    background-color: #808080;
 }
 
 .option:hover {

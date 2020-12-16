@@ -82,3 +82,114 @@ test('should select choice', async () => {
  
     getByTestId('multiple-choice-option-0').click();
 });
+
+test('should disable button and field because time is up', async () => {
+    const quiz: Quiz = {
+        id: '5',
+        name: "Awesome Quiz",
+        participants: [{
+            id: '4711',
+            name: 'Erik',
+            turn: false,
+            points: 12,
+            revealAllowed: true,
+            links: [
+                {
+                    rel: 'buzzer',
+                    href: '/api/participants/4711/buzzer'
+                }
+            ]
+        }],
+        openQuestions: [
+            {
+                id: '1',
+                question: 'Frage 1',
+                pending: false,
+                revealed: false,
+                links: []
+            },
+            {
+                id: '2',
+                question: 'Frage 2',
+                estimates: {},
+                pending: true,
+                revealed: false,
+                secondsLeft: 0,
+                choices: [
+                    {
+                        choice: 'A',
+                        links: []
+                    },
+                    {
+                        choice: 'B',
+                        links: []
+                    }
+                ],
+                links: []
+            }
+        ],
+        links: [{href: '/api/createQuestion', rel: 'createQuestion'}]
+    }
+    const { getByTestId } = render(<MultipleChoice question={quiz.openQuestions[1]}  participantId="4711" />);
+
+    const choice0 = getByTestId('multiple-choice-option-0');
+    const choice1 = getByTestId('multiple-choice-option-1');
+
+    expect(choice0.classList.contains('disabled')).toBeTruthy();
+    expect(choice1.classList.contains('disabled')).toBeTruthy();
+});
+
+test('should disable button and field because answers were revealed', async () => {
+    const quiz: Quiz = {
+        id: '5',
+        name: "Awesome Quiz",
+        participants: [{
+            id: '4711',
+            name: 'Erik',
+            turn: false,
+            points: 12,
+            revealAllowed: true,
+            links: [
+                {
+                    rel: 'buzzer',
+                    href: '/api/participants/4711/buzzer'
+                }
+            ]
+        }],
+        openQuestions: [
+            {
+                id: '1',
+                question: 'Frage 1',
+                pending: false,
+                revealed: false,
+                links: []
+            },
+            {
+                id: '2',
+                question: 'Frage 2',
+                estimates: {},
+                pending: true,
+                revealed: true,
+                choices: [
+                    {
+                        choice: 'A',
+                        links: []
+                    },
+                    {
+                        choice: 'B',
+                        links: []
+                    }
+                ],
+                links: []
+            }
+        ],
+        links: [{href: '/api/createQuestion', rel: 'createQuestion'}]
+    }
+    const { getByTestId } = render(<MultipleChoice question={quiz.openQuestions[1]} participantId="4711" />);
+
+    const choice0 = getByTestId('multiple-choice-option-0');
+    const choice1 = getByTestId('multiple-choice-option-1');
+
+    expect(choice0.classList.contains('disabled')).toBeTruthy();
+    expect(choice1.classList.contains('disabled')).toBeTruthy();
+});
