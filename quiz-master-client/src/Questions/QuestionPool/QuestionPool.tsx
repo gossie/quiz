@@ -19,7 +19,13 @@ const QuestionPool: React.FC<QuestionPoolProps> = (props: QuestionPoolProps) => 
             method: 'POST',
             body: JSON.stringify({
                 question: question.question,
-                imagePath: question.imagePath
+                correctAnswer: question.correctAnswer,
+                category: question.category,
+                timeToAnswer: question.timeToAnswer,
+                imagePath: question.imagePath,
+                publicVisible: question.publicVisible,
+                estimates: question.estimates,
+                choices: question.choices
             }),
             headers: {
                 'Content-Type': 'application/json',
