@@ -17,6 +17,7 @@
     "buttonCopy": "In die Zwischenablage kopieren",
     "secondsLeft": "{{seconds}} Sekunden noch",
     "buttonReveal": "Antworten aufdecken",
+    "hintRevealed": "Antworten aufgedeckt",
     "titleRevealNotAllowed": "{{name}} möchte nicht, dass seine Antwort gezeigt wird",
     "titleDeleteParticipant": "Teilnehmer löschen",
     "buzzerHint": "Ich habe gebuzzert!",

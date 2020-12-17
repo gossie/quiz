@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import Quiz from '../../quiz-client-shared/quiz';
 
@@ -18,6 +18,10 @@ const Estimation: React.FC<EstimationProps> = (props: EstimationProps) => {
     const pendingQuestion = props.quiz.openQuestions.find(q => q.pending);
 
     const disabled = pendingQuestion && (pendingQuestion.revealed || (pendingQuestion.secondsLeft != null && pendingQuestion.secondsLeft <= 0));
+
+    useEffect(() => {
+        setCurrentAnswer('');
+    }, [pendingQuestion.question]);
 
     const sendEstimation = () => {
         setSendButtonCssClasses('button is-primary is-loading');

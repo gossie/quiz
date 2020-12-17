@@ -17,6 +17,7 @@
     "buttonCopy": "Copy to Clipboard",
     "secondsLeft": "{{seconds}} seconds left",
     "buttonReveal": "Reveal answers",
+    "hintRevealed": "Answers revealed",
     "titleRevealNotAllowed": "{{name}} does not want the answer to be shown",
     "titleDeleteParticipant": "Delete participant",
     "buzzerHint": "I have buzzered!",

@@ -14,6 +14,12 @@ const Image: React.FC<ImageProps> = (props: ImageProps) => {
     const { t } = useTranslation();
 
     useEffect(() => {
+        setImageCssClass('question-image invisible');
+        setTimerCssClass('')
+        setTime(3);
+    }, [props.question.question]);
+
+    useEffect(() => {
         const timer = setTimeout(() => {
             if (time === 0) {
                 console.debug('render image');

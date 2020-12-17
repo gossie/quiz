@@ -23,6 +23,8 @@ const Participants: React.FC<ParticipantsProps> = (props: ParticipantsProps) => 
     const [stateAfterLastQuestion, setStateAfterLastQuestion] = useState(new Array<ParticipantState>()); 
     const [currentQuestionId, setCurrentQuestionId] = useState('');
     const [wasAPlayersTurnBefore, setWasAPlayersTurnBefore] = useState(false);
+    const [revealButtonCssClasses, setRevealButtonCssClasses] = useState('button is-link');
+    const [answersRevealed, setAnswersRevealed] = useState(false);
 
     const { t } = useTranslation();
 
@@ -60,6 +62,7 @@ const Participants: React.FC<ParticipantsProps> = (props: ParticipantsProps) => 
     useEffect(() => {
         if (isNewQuestion()) {
             updateStateAfterLastQuestion();
+            setAnswersRevealed(false);
         } 
     }, [isNewQuestion, updateStateAfterLastQuestion]);
     
@@ -86,9 +89,14 @@ const Participants: React.FC<ParticipantsProps> = (props: ParticipantsProps) => 
         )
 
     const revealAnswers = async () => {
+        setRevealButtonCssClasses('button is-link is-loading');
         const href = props.quiz.links.find(link => link.rel === 'reopenQuestion')?.href;
-        await fetch(`${process.env.REACT_APP_BASE_URL}${href}`, {
+        fetch(`${process.env.REACT_APP_BASE_URL}${href}`, {
             method: 'PATCH'
+        })
+        .finally(() => {
+            setRevealButtonCssClasses('button is-link');
+            setAnswersRevealed(true);
         });
     };
 
@@ -108,7 +116,13 @@ const Participants: React.FC<ParticipantsProps> = (props: ParticipantsProps) => 
                 { pendingQuestion && pendingQuestion.secondsLeft != null && <span data-testid="question-counter">{t('secondsLeft', { seconds: pendingQuestion.secondsLeft })}</span> }
             </div>
             <div>
-                { (pendingQuestion && pendingQuestion.estimates) && <button onClick={revealAnswers} className="button is-link">{t('buttonReveal')}</button> }
+                { (pendingQuestion && pendingQuestion.estimates) &&
+                    <div>
+                        {
+                            answersRevealed ? <span>{t('hintRevealed')}</span> : <button onClick={revealAnswers} className={revealButtonCssClasses}>{t('buttonReveal')}</button>
+                        }
+                    </div>
+                }
             </div>
         </div>
     )
