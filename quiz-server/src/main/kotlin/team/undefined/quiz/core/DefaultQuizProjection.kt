@@ -163,7 +163,7 @@ class DefaultQuizProjection(
 
     override fun observeQuiz(quizId: UUID): Flux<Quiz> {
         return observables
-            .computeIfAbsent(quizId) { Sinks.many().multicast().onBackpressureBuffer() }
+            .computeIfAbsent(quizId) { Sinks.many().replay().latest() }
             .asFlux()
     }
 
