@@ -134,7 +134,7 @@ class QuizController(private val quizService: QuizService,
     }
 
     private fun getHeartbeat(quizId: UUID): Flux<ServerSentEvent<QuizDTO>> {
-        return Flux.interval(Duration.ofSeconds(1), Duration.ofSeconds(10))
+        return Flux.interval(Duration.ofSeconds(1), Duration.ofSeconds(5))
                 .flatMap { quizProjection.determineQuiz(quizId) }
                 .flatMap { quiz ->
                     if (quiz.finished) {
