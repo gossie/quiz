@@ -116,7 +116,7 @@ fun Question.map(quizId: UUID): QuestionDTO {
 }
 
 fun Choice.map(quiz: Quiz): ChoiceDTO {
-    val choiceDTO = ChoiceDTO(this.choice)
+    val choiceDTO = ChoiceDTO(this.id, this.choice)
     quiz.participants.forEach {
         choiceDTO.add(Link.of("/api/quiz/" + quiz.id + "/participants/" + it.id + "/choices/" + this.id, "${it.id}-selects-choice"))
     }
@@ -124,7 +124,7 @@ fun Choice.map(quiz: Quiz): ChoiceDTO {
 }
 
 fun Choice.map(): ChoiceDTO {
-    return ChoiceDTO(this.choice)
+    return ChoiceDTO(this.id, this.choice)
 }
 
 fun QuestionDTO.map(questionId: UUID): Question {
