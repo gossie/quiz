@@ -262,6 +262,13 @@ test('should create multiple choice question', async () => {
     expect(choicesWrapper.querySelectorAll('.multiple-choice-option')[1].textContent).toBe('Option 2');
     expect(newChoiceField.value).toBe('');
 
+    getByTestId('edit-multiple-choice-option-1').click();
+    const editInput = getByTestId('edit-muliple-choice-option-input-1') as HTMLInputElement;
+    expect(editInput.value).toEqual('Option 2');
+    fireEvent.change(editInput, { target: { value: 'Option 2 (changed)' } });
+    getByTestId('edit-multiple-choice-option-save-1').click();
+    expect(choicesWrapper.querySelectorAll('.multiple-choice-option')[1].textContent).toBe('Option 2 (changed)');
+
     getByTestId('delete-multiple-choice-option-1').click();
 
     expect(choicesWrapper.querySelectorAll('.multiple-choice-option').length).toBe(1);

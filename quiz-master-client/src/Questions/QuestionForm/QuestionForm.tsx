@@ -5,6 +5,7 @@ import Quiz, { Question } from '../../quiz-client-shared/quiz';
 import { showError } from '../../redux/actions';
 
 import './QuestionForm.css';
+import MultipleChoices from './MultipleChoices/MultipleChoices';
 
 enum QuestionType {
     BUZZER,
@@ -35,7 +36,6 @@ const QuestionForm: React.FC<QuestionFormProps> = (props: QuestionFormProps) => 
     const [questionButtonCssClasses, setQuestionButtonCssClasses] = useState('button is-link');
     const [visibility, setVisibility] = useState(props.questionToChange ? props.questionToChange.publicVisible : false);
     const [questionType, setQuestionType] = useState(props.questionToChange?.choices != null ? QuestionType.MULTIPLE_CHOICE : props.questionToChange?.estimates != null ? QuestionType.FREETEXT : QuestionType.BUZZER);
-    const [newChoice, setNewChoice] = useState('');
     const [choices, setChoices] = useState(props.questionToChange?.choices?.map(c => c.choice) ?? []);
     const [questionIsMissing, setQuestionIsMissing] = useState(false);
 
@@ -46,10 +46,7 @@ const QuestionForm: React.FC<QuestionFormProps> = (props: QuestionFormProps) => 
         setNewQuestion(changeQuestion);
     };
 
-    const addOptionToChoices = () => {
-        setChoices(oldChoices => [...oldChoices, newChoice]);
-        setNewChoice('');
-    };
+    const addOptionToChoices = (newChoice: string) => setChoices(oldChoices => [...oldChoices, newChoice]);
 
     const deleteOptionFromChoices = (index: number) => {
         setChoices(oldChoices => {
@@ -58,6 +55,14 @@ const QuestionForm: React.FC<QuestionFormProps> = (props: QuestionFormProps) => 
             return copy
         });
     }
+
+    const editOption = (newValue: string, index: number) => {
+        setChoices(oldChoices => {
+            const copy = [...oldChoices];
+            copy[index] = newValue;
+            return copy
+        });
+    };
 
     const choiceElements = choices.map(
         (choice, index) => 
@@ -186,18 +191,7 @@ const QuestionForm: React.FC<QuestionFormProps> = (props: QuestionFormProps) => 
                 </div>
             </div>
             { questionType === QuestionType.MULTIPLE_CHOICE &&
-                <div data-testid="choices" className="field">
-                    <div className="field">
-                        <label className="label">{t('labelOption')}</label>
-                        <div className="multiple-choice-options">
-                            {choiceElements}
-                        </div>
-                        <div className="control">
-                            <input data-testid="new-choice" value={newChoice} onChange={ev => setNewChoice(ev.target.value)} onKeyUp={ev => {if (ev.keyCode === 13) addOptionToChoices()}} className="input new-multiple-choice-option" type="text" />
-                            <span data-testid="add-option" className="icon has-text-secondary clickable multiple-choice-add-option" title={t('titleAddMultipleChoiceOption')} onClick={addOptionToChoices}><i className="fas fa-plus"></i></span>
-                        </div>
-                    </div>
-                </div>
+                <MultipleChoices choices={choices} onChoiceAdd={addOptionToChoices} onChoiceEdit={editOption} onChoiceDelete={deleteOptionFromChoices}  />
             }
             <div className="field">
                 <div className="control">
