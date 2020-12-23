@@ -183,7 +183,7 @@ const QuestionForm: React.FC<QuestionFormProps> = (props: QuestionFormProps) => 
                 </div>
             </div>
             { questionType === QuestionType.MULTIPLE_CHOICE &&
-                <MultipleChoices choices={choices} onChoiceAdd={addOptionToChoices} onChoiceDelete={deleteOptionFromChoices}  />
+                <MultipleChoices choices={choices} onChoiceAdd={addOptionToChoices} onChoiceEdit={() => {}} onChoiceDelete={deleteOptionFromChoices}  />
             }
             <div className="field">
                 <div className="control">
