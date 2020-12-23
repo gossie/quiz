@@ -56,6 +56,14 @@ const QuestionForm: React.FC<QuestionFormProps> = (props: QuestionFormProps) => 
         });
     }
 
+    const editOption = (newValue: string, index: number) => {
+        setChoices(oldChoices => {
+            const copy = [...oldChoices];
+            copy[index] = newValue;
+            return copy
+        });
+    };
+
     const choiceElements = choices.map(
         (choice, index) => 
             <div className="multiple-choice-option">
@@ -183,7 +191,7 @@ const QuestionForm: React.FC<QuestionFormProps> = (props: QuestionFormProps) => 
                 </div>
             </div>
             { questionType === QuestionType.MULTIPLE_CHOICE &&
-                <MultipleChoices choices={choices} onChoiceAdd={addOptionToChoices} onChoiceEdit={() => {}} onChoiceDelete={deleteOptionFromChoices}  />
+                <MultipleChoices choices={choices} onChoiceAdd={addOptionToChoices} onChoiceEdit={editOption} onChoiceDelete={deleteOptionFromChoices}  />
             }
             <div className="field">
                 <div className="control">

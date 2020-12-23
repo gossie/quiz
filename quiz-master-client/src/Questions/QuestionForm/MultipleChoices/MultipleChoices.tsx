@@ -33,16 +33,16 @@ const MultipleChoices: React.FC<MultipleChoiceProps> = (props: MultipleChoicePro
 
     const choiceElements = props.choices.map(
         (choice, index) => 
-            <div className="multiple-choice-option">
+            <div key={`choice-wrapper-${index}`} className="multiple-choice-option">
                 { indexToEdit === index
                     ? <input data-testid={`edit-muliple-choice-option-input-${index}`} value={editedChoice} onChange={ev => setEditedChoice(ev.target.value)} onKeyUp={ev => {if (ev.keyCode === 13) edit()}} className="input new-multiple-choice-option" type="text" />
                     : <span className="text">{choice}</span>
                 }
                 { indexToEdit === index
-                    ? <span data-testid={`edit-multiple-choice-option-save-${index}`} className="icon clickable " title={t('titleEditMultipleChoiceOption')} onClick={() => edit()}><i className="fas fa-save"></i></span>
-                    : <span data-testid={`edit-multiple-choice-option-${index}`} className="icon clickable has-text-warning" title={t('titleEditMultipleChoiceOption')} onClick={() => startEdit(index)}><i className="fa fa-pencil"></i></span>
+                    ? <span key={`save-edit-${index}`} data-testid={`edit-multiple-choice-option-save-${index}`} className="icon clickable " title={t('titleEditMultipleChoiceOption')} onClick={() => edit()}><i className="fas fa-save"></i></span>
+                    : <span key={`start-edit-${index}`} data-testid={`edit-multiple-choice-option-${index}`} className="icon clickable has-text-warning" title={t('titleEditMultipleChoiceOption')} onClick={() => startEdit(index)}><i className="fa fa-pencil"></i></span>
                 }
-                <span data-testid={`delete-multiple-choice-option-${index}`} className="icon clickable has-text-danger" title={t('titleDeleteMultipleChoiceOption')} onClick={() => props.onChoiceDelete(index)}><i className="fa fa-trash"></i></span>
+                { indexToEdit !== index && <span data-testid={`delete-multiple-choice-option-${index}`} className="icon clickable has-text-danger" title={t('titleDeleteMultipleChoiceOption')} onClick={() => props.onChoiceDelete(index)}><i className="fa fa-trash"></i></span> }
             </div>
     );
 

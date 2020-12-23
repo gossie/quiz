@@ -57,6 +57,7 @@ test('should edit choice', (done) => {
 
         setTimeout(() => {
             expect(() => getByTestId('edit-multiple-choice-option-1')).not.toThrowError();
+            expect(() => getByTestId('delete-multiple-choice-option-1')).not.toThrowError();
             expect(() => getByTestId('edit-multiple-choice-option-save-1')).toThrowError();
             expect(() => getByTestId('edit-muliple-choice-option-input-1')).toThrowError();
             done();
@@ -69,6 +70,7 @@ test('should edit choice', (done) => {
 
     const editInput = getByTestId('edit-muliple-choice-option-input-1') as HTMLInputElement;
     expect(() => getByTestId('edit-multiple-choice-option-1')).toThrowError();
+    expect(() => getByTestId('delete-multiple-choice-option-1')).toThrowError();
 
     expect(editInput.value).toEqual('Option 2');
     fireEvent.change(editInput, { target: { value: 'Option 2 (changed)' } });
