@@ -20,7 +20,7 @@ function App() {
 
     const [quizId, setQuizId] = useState('');
     const [participantName, setParticipantName] = useState('');
-    const [inputInformation, setInputInformation] = useState([{label: playerNameLabel, value: ''}, {label: quizIdLabel, value: getQuizIdFromUrl()}] as Array<InputInformation>);
+    const [inputInformation, setInputInformation] = useState([{label: playerNameLabel, value: '', focus: true}, {label: quizIdLabel, value: getQuizIdFromUrl()}] as Array<InputInformation>);
     const [errorMessage, setErrorMessage] = useState('');
 
     const setQuizIDInURL = (quizId) => {

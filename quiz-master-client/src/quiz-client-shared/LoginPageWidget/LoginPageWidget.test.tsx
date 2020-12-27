@@ -1,9 +1,6 @@
 import React from 'react';
-import { render, fireEvent, waitFor, cleanup } from '@testing-library/react';
+import { render, fireEvent, waitFor } from '@testing-library/react';
 import LoginPageWidget from './LoginPageWidget';
-
-beforeEach(() => () => cleanup()); 
-afterEach(() => cleanup());
 
 test('should submit on submit button click', (done) => {
     const submitFunction = (value: string) => new Promise<void>(async (resolve) => {
@@ -13,7 +10,7 @@ test('should submit on submit button click', (done) => {
         await waitFor(() => expect(getByTestId('submit-button').classList.contains('is-loading')).toBeFalsy());
         done();
     });
-    const { getByTestId } = render(<LoginPageWidget onSubmit={submitFunction} title="Login" inputLabels={['Login']} buttonLabel="Login" />);
+    const { getByTestId } = render(<LoginPageWidget onSubmit={submitFunction} title="Login" inputInformation={[{label: 'Login'}]} buttonLabel="Login" />);
 
     const inputField = getByTestId('field-0') as HTMLInputElement;
     const submitButton = getByTestId('submit-button') as HTMLButtonElement;
@@ -33,7 +30,7 @@ test('should submit on enter', (done) => {
         await waitFor(() => expect(getByTestId('submit-button').classList.contains('is-loading')).toBeFalsy());
         done();
     });
-    const { getByTestId } = render(<LoginPageWidget onSubmit={submitFunction} title="Login" inputLabels={['Login']} buttonLabel="Login" />);
+    const { getByTestId } = render(<LoginPageWidget onSubmit={submitFunction} title="Login" inputInformation={[{label: 'Login'}]} buttonLabel="Login" />);
 
     const inputField = getByTestId('field-0') as HTMLInputElement;
 

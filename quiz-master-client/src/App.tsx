@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import './App.scss';
 import QuizMaster from './QuizMaster';
-import LoginPageWidget from './quiz-client-shared/LoginPageWidget/LoginPageWidget' 
+import LoginPageWidget, { InputInformation } from './quiz-client-shared/LoginPageWidget/LoginPageWidget' 
 import AppHeader from './quiz-client-shared/AppHeader/AppHeader';
 import { useTranslation } from "react-i18next";
 
@@ -18,6 +18,9 @@ function App() {
         const id = query.get('quiz_id')
         return id;
     };
+
+    const [joinInputInformation, setJoinInputInformation] = useState([{label: quizIdLabel, value: getQuizIdFromUrl(), focus: true}] as Array<InputInformation>);
+    const [createInputInformation, setCreateInputInformation] = useState([{label: quizNameLabel, value: ''}] as Array<InputInformation>);
 
     const setQuizIDInURL = (quizId) => {
         if(window.history && window.history.pushState) {
@@ -51,6 +54,7 @@ function App() {
         setQuizIDInURL(value[quizIdLabel]);
         return Promise.resolve(setQuizId(value[quizIdLabel]));
     }
+    
 
     return (
         <div className="App">
@@ -61,8 +65,8 @@ function App() {
                     <QuizMaster quizId={quizId}></QuizMaster>
                     :
                         <div className="container Login-page">
-                            <LoginPageWidget title={t('headlineCreate')} inputLabels={[quizNameLabel]} buttonLabel={t('buttonStart')} onSubmit={startQuiz}></LoginPageWidget>
-                            <LoginPageWidget title={t('headlineOpen')} inputValues={{[quizIdLabel]: getQuizIdFromUrl()}} inputLabels={[quizIdLabel]} buttonLabel={t('buttonJoin')} onSubmit={joinQuiz}></LoginPageWidget>
+                            <LoginPageWidget title={t('headlineCreate')} inputInformation={createInputInformation} buttonLabel={t('buttonStart')} onSubmit={startQuiz}></LoginPageWidget>
+                            <LoginPageWidget title={t('headlineOpen')} inputInformation={joinInputInformation} onSubmit={joinQuiz} buttonLabel={t('buttonJoin')} ></LoginPageWidget>
                         </div>
                 }
             </div>

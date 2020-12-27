@@ -5,6 +5,7 @@ export interface InputInformation {
     label: string;
     value?: string;
     cssClass?: string;
+    focus: boolean;
 }
 
 interface JoinWidgetProps {
@@ -38,6 +39,7 @@ const LoginPageWidget: React.FC<JoinWidgetProps> = (props: JoinWidgetProps) => {
             <input data-testid={'field-' + index}
                    className={`input ${ii.cssClass}`}
                    type="text"
+                   autoFocus={ii.focus ? true : null}
                    placeholder={ii.label}
                    value={inputValues[ii.label]}
                    onChange={(ev) => setInputValues({...inputValues, ...{[ii.label]: ev.target.value}})}
