@@ -4,6 +4,7 @@ import FlipMove from "react-flip-move"
 
 import './Participants.css';
 import ParticipantItem from './ParticipantItem';
+import Countdown from '../Countdown/Countdown';
 import InviteButton from '../../InviteButton/InviteButton';
 import { useTranslation } from 'react-i18next';
 
@@ -112,9 +113,9 @@ const Participants: React.FC<ParticipantsProps> = (props: ParticipantsProps) => 
                     {elements}
                 </FlipMove>     
             </div>
-            <div>
-                { pendingQuestion && pendingQuestion.secondsLeft != null && <span data-testid="question-counter">{t('secondsLeft', { seconds: pendingQuestion.secondsLeft })}</span> }
-            </div>
+            { pendingQuestion && pendingQuestion.secondsLeft != null && 
+                <Countdown question={pendingQuestion}></Countdown>
+            }
             <div>
                 { (pendingQuestion && pendingQuestion.estimates) &&
                     <div>
