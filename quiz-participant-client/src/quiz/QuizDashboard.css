@@ -5,3 +5,7 @@
 .checkbox input {
     margin-right: 5px;
 }
+
+.has-margin-top {
+    margin-top: 40px;
+}
