@@ -19,10 +19,11 @@ export interface Choice {
 
 export interface Question {
     id: string;
-    question: string;
+    question: string
     imagePath?: string;
     estimates?: object,
     choices?: Array<Choice>;
+    timeToAnswer?: number;
     secondsLeft?: number;
     pending: boolean;
     revealed: boolean;
