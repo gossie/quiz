@@ -5,6 +5,7 @@ import Buzzer from './buzzer/Buzzer';
 import Estimation from './estimation/Estimation';
 import MultipleChoice from './multiple-choice/MultipleChoice';
 import Image from './Image';
+import Countdown from '../quiz-client-shared/Countdown/Countdown';
 import { useTranslation } from 'react-i18next';
 
 interface QuestionProps {
@@ -34,7 +35,9 @@ const Question: React.FC<QuestionProps> = (props: QuestionProps) => {
             { pendingQuestion &&
                 <div>
                     <div data-testid="current-question" className="current-question">{pendingQuestion.question}</div>
-                    { pendingQuestion.secondsLeft != null && <div data-testid="question-counter" className="question-counter">{t('secondsLeft', { seconds: pendingQuestion.secondsLeft })}</div> }
+                    { pendingQuestion.secondsLeft != null &&
+                        <Countdown question={pendingQuestion}></Countdown>
+                    }
                     { questionInteraction() }
                     { hasImage && <Image question={pendingQuestion} /> }
                 </div>

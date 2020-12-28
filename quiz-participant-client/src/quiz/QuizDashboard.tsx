@@ -94,8 +94,10 @@ const QuizDashboard: React.FC<QuizDashboardProps> = (props: QuizDashboardProps) 
                 <div>
                     <h4 className="title is-4">{quiz.name}</h4>
                     <div className="columns Dashboard-content">
-                        <div className="column participants box">
-                            <div className="field">
+                        <div className="column participants box">   
+                            <Participants quiz={quiz}></Participants>
+                            <QuizStatistics quiz={quiz} closeable={false}></QuizStatistics>
+                            <div className="field has-margin-top">
                                 <div className="control">
                                     <label className="checkbox">
                                         <input type="checkbox" checked={revealAllowed} onChange={ev => toggleRevealAllowed(ev.target.checked)} />
@@ -103,11 +105,9 @@ const QuizDashboard: React.FC<QuizDashboardProps> = (props: QuizDashboardProps) 
                                     </label>
                                 </div>
                             </div>
-                            <Participants quiz={quiz}></Participants>
-                            <QuizStatistics quiz={quiz} closeable={false}></QuizStatistics>
                         </div>
                         <div className="column question box">
-                            <h5 className="title is-5">{t('headlineCurrentQuestion')}</h5>
+                            <h4 className="title is-4">{t('headlineCurrentQuestion')}</h4>
                             {<Question quiz={quiz} participantId={participantId}></Question>}
                         </div>
                     </div>
