@@ -17,7 +17,7 @@ jest.mock('react-i18next', () => ({
 }));
 
 test('should render choices', () => {
-    const { getByTestId } = render(<MultipleChoices choices={['Option 1', 'Option 2', 'Option 3']} onChoiceAdd={() => {}} onChoiceEdit={() => {}} onChoiceDelete={() => {}} />)
+    const { getByTestId } = render(<MultipleChoices choices={['Option 1', 'Option 2', 'Option 3']} onOptionChange={() =>{}} onChoiceAdd={() => {}} onChoiceEdit={() => {}} onChoiceDelete={() => {}} />)
     expect(getByTestId('choices').querySelectorAll('.multiple-choice-option').length).toBe(3);
 });
 
@@ -28,7 +28,7 @@ test('should add choice', (done) => {
         done();
     }
 
-    const { getByTestId } = render(<MultipleChoices choices={[]} onChoiceAdd={choiceAdded} onChoiceEdit={() => {}} onChoiceDelete={() => {}} />)
+    const { getByTestId } = render(<MultipleChoices choices={[]} onOptionChange={() =>{}} onChoiceAdd={choiceAdded} onChoiceEdit={() => {}} onChoiceDelete={() => {}} />)
 
     const newChoiceField = getByTestId('new-choice') as HTMLInputElement;
     const addOption = getByTestId('add-option');
@@ -44,7 +44,7 @@ test('should delete choice', (done) => {
         done();
     }
 
-    const { getByTestId } = render(<MultipleChoices choices={['Option 1', 'Option 2', 'Option 3']} onChoiceAdd={() => {}} onChoiceEdit={() => {}} onChoiceDelete={choiceDeleted} />)
+    const { getByTestId } = render(<MultipleChoices choices={['Option 1', 'Option 2', 'Option 3']} onOptionChange={() =>{}} onChoiceAdd={() => {}} onChoiceEdit={() => {}} onChoiceDelete={choiceDeleted} />)
 
     getByTestId('delete-multiple-choice-option-1').click();
 });
@@ -64,7 +64,7 @@ test('should edit choice', (done) => {
         });
     }
 
-    const { getByTestId } = render(<MultipleChoices choices={['Option 1', 'Option 2', 'Option 3']} onChoiceAdd={() => {}} onChoiceEdit={onEdit} onChoiceDelete={() => {}} />)
+    const { getByTestId } = render(<MultipleChoices choices={['Option 1', 'Option 2', 'Option 3']} onOptionChange={() =>{}} onChoiceAdd={() => {}} onChoiceEdit={onEdit} onChoiceDelete={() => {}} />)
 
     getByTestId('edit-multiple-choice-option-1').click();
 
