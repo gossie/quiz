@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next';
 
 interface MultipleChoiceProps {
     choices: Array<string>;
+    onOptionChange: (option: string) => void;
     onChoiceAdd: (newChoice: string) => void;
     onChoiceEdit: (editedChoide: string, index: number) => void;
     onChoiceDelete: (index: number) => void;
@@ -15,7 +16,13 @@ const MultipleChoices: React.FC<MultipleChoiceProps> = (props: MultipleChoicePro
 
     const { t } = useTranslation();
 
+    const optionChanged = (option: string) => {
+        props.onOptionChange(option);
+        setNewChoice(option);
+    }
+
     const addChoice = () => {
+        props.onOptionChange('')
         props.onChoiceAdd(newChoice);
         setNewChoice('');
     }
@@ -54,7 +61,7 @@ const MultipleChoices: React.FC<MultipleChoiceProps> = (props: MultipleChoicePro
                     {choiceElements}
                 </div>
                 <div className="control">
-                    <input data-testid="new-choice" value={newChoice} onChange={ev => setNewChoice(ev.target.value)} onKeyUp={ev => {if (ev.keyCode === 13) addChoice()}} className="input new-multiple-choice-option" type="text" />
+                    <input data-testid="new-choice" value={newChoice} onChange={ev => optionChanged(ev.target.value)} onKeyUp={ev => {if (ev.keyCode === 13) addChoice()}} className="input new-multiple-choice-option" type="text" />
                     <span data-testid="add-option" className="icon has-text-secondary clickable multiple-choice-add-option" title={t('titleAddMultipleChoiceOption')} onClick={addChoice}><i className="fas fa-plus"></i></span>
                 </div>
             </div>

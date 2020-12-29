@@ -292,6 +292,97 @@ test('should create multiple choice question', async () => {
 
 });
 
+test('should create multiple choice question with last choice still in the input field', async () => {
+    jest.spyOn(global, 'fetch').mockImplementation((url: string, request: object) => {
+        expect(url).toEqual('http://localhost:5000/api/createQuestion');
+        expect(request).toEqual({
+            method: 'POST',
+            body: JSON.stringify({
+                question: 'Frage 3',
+                category: 'science',
+                timeToAnswer: 30,
+                publicVisible: false,
+                estimates: {},
+                choices: [{choice: 'Option 1'},{choice: 'Option 2'}]
+            }),
+            headers: {
+                'Content-Type': 'application/json',
+                Accept: 'application/json'
+            }
+        });
+        return Promise.resolve({status: 201});
+    });
+
+    const quiz: Quiz = {
+        id: '5',
+        name: "Awesome Quiz",
+        participants: [],
+        playedQuestions: [],
+        openQuestions: [
+            {
+                id: '1',
+                question: 'Frage 1',
+                category: 'other',
+                publicVisible: false,
+                pending: false,
+                links: [],
+                previousQuestionId: null,
+            },
+            {
+                id: '2',
+                question: 'Frage 2',
+                category: 'other',
+                publicVisible: false,
+                pending: true,
+                links: [],
+                previousQuestionId: '1'
+            }
+        ],
+        expirationDate: 1234,
+        timestamp: 12345678,
+        links: [{href: '/api/createQuestion', rel: 'createQuestion'}]
+    }
+    const { getByTestId } = render(<QuestionForm quiz={quiz} />);
+    const questionButton = getByTestId('create-question-button');
+    const questionField = getByTestId('new-question')  as HTMLInputElement;
+    const categoryField = getByTestId('category')  as HTMLSelectElement;
+    const timeToAnswerField = getByTestId('time-to-answer')  as HTMLInputElement;
+    const imagePathField = getByTestId('image-path')  as HTMLInputElement;
+    const multipleChoiceField = getByTestId('type-multiple-choice')  as HTMLInputElement;
+
+    fireEvent.change(questionField, { target: { value: 'Frage 3' } });
+    fireEvent.change(categoryField, { target: { value: 'science' } });
+    fireEvent.change(timeToAnswerField, { target: { value: '30' } });
+
+    expect(() => getByTestId('choices')).toThrowError();
+    multipleChoiceField.click();
+
+    const choicesWrapper = getByTestId('choices') as HTMLDivElement;
+    const newChoiceField = getByTestId('new-choice') as HTMLInputElement;
+    const addOption = getByTestId('add-option');
+
+    fireEvent.change(newChoiceField, { target: { value: 'Option 1' } });
+    addOption.click();
+
+    expect(choicesWrapper.querySelectorAll('.multiple-choice-option').length).toBe(1);
+    expect(choicesWrapper.querySelectorAll('.multiple-choice-option')[0].textContent).toBe('Option 1');
+    expect(newChoiceField.value).toBe('');
+
+    fireEvent.change(newChoiceField, { target: { value: 'Option 2' } });
+    expect(newChoiceField.value).toBe('Option 2');
+
+    questionButton.click();
+
+    await waitFor(() =>{
+        expect(questionField.value).toBe('');
+        expect(categoryField.value).toBe('other');
+        expect(imagePathField.value).toBe('');
+        expect(timeToAnswerField.value).toBe('');
+        expect(choicesWrapper.querySelectorAll('.multiple-choice-option').length).toBe(0); 
+    });
+
+});
+
 test('should edit multiple choice question', async () => {
     jest.spyOn(global, 'fetch').mockImplementation((url: string, request: object) => {
         console.log('bin da');

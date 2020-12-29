@@ -38,6 +38,7 @@ const QuestionForm: React.FC<QuestionFormProps> = (props: QuestionFormProps) => 
     const [questionType, setQuestionType] = useState(props.questionToChange?.choices != null ? QuestionType.MULTIPLE_CHOICE : props.questionToChange?.estimates != null ? QuestionType.FREETEXT : QuestionType.BUZZER);
     const [choices, setChoices] = useState(props.questionToChange?.choices?.map(c => c.choice) ?? []);
     const [questionIsMissing, setQuestionIsMissing] = useState(false);
+    const [pendingOption, setPendingOption] = useState('');
 
     const { t } = useTranslation();
 
@@ -86,6 +87,14 @@ const QuestionForm: React.FC<QuestionFormProps> = (props: QuestionFormProps) => 
                 method = 'POST';
             }
 
+            let choicesToSend = undefined;
+            if (questionType === QuestionType.MULTIPLE_CHOICE) {
+                choicesToSend = choices.map(c => ({ choice: c }));
+                if (pendingOption.length > 0) {
+                    choicesToSend.push({ choice: pendingOption });
+                }
+            }
+
             fetch(`${process.env.REACT_APP_BASE_URL}${questionLink}`, {
                 method: method,
                 body: JSON.stringify({
@@ -96,7 +105,7 @@ const QuestionForm: React.FC<QuestionFormProps> = (props: QuestionFormProps) => 
                     imagePath: imagePath,
                     publicVisible: visibility,
                     estimates: questionType === QuestionType.FREETEXT || questionType === QuestionType.MULTIPLE_CHOICE ? {} : undefined,
-                    choices: questionType === QuestionType.MULTIPLE_CHOICE ? choices.map(c => ({ choice: c })) : undefined,
+                    choices: choicesToSend,
                     previousQuestionId: props.questionToChange?.previousQuestionId
                 }),
                 headers: {
@@ -191,7 +200,7 @@ const QuestionForm: React.FC<QuestionFormProps> = (props: QuestionFormProps) => 
                 </div>
             </div>
             { questionType === QuestionType.MULTIPLE_CHOICE &&
-                <MultipleChoices choices={choices} onChoiceAdd={addOptionToChoices} onChoiceEdit={editOption} onChoiceDelete={deleteOptionFromChoices}  />
+                <MultipleChoices choices={choices} onOptionChange={setPendingOption} onChoiceAdd={addOptionToChoices} onChoiceEdit={editOption} onChoiceDelete={deleteOptionFromChoices}  />
             }
             <div className="field">
                 <div className="control">
