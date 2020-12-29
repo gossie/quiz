@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 interface MultipleChoiceProps {
@@ -15,6 +15,10 @@ const MultipleChoices: React.FC<MultipleChoiceProps> = (props: MultipleChoicePro
     const [indexToEdit, setIndexToEdit] = useState(-1);
 
     const { t } = useTranslation();
+
+    useEffect(() => {
+        setNewChoice('');
+    }, []);
 
     const optionChanged = (option: string) => {
         props.onOptionChange(option);
