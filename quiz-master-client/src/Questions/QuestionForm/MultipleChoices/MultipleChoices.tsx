@@ -17,8 +17,8 @@ const MultipleChoices: React.FC<MultipleChoiceProps> = (props: MultipleChoicePro
     const { t } = useTranslation();
 
     useEffect(() => {
-        setNewChoice('');
-    }, []);
+        setTimeout(() => setNewChoice(''));
+    }, [props.choices]);
 
     const optionChanged = (option: string) => {
         props.onOptionChange(option);
