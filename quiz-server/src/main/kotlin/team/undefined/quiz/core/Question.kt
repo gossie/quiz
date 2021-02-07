@@ -16,7 +16,8 @@ data class Question(
         val previousQuestionId: UUID? = null,
         val choices: List<Choice>? = null,
         val estimates: Map<UUID, String>? = if(choices != null) { HashMap() } else { null },
-        val correctAnswer: String? = null
+        val correctAnswer: String? = null,
+        val points: Int = 2
 ) {
 
     enum class QuestionVisibility(private val b: Boolean) {
@@ -51,7 +52,8 @@ data class Question(
             previousQuestionId,
             choices,
             newEstimates,
-            correctAnswer
+            correctAnswer,
+            points
         )
     }
 
@@ -70,7 +72,8 @@ data class Question(
             previousQuestionId,
             choices,
             estimates,
-            correctAnswer
+            correctAnswer,
+            points
         )
     }
 
@@ -89,7 +92,8 @@ data class Question(
             prevId,
             choices,
             estimates,
-            correctAnswer
+            correctAnswer,
+            points
         )
     }
 
@@ -108,7 +112,8 @@ data class Question(
             previousQuestionId,
             choices,
             estimates,
-            correctAnswer
+            correctAnswer,
+            points
         )
     }
 
@@ -127,7 +132,8 @@ data class Question(
             previousQuestionId,
             choices,
             estimates,
-            correctAnswer
+            correctAnswer,
+            points
         )
     }
 
@@ -146,7 +152,8 @@ data class Question(
             previousQuestionId,
             choices,
             estimates,
-            correctAnswer
+            correctAnswer,
+            points
         )
     }
 
@@ -165,7 +172,8 @@ data class Question(
             previousQuestionId,
             choices,
             estimates,
-            correctAnswer
+            correctAnswer,
+            points
         )
     }
 
@@ -184,7 +192,8 @@ data class Question(
             previousQuestionId,
             choices,
             estimates,
-            correctAnswer
+            correctAnswer,
+            points
         )
     }
 
