@@ -16,5 +16,6 @@ data class QuestionDTO(
         var revealed: Boolean = false,
         var previousQuestionId: UUID? = null,
         var choices: List<ChoiceDTO>? = null,
-        var correctAnswer: String? = null
+        var correctAnswer: String? = null,
+        var points: Long? = null
 ) : RepresentationModel<QuestionDTO>()

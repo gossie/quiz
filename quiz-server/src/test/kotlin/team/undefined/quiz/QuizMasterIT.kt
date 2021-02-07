@@ -95,7 +95,7 @@ internal class QuizMasterIT {
                 .post()
                 .uri(quizMasterReference.get().getLink("createQuestion").map { it.href }.orElseThrow())
                 .contentType(MediaType.APPLICATION_JSON)
-                .body(BodyInserters.fromValue(QuestionDTO(question = "Wo befindet sich das Kahnbein", choices = listOf(ChoiceDTO(choice = "Im Fuß"), ChoiceDTO(choice = "In der Hand")), estimates = HashMap())))
+                .body(BodyInserters.fromValue(QuestionDTO(question = "Wo befindet sich das Kahnbein", choices = listOf(ChoiceDTO(choice = "Im Fuß"), ChoiceDTO(choice = "In der Hand")), estimates = HashMap(), points = 4)))
                 .exchange()
                 .expectStatus().isCreated
 
@@ -128,7 +128,7 @@ internal class QuizMasterIT {
                 .put()
                 .uri(quizMasterReference.get().openQuestions[1].getLink("self").map { it.href }.orElseThrow())
                 .contentType(MediaType.APPLICATION_JSON)
-                .body(BodyInserters.fromValue(QuestionDTO(question = "Wo befindet sich das Kahnbein?", choices = listOf(ChoiceDTO(choice = "Im Fuß"), ChoiceDTO(choice = "In der Hand")), estimates = HashMap(), previousQuestionId = quizMasterReference.get().openQuestions[0].id)))
+                .body(BodyInserters.fromValue(QuestionDTO(question = "Wo befindet sich das Kahnbein?", choices = listOf(ChoiceDTO(choice = "Im Fuß"), ChoiceDTO(choice = "In der Hand")), estimates = HashMap(), points = 4, previousQuestionId = quizMasterReference.get().openQuestions[0].id)))
                 .exchange()
                 .expectStatus().isOk
 
@@ -860,7 +860,7 @@ internal class QuizMasterIT {
                 }
                 .particpantSizeIs(2)
                 .hasParticipant(0) { it.hasName("André").hasPoints(0).allowsReveal().isNotTurn }
-                .hasParticipant(1) { it.hasName("Lena").hasPoints(4).allowsReveal().isNotTurn }
+                .hasParticipant(1) { it.hasName("Lena").hasPoints(6).allowsReveal().isNotTurn }
                 .undoIsPossible()
                 .redoIsNotPossible()
                 .isNotFinished
@@ -902,7 +902,7 @@ internal class QuizMasterIT {
                 }
                 .particpantSizeIs(2)
                 .hasParticipant(0) { it.hasName("André").hasPoints(0).allowsReveal().isNotTurn }
-                .hasParticipant(1) { it.hasName("Lena").hasPoints(4).allowsReveal().isNotTurn }
+                .hasParticipant(1) { it.hasName("Lena").hasPoints(6).allowsReveal().isNotTurn }
                 .undoIsPossible()
                 .redoIsNotPossible()
                 .isNotFinished
@@ -942,7 +942,7 @@ internal class QuizMasterIT {
                 }
                 .particpantSizeIs(2)
                 .hasParticipant(0) { it.hasName("André").hasPoints(0).allowsReveal().isNotTurn }
-                .hasParticipant(1) { it.hasName("Lena").hasPoints(4).allowsReveal().isNotTurn }
+                .hasParticipant(1) { it.hasName("Lena").hasPoints(6).allowsReveal().isNotTurn }
                 .undoIsPossible()
                 .redoIsNotPossible()
                 .isNotFinished
@@ -985,7 +985,7 @@ internal class QuizMasterIT {
                 }
                 .particpantSizeIs(2)
                 .hasParticipant(0) { it.hasName("André").hasPoints(0).allowsReveal().isNotTurn }
-                .hasParticipant(1) { it.hasName("Lena").hasPoints(4).allowsReveal().isNotTurn }
+                .hasParticipant(1) { it.hasName("Lena").hasPoints(6).allowsReveal().isNotTurn }
                 .undoIsPossible()
                 .redoIsNotPossible()
                 .isNotFinished
@@ -1026,7 +1026,7 @@ internal class QuizMasterIT {
                 }
                 .particpantSizeIs(2)
                 .hasParticipant(0) { it.hasName("André").hasPoints(0).allowsReveal().isNotTurn }
-                .hasParticipant(1) { it.hasName("Lena").hasPoints(4).doesNotAllowReveal().isNotTurn }
+                .hasParticipant(1) { it.hasName("Lena").hasPoints(6).doesNotAllowReveal().isNotTurn }
                 .undoIsPossible()
                 .redoIsNotPossible()
                 .isNotFinished
@@ -1072,7 +1072,7 @@ internal class QuizMasterIT {
                 }
                 .particpantSizeIs(2)
                 .hasParticipant(0) { it.hasName("André").hasPoints(0).allowsReveal().isNotTurn }
-                .hasParticipant(1) { it.hasName("Lena").hasPoints(4).doesNotAllowReveal().isNotTurn }
+                .hasParticipant(1) { it.hasName("Lena").hasPoints(6).doesNotAllowReveal().isNotTurn }
                 .undoIsPossible()
                 .redoIsNotPossible()
                 .isNotFinished
@@ -1116,7 +1116,7 @@ internal class QuizMasterIT {
                 }
                 .particpantSizeIs(2)
                 .hasParticipant(0) { it.hasName("André").hasPoints(0).allowsReveal().isNotTurn }
-                .hasParticipant(1) { it.hasName("Lena").hasPoints(4).doesNotAllowReveal().isNotTurn }
+                .hasParticipant(1) { it.hasName("Lena").hasPoints(6).doesNotAllowReveal().isNotTurn }
                 .undoIsPossible()
                 .redoIsNotPossible()
                 .isNotFinished
@@ -1162,7 +1162,7 @@ internal class QuizMasterIT {
                 }
                 .particpantSizeIs(2)
                 .hasParticipant(0) { it.hasName("André").hasPoints(2).allowsReveal().isNotTurn }
-                .hasParticipant(1) { it.hasName("Lena").hasPoints(4).doesNotAllowReveal().isNotTurn }
+                .hasParticipant(1) { it.hasName("Lena").hasPoints(6).doesNotAllowReveal().isNotTurn }
                 .undoIsPossible()
                 .redoIsNotPossible()
                 .isNotFinished
@@ -1202,7 +1202,7 @@ internal class QuizMasterIT {
                             .hasChoice(1) { choice -> choice.hasChoice("In der Hand") }
                 }
                 .particpantSizeIs(1)
-                .hasParticipant(0) { it.hasName("Lena").hasPoints(4).doesNotAllowReveal().isNotTurn }
+                .hasParticipant(0) { it.hasName("Lena").hasPoints(6).doesNotAllowReveal().isNotTurn }
                 .undoIsPossible()
                 .redoIsNotPossible()
                 .isNotFinished
@@ -1246,7 +1246,7 @@ internal class QuizMasterIT {
                 }
                 .particpantSizeIs(2)
                 .hasParticipant(0) { it.hasName("André").hasPoints(2).allowsReveal().isNotTurn }
-                .hasParticipant(1) { it.hasName("Lena").hasPoints(4).doesNotAllowReveal().isNotTurn }
+                .hasParticipant(1) { it.hasName("Lena").hasPoints(6).doesNotAllowReveal().isNotTurn }
                 .undoIsPossible()
                 .redoIsPossible()
                 .isNotFinished
@@ -1286,7 +1286,7 @@ internal class QuizMasterIT {
                             .hasChoice(1) { choice -> choice.hasChoice("In der Hand") }
                 }
                 .particpantSizeIs(1)
-                .hasParticipant(0) { it.hasName("Lena").hasPoints(4).doesNotAllowReveal().isNotTurn }
+                .hasParticipant(0) { it.hasName("Lena").hasPoints(6).doesNotAllowReveal().isNotTurn }
                 .undoIsPossible()
                 .redoIsNotPossible()
                 .isNotFinished
@@ -1328,7 +1328,7 @@ internal class QuizMasterIT {
                 }
                 .particpantSizeIs(2)
                 .hasParticipant(0) { it.hasName("André").hasPoints(2).allowsReveal().isNotTurn }
-                .hasParticipant(1) { it.hasName("Lena").hasPoints(4).doesNotAllowReveal().isNotTurn }
+                .hasParticipant(1) { it.hasName("Lena").hasPoints(6).doesNotAllowReveal().isNotTurn }
                 .undoIsPossible()
                 .redoIsPossible()
                 .isNotFinished
@@ -1373,7 +1373,7 @@ internal class QuizMasterIT {
                 }
                 .particpantSizeIs(2)
                 .hasParticipant(0) { it.hasName("André").hasPoints(2).allowsReveal().isNotTurn }
-                .hasParticipant(1) { it.hasName("Lena").hasPoints(4).doesNotAllowReveal().isNotTurn }
+                .hasParticipant(1) { it.hasName("Lena").hasPoints(6).doesNotAllowReveal().isNotTurn }
                 .undoIsPossible()
                 .redoIsNotPossible()
                 .hasQuizStatistics() { quizStatistics ->

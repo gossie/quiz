@@ -17,7 +17,7 @@ data class Question(
         val choices: List<Choice>? = null,
         val estimates: Map<UUID, String>? = if(choices != null) { HashMap() } else { null },
         val correctAnswer: String? = null,
-        val points: Int = 2
+        val points: Long? = null
 ) {
 
     enum class QuestionVisibility(private val b: Boolean) {

@@ -12,7 +12,8 @@ data class Quiz(
     val timestamp: Long = Date().time,
     val sequenceNumber: Long = 0,
     val undoPossible: Boolean = false,
-    val redoPossible: Boolean = false
+    val redoPossible: Boolean = false,
+    val points: Long = 2
 ) {
 
     val pendingQuestion: Question?
@@ -32,7 +33,7 @@ data class Quiz(
             }
         }
 
-        return Quiz(id, name, participants, newQuestions, finished, timestamp, sequenceNumber, undoPossible)
+        return Quiz(id, name, participants, newQuestions, finished, timestamp, sequenceNumber, undoPossible, redoPossible, points)
     }
 
     fun select(participantId: UUID): Quiz {
@@ -53,7 +54,8 @@ data class Quiz(
             timestamp,
             sequenceNumber,
             undoPossible,
-            redoPossible
+            redoPossible,
+            points
         )
     }
 
@@ -87,7 +89,8 @@ data class Quiz(
             timestamp,
             sequenceNumber,
             undoPossible,
-            redoPossible
+            redoPossible,
+            points
         )
     }
 
@@ -116,7 +119,8 @@ data class Quiz(
             timestamp,
             sequenceNumber,
             undoPossible,
-            redoPossible
+            redoPossible,
+            points
         )
     }
 
@@ -134,7 +138,8 @@ data class Quiz(
             timestamp,
             sequenceNumber,
             undoPossible,
-            redoPossible
+            redoPossible,
+            points
         )
     }
 
@@ -148,7 +153,7 @@ data class Quiz(
         val newQuestions = ArrayList(questions)
         newQuestions.add(question.setPreviousQuestionId(prevId))
 
-        return Quiz(id, name, participants, newQuestions, finished, timestamp, sequenceNumber, undoPossible)
+        return Quiz(id, name, participants, newQuestions, finished, timestamp, sequenceNumber, undoPossible, redoPossible, points)
     }
 
     fun editQuestion(question: Question): Quiz {
@@ -175,7 +180,8 @@ data class Quiz(
             timestamp,
             sequenceNumber,
             undoPossible,
-            redoPossible
+            redoPossible,
+            points
         )
     }
 
@@ -190,7 +196,8 @@ data class Quiz(
             timestamp,
             sequenceNumber,
             undoPossible,
-            redoPossible
+            redoPossible,
+            points
         )
     }
 
@@ -216,7 +223,8 @@ data class Quiz(
             timestamp,
             sequenceNumber,
             undoPossible,
-            redoPossible
+            redoPossible,
+            points
         )
     }
 
@@ -266,7 +274,7 @@ data class Quiz(
         val newParticipants = participants
             .map {
                 if (checkParticipant(it, participantId)) {
-                    Participant(it.id, it.name, it.turn, it.points + 2, it.revealAllowed)
+                    Participant(it.id, it.name, it.turn, it.points + (questions.find { it.pending }?.points ?: points), it.revealAllowed)
                 } else {
                     it
                 }
@@ -280,7 +288,8 @@ data class Quiz(
             timestamp,
             sequenceNumber,
             undoPossible,
-            redoPossible
+            redoPossible,
+            points
         )
     }
 
@@ -302,7 +311,8 @@ data class Quiz(
             timestamp,
             sequenceNumber,
             undoPossible,
-            redoPossible
+            redoPossible,
+            points
         )
     }
 
@@ -325,7 +335,8 @@ data class Quiz(
             timestamp,
             sequenceNumber,
             undoPossible,
-            redoPossible
+            redoPossible,
+            points
         )
     }
 
@@ -347,28 +358,29 @@ data class Quiz(
             timestamp,
             sequenceNumber,
             undoPossible,
-            redoPossible
+            redoPossible,
+            points
         )
     }
 
     fun finishQuiz(): Quiz {
-        return Quiz(id, name, participants, questions, true, timestamp, sequenceNumber, undoPossible, redoPossible)
+        return Quiz(id, name, participants, questions, true, timestamp, sequenceNumber, undoPossible, redoPossible, points)
     }
 
     fun setTimestamp(timestamp: Long): Quiz {
-        return Quiz(id, name, participants, questions, finished, timestamp, sequenceNumber, undoPossible, redoPossible)
+        return Quiz(id, name, participants, questions, finished, timestamp, sequenceNumber, undoPossible, redoPossible, points)
     }
 
     fun setSequenceNumber(sequenceNumber: Long): Quiz {
-        return Quiz(id, name, participants, questions, finished, timestamp, sequenceNumber, undoPossible, redoPossible)
+        return Quiz(id, name, participants, questions, finished, timestamp, sequenceNumber, undoPossible, redoPossible, points)
     }
 
     fun setUndoPossible(): Quiz {
-        return Quiz(id, name, participants, questions, finished, timestamp, sequenceNumber, true, redoPossible)
+        return Quiz(id, name, participants, questions, finished, timestamp, sequenceNumber, true, redoPossible, points)
     }
 
     fun setRedoPossible(redoPossible: Boolean): Quiz {
-        return Quiz(id, name, participants, questions, finished, timestamp, sequenceNumber, undoPossible, redoPossible)
+        return Quiz(id, name, participants, questions, finished, timestamp, sequenceNumber, undoPossible, redoPossible, points)
     }
 
 }
