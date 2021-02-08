@@ -50,6 +50,7 @@
     "labelQuestion": "Frage*",
     "errorQuestionMandatory": "Das Feld 'Frage' muss ausgefüllt werden",
     "labelAnswer": "Antwort",
+    "labelPoints": "Punkte",
     "labelCategory": "Kategorie",
     "categoryOther": "Sonstiges",
     "categoryHistory": "Geschichte",

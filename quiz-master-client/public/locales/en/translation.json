@@ -50,6 +50,7 @@
     "labelQuestion": "Question*",
     "errorQuestionMandatory": "The field 'Question' is mandatory",
     "labelAnswer": "Answer",
+    "labelPoints": "Punkte",
     "labelCategory": "Category",
     "categoryOther": "Other",
     "categoryHistory": "History",

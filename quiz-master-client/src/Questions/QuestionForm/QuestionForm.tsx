@@ -153,7 +153,7 @@ const QuestionForm: React.FC<QuestionFormProps> = (props: QuestionFormProps) => 
             </div>
 
             <div className="field">
-                <label className="label">{t('labePoints')}</label>
+                <label className="label">{t('labelPoints')}</label>
                 <div className="control">
                     <input data-testid={props.questionToChange ? 'points-to-edit' : 'new-points'} value={newPoints ?? ''} onChange={ev => setNewPoints(parseInt(ev.target.value))} className="input" type="text" />
                 </div>
