@@ -18,6 +18,7 @@ test('should show buttons', () => {
     const quiz: Quiz = {
         id: '17',
         name: 'Test',
+        points: 2,
         participants: [
             {
                 id: '12',
@@ -66,6 +67,7 @@ test('should answer correctly', () => {
     const quiz: Quiz = {
         id: '17',
         name: 'Test',
+        points: 2,
         participants: [
             {
                 id: '12',
@@ -113,6 +115,7 @@ test('should answer correctly', () => {
     const quiz: Quiz = {
         id: '17',
         name: 'Test',
+        points: 2,
         participants: [
             {
                 id: '12',

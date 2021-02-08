@@ -32,6 +32,7 @@ test('does not display statistics', () => {
     const quiz: Quiz = {
         id: '1',
         name: 'Quiz',
+        points: 2,
         participants: [
             {
                 id: '15',
@@ -66,6 +67,7 @@ test('displays statistics', () => {
     const quiz: Quiz = {
         id: '1',
         name: 'Quiz',
+        points: 2,
         participants: [
             {
                 id: '15',
@@ -115,6 +117,7 @@ test('should close statistics', () => {
     const quiz: Quiz = {
         id: '1',
         name: 'Quiz',
+        points: 2,
         participants: [
             {
                 id: '15',
@@ -168,6 +171,7 @@ test('should not be closeable', () => {
     const quiz: Quiz = {
         id: '1',
         name: 'Quiz',
+        points: 2,
         participants: [
             {
                 id: '15',
@@ -217,6 +221,7 @@ test('displays buzzer answer', () => {
     const quiz: Quiz = {
         id: '1',
         name: 'Quiz',
+        points: 2,
         participants: [
             {
                 id: '15',
@@ -279,6 +284,7 @@ test('displays freetext answer', () => {
     const quiz: Quiz = {
         id: '1',
         name: 'Quiz',
+        points: 2,
         participants: [
             {
                 id: '15',
@@ -342,6 +348,7 @@ test('that answer of a freetext question is not shown if the user does not want 
     const quiz: Quiz = {
         id: '1',
         name: 'Quiz',
+        points: 2,
         participants: [
             {
                 id: '15',

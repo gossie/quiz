@@ -33,6 +33,7 @@ test('has two participants', () => {
     const quiz: Quiz = {
         id: '1',
         name: 'Quiz',
+        points: 2,
         participants: [
             {
                 id: '15',
@@ -69,6 +70,7 @@ test('has no participants', () => {
     const quiz: Quiz = {
         id: '1',
         name: 'Quiz',
+        points: 2,
         participants: [],
         openQuestions: [],
         playedQuestions: [],
@@ -86,6 +88,7 @@ test('shows question counter', () => {
     const quiz: Quiz = {
         id: '1',
         name: 'Quiz',
+        points: 2,
         participants: [
             {
                 id: '15',

@@ -62,6 +62,7 @@ test('should determine question pool', async () => {
     const quiz: Quiz = {
         id: '5',
         name: "Awesome Quiz",
+        points: 2,
         participants: [],
         playedQuestions: [],
         openQuestions: [],

@@ -21,6 +21,7 @@ test('displays participant after a correct answer', () => {
     const quiz: Quiz = {
         id: '1',
         name: 'Quiz',
+        points: 2,
         participants: [
             {
                 id: '15',
@@ -62,6 +63,7 @@ test('displays participant after an incorrect answer', () => {
     const quiz: Quiz = {
         id: '1',
         name: 'Quiz',
+        points: 2,
         participants: [
             {
                 id: '15',
@@ -103,6 +105,7 @@ test('displays participant that did not answer', () => {
     const quiz: Quiz = {
         id: '1',
         name: 'Quiz',
+        points: 2,
         participants: [
             {
                 id: '15',
@@ -144,6 +147,7 @@ test('displays icon to indicate that answer will not be revealed', () => {
     const quiz: Quiz = {
         id: '1',
         name: 'Quiz',
+        points: 2,
         participants: [
             {
                 id: '15',
@@ -170,6 +174,7 @@ test('displays no icon because reveal is allowed', () => {
     const quiz: Quiz = {
         id: '1',
         name: 'Quiz',
+        points: 2,
         participants: [
             {
                 id: '15',
@@ -204,6 +209,7 @@ test('deletes participant', () => {
     const quiz: Quiz = {
         id: '1',
         name: 'Quiz',
+        points: 2,
         participants: [
             {
                 id: '15',

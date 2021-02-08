@@ -27,6 +27,7 @@ test('should add new estimation question', async () => {
             body: JSON.stringify({
                 question: 'Frage 3',
                 correctAnswer: 'Antwort 3',
+                points: 2,
                 category: 'science',
                 timeToAnswer: 30,
                 publicVisible: false,
@@ -43,6 +44,7 @@ test('should add new estimation question', async () => {
     const quiz: Quiz = {
         id: '5',
         name: "Awesome Quiz",
+        points: 2,
         participants: [],
         playedQuestions: [],
         openQuestions: [
@@ -108,6 +110,7 @@ test('should not add new question, because quiz is finished', (done) => {
             method: 'POST',
             body: JSON.stringify({
                 question: 'Frage 3',
+                points: 3,
                 category: 'science',
                 timeToAnswer: 30,
                 publicVisible: false
@@ -126,6 +129,7 @@ test('should not add new question, because quiz is finished', (done) => {
     const quiz: Quiz = {
         id: '5',
         name: "Awesome Quiz",
+        points: 2,
         participants: [],
         playedQuestions: [],
         openQuestions: [
@@ -165,6 +169,7 @@ test('should not add new question, because quiz is finished', (done) => {
 
     const questionButton = getByTestId('create-question-button');
     const questionField = getByTestId('new-question')  as HTMLInputElement;
+    const pointsField = getByTestId('new-points') as HTMLInputElement;
     const categoryField = getByTestId('category')  as HTMLSelectElement;
     const timeToAnswerField = getByTestId('time-to-answer')  as HTMLInputElement;
     const imagePathField = getByTestId('image-path')  as HTMLInputElement;
@@ -173,9 +178,9 @@ test('should not add new question, because quiz is finished', (done) => {
     fireEvent.change(questionField, { target: { value: 'Frage 3' } });
     fireEvent.change(categoryField, { target: { value: 'science' } });
     fireEvent.change(timeToAnswerField, { target: { value: '30' } });
+    fireEvent.change(pointsField, { target: { value: '3' }});
 
     questionButton.click();
-
 });
 
 test('should create multiple choice question', async () => {
@@ -185,6 +190,7 @@ test('should create multiple choice question', async () => {
             method: 'POST',
             body: JSON.stringify({
                 question: 'Frage 3',
+                points:3,
                 category: 'science',
                 timeToAnswer: 30,
                 publicVisible: false,
@@ -202,6 +208,7 @@ test('should create multiple choice question', async () => {
     const quiz: Quiz = {
         id: '5',
         name: "Awesome Quiz",
+        points: 3,
         participants: [],
         playedQuestions: [],
         openQuestions: [
@@ -299,6 +306,7 @@ test('should create multiple choice question with last choice still in the input
             method: 'POST',
             body: JSON.stringify({
                 question: 'Frage 3',
+                points: 2,
                 category: 'science',
                 timeToAnswer: 30,
                 publicVisible: false,
@@ -316,6 +324,7 @@ test('should create multiple choice question with last choice still in the input
     const quiz: Quiz = {
         id: '5',
         name: "Awesome Quiz",
+        points: 2,
         participants: [],
         playedQuestions: [],
         openQuestions: [
@@ -391,6 +400,7 @@ test('should edit multiple choice question', async () => {
             method: 'PUT',
             body: JSON.stringify({
                 question: 'Frage 2',
+                points: 3,
                 category: 'other',
                 timeToAnswer: null,
                 publicVisible: false,
@@ -409,6 +419,7 @@ test('should edit multiple choice question', async () => {
     const quiz: Quiz = {
         id: '5',
         name: "Awesome Quiz",
+        points: 2,
         participants: [],
         playedQuestions: [],
         openQuestions: [
@@ -443,6 +454,7 @@ test('should edit multiple choice question', async () => {
     }
     const { getByTestId } = render(<QuestionForm quiz={quiz} questionToChange={quiz.openQuestions[1]} />);
     const questionField = getByTestId('question-to-edit')  as HTMLInputElement;
+    const pointsField = getByTestId('points-to-edit') as HTMLInputElement;
     const categoryField = getByTestId('category-to-edit')  as HTMLSelectElement;
     const timeToAnswerField = getByTestId('time-to-answer-to-edit')  as HTMLInputElement;
     const imagePathField = getByTestId('image-path-to-edit')  as HTMLInputElement;
@@ -450,6 +462,9 @@ test('should edit multiple choice question', async () => {
     const choicesWrapper = getByTestId('choices') as HTMLDivElement;
     const newChoiceField = getByTestId('new-choice') as HTMLInputElement;
     const addOption = getByTestId('add-option');
+
+    expect(pointsField.value).toEqual('2');
+    fireEvent.change(pointsField, { target: { value: '3' } });
 
     expect(choicesWrapper.querySelectorAll('.multiple-choice-option').length).toBe(1);
     expect(choicesWrapper.querySelectorAll('.multiple-choice-option')[0].textContent).toBe('Option 1');
@@ -480,6 +495,7 @@ test('that form is not valid when question is missing', async () => {
 
     const quiz: Quiz = {
         id: '5',
+        points: 2,
         name: "Awesome Quiz",
         participants: [],
         playedQuestions: [],
@@ -522,6 +538,7 @@ test('that error message shown and removed depending on the question', () => {
     const quiz: Quiz = {
         id: '5',
         name: "Awesome Quiz",
+        points: 2,
         participants: [],
         playedQuestions: [],
         openQuestions: [],

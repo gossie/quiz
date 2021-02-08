@@ -140,6 +140,7 @@ test('should reopen question', (done) => {
     const quiz: Quiz = {
         id: '17',
         name: 'Test',
+        points: 2,
         participants: [
             {
                 id: '12',
@@ -199,6 +200,7 @@ test('should not reopen question, because the quiz is already finished', (done) 
     const quiz: Quiz = {
         id: '17',
         name: 'Test',
+        points: 2,
         participants: [
             {
                 id: '12',
@@ -263,6 +265,7 @@ test('should not delete question, because the quiz is already finished', (done) 
     const quiz: Quiz = {
         id: '17',
         name: 'Test',
+        points: 2,
         participants: [
             {
                 id: '12',
@@ -332,6 +335,7 @@ test('should not ask question, because the quiz is already finished', (done) => 
     const quiz: Quiz = {
         id: '17',
         name: 'Test',
+        points: 2,
         participants: [
             {
                 id: '12',
@@ -390,6 +394,7 @@ test('should display answer hint', () => {
     const quiz: Quiz = {
         id: '17',
         name: 'Test',
+        points: 2,
         participants: [
             {
                 id: '12',
@@ -442,6 +447,7 @@ test('should not display answer hint', () => {
     const quiz: Quiz = {
         id: '17',
         name: 'Test',
+        points: 2,
         participants: [
             {
                 id: '12',

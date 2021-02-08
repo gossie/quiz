@@ -30,6 +30,7 @@ type QuestionFormProps = StateProps & DispatchProps & OwnProps;
 const QuestionForm: React.FC<QuestionFormProps> = (props: QuestionFormProps) => {
     const [newQuestion, setNewQuestion] = useState(props.questionToChange?.question);
     const [newAnswer, setNewAnswer] = useState(props.questionToChange?.correctAnswer);
+    const [newPoints, setNewPoints] = useState(props.questionToChange?.points ?? props.quiz.points);
     const [category, setCategory] = useState(props.questionToChange ? props.questionToChange.category : 'other');
     const [imagePath, setImagePath] = useState(props.questionToChange?.imagePath);
     const [timeToAnswer, setTimeToAnswer] = useState(props.questionToChange?.timeToAnswer ? `${props.questionToChange?.timeToAnswer}` : '');
@@ -100,6 +101,7 @@ const QuestionForm: React.FC<QuestionFormProps> = (props: QuestionFormProps) => 
                 body: JSON.stringify({
                     question: newQuestion,
                     correctAnswer: newAnswer,
+                    points: newPoints,
                     category: category,
                     timeToAnswer: parseInt(timeToAnswer),
                     imagePath: imagePath,
@@ -147,6 +149,13 @@ const QuestionForm: React.FC<QuestionFormProps> = (props: QuestionFormProps) => 
                 <label className="label">{t('labelAnswer')}</label>
                 <div className="control">
                     <input data-testid={props.questionToChange ? 'answer-to-edit' : 'new-correct-answer'} value={newAnswer ?? ''} onChange={ev => setNewAnswer(ev.target.value)} className="input" type="text" />
+                </div>
+            </div>
+
+            <div className="field">
+                <label className="label">{t('labePoints')}</label>
+                <div className="control">
+                    <input data-testid={props.questionToChange ? 'points-to-edit' : 'new-points'} value={newPoints ?? ''} onChange={ev => setNewPoints(parseInt(ev.target.value))} className="input" type="text" />
                 </div>
             </div>
             

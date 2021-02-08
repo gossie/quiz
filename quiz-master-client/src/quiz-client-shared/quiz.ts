@@ -30,6 +30,7 @@ export interface Question {
     pending: boolean;
     links: Array<Link>;
     previousQuestionId?: string;
+    points?: number;
 }
 
 export interface AnswerStatistics {
@@ -51,6 +52,7 @@ export interface QuizStatistics {
 export default interface Quiz {
     id: string;
     name: string;
+    points: number;
     participants: Array<Participant>;
     playedQuestions: Array<Question>;
     openQuestions: Array<Question>;

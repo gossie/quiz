@@ -24,6 +24,7 @@ test('should display questions', () => {
     const quiz: Quiz = {
         id: '5',
         name: "Awesome Quiz",
+        points: 2,
         participants: [],
         playedQuestions: [
             {
@@ -82,6 +83,7 @@ test('should add new private question', async () => {
             body: JSON.stringify({
                 question: 'Frage 3',
                 correctAnswer: 'Antwort 3',
+                points: 2,
                 category: 'other',
                 timeToAnswer: null,
                 imagePath: 'https://pathToImage',
@@ -98,6 +100,7 @@ test('should add new private question', async () => {
     const quiz: Quiz = {
         id: '5',
         name: "Awesome Quiz",
+        points: 2,
         participants: [],
         playedQuestions: [],
         openQuestions: [
@@ -156,6 +159,7 @@ test('should add new public question', async () => {
             method: 'POST',
             body: JSON.stringify({
                 question: 'Frage 3',
+                points: 2,
                 category: 'other',
                 timeToAnswer: null,
                 imagePath: 'https://pathToImage',
@@ -172,6 +176,7 @@ test('should add new public question', async () => {
     const quiz: Quiz = {
         id: '5',
         name: "Awesome Quiz",
+        points: 2,
         participants: [],
         playedQuestions: [],
         openQuestions: [
@@ -233,6 +238,7 @@ test('should start question', () => {
     const quiz: Quiz = {
         id: '5',
         name: "Awesome Quiz",
+        points: 2,
         participants: [],
         playedQuestions: [
             {
@@ -286,6 +292,7 @@ test('should delete question', () => {
     const quiz: Quiz = {
         id: '5',
         name: "Awesome Quiz",
+        points: 2,
         participants: [],
         playedQuestions: [
             {
@@ -331,6 +338,7 @@ test('should open and close image modal', () => {
     const quiz: Quiz = {
         id: '5',
         name: "Awesome Quiz",
+        points: 2,
         participants: [],
         openQuestions: [
             {
@@ -383,6 +391,7 @@ test('should move question to any position', async () => {
             body: JSON.stringify({
                 id: '3',
                 question: 'Frage 3',
+                points: 4,
                 category: 'other',
                 pending: false,
                 imagePath: 'https://path_to_image/',
@@ -401,6 +410,7 @@ test('should move question to any position', async () => {
     const quiz: Quiz = {
         id: '5',
         name: "Awesome Quiz",
+        points: 2,
         participants: [],
         openQuestions: [
             {
@@ -426,6 +436,7 @@ test('should move question to any position', async () => {
             {
                 id: '3',
                 question: 'Frage 3',
+                points: 4,
                 category: 'other',
                 pending: false,
                 imagePath: 'https://path_to_image/',
@@ -476,6 +487,7 @@ test('should move question to first position', async () => {
     const quiz: Quiz = {
         id: '5',
         name: "Awesome Quiz",
+        points: 2,
         participants: [],
         openQuestions: [
             {
@@ -533,6 +545,7 @@ test('should edit question', async () => {
             body: JSON.stringify({
                 question: 'Frage 4',
                 correctAnswer: 'Antwort 4',
+                points: 2,
                 category: 'history',
                 timeToAnswer: 45,
                 imagePath: 'https://path_to_image_changed/',
@@ -551,6 +564,7 @@ test('should edit question', async () => {
     const quiz: Quiz = {
         id: '5',
         name: "Awesome Quiz",
+        points: 2,
         participants: [],
         openQuestions: [
             {
@@ -661,6 +675,7 @@ test('should not move question, because the quiz is finished', (done) => {
     const quiz: Quiz = {
         id: '5',
         name: "Awesome Quiz",
+        points: 2,
         participants: [],
         openQuestions: [
             {
