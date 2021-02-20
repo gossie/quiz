@@ -16,7 +16,7 @@ const MultipleChoice: React.FC<MultipleChoiceProps> = (props: MultipleChoiceProp
 
     useEffect(() => {
         setSelectedIndex(-1);
-    }, [props.question.question]);
+    }, [props.question.id]);
     
     const selectChoice = (choice: Choice, index: number) => {
         if (!disabled) {
