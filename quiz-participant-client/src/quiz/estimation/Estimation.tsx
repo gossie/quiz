@@ -21,7 +21,7 @@ const Estimation: React.FC<EstimationProps> = (props: EstimationProps) => {
 
     useEffect(() => {
         setCurrentAnswer('');
-    }, [pendingQuestion.question]);
+    }, [pendingQuestion.id]);
 
     const sendEstimation = () => {
         setSendButtonCssClasses('button is-primary is-loading');
