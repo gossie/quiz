@@ -17,7 +17,7 @@ const Image: React.FC<ImageProps> = (props: ImageProps) => {
         setImageCssClass('question-image invisible');
         setTimerCssClass('')
         setTime(3);
-    }, [props.question.question]);
+    }, [props.question.id]);
 
     useEffect(() => {
         const timer = setTimeout(() => {
