@@ -22,7 +22,7 @@ class QuizApplication {
     fun eventBus(): EventBus {
         return EventBus()
     }
-
+/*
     @Bean
     fun databaseCleaner(quizService: QuizService): CommandLineRunner {
         return (CommandLineRunner {
@@ -33,7 +33,7 @@ class QuizApplication {
                     .subscribe { logger.info("deleted old quiz") }
         })
     }
-
+*/
 }
 
 fun main(args: Array<String>) {
