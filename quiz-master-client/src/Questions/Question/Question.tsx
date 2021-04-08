@@ -104,6 +104,11 @@ const QuestionElement: React.FC<QuestionElementProps> = (props: QuestionElementP
                 </div>
                 <div className="has-text-left question-question-column">   
                     <span data-testid="question">{props.question.question}</span>
+                    { props.question.pending && props.question.choices &&
+                        <div className="question-choices">
+                            { props.question.choices.map(choice => <div>{choice.choice}</div>) }
+                        </div>
+                    }
                 </div>
             </div>
         </div>
