@@ -1348,6 +1348,20 @@ internal class QuizMasterIT {
                 .playedQuestionSizeIs(3)
                 .hasPlayedQuestion(0) { playedQuestion ->
                     playedQuestion
+                            .hasQuestion("Wer schrieb das Buch Animal Farm?")
+                            .hasAnswerNote("George Orwell")
+                            .isNotPending
+                }
+                .hasPlayedQuestion(1) { playedQuestion ->
+                    playedQuestion
+                            .hasQuestion("Wo befindet sich das Kahnbein?")
+                            .isNotPending
+                            .isMultipleChoiceQuestion
+                            .hasChoice(0) { choice -> choice.hasChoice("Im Fuß") }
+                            .hasChoice(1) { choice -> choice.hasChoice("In der Hand") }
+                }
+                .hasPlayedQuestion(0) { playedQuestion ->
+                    playedQuestion
                             .hasQuestion("Was ist ein Robo-Advisor?")
                             .hasAnswerNote("Ein algorithmen gesteuertes Dings")
                             .isPending
@@ -1356,20 +1370,6 @@ internal class QuizMasterIT {
                                     quizMasterReference.get().participants[0].id, "Antwort von André",
                                     quizMasterReference.get().participants[1].id, "Antwort von Lena"
                             ))
-                }
-                .hasPlayedQuestion(1) { playedQuestion ->
-                    playedQuestion
-                            .hasQuestion("Wer schrieb das Buch Animal Farm?")
-                            .hasAnswerNote("George Orwell")
-                            .isNotPending
-                }
-                .hasPlayedQuestion(2) { playedQuestion ->
-                    playedQuestion
-                            .hasQuestion("Wo befindet sich das Kahnbein?")
-                            .isNotPending
-                            .isMultipleChoiceQuestion
-                            .hasChoice(0) { choice -> choice.hasChoice("Im Fuß") }
-                            .hasChoice(1) { choice -> choice.hasChoice("In der Hand") }
                 }
                 .particpantSizeIs(2)
                 .hasParticipant(0) { it.hasName("André").hasPoints(2).allowsReveal().isNotTurn }
