@@ -37,30 +37,15 @@ class QuizStatisticsProjection(
                 eventRepository.determineEvents(quizId)
                     .reduce(QuizStatistics()) { quizStatistics, event ->
                         when (event) {
-                            is QuestionAskedEvent -> quizStatistics.addQuestionStatistic(QuestionStatistics(event.questionId, event.timestamp))
-                            is BuzzeredEvent -> addAnswerStatistics(quizStatistics, event.participantId, event.timestamp)
-                            is EstimatedEvent -> addAnswerStatistics(quizStatistics, event.participantId, event.timestamp, event.estimatedValue)
-                            is ChoiceSelectedEvent -> addAnswerStatistics(quizStatistics, event.participantId, event.timestamp, choiceId = event.choiceId)
-                            is AnsweredEvent -> handleAnswer(quizStatistics, event.participantId, event.answer)
+                            is ParticipantCreatedEvent -> quizStatistics.addParticipantStatistics(ParticipantStatistics(event.participant.id))
+                            is ParticipantDeletedEvent -> quizStatistics.deleteParticipantStatistics(event.participantId)
+                            is QuestionAskedEvent -> quizStatistics.addQuestionStatistic(QuestionStatistics(event.questionId))
+                            is AnsweredEvent -> quizStatistics.handleAnswer(event.participantId, event.answer)
                             else -> quizStatistics
                         }
                     }
                     .doOnNext { statistics.put(quizId, it) }
             }
-    }
-
-    private fun addAnswerStatistics(quizStatistics: QuizStatistics, participantId: UUID, timestamp: Long, answer: String? = null, choiceId: UUID? = null): QuizStatistics {
-        val currentQuestion = quizStatistics.questionStatistics.lastOrNull()
-        currentQuestion?.addAnswerStatistics(AnswerStatistics(participantId, timestamp - currentQuestion.timestamp, answer, choiceId)) // TODO: immutable
-        return quizStatistics
-    }
-
-    private fun handleAnswer(quizStatistics: QuizStatistics, participantId: UUID, rating: AnswerCommand.Answer): QuizStatistics {
-        quizStatistics.questionStatistics.last()
-            .answerStatistics
-            .findLast { it.participantId == participantId }
-            ?.rating = rating
-        return quizStatistics
     }
 
     @Subscribe
@@ -70,50 +55,37 @@ class QuizStatisticsProjection(
     }
 
     @Subscribe
+    fun onParticiantCreation(event: ParticipantCreatedEvent) {
+        determineQuizStatisticsFromCacheOrDB(event.quizId)
+                .subscribe {
+                    statistics.put(event.quizId, it.addParticipantStatistics(ParticipantStatistics(event.participant.id)))
+                    logger.info("handled ParticipantCreatedEvent")
+                }
+    }
+
+    @Subscribe
+    fun onParticiantDeletion(event: ParticipantDeletedEvent) {
+        determineQuizStatisticsFromCacheOrDB(event.quizId)
+                .subscribe {
+                    statistics.put(event.quizId, it.deleteParticipantStatistics(event.participantId))
+                    logger.info("handled ParticipantCreatedEvent")
+                }
+    }
+
+    @Subscribe
     fun onQuestionAsked(event: QuestionAskedEvent) {
         determineQuizStatisticsFromCacheOrDB(event.quizId)
             .subscribe {
-                statistics.put(event.quizId, it.addQuestionStatistic(QuestionStatistics(event.questionId, event.timestamp)))
+                statistics.put(event.quizId, it.addQuestionStatistic(QuestionStatistics(event.questionId)))
                 logger.info("handled QuestionAskedEvent")
-            }
-    }
-
-    @Subscribe
-    fun onBuzzer(event: BuzzeredEvent) {
-        determineQuizStatisticsFromCacheOrDB(event.quizId)
-            .map { addAnswerStatistics(it, event.participantId, event.timestamp) }
-            .subscribe {
-                statistics.put(event.quizId, it)
-                logger.info("handled BuzzeredEvent")
-            }
-    }
-
-    @Subscribe
-    fun onEstimation(event: EstimatedEvent) {
-        determineQuizStatisticsFromCacheOrDB(event.quizId)
-            .map { addAnswerStatistics(it, event.participantId, event.timestamp, event.estimatedValue) }
-            .subscribe {
-                statistics.put(event.quizId, it)
-                logger.info("handled EstimatedEvent")
-            }
-    }
-
-    @Subscribe
-    fun onChoiceSelection(event: ChoiceSelectedEvent) {
-        determineQuizStatisticsFromCacheOrDB(event.quizId)
-            .map { addAnswerStatistics(it, event.participantId, event.timestamp, choiceId = event.choiceId) }
-            .subscribe {
-                statistics.put(event.quizId, it)
-                logger.info("handled ChoiceSelectedEvent")
             }
     }
 
     @Subscribe
     fun onAnswer(event: AnsweredEvent) {
         determineQuizStatisticsFromCacheOrDB(event.quizId)
-            .map { handleAnswer(it, event.participantId, event.answer) }
             .subscribe {
-                statistics.put(event.quizId, it)
+                statistics.put(event.quizId, it.handleAnswer(event.participantId, event.answer))
                 logger.info("handled AnsweredEvent")
             }
     }

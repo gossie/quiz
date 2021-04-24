@@ -14,7 +14,7 @@ public class QuestionStatisticsDTOAssert extends AbstractAssert<QuestionStatisti
     public static QuestionStatisticsDTOAssert assertThat(QuestionStatisticsDTO actual) {
         return new QuestionStatisticsDTOAssert(actual);
     }
-
+/*
     public QuestionStatisticsDTOAssert hasQuestion(Consumer<QuestionDTOAssert> consumer) {
         consumer.accept(QuestionDTOAssert.assertThat(actual.getQuestion()));
         return this;
@@ -29,4 +29,5 @@ public class QuestionStatisticsDTOAssert extends AbstractAssert<QuestionStatisti
         consumer.accept(AnswerStatisticsDTOAssert.assertThat(actual.getAnswerStatistics().get(index)));
         return this;
     }
+ */
 }

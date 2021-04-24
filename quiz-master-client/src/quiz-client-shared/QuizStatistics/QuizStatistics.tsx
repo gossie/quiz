@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import Quiz, { AnswerStatistics } from "../quiz";
+import Quiz from "../quiz";
 import './QuizStatistics.scss';
 
 interface QuizStatisticsProps {
@@ -10,33 +10,76 @@ interface QuizStatisticsProps {
     onClose?: () => void;
 }
 
+const COLORS = [
+    '#FF0000',
+    '#00FF00',
+    '#0000FF',
+    '#FFFF00',
+    '#FF00FF',
+    '#00FFFF'
+]
+
 const QuizStatistics: React.FC<QuizStatisticsProps> = (props: QuizStatisticsProps) => {
 
     const [closed, setClosed] = useState(false);
+    const canvasReference = useRef(null)
 
     const { t } = useTranslation();
+    
+    if (canvasReference.current) {
+        const canvas: HTMLCanvasElement = canvasReference.current;
+        canvas.width = 500;
+        canvas.height = 500;
+        canvas.style.cssText = 'image-rendering: optimizeSpeed;' + // FireFox < 6.0
+                'image-rendering: -moz-crisp-edges;' + // FireFox
+                'image-rendering: -o-crisp-edges;' +  // Opera
+                'image-rendering: -webkit-crisp-edges;' + // Chrome
+                'image-rendering: crisp-edges;' + // Chrome
+                'image-rendering: -webkit-optimize-contrast;' + // Safari
+                'image-rendering: pixelated; ' + // Future browsers
+                '-ms-interpolation-mode: nearest-neighbor;'; // IE
 
-    const determineRows = () => {
-        const buzzers = (answerStatistics: Array<AnswerStatistics>) => answerStatistics.map((answerStatistic, index) => {
-            if (answerStatistic.answer) {
-                if (answerStatistic.participant.revealAllowed) {
-                    return <li data-testid={`answer-statistic-${index}`} key={index} className="answer-statistic">{t('answerStatisticAllowedAnswer', { participantName: answerStatistic.participant.name, answer: answerStatistic.answer, time: answerStatistic.duration / 1000, rating: answerStatistic.rating })}</li>
-                } else {
-                    return <li data-testid={`answer-statistic-${index}`} key={index} className="answer-statistic">{t('answerStatisticWithoutAnswer', { participantName: answerStatistic.participant.name, time: answerStatistic.duration / 1000, rating: answerStatistic.rating })}</li>
-                }
-            } else {
-                return <li data-testid={`answer-statistic-${index}`} key={index} className="answer-statistic">{t('buzzerStatistic', { participantName: answerStatistic.participant.name, time: answerStatistic.duration / 1000, rating: answerStatistic.rating })}</li>
-            }
+        const ctx: CanvasRenderingContext2D = canvas.getContext('2d');
+
+        const maxPoints = props.quiz.participants.map(p => p.points).reduce((p, c) => p > c ? p : c, 0);
+
+        const questionSpace = 480 / props.quiz.playedQuestions.length;
+        const pointSpace = 480 / maxPoints;
+
+        ctx.beginPath();
+        ctx.strokeStyle = '#FFFFFF';
+        ctx.moveTo(10, 490);
+        ctx.lineTo(490, 490);
+        ctx.moveTo(10, 490);
+        ctx.lineTo(10, 10);
+        
+        for (let i=1; i<props.quiz.playedQuestions.length; i++) {
+            ctx.moveTo(10 + i*questionSpace, 485);
+            ctx.lineTo(10 + i*questionSpace, 495);
+        }
+        
+        for (let i=1; i<maxPoints; i++) {
+            ctx.moveTo(5, 490 - i*pointSpace);
+            ctx.lineTo(15, 490 - i*pointSpace);
+        }
+
+        ctx.stroke();
+        ctx.closePath()
+
+        props.quiz.quizStatistics.participantStatistics.forEach((participantStatistic, index) => {
+            ctx.beginPath();
+            ctx.moveTo(10, 490);
+            ctx.strokeStyle = COLORS[index];
+            let points = 0;
+            participantStatistic.questionStatistics.forEach((questionStatistic, questionIndex) => {
+                questionStatistic.ratings.forEach(rating => {
+                    points += rating === 'CORRECT' ? (questionStatistic.question.points ?? 2) : -1;
+                })
+                ctx.lineTo(10 + (questionIndex+1)*questionSpace, 490 - points*pointSpace);
+            });
+            ctx.stroke();
+            ctx.closePath();
         });
-
-        return props.quiz.quizStatistics?.questionStatistics.map(questionStatistic => 
-                <tr key={questionStatistic.question.id}>
-                    <td>{questionStatistic.question.question}</td>
-                    <td>
-                        <ul>{buzzers(questionStatistic.answerStatistics)}</ul>
-                    </td>
-                </tr>
-        );
     }
 
     const close = () => {
@@ -52,20 +95,10 @@ const QuizStatistics: React.FC<QuizStatisticsProps> = (props: QuizStatisticsProp
                 <div data-testid="quiz-statistics" className="modal is-active">
                     <div className="modal-background"></div>
                     <div className="modal-content">
-                        <table className="table box">
-                            <thead>
-                                <tr>
-                                    <th>{t('columnHeadlineQuestions')}</th>
-                                    <th>{t('columnHeadlineAnswers')}</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {determineRows()}
-                            </tbody>
-                        </table>
+                        <canvas id="statistics-display" ref={canvasReference} width="500" height="500" />
                     </div>
                     { props.closeable && <button data-testid="close-button" className="modal-close is-large" aria-label="close" onClick={close}></button> }
-                </div>
+                </div> 
             }
         </div>
     );

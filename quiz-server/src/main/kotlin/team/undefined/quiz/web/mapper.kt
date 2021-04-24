@@ -13,46 +13,30 @@ fun Quiz.map(quizStatistics: QuizStatistics? = null): Mono<QuizDTO> {
     return Flux.fromIterable(this.participants)
             .flatMap { it.map(this.id) }
             .collect(Collectors.toList())
-            .flatMap { participants ->
+            .map { participants ->
                 val quizDTO = QuizDTO(this.id, this.name, participants, this.questions.filter { it.alreadyPlayed }.map { it.map(this) }, this.questions.filter { !it.alreadyPlayed }.map { it.map(this) }, this.undoPossible, this.redoPossible, this.finished, timestamp = this.timestamp, expirationDate = this.timestamp + 2_419_200_000, points = this.points)
-                quizStatistics?.map(this)?.map {
-                    quizDTO.quizStatistics = it
-                    quizDTO
-                } ?: Mono.just(quizDTO)
+                quizDTO.quizStatistics = quizStatistics?.map(quizDTO)
+                quizDTO
             }
             .flatMap { it.addLinks() }
 }
 
-private fun QuizStatistics.map(quiz: Quiz): Mono<QuizStatisticsDTO> {
-    return Flux.concat(this.questionStatistics.map { it.map(quiz) })
-            .collect(Collectors.toList())
-            .map { QuizStatisticsDTO(it) }
+private fun QuizStatistics.map(quiz: QuizDTO): QuizStatisticsDTO {
+    return QuizStatisticsDTO(this.participantStatistics.map { it.map(quiz) })
 }
 
-private fun QuestionStatistics.map(quiz: Quiz): Mono<QuestionStatisticsDTO> {
-    return Flux.concat(this.answerStatistics.map { it.map(quiz, this) })
-            .collect(Collectors.toList())
-            .map { buzzerStatistics ->
-                val q = quiz.questions.find { it.id == this.questionId }
-                val mapped = q?.map(quiz)
-                QuestionStatisticsDTO(
-                        mapped!!,
-                        buzzerStatistics
-                )
-            }
+private fun ParticipantStatistics.map(quiz: QuizDTO): ParticipantStatisticsDTO {
+    return ParticipantStatisticsDTO(
+            quiz.participants.find { it.id == this.id },
+            this.questionStatistics.map { it.map(quiz) }
+    )
 }
 
-private fun AnswerStatistics.map(quiz: Quiz, questionStatistics: QuestionStatistics): Mono<AnswerStatisticsDTO> {
-    val question = quiz.questions.find { it.id == questionStatistics.questionId }
-    return quiz.participants.find { it.id == this.participantId }!!.map(quiz.id)
-            .map { participant ->
-                AnswerStatisticsDTO(
-                        participant,
-                        this.duration,
-                        if (this.choiceId != null) { question?.choices?.find { it.id == this.choiceId }?.choice } else { this.answer },
-                        this.rating
-                )
-            }
+private fun QuestionStatistics.map(quiz: QuizDTO): QuestionStatisticsDTO {
+    return QuestionStatisticsDTO(
+            quiz.playedQuestions.find { it.id == this.id }!!,
+            this.ratings
+    )
 }
 
 private fun Participant.map(quizId: UUID): Mono<ParticipantDTO> {

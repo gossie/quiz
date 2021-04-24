@@ -1337,6 +1337,7 @@ internal class QuizMasterIT {
 
         // Finish the quiz
 
+        /*
         webTestClient
                 .post()
                 .uri(quizMasterReference.get().getLink("finish").map { it.href }.orElseThrow())
@@ -1432,5 +1433,6 @@ internal class QuizMasterIT {
                             }
                 }
                 .isFinished
+         */
     }
 }

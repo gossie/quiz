@@ -23,6 +23,7 @@ export interface Question {
     imagePath?: string;
     estimates?: object,
     choices?: Array<Choice>;
+    points?: number;
     timeToAnswer?: number;
     secondsLeft?: number;
     pending: boolean;
@@ -30,20 +31,18 @@ export interface Question {
     links: Array<Link>;
 }
 
-export interface AnswerStatistics {
-    participant: Participant;
-    duration: number;
-    rating: string;
-    answer?: string;
-}
-
 export interface QuestionStatistics {
     question: Question;
-    answerStatistics: Array<AnswerStatistics>;
+    ratings: Array<string>;
+}
+
+export interface ParticipantStatistics {
+    participant?: Participant;
+    questionStatistics: Array<QuestionStatistics>;
 }
 
 export interface QuizStatistics {
-    questionStatistics: Array<QuestionStatistics>
+    participantStatistics: Array<ParticipantStatistics>
 }
 
 export default interface Quiz {

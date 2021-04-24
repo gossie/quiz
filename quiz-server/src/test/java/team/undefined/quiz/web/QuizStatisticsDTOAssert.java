@@ -15,7 +15,7 @@ public class QuizStatisticsDTOAssert extends AbstractAssert<QuizStatisticsDTOAss
     public static QuizStatisticsDTOAssert assertThat(QuizStatisticsDTO actual) {
         return new QuizStatisticsDTOAssert(actual);
     }
-
+/*
     public QuizStatisticsDTOAssert questionStatisticsSizeIs(int size) {
         Assertions.assertThat(actual.getQuestionStatistics()).hasSize(size);
         return this;
@@ -25,4 +25,5 @@ public class QuizStatisticsDTOAssert extends AbstractAssert<QuizStatisticsDTOAss
         consumer.accept(QuestionStatisticsDTOAssert.assertThat(actual.getQuestionStatistics().get(index)));
         return this;
     }
+ */
 }

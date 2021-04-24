@@ -364,7 +364,16 @@ data class Quiz(
     }
 
     fun finishQuiz(): Quiz {
-        return Quiz(id, name, participants, questions, true, timestamp, sequenceNumber, undoPossible, redoPossible, points)
+        val newParticipants = participants.map { Participant(it.id, it.name, false, it.points, it.revealAllowed) }
+        val newQuestions = questions
+                .map {
+                    if (it.pending) {
+                        it.finish()
+                    } else {
+                        it
+                    }
+                }
+        return Quiz(id, name, newParticipants, newQuestions, true, timestamp, sequenceNumber, undoPossible, redoPossible, points)
     }
 
     fun setTimestamp(timestamp: Long): Quiz {

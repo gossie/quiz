@@ -14,7 +14,7 @@ public class QuizStatisticsAssert extends AbstractAssert<QuizStatisticsAssert, Q
     public static QuizStatisticsAssert assertThat(QuizStatistics actual) {
         return new QuizStatisticsAssert(actual);
     }
-
+/*
     public QuizStatisticsAssert questionStatisticsSizeIs(int size) {
         Assertions.assertThat(actual.getQuestionStatistics()).hasSize(size);
         return this;
@@ -24,4 +24,5 @@ public class QuizStatisticsAssert extends AbstractAssert<QuizStatisticsAssert, Q
         consumer.accept(QuestionStatisticsAssert.assertThat(actual.getQuestionStatistics().get(index)));
         return this;
     }
+ */
 }

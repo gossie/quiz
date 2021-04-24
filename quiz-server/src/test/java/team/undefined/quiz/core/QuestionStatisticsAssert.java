@@ -15,7 +15,7 @@ public class QuestionStatisticsAssert extends AbstractAssert<QuestionStatisticsA
     public static QuestionStatisticsAssert assertThat(QuestionStatistics actual) {
         return new QuestionStatisticsAssert(actual);
     }
-
+/*
     public QuestionStatisticsAssert hasQuestionId(UUID id) {
         Assertions.assertThat(actual.getQuestionId()).isEqualTo(id);
         return this;
@@ -30,4 +30,5 @@ public class QuestionStatisticsAssert extends AbstractAssert<QuestionStatisticsA
         consumer.accept(AnswerStatisticsAssert.assertThat(actual.getAnswerStatistics().get(index)));
         return this;
     }
+ */
 }

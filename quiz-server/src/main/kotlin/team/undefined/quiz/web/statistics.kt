@@ -1,19 +1,20 @@
 package team.undefined.quiz.web
 
 import team.undefined.quiz.core.AnswerCommand
+import java.util.*
+import kotlin.collections.ArrayList
 
 data class QuizStatisticsDTO(
-    val questionStatistics: List<QuestionStatisticsDTO> = ArrayList()
+        val participantStatistics: List<ParticipantStatisticsDTO> = ArrayList()
+)
+
+data class ParticipantStatisticsDTO(
+        var participant: ParticipantDTO?,
+        var questionStatistics: List<QuestionStatisticsDTO> = ArrayList()
 )
 
 data class QuestionStatisticsDTO(
-    val question: QuestionDTO,
-    val answerStatistics: List<AnswerStatisticsDTO> = ArrayList()
+        var question: QuestionDTO,
+        var ratings: List<AnswerCommand.Answer> = ArrayList()
 )
 
-data class AnswerStatisticsDTO(
-    val participant: ParticipantDTO,
-    val duration: Long,
-    val answer: String? = null,
-    val rating: AnswerCommand.Answer
-)
