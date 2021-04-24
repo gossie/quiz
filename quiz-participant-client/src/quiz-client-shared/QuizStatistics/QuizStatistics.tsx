@@ -84,7 +84,7 @@ const QuizStatistics: React.FC<QuizStatisticsProps> = (props: QuizStatisticsProp
             { props.quiz.quizStatistics && (props.forceOpen || !closed) && 
                 <div data-testid="quiz-statistics" className="modal is-active">
                     <div className="modal-background"></div>
-                    <div className="modal-content">
+                    <div className="modal-content statistics">
                         <canvas id="statistics-display" ref={canvasReference} width="800" height="600" />
                     </div>
                 </div> 
