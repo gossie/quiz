@@ -1344,9 +1344,10 @@ internal class QuizMasterIT {
                 .expectStatus().isOk
 
         assertThat(quizMasterReference.get())
-                .openQuestionSizeIs(1)
-                .hasOpenQuestion(0) { openQuestion ->
-                    openQuestion
+                .openQuestionSizeIs(0)
+                .playedQuestionSizeIs(3)
+                .hasPlayedQuestion(0) { playedQuestion ->
+                    playedQuestion
                             .hasQuestion("Was ist ein Robo-Advisor?")
                             .hasAnswerNote("Ein algorithmen gesteuertes Dings")
                             .isPending
@@ -1356,14 +1357,13 @@ internal class QuizMasterIT {
                                     quizMasterReference.get().participants[1].id, "Antwort von Lena"
                             ))
                 }
-                .playedQuestionSizeIs(2)
-                .hasPlayedQuestion(0) { playedQuestion ->
+                .hasPlayedQuestion(1) { playedQuestion ->
                     playedQuestion
                             .hasQuestion("Wer schrieb das Buch Animal Farm?")
                             .hasAnswerNote("George Orwell")
                             .isNotPending
                 }
-                .hasPlayedQuestion(1) { playedQuestion ->
+                .hasPlayedQuestion(2) { playedQuestion ->
                     playedQuestion
                             .hasQuestion("Wo befindet sich das Kahnbein?")
                             .isNotPending
