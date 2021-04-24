@@ -41,23 +41,23 @@ const QuizStatistics: React.FC<QuizStatisticsProps> = (props: QuizStatisticsProp
         const maxPoints = props.quiz.participants.map(p => p.points).reduce((p, c) => p > c ? p : c, 0);
 
         const questionSpace = 780 / props.quiz.playedQuestions.length;
-        const pointSpace = 780 / maxPoints;
+        const pointSpace = 580 / maxPoints;
 
         ctx.beginPath();
         ctx.strokeStyle = '#FFFFFF';
-        ctx.moveTo(10, 790);
-        ctx.lineTo(490, 790);
-        ctx.moveTo(10, 790);
+        ctx.moveTo(10, 590);
+        ctx.lineTo(790, 590);
+        ctx.moveTo(10, 590);
         ctx.lineTo(10, 10);
         
         for (let i=1; i<props.quiz.playedQuestions.length; i++) {
-            ctx.moveTo(10 + i*questionSpace, 785);
-            ctx.lineTo(10 + i*questionSpace, 795);
+            ctx.moveTo(10 + i*questionSpace, 585);
+            ctx.lineTo(10 + i*questionSpace, 595);
         }
         
         for (let i=1; i<maxPoints; i++) {
-            ctx.moveTo(5, 790 - i*pointSpace);
-            ctx.lineTo(15, 790 - i*pointSpace);
+            ctx.moveTo(5, 590 - i*pointSpace);
+            ctx.lineTo(15, 590 - i*pointSpace);
         }
 
         ctx.stroke();
@@ -65,14 +65,14 @@ const QuizStatistics: React.FC<QuizStatisticsProps> = (props: QuizStatisticsProp
 
         props.quiz.quizStatistics.participantStatistics.forEach((participantStatistic, index) => {
             ctx.beginPath();
-            ctx.moveTo(10, 790);
+            ctx.moveTo(10, 590);
             ctx.strokeStyle = COLORS[index];
             let points = 0;
             participantStatistic.questionStatistics.forEach((questionStatistic, questionIndex) => {
                 questionStatistic.ratings.forEach(rating => {
                     points += rating === 'CORRECT' ? (questionStatistic.question.points ?? 2) : -1;
                 })
-                ctx.lineTo(10 + (questionIndex+1)*questionSpace, 790 - points*pointSpace);
+                ctx.lineTo(10 + (questionIndex+1)*questionSpace, 590 - points*pointSpace);
             });
             ctx.stroke();
             ctx.closePath();
