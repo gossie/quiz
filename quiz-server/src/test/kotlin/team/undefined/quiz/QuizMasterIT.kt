@@ -1364,7 +1364,7 @@ internal class QuizMasterIT {
                     playedQuestion
                             .hasQuestion("Was ist ein Robo-Advisor?")
                             .hasAnswerNote("Ein algorithmen gesteuertes Dings")
-                            .isPending
+                            .isNotPending
                             .isEstimationQuestion
                             .hasEstimates(java.util.Map.of(
                                     quizMasterReference.get().participants[0].id, "Antwort von André",
