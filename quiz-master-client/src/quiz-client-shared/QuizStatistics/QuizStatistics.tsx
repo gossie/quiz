@@ -1,5 +1,4 @@
 import React, { useRef, useState } from 'react';
-import { useTranslation } from 'react-i18next';
 import Quiz from "../quiz";
 import './QuizStatistics.scss';
 
@@ -24,8 +23,6 @@ const QuizStatistics: React.FC<QuizStatisticsProps> = (props: QuizStatisticsProp
     const [closed, setClosed] = useState(false);
     const canvasReference = useRef(null)
 
-    const { t } = useTranslation();
-    
     if (canvasReference.current) {
         const canvas: HTMLCanvasElement = canvasReference.current;
         canvas.width = 800;
@@ -95,7 +92,7 @@ const QuizStatistics: React.FC<QuizStatisticsProps> = (props: QuizStatisticsProp
                 <div data-testid="quiz-statistics" className="modal is-active">
                     <div className="modal-background"></div>
                     <div className="modal-content">
-                        <canvas id="statistics-display" ref={canvasReference} width="500" height="500" />
+                        <canvas id="statistics-display" ref={canvasReference} width="800" height="600" />
                     </div>
                     { props.closeable && <button data-testid="close-button" className="modal-close is-large" aria-label="close" onClick={close}></button> }
                 </div> 

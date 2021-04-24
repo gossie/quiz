@@ -21,11 +21,8 @@ const COLORS = [
 
 const QuizStatistics: React.FC<QuizStatisticsProps> = (props: QuizStatisticsProps) => {
 
-    const [closed, setClosed] = useState(false);
     const canvasReference = useRef(null)
 
-    const { t } = useTranslation();
-    
     if (canvasReference.current) {
         const canvas: HTMLCanvasElement = canvasReference.current;
         canvas.width = 800;
@@ -88,7 +85,7 @@ const QuizStatistics: React.FC<QuizStatisticsProps> = (props: QuizStatisticsProp
                 <div data-testid="quiz-statistics" className="modal is-active">
                     <div className="modal-background"></div>
                     <div className="modal-content">
-                        <canvas id="statistics-display" ref={canvasReference} width="500" height="500" />
+                        <canvas id="statistics-display" ref={canvasReference} width="800" height="600" />
                     </div>
                 </div> 
             }
