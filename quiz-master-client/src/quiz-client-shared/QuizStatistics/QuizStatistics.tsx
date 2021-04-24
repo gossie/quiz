@@ -28,8 +28,8 @@ const QuizStatistics: React.FC<QuizStatisticsProps> = (props: QuizStatisticsProp
     
     if (canvasReference.current) {
         const canvas: HTMLCanvasElement = canvasReference.current;
-        canvas.width = 500;
-        canvas.height = 500;
+        canvas.width = 800;
+        canvas.height = 600;
         canvas.style.cssText = 'image-rendering: optimizeSpeed;' + // FireFox < 6.0
                 'image-rendering: -moz-crisp-edges;' + // FireFox
                 'image-rendering: -o-crisp-edges;' +  // Opera
@@ -43,24 +43,24 @@ const QuizStatistics: React.FC<QuizStatisticsProps> = (props: QuizStatisticsProp
 
         const maxPoints = props.quiz.participants.map(p => p.points).reduce((p, c) => p > c ? p : c, 0);
 
-        const questionSpace = 480 / props.quiz.playedQuestions.length;
-        const pointSpace = 480 / maxPoints;
+        const questionSpace = 780 / props.quiz.playedQuestions.length;
+        const pointSpace = 780 / maxPoints;
 
         ctx.beginPath();
         ctx.strokeStyle = '#FFFFFF';
-        ctx.moveTo(10, 490);
-        ctx.lineTo(490, 490);
-        ctx.moveTo(10, 490);
+        ctx.moveTo(10, 790);
+        ctx.lineTo(490, 790);
+        ctx.moveTo(10, 790);
         ctx.lineTo(10, 10);
         
         for (let i=1; i<props.quiz.playedQuestions.length; i++) {
-            ctx.moveTo(10 + i*questionSpace, 485);
-            ctx.lineTo(10 + i*questionSpace, 495);
+            ctx.moveTo(10 + i*questionSpace, 785);
+            ctx.lineTo(10 + i*questionSpace, 795);
         }
         
         for (let i=1; i<maxPoints; i++) {
-            ctx.moveTo(5, 490 - i*pointSpace);
-            ctx.lineTo(15, 490 - i*pointSpace);
+            ctx.moveTo(5, 790 - i*pointSpace);
+            ctx.lineTo(15, 790 - i*pointSpace);
         }
 
         ctx.stroke();
@@ -68,14 +68,14 @@ const QuizStatistics: React.FC<QuizStatisticsProps> = (props: QuizStatisticsProp
 
         props.quiz.quizStatistics.participantStatistics.forEach((participantStatistic, index) => {
             ctx.beginPath();
-            ctx.moveTo(10, 490);
+            ctx.moveTo(10, 790);
             ctx.strokeStyle = COLORS[index];
             let points = 0;
             participantStatistic.questionStatistics.forEach((questionStatistic, questionIndex) => {
                 questionStatistic.ratings.forEach(rating => {
                     points += rating === 'CORRECT' ? (questionStatistic.question.points ?? 2) : -1;
                 })
-                ctx.lineTo(10 + (questionIndex+1)*questionSpace, 490 - points*pointSpace);
+                ctx.lineTo(10 + (questionIndex+1)*questionSpace, 790 - points*pointSpace);
             });
             ctx.stroke();
             ctx.closePath();
