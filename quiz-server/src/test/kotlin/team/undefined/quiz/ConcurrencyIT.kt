@@ -25,7 +25,6 @@ class ConcurrencyIT {
     private lateinit var quizProjection: QuizProjection
 
     @Test
-    @Disabled
     fun shouldHandleConcurrency() {
         IntStream
             .range(0, 250)
