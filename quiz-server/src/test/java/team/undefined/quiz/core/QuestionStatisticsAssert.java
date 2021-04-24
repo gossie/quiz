@@ -15,20 +15,20 @@ public class QuestionStatisticsAssert extends AbstractAssert<QuestionStatisticsA
     public static QuestionStatisticsAssert assertThat(QuestionStatistics actual) {
         return new QuestionStatisticsAssert(actual);
     }
-/*
+
     public QuestionStatisticsAssert hasQuestionId(UUID id) {
         Assertions.assertThat(actual.getQuestionId()).isEqualTo(id);
         return this;
     }
 
-    public QuestionStatisticsAssert answerStatisticsSizeIs(int size) {
-        Assertions.assertThat(actual.getAnswerStatistics()).hasSize(size);
+    public QuestionStatisticsAssert ratingSizeIs(int size) {
+        Assertions.assertThat(actual.getRatings()).hasSize(size);
         return this;
     }
 
-    public QuestionStatisticsAssert hasAnswerStatistics(int index, Consumer<AnswerStatisticsAssert> consumer) {
-        consumer.accept(AnswerStatisticsAssert.assertThat(actual.getAnswerStatistics().get(index)));
+    public QuestionStatisticsAssert hasRating(int index, AnswerCommand.Answer raiting) {
+        Assertions.assertThat(actual.getRatings().get(index)).isEqualTo(raiting);
         return this;
     }
- */
+
 }

@@ -1337,7 +1337,6 @@ internal class QuizMasterIT {
 
         // Finish the quiz
 
-        /*
         webTestClient
                 .post()
                 .uri(quizMasterReference.get().getLink("finish").map { it.href }.orElseThrow())
@@ -1377,62 +1376,10 @@ internal class QuizMasterIT {
                 .hasParticipant(1) { it.hasName("Lena").hasPoints(6).doesNotAllowReveal().isNotTurn }
                 .undoIsPossible()
                 .redoIsNotPossible()
-                .hasQuizStatistics() { quizStatistics ->
+                .hasQuizStatistics { quizStatistics ->
                     quizStatistics
-                            .questionStatisticsSizeIs(3)
-                            .hasQuestionStatistics(0) { questionStatistics ->
-                                questionStatistics
-                                        .hasQuestion { it.isEqualTo(quizMasterReference.get().playedQuestions[0]) }
-                                        .answerStatisticsSizeIs(1)
-                                        .hasAnswerStatistics(0) { answerStatistics ->
-                                            answerStatistics
-                                                    .hasParticipantId { it.isEqualTo(quizMasterReference.get().participants[1])}
-                                                    .hasNoAnswer()
-                                                    .isCorrect
-                                        }
-                            }
-                            .hasQuestionStatistics(1) { questionStatistics ->
-                                questionStatistics
-                                        .hasQuestion { it.isEqualTo(quizMasterReference.get().playedQuestions[1]) }
-                                        .answerStatisticsSizeIs(3)
-                                        .hasAnswerStatistics(0) { answerStatistics ->
-                                            answerStatistics
-                                                    .hasParticipantId { it.isEqualTo(quizMasterReference.get().participants[0])}
-                                                    .hasAnswer("Im Fuß")
-                                                    .isIncorrect
-                                        }
-                                        .hasAnswerStatistics(1) { answerStatistics ->
-                                                answerStatistics
-                                                        .hasParticipantId { it.isEqualTo(quizMasterReference.get().participants[1])}
-                                                        .hasAnswer("Im Fuß")
-                                                        .isIncorrect
-                                        }
-                                        .hasAnswerStatistics(2) { answerStatistics ->
-                                                answerStatistics
-                                                        .hasParticipantId { it.isEqualTo(quizMasterReference.get().participants[1])}
-                                                        .hasAnswer("In der Hand")
-                                                        .isCorrect
-                                        }
-                            }
-                            .hasQuestionStatistics(2) { questionStatistics ->
-                                questionStatistics
-                                        .hasQuestion { it.isEqualTo(quizMasterReference.get().openQuestions[0]) }
-                                        .answerStatisticsSizeIs(2)
-                                        .hasAnswerStatistics(0) { answerStatistics ->
-                                            answerStatistics
-                                                    .hasParticipantId { it.isEqualTo(quizMasterReference.get().participants[0])}
-                                                    .hasAnswer("Antwort von André")
-                                                    .isCorrect
-                                        }
-                                        .hasAnswerStatistics(1) { answerStatistics ->
-                                            answerStatistics
-                                                    .hasParticipantId { it.isEqualTo(quizMasterReference.get().participants[1])}
-                                                    .hasAnswer("Antwort von Lena")
-                                                    .isIncorrect
-                                        }
-                            }
+                            .participantStatisticsSizeIs(2)
                 }
                 .isFinished
-         */
     }
 }

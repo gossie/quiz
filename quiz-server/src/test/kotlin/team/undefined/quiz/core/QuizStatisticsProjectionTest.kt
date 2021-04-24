@@ -48,54 +48,46 @@ internal class QuizStatisticsProjectionTest {
             mock(EventBus::class.java),
             QuizStatisticsProjectionConfiguration(25, 1)
         )
-        // TODO: fix test
-        /*
+
         StepVerifier.create(quizStatisticsProvider.determineQuizStatistics(quiz.id))
-            .consumeNextWith { quizStatistics ->
-                assertThat(quizStatistics)
-                    .questionStatisticsSizeIs(2)
-                    .hasQuestionStatistics(0) { questionStatistics ->
-                        questionStatistics
-                            .hasQuestionId(buzzerQuestion.id)
-                            .answerStatisticsSizeIs(2)
-                            .hasAnswerStatistics(0) { it.isEqualTo(AnswerStatistics(participant1.id, 1L)) }
-                            .hasAnswerStatistics(1) {
-                                it.isEqualTo(
-                                    AnswerStatistics(
-                                        participant1.id,
-                                        3L,
-                                        rating = AnswerCommand.Answer.CORRECT
-                                    )
-                                )
+                .consumeNextWith { quizStatistics ->
+                    assertThat(quizStatistics)
+                            .participantStatisticsSizeIs(2)
+                            .hasParticipantStatistics(0) { participantStatistics ->
+                                participantStatistics
+                                        .hasParticipantId(participant1.id)
+                                        .questionStatisticsSizeIs(2)
+                                        .hasQuestionStatistics(0) { questionStatistics ->
+                                            questionStatistics
+                                                    .hasQuestionId(buzzerQuestion.id)
+                                                    .ratingSizeIs(2)
+                                                    .hasRating(0, AnswerCommand.Answer.INCORRECT)
+                                                    .hasRating(1, AnswerCommand.Answer.CORRECT)
+                                        }
+                                        .hasQuestionStatistics(1) { questionStatistics ->
+                                            questionStatistics
+                                                    .hasQuestionId(freetextQuestion.id)
+                                                    .ratingSizeIs(1)
+                                                    .hasRating(0, AnswerCommand.Answer.CORRECT)
+                                        }
                             }
-                    }
-                    .hasQuestionStatistics(1) { questionStatistics ->
-                        questionStatistics
-                            .hasQuestionId(freetextQuestion.id)
-                            .answerStatisticsSizeIs(2)
-                            .hasAnswerStatistics(0) {
-                                it.isEqualTo(
-                                    AnswerStatistics(
-                                        participant1.id,
-                                        1L,
-                                        "Sergej Prokofjew",
-                                        rating = AnswerCommand.Answer.CORRECT
-                                    )
-                                )
+                            .hasParticipantStatistics(1) { participantStatistics ->
+                                participantStatistics
+                                        .hasParticipantId(participant2.id)
+                                        .questionStatisticsSizeIs(2)
+                                        .hasQuestionStatistics(0) { questionStatistics ->
+                                            questionStatistics
+                                                    .hasQuestionId(buzzerQuestion.id)
+                                                    .ratingSizeIs(0)
+                                        }
+                                        .hasQuestionStatistics(1) { questionStatistics ->
+                                            questionStatistics
+                                                    .hasQuestionId(freetextQuestion.id)
+                                                    .ratingSizeIs(0)
+                                        }
                             }
-                            .hasAnswerStatistics(1) {
-                                it.isEqualTo(
-                                    AnswerStatistics(
-                                        participant2.id,
-                                        2L,
-                                        "Max Mustermann"
-                                    )
-                                )
-                            }
-                    }
-            }
-            .verifyComplete()
-         */
+                }
+                .verifyComplete()
     }
 
     @Test
@@ -104,89 +96,81 @@ internal class QuizStatisticsProjectionTest {
 
         val buzzerQuestion = Question(question = "Wofür steht die Abkürzung a.D.?")
         val freetextQuestion =
-            Question(question = "Wer schrieb Peter und der Wolf?", initialTimeToAnswer = 45, estimates = HashMap())
+                Question(question = "Wer schrieb Peter und der Wolf?", initialTimeToAnswer = 45, estimates = HashMap())
         val questionToBeDeleted = Question(question = "Ich komme nicht ins Quiz")
         val participant1 = Participant(name = "Lena")
         val participant2 = Participant(name = "Erik")
 
         val eventRepository = mock(EventRepository::class.java)
         Mockito.`when`(eventRepository.determineEvents(quiz.id))
-            .thenReturn(
-                Flux.just(
-                    QuizCreatedEvent(quiz.id, quiz, 1, 1),
-                    QuestionCreatedEvent(quiz.id, buzzerQuestion, 2, 2),
-                    QuestionCreatedEvent(quiz.id, freetextQuestion, 3, 3),
-                    QuestionCreatedEvent(quiz.id, questionToBeDeleted, 4, 4),
-                    ParticipantCreatedEvent(quiz.id, participant1, 5, 5),
-                    ParticipantCreatedEvent(quiz.id, participant2, 6, 6),
-                    BuzzeredEvent(quiz.id, participant1.id, 7, 7),
-                    QuestionAskedEvent(quiz.id, buzzerQuestion.id, 8, 8),
-                    BuzzeredEvent(quiz.id, participant1.id, 9, 9),
-                    AnsweredEvent(quiz.id, participant1.id, AnswerCommand.Answer.INCORRECT, 10, 10),
-                    BuzzeredEvent(quiz.id, participant1.id, 11, 11),
-                    AnsweredEvent(quiz.id, participant1.id, AnswerCommand.Answer.CORRECT, 12, 12),
-                    QuestionAskedEvent(quiz.id, freetextQuestion.id, 13, 13),
-                    EstimatedEvent(quiz.id, participant1.id, "Sergej Prokofjew", 14, 14),
-                    EstimatedEvent(quiz.id, participant2.id, "Max Mustermann", 15, 15),
-                    AnsweredEvent(quiz.id, participant1.id, AnswerCommand.Answer.CORRECT, 16, 16),
-                    QuestionDeletedEvent(quiz.id, questionToBeDeleted.id, 17, 17),
-                    QuizFinishedEvent(quiz.id, 18, 18)
+                .thenReturn(
+                        Flux.just(
+                                QuizCreatedEvent(quiz.id, quiz, 1, 1),
+                                QuestionCreatedEvent(quiz.id, buzzerQuestion, 2, 2),
+                                QuestionCreatedEvent(quiz.id, freetextQuestion, 3, 3),
+                                QuestionCreatedEvent(quiz.id, questionToBeDeleted, 4, 4),
+                                ParticipantCreatedEvent(quiz.id, participant1, 5, 5),
+                                ParticipantCreatedEvent(quiz.id, participant2, 6, 6),
+                                BuzzeredEvent(quiz.id, participant1.id, 7, 7),
+                                QuestionAskedEvent(quiz.id, buzzerQuestion.id, 8, 8),
+                                BuzzeredEvent(quiz.id, participant1.id, 9, 9),
+                                AnsweredEvent(quiz.id, participant1.id, AnswerCommand.Answer.INCORRECT, 10, 10),
+                                BuzzeredEvent(quiz.id, participant1.id, 11, 11),
+                                AnsweredEvent(quiz.id, participant1.id, AnswerCommand.Answer.CORRECT, 12, 12),
+                                QuestionAskedEvent(quiz.id, freetextQuestion.id, 13, 13),
+                                EstimatedEvent(quiz.id, participant1.id, "Sergej Prokofjew", 14, 14),
+                                EstimatedEvent(quiz.id, participant2.id, "Max Mustermann", 15, 15),
+                                AnsweredEvent(quiz.id, participant1.id, AnswerCommand.Answer.CORRECT, 16, 16),
+                                QuestionDeletedEvent(quiz.id, questionToBeDeleted.id, 17, 17),
+                                QuizFinishedEvent(quiz.id, 18, 18)
+                        )
                 )
-            )
 
         val quizStatisticsProvider = QuizStatisticsProjection(
-            eventRepository,
-            mock(EventBus::class.java),
-            QuizStatisticsProjectionConfiguration(25, 1)
+                eventRepository,
+                mock(EventBus::class.java),
+                QuizStatisticsProjectionConfiguration(25, 1)
         )
-        // TODO: fix test
-        /*
+
         StepVerifier.create(quizStatisticsProvider.determineQuizStatistics(quiz.id))
-            .consumeNextWith { quizStatistics ->
-                assertThat(quizStatistics)
-                    .questionStatisticsSizeIs(2)
-                    .hasQuestionStatistics(0) { questionStatistics ->
-                        questionStatistics
-                            .hasQuestionId(buzzerQuestion.id)
-                            .answerStatisticsSizeIs(2)
-                            .hasAnswerStatistics(0) { it.isEqualTo(AnswerStatistics(participant1.id, 1L)) }
-                            .hasAnswerStatistics(1) {
-                                it.isEqualTo(
-                                    AnswerStatistics(
-                                        participant1.id,
-                                        3L,
-                                        rating = AnswerCommand.Answer.CORRECT
-                                    )
-                                )
+                .consumeNextWith { quizStatistics ->
+                    assertThat(quizStatistics)
+                            .participantStatisticsSizeIs(2)
+                            .hasParticipantStatistics(0) { participantStatistics ->
+                                participantStatistics
+                                        .hasParticipantId(participant1.id)
+                                        .questionStatisticsSizeIs(2)
+                                        .hasQuestionStatistics(0) { questionStatistics ->
+                                            questionStatistics
+                                                    .hasQuestionId(buzzerQuestion.id)
+                                                    .ratingSizeIs(2)
+                                                    .hasRating(0, AnswerCommand.Answer.INCORRECT)
+                                                    .hasRating(1, AnswerCommand.Answer.CORRECT)
+                                        }
+                                        .hasQuestionStatistics(1) { questionStatistics ->
+                                            questionStatistics
+                                                    .hasQuestionId(freetextQuestion.id)
+                                                    .ratingSizeIs(1)
+                                                    .hasRating(0, AnswerCommand.Answer.CORRECT)
+                                        }
                             }
-                    }
-                    .hasQuestionStatistics(1) { questionStatistics ->
-                        questionStatistics
-                            .hasQuestionId(freetextQuestion.id)
-                            .answerStatisticsSizeIs(2)
-                            .hasAnswerStatistics(0) {
-                                it.isEqualTo(
-                                    AnswerStatistics(
-                                        participant1.id,
-                                        1L,
-                                        "Sergej Prokofjew",
-                                        rating = AnswerCommand.Answer.CORRECT
-                                    )
-                                )
+                            .hasParticipantStatistics(1) { participantStatistics ->
+                                participantStatistics
+                                        .hasParticipantId(participant2.id)
+                                        .questionStatisticsSizeIs(2)
+                                        .hasQuestionStatistics(0) { questionStatistics ->
+                                            questionStatistics
+                                                    .hasQuestionId(buzzerQuestion.id)
+                                                    .ratingSizeIs(0)
+                                        }
+                                        .hasQuestionStatistics(1) { questionStatistics ->
+                                            questionStatistics
+                                                    .hasQuestionId(freetextQuestion.id)
+                                                    .ratingSizeIs(0)
+                                        }
                             }
-                            .hasAnswerStatistics(1) {
-                                it.isEqualTo(
-                                    AnswerStatistics(
-                                        participant2.id,
-                                        2L,
-                                        "Max Mustermann"
-                                    )
-                                )
-                            }
-                    }
-            }
-            .verifyComplete()
-         */
+                }
+                .verifyComplete()
     }
 
     @Test
@@ -195,11 +179,11 @@ internal class QuizStatisticsProjectionTest {
 
         val buzzerQuestion = Question(question = "Wofür steht die Abkürzung a.D.?")
         val freetextQuestion =
-            Question(question = "Wer schrieb Peter und der Wolf?", initialTimeToAnswer = 45, estimates = HashMap())
+                Question(question = "Wer schrieb Peter und der Wolf?", initialTimeToAnswer = 45, estimates = HashMap())
         val choice1 = Choice(choice = "Zugspitze")
         val choice2 = Choice(choice = "Brocken")
         val multipleChoiceQuestion =
-            Question(question = "Was ist der höchste Berg Deutschlands?", choices = listOf(choice1, choice2))
+                Question(question = "Was ist der höchste Berg Deutschlands?", choices = listOf(choice1, choice2))
         val participant1 = Participant(name = "Lena")
         val participant2 = Participant(name = "Erik")
 
@@ -207,9 +191,9 @@ internal class QuizStatisticsProjectionTest {
         val eventBus = EventBus()
 
         val quizStatisticsProjection = QuizStatisticsProjection(
-            eventRepository,
-            eventBus,
-            QuizStatisticsProjectionConfiguration(25, 1)
+                eventRepository,
+                eventBus,
+                QuizStatisticsProjectionConfiguration(25, 1)
         )
 
         eventBus.post(QuizCreatedEvent(quiz.id, quiz, 1, 1))
@@ -231,63 +215,56 @@ internal class QuizStatisticsProjectionTest {
         eventBus.post(AnsweredEvent(quiz.id, participant1.id, AnswerCommand.Answer.CORRECT, 17, 17))
         eventBus.post(AnsweredEvent(quiz.id, participant2.id, AnswerCommand.Answer.CORRECT, 18, 18))
         eventBus.post(QuizFinishedEvent(quiz.id, 19, 19))
-        // TODO: fix test
-        /*
-        StepVerifier.create(quizStatisticsProjection.determineQuizStatistics(quiz.id))
-            .consumeNextWith { quizStatistics ->
-                assertThat(quizStatistics)
-                    .questionStatisticsSizeIs(3)
-                    .hasQuestionStatistics(0) { questionStatistics ->
-                        questionStatistics
-                            .hasQuestionId(buzzerQuestion.id)
-                            .answerStatisticsSizeIs(1)
-                            .hasAnswerStatistics(0) { answerStatistics ->
-                                answerStatistics
-                                    .hasDuration(1L)
-                                    .hasParticipantId(participant1.id)
-                                    .isCorrect
-                            }
-                    }
-                    .hasQuestionStatistics(1) { questionStatistics ->
-                        questionStatistics
-                            .hasQuestionId(freetextQuestion.id)
-                            .answerStatisticsSizeIs(2)
-                            .hasAnswerStatistics(0) { answerStatistics ->
-                                answerStatistics
-                                    .hasDuration(1L)
-                                    .hasParticipantId(participant1.id)
-                                    .hasAnswer("Sergej Prokofjew")
-                                    .isCorrect
-                            }
-                            .hasAnswerStatistics(1) { answerStatistics ->
-                                answerStatistics
-                                    .hasDuration(2L)
-                                    .hasParticipantId(participant2.id)
-                                    .hasAnswer("Max Mustermann")
-                                    .isIncorrect
-                            }
-                    }
-                    .hasQuestionStatistics(2) { questionStatistics ->
-                        questionStatistics
-                            .hasQuestionId(multipleChoiceQuestion.id)
-                            .answerStatisticsSizeIs(2)
-                            .hasAnswerStatistics(0) { answerStatistics ->
-                                answerStatistics
-                                    .hasDuration(1L)
-                                    .hasParticipantId(participant1.id)
-                                    .hasChoiceId(choice1.id)
-                                    .isCorrect
-                            }
-                            .hasAnswerStatistics(1) { answerStatistics ->
-                                answerStatistics
-                                    .hasDuration(2L)
-                                    .hasParticipantId(participant2.id)
-                                    .hasChoiceId(choice1.id)
-                                    .isCorrect
-                            }
-                    }
-            }
-         */
 
+        StepVerifier.create(quizStatisticsProjection.determineQuizStatistics(quiz.id))
+                .consumeNextWith { quizStatistics ->
+                    assertThat(quizStatistics)
+                            .participantStatisticsSizeIs(2)
+                            .hasParticipantStatistics(0) { participantStatistics ->
+                                participantStatistics
+                                        .hasParticipantId(participant1.id)
+                                        .questionStatisticsSizeIs(3)
+                                        .hasQuestionStatistics(0) { questionStatistics ->
+                                            questionStatistics
+                                                    .hasQuestionId(buzzerQuestion.id)
+                                                    .ratingSizeIs(1)
+                                                    .hasRating(0, AnswerCommand.Answer.CORRECT)
+                                        }
+                                        .hasQuestionStatistics(1) { questionStatistics ->
+                                            questionStatistics
+                                                    .hasQuestionId(freetextQuestion.id)
+                                                    .ratingSizeIs(1)
+                                                    .hasRating(0, AnswerCommand.Answer.CORRECT)
+                                        }
+                                        .hasQuestionStatistics(2) { questionStatistics ->
+                                            questionStatistics
+                                                    .hasQuestionId(multipleChoiceQuestion.id)
+                                                    .ratingSizeIs(1)
+                                                    .hasRating(0, AnswerCommand.Answer.CORRECT)
+                                        }
+                            }
+                            .hasParticipantStatistics(1) { participantStatistics ->
+                                participantStatistics
+                                        .hasParticipantId(participant2.id)
+                                        .questionStatisticsSizeIs(3)
+                                        .hasQuestionStatistics(0) { questionStatistics ->
+                                            questionStatistics
+                                                    .hasQuestionId(buzzerQuestion.id)
+                                                    .ratingSizeIs(0)
+                                        }
+                                        .hasQuestionStatistics(1) { questionStatistics ->
+                                            questionStatistics
+                                                    .hasQuestionId(freetextQuestion.id)
+                                                    .ratingSizeIs(0)
+                                        }
+                                        .hasQuestionStatistics(2) { questionStatistics ->
+                                            questionStatistics
+                                                    .hasQuestionId(multipleChoiceQuestion.id)
+                                                    .ratingSizeIs(1)
+                                                    .hasRating(0, AnswerCommand.Answer.CORRECT)
+                                        }
+                            }
+                }
+                .verifyComplete()
     }
 }

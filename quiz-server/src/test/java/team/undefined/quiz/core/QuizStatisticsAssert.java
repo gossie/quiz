@@ -14,15 +14,15 @@ public class QuizStatisticsAssert extends AbstractAssert<QuizStatisticsAssert, Q
     public static QuizStatisticsAssert assertThat(QuizStatistics actual) {
         return new QuizStatisticsAssert(actual);
     }
-/*
-    public QuizStatisticsAssert questionStatisticsSizeIs(int size) {
-        Assertions.assertThat(actual.getQuestionStatistics()).hasSize(size);
+
+    public QuizStatisticsAssert participantStatisticsSizeIs(int size) {
+        Assertions.assertThat(actual.getParticipantStatistics()).hasSize(size);
         return this;
     }
 
-    public QuizStatisticsAssert hasQuestionStatistics(int index, Consumer<QuestionStatisticsAssert> consumer) {
-        consumer.accept(QuestionStatisticsAssert.assertThat(actual.getQuestionStatistics().get(index)));
+    public QuizStatisticsAssert hasParticipantStatistics(int index, Consumer<ParticipantStatisticAssert> consumer) {
+        consumer.accept(ParticipantStatisticAssert.assertThat(actual.getParticipantStatistics().get(index)));
         return this;
     }
- */
+
 }

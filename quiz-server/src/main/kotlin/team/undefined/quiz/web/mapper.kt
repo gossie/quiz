@@ -27,14 +27,14 @@ private fun QuizStatistics.map(quiz: QuizDTO): QuizStatisticsDTO {
 
 private fun ParticipantStatistics.map(quiz: QuizDTO): ParticipantStatisticsDTO {
     return ParticipantStatisticsDTO(
-            quiz.participants.find { it.id == this.id },
+            quiz.participants.find { it.id == this.participantId },
             this.questionStatistics.map { it.map(quiz) }
     )
 }
 
 private fun QuestionStatistics.map(quiz: QuizDTO): QuestionStatisticsDTO {
     return QuestionStatisticsDTO(
-            quiz.playedQuestions.find { it.id == this.id }!!,
+            quiz.playedQuestions.find { it.id == this.questionId }!!,
             this.ratings
     )
 }

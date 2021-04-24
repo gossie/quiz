@@ -19,13 +19,13 @@ data class QuizStatistics(
     }
 
     fun deleteParticipantStatistics(participantId: UUID): QuizStatistics {
-        val newParticipantStatistics = participantStatistics.filter { it.id != participantId }
+        val newParticipantStatistics = participantStatistics.filter { it.participantId != participantId }
         return QuizStatistics(newParticipantStatistics)
     }
 
     fun handleAnswer(participantId: UUID, answer: AnswerCommand.Answer): QuizStatistics {
         val newParticipantStatistics = participantStatistics.map {
-            if (it.id == participantId) {
+            if (it.participantId == participantId) {
                 it.handleRating(answer)
             } else {
                 it
@@ -37,13 +37,13 @@ data class QuizStatistics(
 }
 
 data class ParticipantStatistics(
-        val id: UUID,
+        val participantId: UUID,
         val questionStatistics: List<QuestionStatistics> = ArrayList()
 ) {
     fun addQuestionStatistic(questionStatistic: QuestionStatistics): ParticipantStatistics {
         val newQuestionStatistics = ArrayList(questionStatistics)
         newQuestionStatistics.add(questionStatistic)
-        return ParticipantStatistics(id, newQuestionStatistics)
+        return ParticipantStatistics(participantId, newQuestionStatistics)
     }
 
     fun handleRating(rating: AnswerCommand.Answer): ParticipantStatistics {
@@ -54,17 +54,17 @@ data class ParticipantStatistics(
                 question
             }
         }
-        return ParticipantStatistics(id, newQuestionStatistics)
+        return ParticipantStatistics(participantId, newQuestionStatistics)
     }
 }
 
 data class QuestionStatistics(
-        val id: UUID,
+        val questionId: UUID,
         val ratings: List<AnswerCommand.Answer> = ArrayList()
 ) {
     fun addRating(rating: AnswerCommand.Answer): QuestionStatistics {
         val newRatings = ArrayList(ratings)
         newRatings.add(rating)
-        return QuestionStatistics(id, newRatings)
+        return QuestionStatistics(questionId, newRatings)
     }
 }
