@@ -1360,7 +1360,7 @@ internal class QuizMasterIT {
                             .hasChoice(0) { choice -> choice.hasChoice("Im Fuß") }
                             .hasChoice(1) { choice -> choice.hasChoice("In der Hand") }
                 }
-                .hasPlayedQuestion(0) { playedQuestion ->
+                .hasPlayedQuestion(2) { playedQuestion ->
                     playedQuestion
                             .hasQuestion("Was ist ein Robo-Advisor?")
                             .hasAnswerNote("Ein algorithmen gesteuertes Dings")
