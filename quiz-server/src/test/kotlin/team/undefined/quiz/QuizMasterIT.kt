@@ -1376,10 +1376,6 @@ internal class QuizMasterIT {
                 .hasParticipant(1) { it.hasName("Lena").hasPoints(6).doesNotAllowReveal().isNotTurn }
                 .undoIsPossible()
                 .redoIsNotPossible()
-                .hasQuizStatistics { quizStatistics ->
-                    quizStatistics
-                            .participantStatisticsSizeIs(2)
-                }
                 .isFinished
     }
 }
