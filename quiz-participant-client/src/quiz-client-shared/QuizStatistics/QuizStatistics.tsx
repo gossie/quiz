@@ -1,4 +1,4 @@
-import React, { useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import Quiz from "../quiz";
 import './QuizStatistics.scss';
@@ -26,7 +26,7 @@ const QuizStatistics: React.FC<QuizStatisticsProps> = (props: QuizStatisticsProp
 
     const { t } = useTranslation();
 
-    if (canvasReference.current) {
+    useEffect(() => {
         const canvas: HTMLCanvasElement = canvasReference.current;
         canvas.width = 620;
         canvas.height = 465;
@@ -85,7 +85,7 @@ const QuizStatistics: React.FC<QuizStatisticsProps> = (props: QuizStatisticsProp
             ctx.stroke();
             ctx.closePath();
         });
-    }
+    }, [props.quiz.participants, props.quiz.quizStatistics.participantStatistics]);
 
     const determineLegend = () => {
         const trs = props.quiz.quizStatistics.participantStatistics
@@ -95,7 +95,9 @@ const QuizStatistics: React.FC<QuizStatisticsProps> = (props: QuizStatisticsProp
                 participant: p,
                 markup: (
                     <tr>
-                        <td width="100" style={{backgroundColor: COLORS[index]}}></td>
+                        <td width="100">
+                            <span style={{backgroundColor: COLORS[index], width: "100%", height: '2px', display: 'inline-block', verticalAlign: 'middle'}} />
+                        </td>
                         <td width="10" />
                         <td>{p.name}</td>
                         <td width="10" />
