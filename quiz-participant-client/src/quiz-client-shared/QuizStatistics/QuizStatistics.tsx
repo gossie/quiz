@@ -85,7 +85,7 @@ const QuizStatistics: React.FC<QuizStatisticsProps> = (props: QuizStatisticsProp
             ctx.stroke();
             ctx.closePath();
         });
-    }, [props.quiz.participants, props.quiz.quizStatistics.participantStatistics]);
+    }, [props.quiz.participants, props.quiz.quizStatistics?.participantStatistics]);
 
     const determineLegend = () => {
         const trs = props.quiz.quizStatistics.participantStatistics
