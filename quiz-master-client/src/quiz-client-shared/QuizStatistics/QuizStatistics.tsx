@@ -89,16 +89,22 @@ const QuizStatistics: React.FC<QuizStatisticsProps> = (props: QuizStatisticsProp
 
     const determineLegend = () => {
         const trs = props.quiz.quizStatistics.participantStatistics
+            .filter(p => p.participant)
             .map(p => p.participant)
-            .map((p, index) => (
-                <tr>
-                    <td width="100" style={{backgroundColor: COLORS[index]}}></td>
-                    <td width="10" />
-                    <td>{p.name}</td>
-                    <td width="10" />
-                    <td>{p.points} {t('labelPoints')}</td>
-                </tr>
-            ));
+            .map((p, index) => ({
+                participant: p,
+                markup: (
+                    <tr>
+                        <td width="100" style={{backgroundColor: COLORS[index]}}></td>
+                        <td width="10" />
+                        <td>{p.name}</td>
+                        <td width="10" />
+                        <td>{p.points} {t('labelPoints')}</td>
+                    </tr>
+                )
+            }))
+            .sort((o1, o2) => o2.participant.points - o1.participant.points)
+            .map(o => o.markup);
         return (
             <table>
                 <tbody>

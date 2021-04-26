@@ -6,7 +6,6 @@ import Estimation from './estimation/Estimation';
 import MultipleChoice from './multiple-choice/MultipleChoice';
 import Image from './Image';
 import Countdown from '../quiz-client-shared/Countdown/Countdown';
-import { useTranslation } from 'react-i18next';
 
 interface QuestionProps {
     quiz: Quiz;
@@ -14,7 +13,6 @@ interface QuestionProps {
 }
 
 const Question: React.FC<QuestionProps> = (props: QuestionProps) => {
-    const { t } = useTranslation();
 
     const pendingQuestion = props.quiz.openQuestions.find(question => question.pending)
     const hasImage = pendingQuestion?.imagePath !== '';
