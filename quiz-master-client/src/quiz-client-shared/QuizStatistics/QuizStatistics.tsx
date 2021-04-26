@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import Quiz from "../quiz";
 import './QuizStatistics.scss';
@@ -26,7 +26,7 @@ const QuizStatistics: React.FC<QuizStatisticsProps> = (props: QuizStatisticsProp
 
     const { t } = useTranslation();
 
-    useEffect(() => {
+    if (canvasReference.current) {
         const canvas: HTMLCanvasElement = canvasReference.current;
         canvas.width = 620;
         canvas.height = 465;
@@ -85,7 +85,7 @@ const QuizStatistics: React.FC<QuizStatisticsProps> = (props: QuizStatisticsProp
             ctx.stroke();
             ctx.closePath();
         });
-    }, [props.quiz.participants, props.quiz.playedQuestions.length, props.quiz.quizStatistics?.participantStatistics]);
+    }
 
     const determineLegend = () => {
         const trs = props.quiz.quizStatistics.participantStatistics
