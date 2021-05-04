@@ -11,12 +11,17 @@ import java.util.function.Consumer;
 
 public class ParticipantStatisticsDTOAssert extends AbstractAssert<ParticipantStatisticsDTOAssert, ParticipantStatisticsDTO> {
 
-    private ParticipantStatisticsDTOAssert(ParticipantStatisticsDTO participantStatistics) {
-        super(participantStatistics, ParticipantStatisticAssert.class);
+    private ParticipantStatisticsDTOAssert(ParticipantStatisticsDTO participantStatisticsDTO) {
+        super(participantStatisticsDTO, ParticipantStatisticsDTOAssert.class);
     }
 
-    public static ParticipantStatisticsDTOAssert assertThat(ParticipantStatisticsDTO participantStatistics) {
-        return new ParticipantStatisticsDTOAssert(participantStatistics);
+    public static ParticipantStatisticsDTOAssert assertThat(ParticipantStatisticsDTO participantStatisticsDTO) {
+        return new ParticipantStatisticsDTOAssert(participantStatisticsDTO);
+    }
+
+    public ParticipantStatisticsDTOAssert hasParticipant(ParticipantDTO participant) {
+        Assertions.assertThat(actual.getParticipant()).isEqualTo(participant);
+        return this;
     }
 
     public ParticipantStatisticsDTOAssert questionStatisticsSizeIs(int size) {

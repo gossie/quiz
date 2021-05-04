@@ -9,6 +9,7 @@ import reactor.core.publisher.Mono
 import reactor.kotlin.core.publisher.switchIfEmpty
 import java.time.Duration
 import java.util.*
+import java.util.concurrent.Semaphore
 
 @Component
 class QuizStatisticsProjection(
@@ -88,6 +89,21 @@ class QuizStatisticsProjection(
                 statistics.put(event.quizId, it.handleAnswer(event.participantId, event.answer))
                 logger.info("handled AnsweredEvent")
             }
+    }
+
+    @Subscribe
+    fun handleReloadQuizCommand(command: ReloadQuizCommand) {
+        eventRepository.determineEvents(command.quizId)
+                .reduce(QuizStatistics()) { quizStatistics, event ->
+                    when (event) {
+                        is ParticipantCreatedEvent -> quizStatistics.addParticipantStatistics(ParticipantStatistics(event.participant.id))
+                        is ParticipantDeletedEvent -> quizStatistics.deleteParticipantStatistics(event.participantId)
+                        is QuestionAskedEvent -> quizStatistics.addQuestionStatistic(QuestionStatistics(event.questionId))
+                        is AnsweredEvent -> quizStatistics.handleAnswer(event.participantId, event.answer)
+                        else -> quizStatistics
+                    }
+                }
+                .subscribe { statistics.put(command.quizId, it) }
     }
 
     fun determineQuizStatistics(quizId: UUID): Mono<QuizStatistics> {
