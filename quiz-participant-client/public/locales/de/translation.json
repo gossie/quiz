@@ -31,6 +31,17 @@
     "answerStatisticWithoutAnswer": "{{participantName}} hat nach {{time}} Sekunden geantwortet und es war {{rating}}",
     "buzzerStatistic": "{{participantName}} hat nach {{time}} Sekunden gebuzzert und es war {{rating}}",
     "labelPoints": "Punkte",
+    "titleQuizStatistics": "Quizverlauf",
+    "titleQuestionStatistics": "Fragenverteilung",
+    "categoryOther": "Sonstiges",
+    "categoryHistory": "Geschichte",
+    "categoryScience": "Wissenschaft",
+    "categoryPolitics": "Politik",
+    "categoryGeography": "Geographie",
+    "categoryLiterature": "Literatur",
+    "categoryMusic": "Musik",
+    "categoryMovies": "Filme / TV",
+    "categorySport": "Sport",
 
     "footerQuestion": "Du willst nicht nur teilnehmen, sondern selber ein Quiz veranstalten?",
     "footerLink": "Dann los!"

@@ -77,6 +77,8 @@
     "answerStatisticAllowedAnswer": "{{participantName}} hat nach {{time}} Sekunden mit '{{answer}}' geantwortet und es war {{rating}}",
     "answerStatisticWithoutAnswer": "{{participantName}} hat nach {{time}} Sekunden geantwortet und es war {{rating}}",
     "buzzerStatistic": "{{participantName}} hat nach {{time}} Sekunden gebuzzert und es war {{rating}}",
+    "titleQuizStatistics": "Quizverlauf",
+    "titleQuestionStatistics": "Fragenverteilung",
 
     "errorMessageConflict": "Das Quiz wurde beendet und kann deshalb nicht mehr geändert werden. Falls das ein Versehen war, kann das Quiz per undo wieder geöffnent werden."
 }
