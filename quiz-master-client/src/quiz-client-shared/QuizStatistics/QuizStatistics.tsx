@@ -182,10 +182,10 @@ const QuizStatistics: React.FC<QuizStatisticsProps> = (props: QuizStatisticsProp
                     <div className="modal-background"></div>
                     <div className="modal-content">
                         <div className="content">
-                            <h1 className="title">Quizverlauf</h1>
+                            <h1 className="title">{t('titleQuizStatistics')}</h1>
                             { determineLegend() }
                             <canvas id="quiz-statistics-display" ref={quizCanvasReference} width="620" height="465" />
-                            <h1 className="title">Fragenverteilung</h1>
+                            <h1 className="title">{t('titleQuestionStatistics')}</h1>
                             <canvas id="question-statistics-display" ref={questionCanvasReference} width="620" height="465" />
                         </div>
                     </div>

@@ -19,7 +19,8 @@ export interface Choice {
 
 export interface Question {
     id: string;
-    question: string
+    question: string;
+    category: string;
     imagePath?: string;
     estimates?: object,
     choices?: Array<Choice>;

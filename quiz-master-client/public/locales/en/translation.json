@@ -77,6 +77,8 @@
     "answerStatisticAllowedAnswer": "{{participantName}} has answered '{{answer}}' after {{time}} seconds and it was {{rating}}",
     "answerStatisticWithoutAnswer": "{{participantName}} has answered after {{time}} seconds and it was {{rating}}",
     "buzzerStatistic": "{{participantName}} has buzzered after {{time}} seconds and it was {{rating}}",
+    "titleQuizStatistics": "Quiz development",
+    "titleQuestionStatistics": "Question distribution",
 
     "errorMessageConflict": "The quiz has already been closed and cannot be changed anymore. If that was an accident you can undo that action."
 }
