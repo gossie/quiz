@@ -16,6 +16,7 @@
 
     "placeholderAnswer": "Answer",
     "buttonAnswer": "Answer",
+    "buttonLoadAnswer": "Load answer",
     "errorEstimation": "Something went wrong. Please send the data again.",
 
     "buzzerOpen": "I know it!",

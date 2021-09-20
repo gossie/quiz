@@ -53,18 +53,28 @@ const Estimation: React.FC<EstimationProps> = (props: EstimationProps) => {
         });
     }
 
+    const loadAnswer = () => setEstimation(currentAnswer);
+
     return (
         <span>
             <div className="field">
                 <div className="control">
-                    <input data-testid="estimation"
-                           value={estimation}
-                           onChange={ev => setEstimation(ev.target.value)}
-                           onKeyUp={ev => {if (ev.keyCode === 13) sendEstimation()}}
-                           className="input"
-                           type="text"
-                           placeholder={currentAnswer}
-                           disabled={disabled} />
+                    <div className="columns">
+                        <input data-testid="estimation"
+                            value={estimation}
+                            onChange={ev => setEstimation(ev.target.value)}
+                            onKeyUp={ev => {if (ev.keyCode === 13) sendEstimation()}}
+                            className="input"
+                            type="text"
+                            placeholder={currentAnswer}
+                            disabled={disabled} />
+                        { 
+                            currentAnswer &&
+                            <button data-testid="load" onClick={loadAnswer} className="button" disabled={disabled}>
+                                {t('buttonLoadAnswer')}
+                            </button>
+                        }
+                    </div>
                 </div>
             </div>
             <div className="field is-grouped">
