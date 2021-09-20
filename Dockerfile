@@ -1,4 +1,4 @@
-FROM maven:3.6.3-jdk-14
+FROM maven:3.8.2-openjdk-16
 VOLUME /tmp
 ARG JAR_FILE
 WORKDIR /app
