@@ -8,6 +8,8 @@ import org.slf4j.LoggerFactory
 import org.json.JSONObject
 import org.springframework.boot.CommandLineRunner
 import org.springframework.boot.autoconfigure.SpringBootApplication
+import org.springframework.boot.autoconfigure.condition.ConditionalOnCloudPlatform
+import org.springframework.boot.cloud.CloudPlatform
 import org.springframework.boot.runApplication
 import org.springframework.context.annotation.Bean
 import reactor.core.publisher.Flux
@@ -32,6 +34,7 @@ class QuizApplication {
     }
 
     @Bean
+    @ConditionalOnCloudPlatform(CloudPlatform.HEROKU)
     fun events(eventBus: EventBus, objectMapper: ObjectMapper, repo: EventRepository): CommandLineRunner {
         return (CommandLineRunner {
             val input = javaClass.getResourceAsStream("01_events.json")!!
