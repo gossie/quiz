@@ -16,4 +16,29 @@ To spin up the whole system just run `docker-compose up`. As a result there will
 
 ## API
 
-|URL|Possible Status codes|
+URL | Method | Possible Status codes | Description
+----|--------|-----------------------|------------
+/api/quiz | POST | 201 | Creates a new quiz
+/api/quiz/{quizId} | PUT | 200 | Reopens the current question of the quiz
+/api/quiz/{quizId} | PATCH | 200 | Reveals the participants' answers for the current question 
+/api/quiz/{quizId} | POST | 200 | Finishes the quiz and creates final statistics
+/api/quiz/{quizId}/undo | DELETE | 200 | Reverts the last action performed on the quiz
+/api/quiz/{quizId}/redo | POST | 200 | Perform a redo
+/api/quiz/{quizId}/questions | POST | 201, 409 | Creates a new question
+/api/quiz/{quizId}/questions/{questionId} | PUT | 201, 409 | The question is edited
+/api/quiz/{quizId}/questions/{questionId} | PATCH | 201, 409 | The question is asked
+/api/quiz/{quizId}/questions/{questionId} | DELETE | 201, 409 | The question is deleted
+/api/quiz/{quizId}/participants | POST | 201, 400, 404, 409 | Creates a new participant
+/api/quiz/{quizId}/participants/{participantId} | DELETE | 200, 409 | A participant is removed from the quiz
+/api/quiz/{quizId}/participants/{participantId}/answers | POST | 200, 409 | Rates a participant's answer as correct or incorrect
+/api/quiz/{quizId}/participants/{participantId}/buzzer | PUT | 200, 409 | A participant has buzzered or has sent a freetext answer
+/api/quiz/{quizId}/participants/{participantId}/choices/{choiceId} | PUT | 200, 409 | A participant has selected an option of a multiple choice question
+/api/quiz/{quizId}/participants/{participantId}/togglereveal | PUT | 200, 409 | A participant activates or deactivates that his or her answers can be seen by other participants
+/api/questionPool | GET | 200 | Returns the questions that were already played, so some can be copied into a new quiz
+
+The application uses server sent events to broadcast actions to all participants of the quiz.
+
+URL | Description
+----|------------
+/api/quiz/{quizId}/quiz-master | 
+/api/quiz/{quizId}/quiz-participant | 
