@@ -37,17 +37,18 @@ class QuizApplication {
     @ConditionalOnCloudPlatform(CloudPlatform.HEROKU)
     fun events(eventBus: EventBus, objectMapper: ObjectMapper, repo: EventRepository): CommandLineRunner {
         return (CommandLineRunner {
-            val input = javaClass.getResourceAsStream("01_events.json")!!
-            val buffer = BufferedReader(InputStreamReader(input));
-            var content = ""
-            var line = buffer.readLine()
-            while (line != null) {
-                content +=  line
-                line = buffer.readLine();
+
+            val values01 = readFileContent("01_events.json").getJSONArray("values")
+            values01.forEach {
+                val eventType = (it as JSONArray).get(2) as String
+                val event = it.get(4) as String
+                val domainEvent = objectMapper.readValue(event, Class.forName(eventType))
+                val myEvent = Event::class.java.cast(domainEvent)
+                eventBus.post(myEvent)
             }
-            val json = JSONObject(content)
-            val values = json.getJSONArray("values")
-            values.forEach {
+
+            val values02 = readFileContent("02_events.json").getJSONArray("values")
+            values02.forEach {
                 val eventType = (it as JSONArray).get(2) as String
                 val event = it.get(4) as String
                 val domainEvent = objectMapper.readValue(event, Class.forName(eventType))
@@ -60,6 +61,18 @@ class QuizApplication {
                         eventBus.post(it)
                     }
         })
+    }
+
+    private fun readFileContent(filename: String): JSONObject {
+        val input = javaClass.getResourceAsStream(filename)!!
+        val buffer = BufferedReader(InputStreamReader(input));
+        var content = ""
+        var line = buffer.readLine()
+        while (line != null) {
+            content +=  line
+            line = buffer.readLine();
+        }
+        return JSONObject(content)
     }
 
 /*
