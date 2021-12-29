@@ -37,7 +37,7 @@ class QuizApplication {
     @ConditionalOnCloudPlatform(CloudPlatform.HEROKU)
     fun events(eventBus: EventBus, objectMapper: ObjectMapper, repo: EventRepository): CommandLineRunner {
         return (CommandLineRunner {
-
+            logger.info("import first batch of events")
             val values01 = readFileContent("01_events.json").getJSONArray("values")
             values01.forEach {
                 val eventType = (it as JSONArray).get(2) as String
@@ -47,6 +47,7 @@ class QuizApplication {
                 eventBus.post(myEvent)
             }
 
+            logger.info("import second batch of events")
             val values02 = readFileContent("02_events.json").getJSONArray("values")
             values02.forEach {
                 val eventType = (it as JSONArray).get(2) as String
