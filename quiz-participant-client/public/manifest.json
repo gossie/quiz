@@ -1,9 +1,0 @@
-{
-  "short_name": "Quiz participant app",
-  "name": "Quiz participant app",
-  "icons": [],
-  "start_url": ".",
-  "display": "standalone",
-  "theme_color": "#000000",
-  "background_color": "#ffffff"
-}
