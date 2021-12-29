@@ -1,26 +1,20 @@
 package team.undefined.quiz
 
-import com.fasterxml.jackson.annotation.JsonGetter
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.google.common.eventbus.EventBus
 import org.json.JSONArray
-import org.slf4j.LoggerFactory
 import org.json.JSONObject
+import org.slf4j.LoggerFactory
 import org.springframework.boot.CommandLineRunner
 import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.boot.autoconfigure.condition.ConditionalOnCloudPlatform
 import org.springframework.boot.cloud.CloudPlatform
 import org.springframework.boot.runApplication
 import org.springframework.context.annotation.Bean
-import reactor.core.publisher.Flux
-import team.undefined.quiz.core.DeleteQuizCommand
 import team.undefined.quiz.core.Event
 import team.undefined.quiz.core.EventRepository
-import team.undefined.quiz.core.QuizService
 import java.io.BufferedReader
 import java.io.InputStreamReader
-import java.time.Duration
-import java.util.*
 
 @SpringBootApplication
 class QuizApplication {
@@ -52,23 +46,7 @@ class QuizApplication {
             val values02 = readFileContent("02_events.json").getJSONArray("values")
             values02.forEach {
                 val eventType = (it as JSONArray).get(2) as String
-                val event = it.get(4) as String
-                val domainEvent = objectMapper.readValue(event, Class.forName(eventType))
-                val myEvent = Event::class.java.cast(domainEvent)
-                eventBus.post(myEvent)
-            }
-        })
-    }
-
-    @Bean
-    @ConditionalOnCloudPlatform(CloudPlatform.HEROKU)
-    fun events02(eventBus: EventBus, objectMapper: ObjectMapper, repo: EventRepository): CommandLineRunner {
-        return (CommandLineRunner {
-            logger.info("import second batch of events")
-            val values02 = readFileContent("02_events.json").getJSONArray("values")
-            values02.forEach {
-                val eventType = (it as JSONArray).get(2) as String
-                val event = it.get(4) as String
+                val event = it.get(5) as String
                 val domainEvent = objectMapper.readValue(event, Class.forName(eventType))
                 val myEvent = Event::class.java.cast(domainEvent)
                 eventBus.post(myEvent)
