@@ -33,6 +33,7 @@ class QuizApplication {
         return EventBus()
     }
 
+    /*
     @Bean
     @ConditionalOnCloudPlatform(CloudPlatform.HEROKU)
     fun events(eventBus: EventBus, objectMapper: ObjectMapper, repo: EventRepository): CommandLineRunner {
@@ -75,6 +76,7 @@ class QuizApplication {
         }
         return JSONObject(content)
     }
+    */
 
 /*
     @Bean
