@@ -87,7 +87,6 @@ class QuizApplication {
         }
         return JSONObject(content)
     }
-    */
 
 /*
     @Bean
