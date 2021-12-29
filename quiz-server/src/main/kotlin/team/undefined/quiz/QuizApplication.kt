@@ -33,10 +33,10 @@ class QuizApplication {
         return EventBus()
     }
 
-    /*
+
     @Bean
     @ConditionalOnCloudPlatform(CloudPlatform.HEROKU)
-    fun events(eventBus: EventBus, objectMapper: ObjectMapper, repo: EventRepository): CommandLineRunner {
+    fun events01(eventBus: EventBus, objectMapper: ObjectMapper, repo: EventRepository): CommandLineRunner {
         return (CommandLineRunner {
             logger.info("import first batch of events")
             val values01 = readFileContent("01_events.json").getJSONArray("values")
@@ -57,11 +57,22 @@ class QuizApplication {
                 val myEvent = Event::class.java.cast(domainEvent)
                 eventBus.post(myEvent)
             }
+        })
+    }
 
-            repo.determineEvents()
-                    .subscribe {
-                        eventBus.post(it)
-                    }
+    @Bean
+    @ConditionalOnCloudPlatform(CloudPlatform.HEROKU)
+    fun events02(eventBus: EventBus, objectMapper: ObjectMapper, repo: EventRepository): CommandLineRunner {
+        return (CommandLineRunner {
+            logger.info("import second batch of events")
+            val values02 = readFileContent("02_events.json").getJSONArray("values")
+            values02.forEach {
+                val eventType = (it as JSONArray).get(2) as String
+                val event = it.get(4) as String
+                val domainEvent = objectMapper.readValue(event, Class.forName(eventType))
+                val myEvent = Event::class.java.cast(domainEvent)
+                eventBus.post(myEvent)
+            }
         })
     }
 
