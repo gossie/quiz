@@ -1,0 +1,52 @@
+# this is an auto generated file. This will be overwritten
+mutation CreateEvent(
+  $input: CreateEventInput!
+  $condition: ModelEventConditionInput
+) {
+  createEvent(input: $input, condition: $condition) {
+    id
+    aggregateId
+    type
+    sequenceNumber
+    createdAt
+    domainEvent
+    updatedAt
+    _version
+    _deleted
+    _lastChangedAt
+  }
+}
+mutation UpdateEvent(
+  $input: UpdateEventInput!
+  $condition: ModelEventConditionInput
+) {
+  updateEvent(input: $input, condition: $condition) {
+    id
+    aggregateId
+    type
+    sequenceNumber
+    createdAt
+    domainEvent
+    updatedAt
+    _version
+    _deleted
+    _lastChangedAt
+  }
+}
+mutation DeleteEvent(
+  $input: DeleteEventInput!
+  $condition: ModelEventConditionInput
+) {
+  deleteEvent(input: $input, condition: $condition) {
+    id
+    aggregateId
+    type
+    sequenceNumber
+    createdAt
+    domainEvent
+    updatedAt
+    _version
+    _deleted
+    _lastChangedAt
+  }
+}

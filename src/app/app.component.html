@@ -1,1 +1,15 @@
-<router-outlet></router-outlet>
+<div>
+    <form
+        autocomplete="off"
+        [formGroup]="createForm"
+        (ngSubmit)="createEvent(createForm.value)"
+    >
+        <div>
+            <label>Name: </label>
+            <input type="text" formControlName="name" autocomplete="off" />
+        </div>
+        <button type="submit">Submit</button>
+    </form>
+
+    <router-outlet></router-outlet>
+</div>

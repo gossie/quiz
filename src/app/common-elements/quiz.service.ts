@@ -9,7 +9,7 @@ export class QuizService {
     constructor() { }
 
     public hasQuiz(): boolean {
-        return false;
+        return true;
     }
 
 }

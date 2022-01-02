@@ -1,0 +1,43 @@
+# this is an auto generated file. This will be overwritten
+subscription OnCreateEvent {
+  onCreateEvent {
+    id
+    aggregateId
+    type
+    sequenceNumber
+    createdAt
+    domainEvent
+    updatedAt
+    _version
+    _deleted
+    _lastChangedAt
+  }
+}
+subscription OnUpdateEvent {
+  onUpdateEvent {
+    id
+    aggregateId
+    type
+    sequenceNumber
+    createdAt
+    domainEvent
+    updatedAt
+    _version
+    _deleted
+    _lastChangedAt
+  }
+}
+subscription OnDeleteEvent {
+  onDeleteEvent {
+    id
+    aggregateId
+    type
+    sequenceNumber
+    createdAt
+    domainEvent
+    updatedAt
+    _version
+    _deleted
+    _lastChangedAt
+  }
+}
