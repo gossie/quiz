@@ -5,6 +5,7 @@ import { LoginPageComponent } from './login-page/login-page.component';
 import { QuizHostComponent } from './quiz-host.component';
 
 const routes: Routes = [
+    { path: '', redirectTo: 'quiz', pathMatch: 'full' },
     { path: 'quiz', component: QuizHostComponent, canActivate: [AuthGuard] },
     { path: 'login', component: LoginPageComponent }
 ];
