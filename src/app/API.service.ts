@@ -144,11 +144,26 @@ export type ModelEventFilterInput = {
   not?: ModelEventFilterInput | null;
 };
 
+export enum ModelSortDirection {
+  ASC = "ASC",
+  DESC = "DESC"
+}
+
 export type ModelEventConnection = {
   __typename: "ModelEventConnection";
   items: Array<Event | null>;
   nextToken?: string | null;
   startedAt?: number | null;
+};
+
+export type ModelStringKeyConditionInput = {
+  eq?: string | null;
+  le?: string | null;
+  lt?: string | null;
+  ge?: string | null;
+  gt?: string | null;
+  between?: Array<string | null> | null;
+  beginsWith?: string | null;
 };
 
 export type CreateEventMutation = {
@@ -227,6 +242,25 @@ export type ListEventsQuery = {
 };
 
 export type SyncEventsQuery = {
+  __typename: "ModelEventConnection";
+  items: Array<{
+    __typename: "Event";
+    id: string;
+    aggregateId?: string | null;
+    type?: string | null;
+    sequenceNumber?: number | null;
+    createdAt?: string | null;
+    domainEvent?: string | null;
+    updatedAt: string;
+    _version: number;
+    _deleted?: boolean | null;
+    _lastChangedAt: number;
+  } | null>;
+  nextToken?: string | null;
+  startedAt?: number | null;
+};
+
+export type EventsByAggregateIdQuery = {
   __typename: "ModelEventConnection";
   items: Array<{
     __typename: "Event";
@@ -406,12 +440,14 @@ export class APIService {
     return <GetEventQuery>response.data.getEvent;
   }
   async ListEvents(
+    id?: string,
     filter?: ModelEventFilterInput,
     limit?: number,
-    nextToken?: string
+    nextToken?: string,
+    sortDirection?: ModelSortDirection
   ): Promise<ListEventsQuery> {
-    const statement = `query ListEvents($filter: ModelEventFilterInput, $limit: Int, $nextToken: String) {
-        listEvents(filter: $filter, limit: $limit, nextToken: $nextToken) {
+    const statement = `query ListEvents($id: ID, $filter: ModelEventFilterInput, $limit: Int, $nextToken: String, $sortDirection: ModelSortDirection) {
+        listEvents(id: $id, filter: $filter, limit: $limit, nextToken: $nextToken, sortDirection: $sortDirection) {
           __typename
           items {
             __typename
@@ -431,6 +467,9 @@ export class APIService {
         }
       }`;
     const gqlAPIServiceArguments: any = {};
+    if (id) {
+      gqlAPIServiceArguments.id = id;
+    }
     if (filter) {
       gqlAPIServiceArguments.filter = filter;
     }
@@ -439,6 +478,9 @@ export class APIService {
     }
     if (nextToken) {
       gqlAPIServiceArguments.nextToken = nextToken;
+    }
+    if (sortDirection) {
+      gqlAPIServiceArguments.sortDirection = sortDirection;
     }
     const response = (await API.graphql(
       graphqlOperation(statement, gqlAPIServiceArguments)
@@ -488,6 +530,58 @@ export class APIService {
       graphqlOperation(statement, gqlAPIServiceArguments)
     )) as any;
     return <SyncEventsQuery>response.data.syncEvents;
+  }
+  async EventsByAggregateId(
+    aggregateId?: string,
+    createdAt?: ModelStringKeyConditionInput,
+    sortDirection?: ModelSortDirection,
+    filter?: ModelEventFilterInput,
+    limit?: number,
+    nextToken?: string
+  ): Promise<EventsByAggregateIdQuery> {
+    const statement = `query EventsByAggregateId($aggregateId: ID, $createdAt: ModelStringKeyConditionInput, $sortDirection: ModelSortDirection, $filter: ModelEventFilterInput, $limit: Int, $nextToken: String) {
+        eventsByAggregateId(aggregateId: $aggregateId, createdAt: $createdAt, sortDirection: $sortDirection, filter: $filter, limit: $limit, nextToken: $nextToken) {
+          __typename
+          items {
+            __typename
+            id
+            aggregateId
+            type
+            sequenceNumber
+            createdAt
+            domainEvent
+            updatedAt
+            _version
+            _deleted
+            _lastChangedAt
+          }
+          nextToken
+          startedAt
+        }
+      }`;
+    const gqlAPIServiceArguments: any = {};
+    if (aggregateId) {
+      gqlAPIServiceArguments.aggregateId = aggregateId;
+    }
+    if (createdAt) {
+      gqlAPIServiceArguments.createdAt = createdAt;
+    }
+    if (sortDirection) {
+      gqlAPIServiceArguments.sortDirection = sortDirection;
+    }
+    if (filter) {
+      gqlAPIServiceArguments.filter = filter;
+    }
+    if (limit) {
+      gqlAPIServiceArguments.limit = limit;
+    }
+    if (nextToken) {
+      gqlAPIServiceArguments.nextToken = nextToken;
+    }
+    const response = (await API.graphql(
+      graphqlOperation(statement, gqlAPIServiceArguments)
+    )) as any;
+    return <EventsByAggregateIdQuery>response.data.eventsByAggregateId;
   }
   OnCreateEventListener: Observable<
     SubscriptionResponse<Pick<__SubscriptionContainer, "onCreateEvent">>

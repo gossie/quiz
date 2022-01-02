@@ -14,11 +14,19 @@ query GetEvent($id: ID!) {
   }
 }
 query ListEvents(
+  $id: ID
   $filter: ModelEventFilterInput
   $limit: Int
   $nextToken: String
+  $sortDirection: ModelSortDirection
 ) {
-  listEvents(filter: $filter, limit: $limit, nextToken: $nextToken) {
+  listEvents(
+    id: $id
+    filter: $filter
+    limit: $limit
+    nextToken: $nextToken
+    sortDirection: $sortDirection
+  ) {
     items {
       id
       aggregateId
@@ -46,6 +54,38 @@ query SyncEvents(
     limit: $limit
     nextToken: $nextToken
     lastSync: $lastSync
+  ) {
+    items {
+      id
+      aggregateId
+      type
+      sequenceNumber
+      createdAt
+      domainEvent
+      updatedAt
+      _version
+      _deleted
+      _lastChangedAt
+    }
+    nextToken
+    startedAt
+  }
+}
+query EventsByAggregateId(
+  $aggregateId: ID
+  $createdAt: ModelStringKeyConditionInput
+  $sortDirection: ModelSortDirection
+  $filter: ModelEventFilterInput
+  $limit: Int
+  $nextToken: String
+) {
+  eventsByAggregateId(
+    aggregateId: $aggregateId
+    createdAt: $createdAt
+    sortDirection: $sortDirection
+    filter: $filter
+    limit: $limit
+    nextToken: $nextToken
   ) {
     items {
       id
