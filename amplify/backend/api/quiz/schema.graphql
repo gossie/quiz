@@ -1,8 +1,12 @@
-type Event @model @auth(rules: [{allow: public}]) {
-  id: ID!
-  aggregateId: ID
-  type: String
-  sequenceNumber: Int
-  createdAt: AWSDateTime
-  domainEvent: AWSJSON
+type Event @model
+        @key(fields: ["id"])
+        @key(name: "eventsByAggregateId", fields: ["aggregateId", "createdAt"], queryField: "eventsByAggregateId")
+        @auth(rules: [{allow: public}]) {
+
+    id: ID!
+    aggregateId: ID
+    type: String
+    sequenceNumber: Int
+    createdAt: AWSDateTime
+    domainEvent: AWSJSON
 }
