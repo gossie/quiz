@@ -10,6 +10,7 @@ export interface SubscriptionResponse<T> {
 }
 
 export type __SubscriptionContainer = {
+  subscribeToEvents: SubscribeToEventsSubscription;
   onCreateEvent: OnCreateEventSubscription;
   onUpdateEvent: OnUpdateEventSubscription;
   onDeleteEvent: OnDeleteEventSubscription;
@@ -277,6 +278,20 @@ export type EventsByAggregateIdQuery = {
   } | null>;
   nextToken?: string | null;
   startedAt?: number | null;
+};
+
+export type SubscribeToEventsSubscription = {
+  __typename: "Event";
+  id: string;
+  aggregateId?: string | null;
+  type?: string | null;
+  sequenceNumber?: number | null;
+  createdAt?: string | null;
+  domainEvent?: string | null;
+  updatedAt: string;
+  _version: number;
+  _deleted?: boolean | null;
+  _lastChangedAt: number;
 };
 
 export type OnCreateEventSubscription = {
@@ -583,6 +598,36 @@ export class APIService {
     )) as any;
     return <EventsByAggregateIdQuery>response.data.eventsByAggregateId;
   }
+  SubscribeToEventsListener(
+    aggregateId: string
+  ): Observable<
+    SubscriptionResponse<Pick<__SubscriptionContainer, "subscribeToEvents">>
+  > {
+    const statement = `subscription SubscribeToEvents($aggregateId: ID!) {
+        subscribeToEvents(aggregateId: $aggregateId) {
+          __typename
+          id
+          aggregateId
+          type
+          sequenceNumber
+          createdAt
+          domainEvent
+          updatedAt
+          _version
+          _deleted
+          _lastChangedAt
+        }
+      }`;
+    const gqlAPIServiceArguments: any = {
+      aggregateId
+    };
+    return API.graphql(
+      graphqlOperation(statement, gqlAPIServiceArguments)
+    ) as Observable<
+      SubscriptionResponse<Pick<__SubscriptionContainer, "subscribeToEvents">>
+    >;
+  }
+
   OnCreateEventListener: Observable<
     SubscriptionResponse<Pick<__SubscriptionContainer, "onCreateEvent">>
   > = API.graphql(

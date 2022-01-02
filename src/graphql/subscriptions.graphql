@@ -1,4 +1,18 @@
 # this is an auto generated file. This will be overwritten
+subscription SubscribeToEvents($aggregateId: ID!) {
+  subscribeToEvents(aggregateId: $aggregateId) {
+    id
+    aggregateId
+    type
+    sequenceNumber
+    createdAt
+    domainEvent
+    updatedAt
+    _version
+    _deleted
+    _lastChangedAt
+  }
+}
 subscription OnCreateEvent {
   onCreateEvent {
     id

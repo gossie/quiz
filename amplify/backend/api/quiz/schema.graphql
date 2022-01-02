@@ -6,3 +6,7 @@ type Event @model @auth(rules: [{allow: public}]) {
     createdAt: AWSDateTime
     domainEvent: AWSJSON
 }
+
+type Subscription {
+    subscribeToEvents(aggregateId: ID!): Event @aws_subscribe(mutations: ["createEvent"])
+}
