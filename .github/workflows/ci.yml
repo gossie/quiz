@@ -37,7 +37,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.QUIZ_GITHUB_TOKEN }}
           BRANCH: gh-pages
           TARGET_FOLDER: quiz-master-client
-          FOLDER: ${{env.working-directory}}/build
+          FOLDER: ../quiz-master-client/build
           CLEAN: true
       
   build-quiz-participant-client:
