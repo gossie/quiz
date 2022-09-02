@@ -10,7 +10,7 @@ jobs:
           java-version: 17
       - name: verify
         run: mvn -B verify
-  build-quiz-master-client:
+  build-and-deploy-quiz-master-client:
     runs-on: ubuntu-latest
     env:
       working-directory: ./quiz-master-client
@@ -25,7 +25,15 @@ jobs:
       - name: Unit tests
         run: npm run test:ci
         working-directory: ${{env.working-directory}}
-  build-quiz-participant-client:
+      - name: Deploy
+        uses: JamesIves/github-pages-deploy-action@releases/v3
+        with:
+          GITHUB_TOKEN: ${{ secrets.QUIZ_GITHUB_TOKEN }}
+          BRANCH: gh-pages
+          TARGET_FOLDER: quiz-master-client
+          FOLDER: ${{env.working-directory}}/build
+          CLEAN: true
+  build-and-deploy-quiz-participant-client:
     runs-on: ubuntu-latest
     env:
       working-directory: ./quiz-participant-client
@@ -40,3 +48,11 @@ jobs:
       - name: Unit tests
         run: npm run test:ci
         working-directory: ${{env.working-directory}}
+      - name: Deploy
+        uses: JamesIves/github-pages-deploy-action@releases/v3
+        with:
+          GITHUB_TOKEN: ${{ secrets.QUIZ_GITHUB_TOKEN }}
+          BRANCH: gh-pages
+          TARGET_FOLDER: quiz-participant-client
+          FOLDER: ${{env.working-directory}}/build
+          CLEAN: true
