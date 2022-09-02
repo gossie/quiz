@@ -203,7 +203,7 @@ test('deletes participant', () => {
         expect(request).toEqual({
             method: 'DELETE'
         });
-        return Promise.resolve({ status: 200 });
+        return Promise.resolve({ status: 200 } as Response);
     });
 
     const quiz: Quiz = {

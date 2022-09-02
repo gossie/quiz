@@ -29,7 +29,7 @@ test('should select choice', async () => {
         });
         return Promise.resolve({
             status: 200
-        });
+        } as Response);
     });
 
     const quiz: Quiz = {
@@ -54,6 +54,7 @@ test('should select choice', async () => {
                 question: 'Frage 1',
                 pending: false,
                 revealed: false,
+                category: 'eins',
                 links: []
             },
             {
@@ -73,6 +74,7 @@ test('should select choice', async () => {
                 ],
                 pending: true,
                 revealed: false,
+                category: 'eins',
                 links: []
             }
         ],
@@ -106,6 +108,7 @@ test('should disable button and field because time is up', async () => {
                 question: 'Frage 1',
                 pending: false,
                 revealed: false,
+                category: 'eins',
                 links: []
             },
             {
@@ -115,6 +118,7 @@ test('should disable button and field because time is up', async () => {
                 pending: true,
                 revealed: false,
                 secondsLeft: 0,
+                category: 'eins',
                 choices: [
                     {
                         choice: 'A',
@@ -162,6 +166,7 @@ test('should disable button and field because answers were revealed', async () =
                 question: 'Frage 1',
                 pending: false,
                 revealed: false,
+                category: 'eins',
                 links: []
             },
             {
@@ -170,6 +175,7 @@ test('should disable button and field because answers were revealed', async () =
                 estimates: {},
                 pending: true,
                 revealed: true,
+                category: 'eins',
                 choices: [
                     {
                         choice: 'A',

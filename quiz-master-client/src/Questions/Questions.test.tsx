@@ -94,7 +94,7 @@ test('should add new private question', async () => {
                 Accept: 'application/json'
             }
         });
-        return Promise.resolve({ status: 201 });
+        return Promise.resolve({ status: 201 } as Response);
     });
 
     const quiz: Quiz = {
@@ -170,7 +170,7 @@ test('should add new public question', async () => {
                 Accept: 'application/json'
             }
         });
-        return Promise.resolve({ status: 201 });
+        return Promise.resolve({ status: 201 } as Response);
     });
 
     const quiz: Quiz = {
@@ -232,7 +232,7 @@ test('should start question', () => {
         expect(request).toEqual({
             method: 'PATCH'
         });
-        return Promise.resolve({ status: 200 });
+        return Promise.resolve({ status: 200 } as Response);
     });
 
     const quiz: Quiz = {
@@ -286,7 +286,7 @@ test('should delete question', () => {
         expect(request).toEqual({
             method: 'DELETE'
         });
-        return Promise.resolve({ status: 200 });
+        return Promise.resolve({ status: 200 } as Response);
     });
 
     const quiz: Quiz = {
@@ -404,7 +404,7 @@ test('should move question to any position', async () => {
                 Accept: 'application/json'
             }
         });
-        return Promise.resolve({status: 200});
+        return Promise.resolve({status: 200} as Response);
     });
 
     const quiz: Quiz = {
@@ -481,7 +481,7 @@ test('should move question to first position', async () => {
                 Accept: 'application/json'
             }
         });
-        return Promise.resolve({status: 200});
+        return Promise.resolve({status: 200} as Response);
     });
 
     const quiz: Quiz = {
@@ -558,7 +558,7 @@ test('should edit question', async () => {
                 Accept: 'application/json'
             }
         });
-        return Promise.resolve({ status: 200 });
+        return Promise.resolve({ status: 200 } as Response);
     });
 
     const quiz: Quiz = {
@@ -669,7 +669,7 @@ test('should not move question, because the quiz is finished', (done) => {
         return Promise.resolve({
             status: 409,
             json: () => Promise.resolve({message: 'errorMessageConflict'})
-        });
+        } as Response);
     });
 
     const quiz: Quiz = {

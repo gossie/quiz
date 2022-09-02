@@ -14,7 +14,7 @@ test('should buzzer', async () => {
         });
         return Promise.resolve({
             status: 200
-        });
+        } as Response);
     });
 
     const quiz: Quiz = {
@@ -25,6 +25,7 @@ test('should buzzer', async () => {
             name: 'Erik',
             turn: false,
             points: 12,
+            revealAllowed: true,
             links: [
                 {
                     rel: 'buzzer',
@@ -37,12 +38,16 @@ test('should buzzer', async () => {
                 id: '1',
                 question: 'Frage 1',
                 pending: false,
+                revealed: false,
+                category: 'eins',
                 links: []
             },
             {
                 id: '2',
                 question: 'Frage 2',
                 pending: true,
+                revealed: false,
+                category: 'zwei',
                 links: []
             }
         ],

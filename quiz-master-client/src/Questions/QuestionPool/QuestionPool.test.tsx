@@ -40,7 +40,7 @@ test('should determine question pool', async () => {
                         links: []
                     }
                 ])
-            });
+            } as Response);
         } else if (url === 'http://localhost:5000/api/createQuestion') {
             expect(request).toEqual({
                 method: 'POST',
@@ -52,7 +52,7 @@ test('should determine question pool', async () => {
                     Accept: 'application/json'
                 }
             });
-            return Promise.resolve({ status: 201 });
+            return Promise.resolve({ status: 201 } as Response);
         } else {
             return Promise.reject();
         }

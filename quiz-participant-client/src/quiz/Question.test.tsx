@@ -57,6 +57,7 @@ test('has no pending question', () => {
                 question: "What is happening?",
                 pending: false,
                 revealed: false,
+                category: 'eins',
                 links: []
             }
         ],
@@ -87,6 +88,7 @@ test('has pending question', () => {
                 question: 'What is happening?',
                 pending: true,
                 revealed: false,
+                category: 'eins',
                 links: []
             }
         ],
@@ -121,6 +123,7 @@ test('has pending question with counter', () => {
                 secondsLeft: 17,
                 pending: true,
                 revealed: false,
+                category: 'eins',
                 links: []
             }
         ],

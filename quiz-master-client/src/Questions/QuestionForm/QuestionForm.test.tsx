@@ -38,7 +38,7 @@ test('should add new estimation question', async () => {
                 Accept: 'application/json'
             }
         });
-        return Promise.resolve({status: 201});
+        return Promise.resolve({status: 201} as Response);
     });
 
     const quiz: Quiz = {
@@ -123,7 +123,7 @@ test('should not add new question, because quiz is finished', (done) => {
         return Promise.resolve({
             status: 409,
             json: () => Promise.resolve({message: 'errorMessageConflict'})
-        });
+        } as Response);
     });
 
     const quiz: Quiz = {
@@ -202,7 +202,7 @@ test('should create multiple choice question', async () => {
                 Accept: 'application/json'
             }
         });
-        return Promise.resolve({status: 201});
+        return Promise.resolve({status: 201} as Response);
     });
 
     const quiz: Quiz = {
@@ -318,7 +318,7 @@ test('should create multiple choice question with last choice still in the input
                 Accept: 'application/json'
             }
         });
-        return Promise.resolve({status: 201});
+        return Promise.resolve({status: 201} as Response);
     });
 
     const quiz: Quiz = {
@@ -413,7 +413,7 @@ test('should edit multiple choice question', async () => {
                 'Content-Type': 'application/json'
             }
         });
-        return Promise.resolve({status: 200});
+        return Promise.resolve({status: 200} as Response);
     });
 
     const quiz: Quiz = {

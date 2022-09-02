@@ -5,26 +5,27 @@ import Quiz from '../quiz';
 
 test('has two participants', () => {
     const quiz: Quiz = {
-        id: 1,
+        id: '1',
         name: 'Quiz',
         participants: [
             {
-                id: 15,
+                id: '15',
                 name: 'Erik',
                 turn: false,
                 points: 0,
+                revealAllowed: true,
                 links: []
             },
             {
-                id: 16,
+                id: '16',
                 name: 'Sandra',
                 turn: false,
                 points: 0,
+                revealAllowed: true,
                 links: []
             }
         ],
         openQuestions: [],
-        playedQuestions: [],
         links: []
     }
     
@@ -36,7 +37,7 @@ test('has two participants', () => {
 
 test('has no participants', () => {
     const quiz: Quiz = {
-        id: 1,
+        id: '1',
         name: 'Quiz',
         participants: [],
         openQuestions: [],

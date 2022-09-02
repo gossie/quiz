@@ -1,19 +1,21 @@
-import React from 'react';
 import { useTranslation } from 'react-i18next';
 import './AppFooter.scss';
 
-interface AppFooterProps {}
+export default function AppFooter() {
 
-const AppFooter: React.FC<AppFooterProps> = (props: AppFooterProps) => {
     const { t } = useTranslation();
+
+    const trans1 = t('footerQuestion')
+    const trans2 = t('footerLink')
 
     return (
         <footer className="footer">
             <nav className="content has-text-centered">
                 <p>
-                    { t('footerQuestion') } <a href={process.env.REACT_APP_QUIZ_MASTER_BASE_URL} target="_blank">{ t('footerLink') }</a>
+                    <div>
+                        <span>{ trans1 }</span> <a href={process.env.REACT_APP_QUIZ_MASTER_BASE_URL} target="_blank">{ trans2 }</a>
+                    </div>
                 </p>
             </nav>
     </footer>
-    )};
-export default AppFooter;
+)};

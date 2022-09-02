@@ -9,6 +9,7 @@ test('displays participant after a correct answer', () => {
         name: 'Sandra',
         turn: false,
         points: 2,
+        revealAllowed: true,
         links: []
     };
 
@@ -30,6 +31,7 @@ test('displays participant after an incorrect answer', () => {
         name: 'Erik',
         turn: false,
         points: 1,
+        revealAllowed: true,
         links: []
     };
 
@@ -51,6 +53,7 @@ test('displays participant that did not answer', () => {
         name: 'Erik',
         turn: false,
         points: 2,
+        revealAllowed: true,
         links: []
     };
 
@@ -72,6 +75,7 @@ test('displays answer hint for freetext questions', () => {
         name: 'Erik',
         turn: false,
         points: 2,
+        revealAllowed: true,
         links: []
     };
 
@@ -82,6 +86,8 @@ test('displays answer hint for freetext questions', () => {
             '15': '*****'
         },
         pending: true,
+        category: 'catgegory-1',
+        revealed: false,
         links: []
     }
 
@@ -96,6 +102,7 @@ test('displays no answer hint because participant has not answered', () => {
         name: 'Erik',
         turn: false,
         points: 2,
+        revealAllowed: true,
         links: []
     };
 
@@ -106,6 +113,8 @@ test('displays no answer hint because participant has not answered', () => {
             '19': '*****'
         },
         pending: true,
+        category: 'catgegory-1',
+        revealed: false,
         links: []
     }
 
@@ -120,6 +129,7 @@ test('displays no answer hint because it is no freetext question', () => {
         name: 'Erik',
         turn: false,
         points: 2,
+        revealAllowed: true,
         links: []
     };
 
@@ -127,6 +137,8 @@ test('displays no answer hint because it is no freetext question', () => {
         id: '17',
         question: 'Was ist das?',
         pending: true,
+        category: 'catgegory-1',
+        revealed: false,
         links: []
     }
 
@@ -141,6 +153,7 @@ test('displays no answer hint because no question is pending', () => {
         name: 'Erik',
         turn: false,
         points: 2,
+        revealAllowed: true,
         links: []
     };
 

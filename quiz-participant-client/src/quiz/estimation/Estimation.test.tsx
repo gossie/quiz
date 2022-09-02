@@ -33,7 +33,7 @@ test('should estimate', async () => {
         });
         return Promise.resolve({
             status: 200
-        });
+        } as Response);
     });
 
     const quiz: Quiz = {
@@ -58,6 +58,7 @@ test('should estimate', async () => {
                 question: 'Frage 1',
                 pending: false,
                 revealed: false,
+                category: 'eins',
                 links: []
             },
             {
@@ -66,6 +67,7 @@ test('should estimate', async () => {
                 estimates: {},
                 pending: true,
                 revealed: false,
+                category: 'eins',
                 links: []
             }
         ],
@@ -98,7 +100,7 @@ test('should send value with enter', async () => {
         });
         return Promise.resolve({
             status: 200
-        });
+        } as Response);
     });
 
     const quiz: Quiz = {
@@ -123,6 +125,7 @@ test('should send value with enter', async () => {
                 question: 'Frage 1',
                 pending: false,
                 revealed: false,
+                category: 'eins',
                 links: []
             },
             {
@@ -131,6 +134,7 @@ test('should send value with enter', async () => {
                 estimates: {},
                 pending: true,
                 revealed: false,
+                category: 'eins',
                 links: []
             }
         ],
@@ -161,7 +165,7 @@ test('should receive error when sending value', async () => {
         });
         return Promise.resolve({
             status: 400
-        });
+        } as Response);
     });
 
     const quiz: Quiz = {
@@ -186,6 +190,7 @@ test('should receive error when sending value', async () => {
                 question: 'Frage 1',
                 pending: false,
                 revealed: false,
+                category: 'eins',
                 links: []
             },
             {
@@ -194,6 +199,7 @@ test('should receive error when sending value', async () => {
                 estimates: {},
                 pending: true,
                 revealed: false,
+                category: 'eins',
                 links: []
             }
         ],
@@ -237,6 +243,7 @@ test('should disable button and field because time is up', async () => {
                 question: 'Frage 1',
                 pending: false,
                 revealed: false,
+                category: 'eins',
                 links: []
             },
             {
@@ -246,6 +253,7 @@ test('should disable button and field because time is up', async () => {
                 pending: true,
                 revealed: false,
                 secondsLeft: 0,
+                category: 'eins',
                 links: []
             }
         ],
@@ -283,6 +291,7 @@ test('should disable button and field because answers were revealed', async () =
                 question: 'Frage 1',
                 pending: false,
                 revealed: false,
+                category: 'eins',
                 links: []
             },
             {
@@ -291,6 +300,7 @@ test('should disable button and field because answers were revealed', async () =
                 estimates: {},
                 pending: true,
                 revealed: true,
+                category: 'eins',
                 links: []
             }
         ],
