@@ -146,7 +146,7 @@ const QuizStatistics: React.FC<QuizStatisticsProps> = (props: QuizStatisticsProp
             .map((p, index) => ({
                 participant: p,
                 markup: (
-                    <tr>
+                    <tr key={p.id}>
                         <td width="100">
                             <span style={{backgroundColor: COLORS[index], width: "100%", height: '2px', display: 'inline-block', verticalAlign: 'middle'}} />
                         </td>
