@@ -18,7 +18,9 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v1
       - name: Install & Build
-        run: npm install
+        run: |
+          npm install
+          npm run build
         working-directory: ${{env.working-directory}}
       - name: Unit tests
         run: npm run test:ci
@@ -28,7 +30,7 @@ jobs:
         with:
           GITHUB_TOKEN: ${{ secrets.QUIZ_GITHUB_TOKEN }}
           BRANCH: gh-pages
-          TARGET_FOLDER: quiz-masterclient
+          TARGET_FOLDER: quiz-master-client
           FOLDER: ${{env.working-directory}}/build
           CLEAN: true
       
@@ -40,7 +42,9 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v1
       - name: Install & Build
-        run: npm install
+        run: |
+          npm install
+          npm run build
         working-directory: ${{env.working-directory}}
       - name: Unit tests
         run: npm run test:ci
