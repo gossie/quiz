@@ -25,14 +25,6 @@ jobs:
       - name: Unit tests
         run: npm run test:ci
         working-directory: ${{env.working-directory}}
-      - name: Deploy
-        uses: JamesIves/github-pages-deploy-action@releases/v3
-        with:
-          GITHUB_TOKEN: ${{ secrets.QUIZ_GITHUB_TOKEN }}
-          BRANCH: gh-pages
-          TARGET_FOLDER: quiz-master-client
-          FOLDER: ${{env.working-directory}}/build
-          CLEAN: true
   deploy-quiz-master-client:
     runs-on: ubuntu-latest
     needs: build-quiz-master-client
