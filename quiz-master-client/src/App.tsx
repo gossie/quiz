@@ -19,8 +19,8 @@ function App() {
         return id;
     };
 
-    const [joinInputInformation, setJoinInputInformation] = useState([{label: quizIdLabel, value: getQuizIdFromUrl(), focus: true}] as Array<InputInformation>);
-    const [createInputInformation, setCreateInputInformation] = useState([{label: quizNameLabel, value: ''}] as Array<InputInformation>);
+    const [joinInputInformation] = useState([{label: quizIdLabel, value: getQuizIdFromUrl(), focus: true}] as Array<InputInformation>);
+    const [createInputInformation] = useState([{label: quizNameLabel, value: ''}] as Array<InputInformation>);
 
     const setQuizIDInURL = (quizId) => {
         if(window.history && window.history.pushState) {

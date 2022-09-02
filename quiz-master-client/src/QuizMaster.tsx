@@ -53,24 +53,23 @@ const QuizMaster: React.FC<QuizMasterProps> = (props: QuizMasterProps) => {
         return `${expirationDate.getDate()}.${expirationDate.getMonth() + 1}.${expirationDate.getFullYear()}`
     };
 
+    // const undo = () => {
+    //     if (quiz.undoPossible) {
+    //         const url = quiz.links.find(link => link.rel === 'undo').href;
+    //         fetch(`${process.env.REACT_APP_BASE_URL}${url}`, {
+    //             method: 'DELETE'
+    //         });
+    //     }
+    // }
 
-    const undo = () => {
-        if (quiz.undoPossible) {
-            const url = quiz.links.find(link => link.rel === 'undo').href;
-            fetch(`${process.env.REACT_APP_BASE_URL}${url}`, {
-                method: 'DELETE'
-            });
-        }
-    }
-
-    const redo = () => {
-        if (quiz.redoPossible) {
-            const url = quiz.links.find(link => link.rel === 'redo').href;
-            fetch(`${process.env.REACT_APP_BASE_URL}${url}`, {
-                method: 'POST'
-            });
-        }
-    }
+    // const redo = () => {
+    //     if (quiz.redoPossible) {
+    //         const url = quiz.links.find(link => link.rel === 'redo').href;
+    //         fetch(`${process.env.REACT_APP_BASE_URL}${url}`, {
+    //             method: 'POST'
+    //         });
+    //     }
+    // }
 
     return (
         <div className="Quiz-dashboard">

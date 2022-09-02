@@ -66,13 +66,13 @@ const QuestionForm: React.FC<QuestionFormProps> = (props: QuestionFormProps) => 
         });
     };
 
-    const choiceElements = choices.map(
-        (choice, index) => 
-            <div className="multiple-choice-option">
-                <span className="text">{choice}</span>
-                <span data-testid={`delete-multiple-choice-option-${index}`} className="icon clickable has-text-danger" title={t('titleDeleteMultipleChoiceOption')} onClick={() => deleteOptionFromChoices(index)}><i className="fa fa-trash"></i></span>
-            </div>
-    );
+    // const choiceElements = choices.map(
+    //     (choice, index) => 
+    //         <div className="multiple-choice-option">
+    //             <span className="text">{choice}</span>
+    //             <span data-testid={`delete-multiple-choice-option-${index}`} className="icon clickable has-text-danger" title={t('titleDeleteMultipleChoiceOption')} onClick={() => deleteOptionFromChoices(index)}><i className="fa fa-trash"></i></span>
+    //         </div>
+    // );
 
     const createQuestion = async () => {
         if (newQuestion) {
