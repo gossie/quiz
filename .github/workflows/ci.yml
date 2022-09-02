@@ -15,8 +15,10 @@ jobs:
     env:
       working-directory: ./quiz-master-client
     steps:
-      - name: Checkout
-        uses: actions/checkout@v1
+      - uses: actions/checkout@v1
+      - uses: actions/setup-node@v1
+        with:
+          node-version: 12
       - name: Install & Build
         run: |
           npm install
@@ -25,6 +27,12 @@ jobs:
       - name: Unit tests
         run: npm run test:ci
         working-directory: ${{env.working-directory}}
+  deploy-quiz-master-client:
+    runs-on: ubuntu-latest
+    needs: build-quiz-master-client
+    env:
+      working-directory: ./quiz-master-client
+    steps:
       - name: Deploy
         uses: JamesIves/github-pages-deploy-action@releases/v3
         with:
@@ -33,14 +41,16 @@ jobs:
           TARGET_FOLDER: quiz-master-client
           FOLDER: ${{env.working-directory}}/build
           CLEAN: true
-      
+
   build-quiz-participant-client:
     runs-on: ubuntu-latest
     env:
       working-directory: ./quiz-participant-client
     steps:
-      - name: Checkout
-        uses: actions/checkout@v1
+      - uses: actions/checkout@v1
+      - uses: actions/setup-node@v1
+        with:
+          node-version: 12
       - name: Install & Build
         run: |
           npm install
@@ -49,6 +59,12 @@ jobs:
       - name: Unit tests
         run: npm run test:ci
         working-directory: ${{env.working-directory}}
+  deploy-quiz-participant-client:
+    runs-on: ubuntu-latest
+    needs: build-quiz-participant-client
+    env:
+      working-directory: ./quiz-participant-client
+    steps:
       - name: Deploy
         uses: JamesIves/github-pages-deploy-action@releases/v3
         with:
