@@ -29,6 +29,7 @@ class QuizApplication {
 
 
     @Bean
+    @ConditionalOnCloudPlatform(CloudPlatform.HEROKU)
     fun events01(eventBus: EventBus, objectMapper: ObjectMapper, repo: EventRepository): CommandLineRunner {
         return (CommandLineRunner {
             Thread.sleep(5000)
