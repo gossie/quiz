@@ -61,7 +61,7 @@ test('should answer correctly', () => {
                 Accept: 'application/json'
             }
         });
-        Promise.resolve();
+        return Promise.resolve({} as Response);
     });
 
     const quiz: Quiz = {
@@ -109,7 +109,7 @@ test('should answer correctly', () => {
                 Accept: 'application/json'
             }
         });
-        Promise.resolve();
+        return Promise.resolve({} as Response);
     });
 
     const quiz: Quiz = {
