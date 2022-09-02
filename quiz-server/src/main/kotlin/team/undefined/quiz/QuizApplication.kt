@@ -29,17 +29,23 @@ class QuizApplication {
 
 
     @Bean
-    @ConditionalOnCloudPlatform(CloudPlatform.HEROKU)
     fun events01(eventBus: EventBus, objectMapper: ObjectMapper, repo: EventRepository): CommandLineRunner {
         return (CommandLineRunner {
+            Thread.sleep(5000)
             logger.info("import first batch of events")
+            var counter = 0
             val values01 = readFileContent("01_events.json").getJSONArray("values")
             values01.forEach {
                 val eventType = (it as JSONArray).get(2) as String
                 val event = it.get(4) as String
                 val domainEvent = objectMapper.readValue(event, Class.forName(eventType))
                 val myEvent = Event::class.java.cast(domainEvent)
-                eventBus.post(myEvent)
+                repo.storeEvent(myEvent)
+                    .subscribe { ev ->
+                        logger.info("imported ${++counter} events")
+                        eventBus.post(ev)
+                    }
+                Thread.sleep(100)
             }
 
             logger.info("import second batch of events")
@@ -49,7 +55,12 @@ class QuizApplication {
                 val event = it.get(5) as String
                 val domainEvent = objectMapper.readValue(event, Class.forName(eventType))
                 val myEvent = Event::class.java.cast(domainEvent)
-                eventBus.post(myEvent)
+                repo.storeEvent(myEvent)
+                    .subscribe { ev ->
+                        eventBus.post(ev)
+                        logger.info("imported ${++counter} events")
+                    }
+                Thread.sleep(100)
             }
 
             logger.info("import third batch of events")
@@ -59,7 +70,12 @@ class QuizApplication {
                 val event = it.get(5) as String
                 val domainEvent = objectMapper.readValue(event, Class.forName(eventType))
                 val myEvent = Event::class.java.cast(domainEvent)
-                eventBus.post(myEvent)
+                repo.storeEvent(myEvent)
+                    .subscribe { ev ->
+                        eventBus.post(ev)
+                        logger.info("imported ${++counter} events")
+                    }
+                Thread.sleep(100)
             }
         })
     }
