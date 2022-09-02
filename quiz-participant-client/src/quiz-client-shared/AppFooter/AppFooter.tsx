@@ -13,7 +13,7 @@ export default function AppFooter() {
             <nav className="content has-text-centered">
                 <p>
                     <div>
-                        <span>{ trans1 }</span> <a href={process.env.REACT_APP_QUIZ_MASTER_BASE_URL} target="_blank">{ trans2 }</a>
+                        <span>{ trans1 }</span> <a href={process.env.REACT_APP_QUIZ_MASTER_BASE_URL} target="_blank" rel="noreferrer">{ trans2 }</a>
                     </div>
                 </p>
             </nav>
