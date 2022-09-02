@@ -51,6 +51,16 @@ class QuizApplication {
                 val myEvent = Event::class.java.cast(domainEvent)
                 eventBus.post(myEvent)
             }
+
+            logger.info("import third batch of events")
+            val values03 = readFileContent("03_events.json").getJSONArray("values")
+            values03.forEach {
+                val eventType = (it as JSONArray).get(2) as String
+                val event = it.get(5) as String
+                val domainEvent = objectMapper.readValue(event, Class.forName(eventType))
+                val myEvent = Event::class.java.cast(domainEvent)
+                eventBus.post(myEvent)
+            }
         })
     }
 

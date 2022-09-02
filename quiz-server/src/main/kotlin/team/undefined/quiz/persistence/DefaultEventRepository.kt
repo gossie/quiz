@@ -1,9 +1,11 @@
 package team.undefined.quiz.persistence
 
 import com.fasterxml.jackson.databind.ObjectMapper
+import org.springframework.data.domain.Sort
 import org.springframework.stereotype.Component
 import reactor.core.publisher.Flux
 import reactor.core.publisher.Mono
+import reactor.kotlin.core.publisher.toMono
 import team.undefined.quiz.core.Event
 import team.undefined.quiz.core.EventRepository
 import java.util.UUID
@@ -19,13 +21,14 @@ class DefaultEventRepository(private val eventEntityRepository: EventEntityRepos
     }
 
     override fun determineEvents(quizId: UUID): Flux<Event> {
+        //OrderBySequenceNumberAscCreatedAtAsc
         return eventEntityRepository.findAllByAggregateId(quizId.toString())
                 .map { objectMapper.readValue(it.domainEvent, Class.forName(it.type)) }
                 .map { Event::class.java.cast(it) }
     }
 
     override fun determineEvents(): Flux<Event> {
-        return eventEntityRepository.findAllOrdered()
+        return eventEntityRepository.findAll(Sort.by(Sort.Direction.ASC, "createdAt"))
                 .map { objectMapper.readValue(it.domainEvent, Class.forName(it.type)) }
                 .map { Event::class.java.cast(it) }
     }
@@ -35,12 +38,17 @@ class DefaultEventRepository(private val eventEntityRepository: EventEntityRepos
     }
 
     override fun determineQuizIds(): Flux<UUID> {
-        return eventEntityRepository.findAllAggregateIds()
+        // TODO: this should be handled by the database
+        return eventEntityRepository.findAll()
+                .map { it.aggregateId }
+                .distinct()
                 .map { UUID.fromString(it) }
     }
 
     override fun undoLastAction(quizId: UUID): Mono<Event> {
-        return eventEntityRepository.findLastByAggregateId(quizId.toString())
+        return eventEntityRepository.findAllByAggregateId(quizId.toString(), Sort.by(Sort.Direction.DESC, "sequenceNumber", "createdAt"))
+                .take(1)
+                .toMono()
                 .flatMap { deleteEvent(it) }
                 .map { objectMapper.readValue(it.domainEvent, Class.forName(it.type)) }
                 .map { Event::class.java.cast(it) }

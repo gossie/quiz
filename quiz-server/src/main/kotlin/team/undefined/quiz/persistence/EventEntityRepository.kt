@@ -1,28 +1,20 @@
 package team.undefined.quiz.persistence
 
-import org.springframework.data.r2dbc.repository.Query
-import org.springframework.data.repository.reactive.ReactiveCrudRepository
+import org.springframework.data.domain.Sort
+import org.springframework.data.mongodb.repository.ReactiveMongoRepository
 import org.springframework.stereotype.Repository
 import reactor.core.publisher.Flux
 import reactor.core.publisher.Mono
-import java.util.*
 
 @Repository
-interface EventEntityRepository : ReactiveCrudRepository<EventEntity, Long> {
+interface EventEntityRepository : ReactiveMongoRepository<EventEntity, String> {
 
-    @Query("SELECT * FROM event_entity ORDER BY created_at ASC")
-    fun findAllOrdered(): Flux<EventEntity>
+    fun findAllByAggregateId(quizId: String, sort: Sort = Sort.by(Sort.Direction.ASC, "sequenceNumber", "createdAt")): Flux<EventEntity>
 
-    @Query("SELECT * FROM event_entity WHERE aggregate_id = :quizId ORDER BY sequence_number ASC, created_at ASC")
-    fun findAllByAggregateId(quizId: String): Flux<EventEntity>
-
-    @Query("DELETE FROM event_entity WHERE aggregate_id = :quizId")
     fun deleteAllByAggregateId(quizId: String): Mono<Void>
 
-    @Query("SELECT DISTINCT aggregate_id FROM event_entity")
-    fun findAllAggregateIds(): Flux<String>
+    //fun findAllAggregateIdsDistinct(): Flux<String>
 
-    @Query("SELECT * FROM event_entity WHERE aggregate_id = :quizId ORDER BY sequence_number DESC, created_at DESC LIMIT 1")
-    fun findLastByAggregateId(quizId: String): Mono<EventEntity>
+    //fun findTop1ByAggregateIdOrderBySequenceNumberDescCreatedAtDesc(quizId: String): Mono<EventEntity>
 
 }
