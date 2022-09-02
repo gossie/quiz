@@ -16,6 +16,9 @@ i18n
     
         interpolation: {
             escapeValue: false, // not needed for react as it escapes by default
+        },
+        backend: {
+            loadPath: '/quiz/quiz-participant-client/locales/{{lng}}/{{ns}}.json'
         }
     });
 
