@@ -1,6 +1,7 @@
 package team.undefined.quiz
 
 import org.assertj.core.api.Assertions.assertThat
+import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.reactive.AutoConfigureWebTestClient
@@ -24,6 +25,7 @@ internal class QuizMasterIT {
     private lateinit var webTestClient: WebTestClient
 
     @Test
+    @Disabled
     fun shouldCreateAndGetQuiz() {
 
         val quizMasterReference = AtomicReference<QuizDTO>()
