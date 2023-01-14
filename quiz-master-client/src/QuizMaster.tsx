@@ -53,23 +53,23 @@ const QuizMaster: React.FC<QuizMasterProps> = (props: QuizMasterProps) => {
         return `${expirationDate.getDate()}.${expirationDate.getMonth() + 1}.${expirationDate.getFullYear()}`
     };
 
-    // const undo = () => {
-    //     if (quiz.undoPossible) {
-    //         const url = quiz.links.find(link => link.rel === 'undo').href;
-    //         fetch(`${process.env.REACT_APP_BASE_URL}${url}`, {
-    //             method: 'DELETE'
-    //         });
-    //     }
-    // }
+    const undo = () => {
+        if (quiz.undoPossible) {
+            const url = quiz.links.find(link => link.rel === 'undo').href;
+            fetch(`${process.env.REACT_APP_BASE_URL}${url}`, {
+                method: 'DELETE'
+            });
+        }
+    }
 
-    // const redo = () => {
-    //     if (quiz.redoPossible) {
-    //         const url = quiz.links.find(link => link.rel === 'redo').href;
-    //         fetch(`${process.env.REACT_APP_BASE_URL}${url}`, {
-    //             method: 'POST'
-    //         });
-    //     }
-    // }
+    const redo = () => {
+        if (quiz.redoPossible) {
+            const url = quiz.links.find(link => link.rel === 'redo').href;
+            fetch(`${process.env.REACT_APP_BASE_URL}${url}`, {
+                method: 'POST'
+            });
+        }
+    }
 
     return (
         <div className="Quiz-dashboard">
@@ -93,8 +93,8 @@ const QuizMaster: React.FC<QuizMasterProps> = (props: QuizMasterProps) => {
                         <div id="timestamp">{lastChanged()}</div>
                         <div>
                             <h4 className="title is-4">{quiz.name}</h4>
-                            {/* TODO: currently undo does not work in backend <span className={`icon ${quiz.undoPossible ? "clickable has-text-link" : "has-text-grey-light"}`} onClick={() => undo()} title={t('titleUndo')}><i className="fas fa-undo"></i></span>
-                            <span className={`icon ${quiz.redoPossible ? "clickable has-text-link" : "has-text-grey-light"}`} onClick={() => redo()} title={t('titleRedo')}><i className="fas fa-redo"></i></span> */}
+                            <span className={`icon ${quiz.undoPossible ? "clickable has-text-link" : "has-text-grey-light"}`} onClick={() => undo()} title={t('titleUndo')}><i className="fas fa-undo"></i></span>
+                            <span className={`icon ${quiz.redoPossible ? "clickable has-text-link" : "has-text-grey-light"}`} onClick={() => redo()} title={t('titleRedo')}><i className="fas fa-redo"></i></span>
                         </div>
                         <div className="columns">
                             <div className="column participants box">
