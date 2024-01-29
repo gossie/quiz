@@ -4,23 +4,28 @@ import java.util.*
 import kotlin.collections.ArrayList
 
 data class QuizStatistics(
-        val participantStatistics: List<ParticipantStatistics> = ArrayList()
+        val participantStatistics: List<ParticipantStatistics> = ArrayList(),
+        val sequenceNumber: Long = 0,
 ) {
+
+    fun setSequenceNumber(sequenceNumber: Long): QuizStatistics {
+        return QuizStatistics(participantStatistics, sequenceNumber)
+    }
 
     fun addParticipantStatistics(participantStatistic: ParticipantStatistics): QuizStatistics {
         val newParticipantStatistic = ArrayList(participantStatistics)
         newParticipantStatistic.add(participantStatistic)
-        return QuizStatistics(newParticipantStatistic)
+        return QuizStatistics(newParticipantStatistic, sequenceNumber)
     }
 
     fun addQuestionStatistic(questionStatistic: QuestionStatistics): QuizStatistics {
         val newParticipantStatistics = participantStatistics.map { it.addQuestionStatistic(questionStatistic) }
-        return QuizStatistics(newParticipantStatistics)
+        return QuizStatistics(newParticipantStatistics, sequenceNumber)
     }
 
     fun deleteParticipantStatistics(participantId: UUID): QuizStatistics {
         val newParticipantStatistics = participantStatistics.filter { it.participantId != participantId }
-        return QuizStatistics(newParticipantStatistics)
+        return QuizStatistics(newParticipantStatistics, sequenceNumber)
     }
 
     fun handleAnswer(participantId: UUID, answer: AnswerCommand.Answer): QuizStatistics {
@@ -31,7 +36,7 @@ data class QuizStatistics(
                 it
             }
         }
-        return QuizStatistics(newParticipantStatistics)
+        return QuizStatistics(newParticipantStatistics, sequenceNumber)
     }
 
 }
