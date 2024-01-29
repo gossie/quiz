@@ -9,7 +9,6 @@ import reactor.core.publisher.Mono
 import reactor.kotlin.core.publisher.switchIfEmpty
 import java.time.Duration
 import java.util.*
-import java.util.concurrent.Semaphore
 
 @Component
 class QuizStatisticsProjection(
@@ -56,19 +55,29 @@ class QuizStatisticsProjection(
     }
 
     @Subscribe
-    fun onParticiantCreation(event: ParticipantCreatedEvent) {
+    fun onParticipantCreation(event: ParticipantCreatedEvent) {
         determineQuizStatisticsFromCacheOrDB(event.quizId)
                 .subscribe {
-                    statistics.put(event.quizId, it.addParticipantStatistics(ParticipantStatistics(event.participant.id)))
+                    var processedQuizStatistics = it
+                    if (event.sequenceNumber > it.sequenceNumber) {
+                        processedQuizStatistics = it.addParticipantStatistics(ParticipantStatistics(event.participant.id))
+                            .setSequenceNumber(event.sequenceNumber)
+                    }
+                    statistics.put(event.quizId, processedQuizStatistics)
                     logger.info("handled ParticipantCreatedEvent")
                 }
     }
 
     @Subscribe
-    fun onParticiantDeletion(event: ParticipantDeletedEvent) {
+    fun onParticipantDeletion(event: ParticipantDeletedEvent) {
         determineQuizStatisticsFromCacheOrDB(event.quizId)
                 .subscribe {
-                    statistics.put(event.quizId, it.deleteParticipantStatistics(event.participantId))
+                    var processedQuizStatistics = it
+                    if (event.sequenceNumber > it.sequenceNumber) {
+                        processedQuizStatistics = it.deleteParticipantStatistics(event.participantId)
+                            .setSequenceNumber(event.sequenceNumber)
+                    }
+                    statistics.put(event.quizId, processedQuizStatistics)
                     logger.info("handled ParticipantCreatedEvent")
                 }
     }
@@ -77,7 +86,12 @@ class QuizStatisticsProjection(
     fun onQuestionAsked(event: QuestionAskedEvent) {
         determineQuizStatisticsFromCacheOrDB(event.quizId)
             .subscribe {
-                statistics.put(event.quizId, it.addQuestionStatistic(QuestionStatistics(event.questionId)))
+                var processedQuizStatistics = it
+                if (event.sequenceNumber > it.sequenceNumber) {
+                    processedQuizStatistics = it.addQuestionStatistic(QuestionStatistics(event.questionId))
+                        .setSequenceNumber(event.sequenceNumber)
+                }
+                statistics.put(event.quizId, processedQuizStatistics)
                 logger.info("handled QuestionAskedEvent")
             }
     }
@@ -86,7 +100,12 @@ class QuizStatisticsProjection(
     fun onAnswer(event: AnsweredEvent) {
         determineQuizStatisticsFromCacheOrDB(event.quizId)
             .subscribe {
-                statistics.put(event.quizId, it.handleAnswer(event.participantId, event.answer))
+                var processedQuizStatistics = it
+                if (event.sequenceNumber > it.sequenceNumber) {
+                    processedQuizStatistics = it.handleAnswer(event.participantId, event.answer)
+                        .setSequenceNumber(event.sequenceNumber)
+                }
+                statistics.put(event.quizId, processedQuizStatistics)
                 logger.info("handled AnsweredEvent")
             }
     }
