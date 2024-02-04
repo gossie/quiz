@@ -1,13 +1,9 @@
-FROM mhart/alpine-node:16 AS builder
+FROM node AS builder
 WORKDIR /app
 COPY . .
 COPY .env.docker .env.production
-RUN npm install react-scripts -g --silent
-RUN yarn install
-RUN yarn run build
+RUN npm install
+RUN npm run build
 
-FROM mhart/alpine-node
-RUN yarn global add serve
-WORKDIR /app
-COPY --from=builder /app/build .
-CMD ["serve", "-p", "80", "-s", "."]doc
+FROM nginx
+COPY --from=builder /app/build /usr/share/nginx/html
