@@ -77,7 +77,7 @@ fun Question.map(quiz: Quiz): QuestionDTO {
             this.points
     )
     questionDTO.add(Link.of("/api/quiz/" + quiz.id + "/questions/" + this.id, "self"))
-    return if (this.imageUrl == "") questionDTO else questionDTO.add(Link.of(this.imageUrl, "image"))
+    return if (this.imageUrl.isBlank()) questionDTO else questionDTO.add(Link.of(this.imageUrl, "image"))
 }
 
 fun Question.map(quizId: UUID): QuestionDTO {
